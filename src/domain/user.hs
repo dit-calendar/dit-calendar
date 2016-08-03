@@ -1,2 +1,4 @@
-data User
-name = String
+data User = User {
+id :: Integer,
+name :: String
+}
