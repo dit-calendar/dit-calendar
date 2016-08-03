@@ -1,0 +1,10 @@
+h3. Nutzer/Gruppen
+* Es soll eine Nutzerverwaltung geben
+** happstack-authenticate für Anmeldung und Regestirierung benutzten
+** benötigt wohl web-routes https://groups.google.com/forum/#!topic/happs/n5NJFfx-KIs
+* Es sollen Gruppen von Nutzern angelegt werden können. Eine Gruppe hat mehr als einen Nutzer.
+
+
+h3. Kalender
+* Es gibt einen Kalender
+* Jede Gruppe und jede_r Nutzer_in kann einen Kalendar eintrag machen

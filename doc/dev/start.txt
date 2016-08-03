@@ -1,0 +1,17 @@
+h3. Cabal
+* beim erstem Mal sandbox aufsetzen: cabal sandbox init
+* alles installieren und bauen: cabal install -j
+* Dependency hinzufügen: in happstack-test.cabal unter dem "build-depends:"-Tag
+
+h3. Programm ausführen
+* bauen: cabal build 
+* starten: .cabal-sandbox/bin/happstack-test
+* einzelne Datein ausführen: ?
+
+h3. Test ausführen
+* builds tests and runs them: cabal install --enable-tests
+* alle Tests ausführen: cabal test
+* einzelne Tests ausführen: ?
+
+h3. Code Quality
+* http://taylor.fausak.me/2014/03/04/haskeleton-a-haskell-project-skeleton/
