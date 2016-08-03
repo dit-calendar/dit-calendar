@@ -1,4 +1,4 @@
-module HappStackTestSpec (spec) where
+module HappStackSpec (spec) where
 
 --TODO: wie importiert man Main?
 import Main
