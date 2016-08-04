@@ -20,7 +20,7 @@ executable happstack-test
   -- other-modules:       
   -- other-extensions:    
   build-depends:       base >=4.9 && <4.10,
-                       happstack-server,
+                       happstack-server == 7.4.*,
                        rest-happstack,
                        --happstack-authenticate == 2.3.*,
                        hsp
