@@ -31,8 +31,10 @@ data Sitemap
 $(derivePathInfo ''Sitemap)
 
 route :: Sitemap -> RouteT Sitemap (ServerPartT IO) Response
- route Home  = homePage
- route (User userId) = userPage userId
+route url =
+    case url of
+      Home                -> homePage
+      (User userId) -> userPage userId
 
 homePage :: RouteT Sitemap (ServerPartT IO) Response
 homePage = do
@@ -50,7 +52,7 @@ main :: IO ()
 main = simpleHTTP nullConf $ msum
   [ dir "favicon.ico" $ notFound (toResponse ())
   , implSite (pack "http://localhost:8000") (pack "/route") site
-  , seeOther "/route" (toResponse ())
+  , seeOther "/r" (toResponse ())
   ]
 
 -- handler :: Sitemap -> RouteT Sitemap IO ()
