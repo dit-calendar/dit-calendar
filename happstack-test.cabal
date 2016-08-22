@@ -21,7 +21,10 @@ executable happstack-test
   -- other-extensions:    
   build-depends:       base >=4.9 && <4.10,
                        text == 1.2.*,
-                       happstack-server == 7.4.*
+                       happstack-server == 7.4.*,
+                       web-routes,
+                       web-routes-th,
+                       web-routes-happstack,
                        --happstack-authenticate == 2.3.*,
                        hsp
   hs-source-dirs:      src
