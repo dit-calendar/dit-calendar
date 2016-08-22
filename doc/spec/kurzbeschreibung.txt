@@ -1,10 +1,20 @@
-h3. Nutzer/Gruppen
+h3. Nutzer
 * Es soll eine Nutzerverwaltung geben
 ** happstack-authenticate für Anmeldung und Regestirierung benutzten
 ** benötigt wohl web-routes https://groups.google.com/forum/#!topic/happs/n5NJFfx-KIs
+
+h4. Gruppen
 * Es sollen Gruppen von Nutzern angelegt werden können. Eine Gruppe hat mehr als einen Nutzer.
+* Eine Gruppe kann eine Untergruppe besitzen (Schleifen muss man verbieten!)
 
 
 h3. Kalender
 * Es gibt einen Kalender
 * Jede Gruppe und jede_r Nutzer_in kann einen Kalendar eintrag machen
+
+h4. Kalendereinträge
+* Kalendereintrag können von Nutzern oder Gruppen aboniert werden
+* Nutzer können Kalendereinträge von anderen Nutzern und Gruppen abonieren
+* Gruppen können Kalenereinträge von Nutzern und Gruppen abonieren
+** Nutzer N der Gruppe G besitzt alle kalendereinträge K die G auch besitzt
+** wird k aus K gelöscht, wird es auch bei N gelöscht, es sein denn N hat k selbst aboniert

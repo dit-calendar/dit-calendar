@@ -1,0 +1,9 @@
+h3. Nutzer
+* pfad /user/
+* get /user/id
+** gibt User als JSON-Objekt zurück
+
+h3. Kalendereintrag
+* pfad /calendar/
+* wie sind Kalendereinträge auffindbar? Mit ID oder user/id der es angelegt hat?
+* Kalendaereintrag erstellen?
