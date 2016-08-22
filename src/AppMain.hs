@@ -31,10 +31,8 @@ data Sitemap
 $(derivePathInfo ''Sitemap)
 
 route :: Sitemap -> RouteT Sitemap (ServerPartT IO) Response
-route url =
-    case url of
-      Home                -> homePage
-      (User userId) -> userPage userId
+ route Home  = homePage
+ route (User userId) = userPage userId
 
 homePage :: RouteT Sitemap (ServerPartT IO) Response
 homePage = do
