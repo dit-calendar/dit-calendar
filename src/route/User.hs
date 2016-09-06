@@ -1,4 +1,3 @@
---Start-Module darf nicht anders als Main heißen
 module Route.User where
 
 import Domain.User
