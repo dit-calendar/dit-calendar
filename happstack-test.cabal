@@ -21,6 +21,9 @@ executable happstack-test
   -- other-extensions:    
   build-depends:       base >=4.9 && <4.10,
                        text == 1.2.*,
+                       mtl,
+                       acid-state == 0.14.*,
+                       safecopy == 0.9.*,
                        happstack-server == 7.4.*,
                        web-routes,
                        web-routes-th,
