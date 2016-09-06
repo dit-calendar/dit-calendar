@@ -1,4 +1,5 @@
-{-# LANGUAGE DeriveDataTypeable, GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE DeriveDataTypeable, GeneralizedNewtypeDeriving,
+    TemplateHaskell #-}
 
 module Domain.User where
 
@@ -8,7 +9,11 @@ import Data.Data (Data, Typeable)
 import Web.Routes ( PathInfo(..))
 import Web.Routes.TH  (derivePathInfo)
 
-newtype User = User {
-    UserId :: Int,
-    name :: String
-    } deriving (Read, Show)
+newtype UserId = UserId { unUserId :: Int }
+    deriving (Eq, Ord, Enum, Read, Show, Data, Typeable, PathInfo)
+
+data Sitemap
+  = Home
+  | User UserId
+  
+$(derivePathInfo ''Sitemap)

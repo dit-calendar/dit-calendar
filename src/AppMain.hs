@@ -1,9 +1,7 @@
 --Start-Module darf nicht anders als Main heißen
-{-# LANGUAGE DeriveDataTypeable, GeneralizedNewtypeDeriving,
-    TemplateHaskell #-}
 module Main where
 
---import Domain.User
+import Domain.User
 
 import Prelude                 hiding (head)
 
@@ -19,16 +17,6 @@ import Web.Routes
     , runRouteT, Site(..), setDefault, mkSitePI)
 import Web.Routes.TH           (derivePathInfo)
 import Web.Routes.Happstack    (implSite)
-
-
-newtype UserId = UserId { unUserId :: Int }
-    deriving (Eq, Ord, Enum, Read, Show, Data, Typeable, PathInfo)
-
-data Sitemap
-  = Home
-  | User UserId
-  
-$(derivePathInfo ''Sitemap)
 
 route :: Sitemap -> RouteT Sitemap (ServerPartT IO) Response
 route url =
