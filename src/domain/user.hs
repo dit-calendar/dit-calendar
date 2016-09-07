@@ -42,11 +42,20 @@ initialUserState = UserState ""
 setName :: String -> Update UserState String
 setName n =
     do c@UserState{..} <- get
-       let newName = name
+       let newName = n
        put $ c { name = newName }
        return newName
 
 peekName :: Query UserState String
 peekName = name <$> ask
-
 $(makeAcidic ''UserState ['setName, 'peekName])
+
+handlers :: AcidState UserState -> ServerPart Response
+handlers acid = msum
+  [ dir "peek" $ do
+      c <- query' acid PeekName
+      ok $ toResponse $"peeked at the name and saw: " ++ show c
+  , do nullDir
+       c <- update' acid (SetName "foo")
+       ok $ toResponse $ "New name is: " ++ show c
+  ]
