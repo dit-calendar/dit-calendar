@@ -24,9 +24,12 @@ import Data.Acid.Local      ( createCheckpointAndClose )
 --   , seeOther "/r" (toResponse ())
 --   ]
 
+--reuse code in site?
 main :: IO ()
 main =
-  bracket (openLocalState initialUserState)
+  -- starts up acid-state. If no pre-existing state is found, then initialCounterState will be used
+  let handle = openLocalState initialUserState in
+  bracket handle
           (createCheckpointAndClose)
            (\acid ->
                simpleHTTP nullConf (handlers acid))
