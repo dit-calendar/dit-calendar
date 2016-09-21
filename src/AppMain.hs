@@ -24,12 +24,23 @@ import Data.Acid.Local      ( createCheckpointAndClose )
 --   , seeOther "/r" (toResponse ())
 --   ]
 
+main :: IO () 
+main = -- starts up acid-state. If no pre-existing state is found, then initialCounterState will be used 
+	let handle = openLocalState initialUserState in 
+		bracket handle 
+			(createCheckpointAndClose) 
+			(\acid -> 
+				simpleHTTP nullConf $ msum
+   					[ dir "favicon.ico" $ notFound (toResponse ())
+   					, implSite (pack "http://localhost:8000") (pack "/route") $ Route.site acid
+   					, seeOther "/r" (toResponse ())
+   					])
 --reuse code in site?
-main :: IO ()
-main =
-  -- starts up acid-state. If no pre-existing state is found, then initialCounterState will be used
-  let handle = openLocalState initialUserState in
-  bracket handle
-          (createCheckpointAndClose)
-           (\acid ->
-               simpleHTTP nullConf (Domain.handlers acid))
+-- main :: IO ()
+-- main =
+--   -- starts up acid-state. If no pre-existing state is found, then initialCounterState will be used
+--   let handle = openLocalState initialUserState in
+--   bracket handle
+--           (createCheckpointAndClose)
+--            (\acid ->
+--                simpleHTTP nullConf (Domain.handlers acid))
