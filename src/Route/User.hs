@@ -47,13 +47,3 @@ site acid =
   --convert the new function to a Site
   let realSite = mkSitePI realRoute in
        setDefault Home realSite
-
--- handlers :: AcidState UserState -> ServerPart Response
--- handlers acid = msum
---   [ dir "peek" $ do
---       c <- query' acid PeekName
---       ok $ toResponse $"peeked at the name and saw: " ++ show c
---   , do nullDir
---        c <- update' acid (SetName "foo")
---        ok $ toResponse $ "New name is: " ++ show c
---   ]
