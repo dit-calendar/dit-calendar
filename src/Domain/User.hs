@@ -14,16 +14,9 @@ import Data.Acid            ( Query, Update, makeAcidic )
 import Data.SafeCopy        ( base, deriveSafeCopy )
 
 import Web.Routes ( PathInfo(..))
-import Web.Routes.TH  (derivePathInfo)
 
 newtype UserId = UserId { unUserId :: Int }
     deriving (Eq, Ord, Enum, Read, Show, Data, Typeable, PathInfo)
-
---A url type
-data Sitemap
-  = Home
-  | User UserId
-$(derivePathInfo ''Sitemap)
 
 --type that represents the state we wish to store
 data UserState = UserState { name :: String }

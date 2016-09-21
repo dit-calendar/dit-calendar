@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Route.User where
 
 import Domain.User
@@ -11,6 +13,14 @@ import Web.Routes        ( RouteT, runRouteT, Site(..)
 import Web.Routes.Happstack    ( implSite )
 import Data.Acid            ( AcidState )
 import Data.Acid.Advanced   ( query', update' )
+import Web.Routes.TH  ( derivePathInfo )
+
+
+--A url type
+data Sitemap
+  = Home
+  | User UserId
+$(derivePathInfo ''Sitemap)
 
 --function that maps a route to the handlers:
 route :: AcidState UserState -> Sitemap -> RouteT Sitemap (ServerPartT IO) Response
