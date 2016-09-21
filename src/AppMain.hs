@@ -1,8 +1,8 @@
 --Start-Module darf nicht anders als Main heißen
 module Main where
 
-import Domain.User
-import Route.User
+import Domain.User as Domain
+import Route.User as Route
 
 import Prelude                 hiding (head)
 
@@ -20,7 +20,7 @@ import Data.Acid.Local      ( createCheckpointAndClose )
 -- main :: IO ()
 -- main = simpleHTTP nullConf $ msum
 --   [ dir "favicon.ico" $ notFound (toResponse ())
---   , implSite (pack "http://localhost:8000") (pack "/route") site
+--   , implSite (pack "http://localhost:8000") (pack "/route") Route.site
 --   , seeOther "/r" (toResponse ())
 --   ]
 
@@ -32,4 +32,4 @@ main =
   bracket handle
           (createCheckpointAndClose)
            (\acid ->
-               simpleHTTP nullConf (handlers acid))
+               simpleHTTP nullConf (Domain.handlers acid))
