@@ -2,22 +2,14 @@ module Route.User where
 
 import Domain.User
 
-import Prelude                 hiding (head)
+import Prelude                 hiding ( head )
 
-import Control.Monad           (msum)
-import Data.Data               (Data, Typeable)
-import Data.Monoid             (mconcat)
-import Data.Text
-import Happstack.Server
-    ( Response, ServerPartT, ok, toResponse, simpleHTTP
-    , nullConf, seeOther, dir, notFound, seeOther)
-import Web.Routes
-    ( PathInfo(..), RouteT, showURL
-    , runRouteT, Site(..), setDefault, mkSitePI)
-import Web.Routes.TH           (derivePathInfo)
-import Web.Routes.Happstack    (implSite)
-import Data.Acid            ( AcidState, Query, Update
-                            , makeAcidic, openLocalState )
+import Happstack.Server  ( Response, ServerPartT
+                          , ok, toResponse )
+import Web.Routes        ( RouteT, runRouteT, Site(..)
+                          , setDefault, mkSitePI )
+import Web.Routes.Happstack    ( implSite )
+import Data.Acid            ( AcidState )
 import Data.Acid.Advanced   ( query', update' )
 
 --function that maps a route to the handlers:
@@ -29,10 +21,10 @@ route acid url =
 
 --handler for homePage
 homePage :: AcidState UserState -> RouteT Sitemap (ServerPartT IO) Response
-homePage acid = 
+homePage acid =
   do
        c <- query' acid PeekName
-       ok $ toResponse $"peeked at the name and saw: " ++ show c
+       ok $ toResponse $ "peeked at the name and saw: " ++ show c
 
 --handler for userPage
 userPage :: UserId -> RouteT Sitemap (ServerPartT IO) Response
@@ -47,3 +39,13 @@ site acid =
   --convert the new function to a Site
   let realSite = mkSitePI realRoute in
        setDefault Home realSite
+
+-- handlers :: AcidState UserState -> ServerPart Response
+-- handlers acid = msum
+--   [ dir "peek" $ do
+--       c <- query' acid PeekName
+--       ok $ toResponse $"peeked at the name and saw: " ++ show c
+--   , do nullDir
+--        c <- update' acid (SetName "foo")
+--        ok $ toResponse $ "New name is: " ++ show c
+--   ]
