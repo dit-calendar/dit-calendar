@@ -2,7 +2,7 @@
 
 module Controller.UserController where
 
-import Route.Url
+import Route.PageEnum
 
 import Prelude                 hiding ( head )
 

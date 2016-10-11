@@ -2,7 +2,7 @@
 
 module Controller.HomeController where
 
-import Route.Url
+import Route.PageEnum
 import Domain.User
 
 import Prelude                 hiding ( head )

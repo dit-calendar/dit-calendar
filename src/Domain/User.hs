@@ -16,12 +16,12 @@ import Data.SafeCopy        ( base, deriveSafeCopy )
 import Web.Routes ( PathInfo(..))
 
 --type that represents the state we wish to store
-data UserState = UserState { name :: String }
+data UserState = UserState { name :: String, userId :: Integer }
     deriving (Eq, Ord, Read, Show, Data, Typeable)
 $(deriveSafeCopy 0 'base ''UserState)
 
 initialUserState :: UserState
-initialUserState = UserState ""
+initialUserState = UserState "" 1
 
 --update function of UserState
 setName :: String -> Update UserState String

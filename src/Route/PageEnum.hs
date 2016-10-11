@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Route.Url where
+module Route.PageEnum where
 
 import Prelude                 hiding ( head )
 
