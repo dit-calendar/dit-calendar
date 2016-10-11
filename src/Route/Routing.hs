@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Route.User where
+module Route.Routing where
 
 import Domain.User
 import Controller.UserController
