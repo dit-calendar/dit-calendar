@@ -2,7 +2,7 @@
 module Main where
 
 import Domain.User as Domain
-import Route.User as Route
+import Route.Routing as Route
 
 import Prelude                 hiding ( head )
 
