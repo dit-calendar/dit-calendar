@@ -5,7 +5,7 @@ module Route.Routing where
 import Domain.User
 import Controller.UserController
 import Controller.HomeController
-import Route.Url
+import Route.PageEnum
 
 import Prelude                 hiding ( head )
 
