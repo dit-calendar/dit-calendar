@@ -15,9 +15,6 @@ import Data.SafeCopy        ( base, deriveSafeCopy )
 
 import Web.Routes ( PathInfo(..))
 
-newtype UserId = UserId { unUserId :: Int }
-    deriving (Eq, Ord, Enum, Read, Show, Data, Typeable, PathInfo)
-
 --type that represents the state we wish to store
 data UserState = UserState { name :: String }
     deriving (Eq, Ord, Read, Show, Data, Typeable)
