@@ -19,14 +19,14 @@ import Data.Acid.Advanced   ( query', update' )
 import Web.Routes.TH  ( derivePathInfo )
 
 --function that maps a route to the handlers:
-route :: AcidState UserState -> SiteMap -> RouteT SiteMap (ServerPartT IO) Response
+route :: AcidState UserList -> SiteMap -> RouteT SiteMap (ServerPartT IO) Response
 route acid url =
     case url of
       HomePage       -> getHomePage acid
       UserPage       -> getUserPage
 
 --does the routing?
-site :: AcidState UserState -> Site SiteMap (ServerPartT IO Response)
+site :: AcidState UserList -> Site SiteMap (ServerPartT IO Response)
 site acid =
   --runRouteT removes the RouteT wrapper from our routing function
   let realRoute = runRouteT $ route acid in

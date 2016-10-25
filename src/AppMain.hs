@@ -19,7 +19,7 @@ import Data.Acid.Local      ( createCheckpointAndClose )
 main :: IO () 
 main = 
     -- starts up acid-state. If no pre-existing state is found, then initialCounterState will be used 
-    let currentState = openLocalState Domain.initialUserState in
+    let currentState = openLocalState Domain.initialUserListState in
         bracket currentState
             createCheckpointAndClose
             (\acid ->
