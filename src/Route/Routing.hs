@@ -23,7 +23,7 @@ route :: AcidState UserList -> SiteMap -> RouteT SiteMap (ServerPartT IO) Respon
 route acid url =
     case url of
       HomePage       -> getHomePage acid
-      UserPage       -> getUserPage
+      (UserPage i)   -> getUserPage i
 
 --does the routing?
 site :: AcidState UserList -> Site SiteMap (ServerPartT IO Response)

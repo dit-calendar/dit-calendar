@@ -25,7 +25,6 @@ $(deriveSafeCopy 0 'base ''UserState)
 
 instance Indexable UserState where
   empty = ixSet [ ixFun $ \bp -> [ userId bp ] ]
-  
 
 data UserList = UserList
     { nextUserId :: Integer

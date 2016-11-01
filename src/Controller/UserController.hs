@@ -16,7 +16,7 @@ import Data.Acid.Advanced   ( query', update' )
 import Web.Routes.TH  ( derivePathInfo )
 
 --handler for userPage
-getUserPage :: RouteT SiteMap (ServerPartT IO) Response
-getUserPage = do
-  ok $ toResponse "foo"
+getUserPage :: Integer -> RouteT SiteMap (ServerPartT IO) Response
+getUserPage i  = do
+  ok $ toResponse ("foo" ++ show i)
 

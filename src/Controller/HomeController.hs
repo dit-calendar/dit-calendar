@@ -14,7 +14,6 @@ import Web.Routes        ( RouteT, runRouteT, Site(..)
 import Web.Routes.Happstack    ( implSite )
 import Data.Acid            ( AcidState )
 import Data.Acid.Advanced   ( query', update' )
-import Web.Routes.TH  ( derivePathInfo )
 
 --handler for homePage
 getHomePage :: AcidState User.UserList -> RouteT Page.SiteMap (ServerPartT IO) Response
