@@ -25,25 +25,7 @@ $(deriveSafeCopy 0 'base ''UserState)
 
 instance Indexable UserState where
   empty = ixSet [ ixFun $ \bp -> [ userId bp ] ]
-
-initialUserState :: UserState
-initialUserState = UserState "" 1
-
---update function of UserState
-setName :: String -> Update UserState String
-setName n =
-    do c@UserState{..} <- get
-       let newName = name ++ n
-       put $ c { name = newName }
-       return newName
-
---read function of UserState
-peekName :: Query UserState String
-peekName = name <$> ask
-
---turn the update and read functions into acid-state events
-$(makeAcidic ''UserState ['setName, 'peekName])
-
+  
 
 data UserList = UserList
     { nextUserId :: Integer

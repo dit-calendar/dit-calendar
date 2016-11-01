@@ -2,8 +2,8 @@
 
 module Controller.HomeController where
 
-import Route.PageEnum
-import Domain.User
+import Route.PageEnum as Page
+import Domain.User as User
 
 import Prelude                 hiding ( head )
 
@@ -17,11 +17,11 @@ import Data.Acid.Advanced   ( query', update' )
 import Web.Routes.TH  ( derivePathInfo )
 
 --handler for homePage
-getHomePage :: AcidState UserList -> RouteT SiteMap (ServerPartT IO) Response
+getHomePage :: AcidState User.UserList -> RouteT Page.SiteMap (ServerPartT IO) Response
 getHomePage acid =
     do mUser <- query' acid (UserById 1)
        case mUser of
          Nothing ->
              ok $ toResponse $ "Could not find a user with id " ++ show 1
          (Just u) ->
-             ok $ toResponse $ "peeked at the name and saw: " ++ show (userId u)
+             ok $ toResponse $ "peeked at the name and saw: " ++ show (User.userId u)
