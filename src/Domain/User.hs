@@ -8,12 +8,11 @@ import Prelude hiding ( head )
 
 import Control.Applicative  ( (<$>) )
 import Control.Monad.Reader ( ask )
-import Control.Monad.State  ( get, put )
 import Data.Data            ( Data, Typeable )
 import Data.Acid            ( Query, Update, makeAcidic )
 import Data.SafeCopy        ( base, deriveSafeCopy )
 import Data.IxSet           ( Indexable(..), IxSet(..), (@=)
-                            , Proxy(..), getOne, ixFun, ixSet )
+                            , Proxy(..), getOne, ixFun, ixSet, toList )
 import qualified Data.IxSet as IxSet
 
 import Web.Routes ( PathInfo(..))
@@ -45,4 +44,9 @@ userById uid =
      do UserList{..} <- ask
         return $ getOne $ users @= uid
 
-$(makeAcidic ''UserList ['userById])
+allUsers :: Query UserList [UserState]
+allUsers =
+     do UserList{..} <- ask
+        return (toList users)
+
+$(makeAcidic ''UserList ['userById, 'allUsers])

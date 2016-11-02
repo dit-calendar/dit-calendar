@@ -24,3 +24,21 @@ getUserPage acid i =
              ok $ toResponse $ "Could not find a user with id " ++ show i
          (Just u) ->
              ok $ toResponse $ "peeked at the name and saw: " ++ show (User.userId u)
+
+--handler for userPage
+getUsersPage :: AcidState User.UserList -> RouteT SiteMap (ServerPartT IO) Response
+getUsersPage acid =
+    let temp = "Anzeige aller User \n" in
+    do mUser <- query' acid AllUsers
+       case mUser of
+         [] ->
+             ok $ toResponse (temp ++ "Liste ist leer")
+         (x:xs) ->
+             ok $ toResponse $ temp ++ printUsersList (x:xs)
+
+printUsersList :: [User.UserState] -> String
+printUsersList l = case l of
+    --schlechte implementierung. es gibt dafür schon fertige funktionen (annonyme funktion uergeben)
+    []     -> ""
+    (x:xs) -> ("User: " ++ User.name x ++ "mit Id: "++ show (User.userId x))
+        ++ "\n" ++ printUsersList xs
