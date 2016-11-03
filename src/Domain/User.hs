@@ -43,25 +43,24 @@ initialUserListState =
 -- create a new, empty user and add it to the database
 newUser :: String -> Update UserList UserState
 newUser n =
-    do b@UserList{..} <- get
-        --unmoeglich hier einzuruecken zu benutzen
-       let user = UserState { name = n
+    do  b@UserList{..} <- get
+        let user = UserState { name = n
                         , userId  = nextUserId
                         }
         --Because UserId is an instance of Enum we can use succ to increment it.
-       put $ b { nextUserId = succ nextUserId
+        put $ b { nextUserId = succ nextUserId
                 , users      = IxSet.insert user users
                 }
-       return user
+        return user
 
 userById :: Integer -> Query UserList (Maybe UserState)
 userById uid =
-     do UserList{..} <- ask
+    do  UserList{..} <- ask
         return $ getOne $ users @= uid
 
 allUsers :: Query UserList [UserState]
 allUsers =
-     do UserList{..} <- ask
+    do  UserList{..} <- ask
         return (toList users)
 
 $(makeAcidic ''UserList ['newUser, 'userById, 'allUsers])

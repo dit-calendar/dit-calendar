@@ -18,23 +18,23 @@ import Data.Acid.Advanced   ( query', update' )
 --handler for userPage
 getUserPage :: AcidState User.UserList -> Integer -> RouteT SiteMap (ServerPartT IO) Response
 getUserPage acid i =
-    do mUser <- query' acid (UserById i)
-       case mUser of
-         Nothing ->
-             ok $ toResponse $ "Could not find a user with id " ++ show i
-         (Just u) ->
-             ok $ toResponse $ "peeked at the name and saw: " ++ show (User.userId u)
+    do  mUser <- query' acid (UserById i)
+        case mUser of
+            Nothing ->
+                ok $ toResponse $ "Could not find a user with id " ++ show i
+            (Just u) ->
+                ok $ toResponse $ "peeked at the name and saw: " ++ show (User.userId u)
 
 --handler for userPage
 getUsersPage :: AcidState User.UserList -> RouteT SiteMap (ServerPartT IO) Response
 getUsersPage acid =
     let temp = "Anzeige aller User \n" in
-    do mUser <- query' acid AllUsers
-       case mUser of
-         [] ->
-             ok $ toResponse (temp ++ "Liste ist leer")
-         (x:xs) ->
-             ok $ toResponse $ temp ++ printUsersList (x:xs)
+    do  mUser <- query' acid AllUsers
+        case mUser of
+            [] ->
+                ok $ toResponse (temp ++ "Liste ist leer")
+            (x:xs) ->
+                ok $ toResponse $ temp ++ printUsersList (x:xs)
 
 printUsersList :: [User.UserState] -> String
 printUsersList l = case l of

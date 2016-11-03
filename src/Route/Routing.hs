@@ -22,14 +22,14 @@ import Web.Routes.TH  ( derivePathInfo )
 route :: AcidState UserList -> SiteMap -> RouteT SiteMap (ServerPartT IO) Response
 route acid url =
     case url of
-      HomePage       -> getHomePage acid
-      (UserPage i)   -> getUserPage acid i
+        HomePage       -> getHomePage acid
+        (UserPage i)   -> getUserPage acid i
 
 --does the routing?
 site :: AcidState UserList -> Site SiteMap (ServerPartT IO Response)
 site acid =
-  --runRouteT removes the RouteT wrapper from our routing function
-  let realRoute = runRouteT $ route acid in
-  --convert the new function to a Site
-  let realSite = mkSitePI realRoute in
-       setDefault HomePage realSite
+    --runRouteT removes the RouteT wrapper from our routing function
+    let realRoute = runRouteT $ route acid in
+    --convert the new function to a Site
+    let realSite = mkSitePI realRoute in
+        setDefault HomePage realSite
