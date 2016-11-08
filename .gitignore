@@ -2,5 +2,5 @@
 cabal.sandbox.config
 dist/
 state/
-happstack-test.iml
+dit-calendar.iml
 .idea/

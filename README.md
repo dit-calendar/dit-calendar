@@ -1,2 +1,2 @@
-# happstack-test
+# dit-calendar
 # test

@@ -1,4 +1,4 @@
-# Revision history for happstack-test
+# Revision history for dit-calendar
 
 ## 0.1.0.0  -- YYYY-mm-dd
 
