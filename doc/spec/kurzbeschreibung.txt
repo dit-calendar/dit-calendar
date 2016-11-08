@@ -8,7 +8,7 @@ h4. Gruppen
 ** Optional: Eine Gruppe kann eine Untergruppe besitzen (Schleifen muss man verbieten!)
 
 h3. Kalender
-* Es gibt einen Kalender, bestehnd aus Kalenertagen und eine Menge Kelandereinträgen
+* Es gibt einen Kalender, bestehnd aus Kalendertagen(Datum) und eine Menge Kelandereinträgen
 
 h4. Kalendereintrag
 * Besteht aus Datum, Ort, Beschreibung, Menge von Aufgaben
@@ -16,7 +16,7 @@ h4. Kalendereintrag
 
 h3. Aufgaben
 * jede Aufgabe gehört genau zu einem Kalendereintag
-* Augabe besteht aus Datum, Beschreibung
+* Aufgabe besteht aus Datum, Beschreibung
 * in jede Aufgabe kann sich ein oder mehrere Nutzer und Gruppe eintragen 
 
 h3. Optional:Abonieren
