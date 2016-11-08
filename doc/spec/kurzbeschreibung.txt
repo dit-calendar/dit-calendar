@@ -5,16 +5,23 @@ h3. Nutzer
 
 h4. Gruppen
 * Es sollen Gruppen von Nutzern angelegt werden können. Eine Gruppe hat mehr als einen Nutzer.
-* Eine Gruppe kann eine Untergruppe besitzen (Schleifen muss man verbieten!)
-
+** Optional: Eine Gruppe kann eine Untergruppe besitzen (Schleifen muss man verbieten!)
 
 h3. Kalender
-* Es gibt einen Kalender
-* Jede Gruppe und jede_r Nutzer_in kann einen Kalendar eintrag machen
+* Es gibt einen Kalender, bestehnd aus Kalenertagen und eine Menge Kelandereinträgen
 
-h4. Kalendereinträge
+h4. Kalendereintrag
+* Besteht aus Datum, Ort, Beschreibung, Menge von Aufgaben
+* Jede Gruppe und jede_r Nutzer_in kann einen Kalendareintrag machen
+
+h3. Aufgaben
+* jede Aufgabe gehört genau zu einem Kalendereintag
+* Augabe besteht aus Datum, Beschreibung
+* in jede Aufgabe kann sich ein oder mehrere Nutzer und Gruppe eintragen 
+
+h3. Optional:Abonieren
 * Kalendereintrag können von Nutzern oder Gruppen aboniert werden
-* Nutzer können Kalendereinträge von anderen Nutzern und Gruppen abonieren
-* Gruppen können Kalenereinträge von Nutzern und Gruppen abonieren
+* Nutzer können anderen Nutzern und Gruppen abonieren (alle Kalendereinträge)
+* Gruppen können Nutzern und Gruppen abonieren (alle Kalendereinträge)
 ** Nutzer N der Gruppe G besitzt alle kalendereinträge K die G auch besitzt
 ** wird k aus K gelöscht, wird es auch bei N gelöscht, es sein denn N hat k selbst aboniert
