@@ -1,5 +1,4 @@
---Start-Module darf nicht anders als Main heißen
-module Main where
+module AppStart where
 
 import Domain.User as Domain
 import Route.Routing as Route
@@ -16,8 +15,8 @@ import Control.Exception    ( bracket )
 import Data.Acid            ( openLocalState )
 import Data.Acid.Local      ( createCheckpointAndClose )
 
-main :: IO () 
-main = 
+run :: IO ()
+run =
     -- starts up acid-state. If no pre-existing state is found, then initialCounterState will be used 
     let currentState = openLocalState Domain.initialUserListState in
         bracket currentState

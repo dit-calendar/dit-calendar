@@ -3,6 +3,7 @@
 
 name:                dit-calendar
 version:             0.1.0.0
+description:         mitmach Kalender
 license:             GPL-3
 license-file:        LICENSE
 author:              Viktor Befort, Alex Befort
@@ -12,8 +13,16 @@ build-type:          Simple
 extra-source-files:  ChangeLog.md
 cabal-version:       >=1.10
 
-executable dit-calendar
-  main-is:             AppMain.hs
+library
+  default-language:    Haskell2010
+  hs-source-dirs:      library
+  exposed-modules:
+                       Domain.User,
+                       Route.PageEnum,
+                       Route.Routing,
+                       Controller.HomeController,
+                       Controller.UserController,
+                       AppStart
   build-depends:       base >=4.9 && <4.10,
                        text == 1.2.*,
                        mtl,
@@ -25,13 +34,20 @@ executable dit-calendar
                        web-routes-happstack,
                        hsp,
                        ixset == 1.0.*
+
+
+executable dit-calendar
+  main-is:             Main.hs
   hs-source-dirs:      src
   default-language:    Haskell2010
+  build-depends:       base >=4.9 && <4.10,
+                       dit-calendar
 
-test-suite hspec
+test-suite tests
   build-depends:       base >=4.9 && <4.10,
                        hspec-discover == 2.2.*,
-                       hspec == 2.2.*
+                       hspec == 2.2.*,
+                       dit-calendar
   default-language:    Haskell2010
   hs-source-dirs:      testsuite
   main-is:             Spec.hs
