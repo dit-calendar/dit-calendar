@@ -1,5 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 module Controller.UserController where
 
 import Route.PageEnum as Page

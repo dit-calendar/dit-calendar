@@ -1,5 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 module Controller.HomeController where
 
 import Route.PageEnum as Page
@@ -18,4 +16,4 @@ import Data.Acid.Advanced   ( query', update' )
 
 --handler for homePage
 getHomePage :: AcidState User.UserList -> RouteT Page.SiteMap (ServerPartT IO) Response
-getHomePage acid = UserController.getUsersPage acid
+getHomePage = UserController.getUsersPage
