@@ -6,26 +6,23 @@
 module Controller.Repo where
 
 import Domain.User as User
+import Route.PageEnum
 
 import Prelude hiding       (head, id)
 import System.FilePath      ((</>))
 
-import Control.Exception.Base    (bracket)
-import Control.Monad.Trans.Control (MonadBaseControl)
-import Control.Monad        (MonadPlus, mplus)
-import Control.Monad.Reader ( MonadReader, ReaderT(..)
-                            , ask)
-import Control.Monad.Trans  (MonadIO(..))
-import Data.Acid
-    ( AcidState(..), IsAcidic(..), openLocalState
-    )
-import Data.Acid.Local      ( createCheckpointAndClose
-                            , openLocalStateFrom
-                            )
-import Data.Maybe           (fromMaybe)
-import Data.Data            (Typeable)
+import Happstack.Foundation
+
+-- | The foundation types are heavily parameterized -- but for our app
+-- we can pin all the type parameters down.
+type CtrlV'    = FoundationT' SiteMap Acid () IO
+type CtrlV     = CtrlV'
+type CtrlVForm = FoundationForm SiteMap Acid () IO
 
 data Acid = Acid
    {
    acidUserListState    :: AcidState UserList
    }
+
+instance (Functor m, Monad m) => HasAcidState (FoundationT' url Acid reqSt m) UserList where
+    getAcidState = acidUserListState <$> getAcidSt

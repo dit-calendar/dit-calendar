@@ -13,10 +13,9 @@ import Data.Data            ( Data, Typeable )
 import Data.Acid            ( Query, Update, makeAcidic )
 import Data.SafeCopy        ( base, deriveSafeCopy )
 import Data.IxSet           ( Indexable(..), IxSet(..), (@=)
-                            , Proxy(..), getOne, ixFun, ixSet, toList )
+                            , Proxy(..), getOne, ixFun, ixSet
+                            , toList, getEQ )
 import qualified Data.IxSet as IxSet
-
-import Web.Routes ( PathInfo(..))
 
 --type that represents the state we wish to store
 data UserState = UserState { name :: String, userId :: Integer }
@@ -54,13 +53,9 @@ newUser n =
         return user
 
 userById :: Integer -> Query UserList (Maybe UserState)
-userById uid =
-    do  UserList{..} <- ask
-        return $ getOne $ users @= uid
+userById uid = getOne . getEQ uid . users <$> ask
 
 allUsers :: Query UserList [UserState]
-allUsers =
-    do  UserList{..} <- ask
-        return (toList users)
+allUsers = toList . users <$> ask
 
 $(makeAcidic ''UserList ['newUser, 'userById, 'allUsers])

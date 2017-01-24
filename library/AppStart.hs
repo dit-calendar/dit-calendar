@@ -2,6 +2,7 @@
 module AppStart where
 
 import Domain.User as Domain
+import Controller.Repo
 import Happstack.Foundation
 import System.FilePath      ((</>))
 import Route.Routing as Route
@@ -19,31 +20,28 @@ import Data.Acid            ( openLocalState )
 import Data.Acid.Local      ( createCheckpointAndClose )
 import Data.Maybe           (fromMaybe)
 
+--run :: IO ()
+--run = withAcid Nothing (\acid ->
+--    simpleHTTP nullConf $ msum
+--    [ dir "favicon.ico" $ notFound (toResponse ())
+--    , implSite (pack "http://localhost:8000") (pack "/route") $ Route.site acid
+--    , seeOther "/r" (toResponse ())])
 
 run :: IO ()
-run =
-    -- starts up acid-state. If no pre-existing state is found, then initialCounterState will be used 
-    let currentState = openLocalState Domain.initialUserListState in
-        bracket currentState
-            createCheckpointAndClose
-            (\acid ->
-                simpleHTTP nullConf $ msum
-                    [ dir "favicon.ico" $ notFound (toResponse ())
-                    , implSite (pack "http://localhost:8000") (pack "/route") $ Route.site acid
-                    , seeOther "/r" (toResponse ())
-                    ])
-
-
-data Acid = Acid
-   {
-   acidUserListState    :: AcidState UserList
-   }
+run = withAcid Nothing $ \acid -> do
+         simpleApp id
+            defaultConf
+              (AcidUsing acid)
+              ()
+              HomePage
+              ""
+              route
 
 withAcid :: Maybe FilePath -- ^ state directory
          -> (Acid -> IO a) -- ^ action
          -> IO a
 withAcid mBasePath f =
-    let basePath = fromMaybe "_state" mBasePath 
+    let basePath = fromMaybe "_state" mBasePath
         countPath = basePath </> "userlist"
     in bracket (openLocalStateFrom countPath  Domain.initialUserListState) (createCheckpointAndClose) $ \paste ->
         f (Acid paste)
