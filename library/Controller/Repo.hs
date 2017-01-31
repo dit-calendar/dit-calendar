@@ -15,9 +15,7 @@ import Happstack.Foundation
 
 -- | The foundation types are heavily parameterized -- but for our app
 -- we can pin all the type parameters down.
-type CtrlV'    = FoundationT' SiteMap Acid () IO
-type CtrlV     = CtrlV'
-type CtrlVForm = FoundationForm SiteMap Acid () IO
+type CtrlV     = FoundationT SiteMap Acid () IO
 
 data Acid = Acid
    {
