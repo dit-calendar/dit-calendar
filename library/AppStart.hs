@@ -9,7 +9,7 @@ import Data.Text (pack)
 
 --zu HomePage zu erreichen unter http://localhost:8000
 run :: IO ()
-run = AcidHelper.withAcid Nothing $ \acid -> do
+run = AcidHelper.withAcid Nothing $ \acid ->
          simpleApp id
             defaultConf
             (AcidUsing acid)

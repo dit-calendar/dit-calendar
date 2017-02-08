@@ -6,9 +6,6 @@ import Controller.UserController
 import Controller.HomeController
 import Route.PageEnum
 
-
-import Prelude                 hiding ( head )
-
 import Happstack.Server  ( Response )
 
 
