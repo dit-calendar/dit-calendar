@@ -22,7 +22,8 @@ library
                        Route.Routing,
                        Controller.HomeController,
                        Controller.UserController,
-                       TestState,
+                       Controller.AcidHelper,
+                       Repository.UserRepository,
                        AppStart
   build-depends:
                        base >=4.9 && <4.10,
@@ -35,6 +36,9 @@ library
                        web-routes-th,
                        web-routes-happstack,
                        hsp,
+                       monad-control,
+                       filepath,
+                       happstack-foundation,
                        ixset == 1.0.*
 
 
