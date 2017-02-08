@@ -1,7 +1,8 @@
 module Controller.UserController where
 
 import Domain.User as User
-import Controller.Repo as Repo
+import Repository.UserRepository as UserRepo
+import Controller.AcidHelper
 
 import Prelude                 hiding ( head )
 
@@ -15,7 +16,7 @@ import Happstack.Foundation
 getUserPage :: Integer -> CtrlV Response
 getUserPage i =
     do
-       mUser <- query (User.UserById i)
+       mUser <- query (UserRepo.UserById i)
        case mUser of
             Nothing ->
                 ok $ toResponse $ "Could not find a user with id " ++ show i
@@ -27,8 +28,8 @@ getUsersPage :: CtrlV Response
 getUsersPage =
     let temp = "Anzeige aller User \n" in
     do method GET
-       allUsers <- query AllUsers
-       case allUsers of
+       userList <- query UserRepo.AllUsers
+       case userList of
             [] ->
                 ok $ toResponse (temp ++ "Liste ist leer")
             (x:xs) ->

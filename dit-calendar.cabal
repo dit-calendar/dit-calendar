@@ -22,7 +22,8 @@ library
                        Route.Routing,
                        Controller.HomeController,
                        Controller.UserController,
-                       Controller.Repo
+                       Controller.AcidHelper,
+                       Repository.UserRepository,
                        AppStart
   build-depends:
                        base >=4.9 && <4.10,

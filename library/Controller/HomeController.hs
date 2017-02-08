@@ -1,7 +1,7 @@
 module Controller.HomeController where
 
 import Controller.UserController as UserController
-import Controller.Repo
+import Controller.AcidHelper
 
 import Happstack.Server  ( Response )
 
