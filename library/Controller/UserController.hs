@@ -1,15 +1,17 @@
 module Controller.UserController where
 
-import Domain.User as User
-import Repository.UserRepository as UserRepo
-import Controller.AcidHelper
-import Happstack.Server  ( ok, toResponse, lookRead 
-                           , Method(GET), method)
-import Happstack.Foundation (query)
+import Happstack.Server         ( ok, toResponse, lookRead 
+                                , Method(GET), method)
+import Happstack.Foundation     ( query )
+
+import Domain.User as User      ( User(..) )
+import Repository.UserRepo as UserRepo
+import Controller.AcidHelper    ( CtrlV )
+
 
 --handler for userPage
-getUserPage :: Integer -> CtrlV
-getUserPage i =
+userPage :: Integer -> CtrlV
+userPage i =
     do
        mUser <- query (UserRepo.UserById i)
        case mUser of
@@ -19,8 +21,8 @@ getUserPage i =
                 ok $ toResponse $ "peeked at the name and saw: " ++ show (User.userId u)
 
 --handler for userPage
-getUsersPage :: CtrlV
-getUsersPage =
+usersPage :: CtrlV
+usersPage =
     let temp = "Anzeige aller User \n" in
     do method GET
        userList <- query UserRepo.AllUsers
@@ -30,7 +32,7 @@ getUsersPage =
             (x:xs) ->
                 ok $ toResponse $ temp ++ printUsersList (x:xs)
 
-printUsersList :: [User.UserState] -> String
+printUsersList :: [User] -> String
 printUsersList l = case l of
     --schlechte implementierung. es gibt dafür schon fertige funktionen (annonyme funktion uebergeben)
     []     -> ""

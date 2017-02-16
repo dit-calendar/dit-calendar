@@ -1,16 +1,16 @@
-{-# LANGUAGE CPP, DeriveDataTypeable, FlexibleContexts,
-  TemplateHaskell, TypeFamilies, RecordWildCards #-}
+{-# LANGUAGE TemplateHaskell, DeriveDataTypeable #-}
 
 module Route.PageEnum where
 
 import Prelude                 hiding ( head )
 
-import Data.Data               (Data, Typeable)
+import Data.Data               ( Data, Typeable )
 import Web.Routes.TH           ( derivePathInfo )
+
 
 --A url type
 data SiteMap
-  = HomePage
-  | UserPage Integer
+  = Home
+  | User Integer
   deriving (Eq, Ord, Read, Show, Data, Typeable)
 $(derivePathInfo ''SiteMap)

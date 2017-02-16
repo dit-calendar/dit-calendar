@@ -1,14 +1,14 @@
 module Route.Routing where
 
-import Domain.User
-import Controller.AcidHelper
-import Controller.UserController
-import Controller.HomeController
-import Route.PageEnum
+import Controller.AcidHelper     ( CtrlV )
+import Controller.UserController ( userPage )
+import Controller.HomeController ( homePage )
+import Route.PageEnum            ( SiteMap(..) )
+
 
 -- | the route mapping function
 route :: SiteMap -> CtrlV
 route url =
     case url of
-      HomePage     -> getHomePage
-      (UserPage i) -> getUserPage i
+      Home     -> homePage
+      (User i) -> userPage i

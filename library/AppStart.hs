@@ -1,19 +1,20 @@
 module AppStart where
 
-import Controller.AcidHelper as AcidHelper
-import Route.PageEnum as PageEnum
+import Data.Text                    ( pack )
 import Happstack.Foundation
+
+import Controller.AcidHelper        ( withAcid )
+import Route.PageEnum as PageEnum
 import Route.Routing as Route
 
-import Data.Text (pack)
 
 --zu HomePage zu erreichen unter http://localhost:8000
 run :: IO ()
-run = AcidHelper.withAcid Nothing $ \acid ->
+run = withAcid Nothing $ \acid ->
          simpleApp id
             defaultConf
             (AcidUsing acid)
             ()
-            PageEnum.HomePage
+            PageEnum.Home
             (pack "")
-            route
+            Route.route

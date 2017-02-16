@@ -1,13 +1,15 @@
 module Controller.HomeController where
 
+import Happstack.Server         ( ok, toResponse, lookRead, Method(GET, POST)
+                                , method, nullDir, Request(rqMethod), askRq )
+
 import Controller.UserController as UserController
-import Controller.AcidHelper
-import Happstack.Server  ( ok, toResponse, lookRead, Method(GET, POST), method
-                           , nullDir, Request(rqMethod), askRq )
+import Controller.AcidHelper    ( CtrlV )
+
 
 --handler for homePage
-getHomePage :: CtrlV
-getHomePage = do
+homePage :: CtrlV
+homePage = do
   nullDir
   g <- greet
   ok $ toResponse (show g)
@@ -15,9 +17,9 @@ getHomePage = do
   greet = do
     m <- rqMethod <$> askRq
     case m of
-    -- curl http://localhost:8000/home-page
-      GET  -> do
-        getUsersPage
-    -- curl -d '' http://localhost:8000/home-page
-      POST  -> do
-        getUserPage 1
+    -- curl http://localhost:8000/home
+      GET  ->
+        UserController.usersPage
+    -- curl -d '' http://localhost:8000/home
+      POST  ->
+        UserController.userPage 1

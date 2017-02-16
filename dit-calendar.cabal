@@ -23,7 +23,7 @@ library
                        Controller.HomeController,
                        Controller.UserController,
                        Controller.AcidHelper,
-                       Repository.UserRepository,
+                       Repository.UserRepo,
                        AppStart
   build-depends:
                        base >=4.9 && <4.10,
