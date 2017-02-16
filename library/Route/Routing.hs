@@ -6,11 +6,8 @@ import Controller.UserController
 import Controller.HomeController
 import Route.PageEnum
 
-import Happstack.Server  ( Response )
-
-
 -- | the route mapping function
-route :: SiteMap -> CtrlV Response
+route :: SiteMap -> CtrlV
 route url =
     case url of
       HomePage     -> getHomePage

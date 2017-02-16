@@ -6,21 +6,24 @@
 module Controller.AcidHelper where
 
 import Repository.UserRepository as UserRepo
-import Route.PageEnum
+import Route.PageEnum       (SiteMap)
 
 import Prelude hiding       (head, id)
 import System.FilePath      ((</>))
 
-import Happstack.Foundation
+import Happstack.Foundation ( FoundationT, HasAcidState(..), FoundationT', getAcidSt )
 
-import Data.Maybe           (fromMaybe)
+import Data.Maybe           ( fromMaybe )
 import Control.Exception    ( bracket )
-import Data.Acid            ( openLocalState )
+import Data.Acid            ( openLocalStateFrom, AcidState(..) )
 import Data.Acid.Local      ( createCheckpointAndClose )
+
+import Happstack.Server  ( Response )
 
 -- | The foundation types are heavily parameterized -- but for our app
 -- we can pin all the type parameters down.
-type CtrlV     = FoundationT SiteMap Acid () IO
+type App     = FoundationT SiteMap Acid () IO
+type CtrlV   = App Response
 
 data Acid = Acid
    {

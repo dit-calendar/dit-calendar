@@ -3,17 +3,12 @@ module Controller.UserController where
 import Domain.User as User
 import Repository.UserRepository as UserRepo
 import Controller.AcidHelper
-
-import Prelude                 hiding ( head )
-
-import Happstack.Server  ( Response, ServerPartT
-                          , ok, toResponse, lookRead )
-import Web.Routes        ( RouteT, runRouteT, Site(..)
-                          , setDefault, mkSitePI )
-import Happstack.Foundation
+import Happstack.Server  ( ok, toResponse, lookRead 
+                           , Method(GET), method)
+import Happstack.Foundation (query)
 
 --handler for userPage
-getUserPage :: Integer -> CtrlV Response
+getUserPage :: Integer -> CtrlV
 getUserPage i =
     do
        mUser <- query (UserRepo.UserById i)
@@ -24,7 +19,7 @@ getUserPage i =
                 ok $ toResponse $ "peeked at the name and saw: " ++ show (User.userId u)
 
 --handler for userPage
-getUsersPage :: CtrlV Response
+getUsersPage :: CtrlV
 getUsersPage =
     let temp = "Anzeige aller User \n" in
     do method GET
