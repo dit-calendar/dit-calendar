@@ -17,7 +17,7 @@ userPage i =
             Nothing ->
                 ok $ toResponse $ "Could not find a user with id " ++ show i
             (Just u) ->
-                ok $ toResponse $ "peeked at the name and saw: " ++ show (User.userId u)
+                ok $ toResponse $ "peeked at the name and saw: " ++ show u
 
 --handler for userPage
 usersPage :: CtrlV
@@ -35,7 +35,7 @@ createUser :: String -> CtrlV
 createUser name =
     do
         mUser <- update (UserRepo.NewUser name)
-        ok $ toResponse $ "User created: " ++ show (User.userId mUser)
+        ok $ toResponse $ "User created: " ++ show mUser
 
 printUsersList :: [User] -> String
 printUsersList l = case l of

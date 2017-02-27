@@ -1,11 +1,12 @@
 module Route.Routing where
 
+import Happstack.Server         ( ok, toResponse, Method(GET, POST)
+                                , nullDir, Request(rqMethod), askRq )
+
 import Controller.AcidHelper     ( CtrlV )
 import Controller.UserController ( userPage )
 import Controller.HomeController ( homePage )
 import Route.PageEnum            ( SiteMap(..) )
-import Happstack.Server         ( ok, toResponse, lookRead, Method(GET, POST)
-                                , method, nullDir, Request(rqMethod), askRq )
 
 import Controller.UserController as UserController
 
@@ -17,7 +18,6 @@ route url =
       Home     -> homePage
       Userdetail     -> routeUser
       (User i) -> userPage i
-
 
 routeUser :: CtrlV
 routeUser = do
@@ -32,5 +32,5 @@ routeUser = do
       GET  ->
         UserController.usersPage
     -- curl -d '' http://localhost:8000/home
-      POST  ->
+      POST ->
         UserController.createUser "test"
