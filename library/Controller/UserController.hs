@@ -2,12 +2,11 @@ module Controller.UserController where
 
 import Happstack.Server         ( ok, toResponse, lookRead 
                                 , Method(GET), method)
-import Happstack.Foundation     ( query )
+import Happstack.Foundation     ( query, update )
 
 import Domain.User as User      ( User(..) )
 import Repository.UserRepo as UserRepo
 import Controller.AcidHelper    ( CtrlV )
-
 
 --handler for userPage
 userPage :: Integer -> CtrlV
@@ -31,6 +30,12 @@ usersPage =
                 ok $ toResponse (temp ++ "Liste ist leer")
             (x:xs) ->
                 ok $ toResponse $ temp ++ printUsersList (x:xs)
+
+createUser :: String -> CtrlV
+createUser name =
+    do
+        mUser <- update (UserRepo.NewUser name)
+        ok $ toResponse $ "User created: " ++ show (User.userId mUser)
 
 printUsersList :: [User] -> String
 printUsersList l = case l of

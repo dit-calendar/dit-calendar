@@ -12,5 +12,6 @@ import Web.Routes.TH           ( derivePathInfo )
 data SiteMap
   = Home
   | User Integer
+  | Userdetail
   deriving (Eq, Ord, Read, Show, Data, Typeable)
 $(derivePathInfo ''SiteMap)
