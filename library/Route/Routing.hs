@@ -28,9 +28,9 @@ routeUser = do
   greet = do
     m <- rqMethod <$> askRq
     case m of
-    -- curl http://localhost:8000/home
+    -- curl http://localhost:8000/userdetail
       GET  ->
         UserController.usersPage
-    -- curl -d '' http://localhost:8000/home
+    -- curl -d '' http://localhost:8000/userdetail
       POST ->
         UserController.createUser "test"
