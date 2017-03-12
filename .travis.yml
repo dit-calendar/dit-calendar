@@ -1,6 +1,6 @@
 # .travis.yml
 language: haskell
-ghc: 8.0
+ghc: 8.0.1
 
 install:
  - cabal install --only-dependencies --enable-tests
