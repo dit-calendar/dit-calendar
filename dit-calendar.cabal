@@ -3,6 +3,7 @@
 
 name:                dit-calendar
 version:             0.1.0.0
+synopsis:            calendar for participatory projects
 description:         mitmach Kalender
 license:             GPL-3
 license-file:        LICENSE
@@ -13,9 +14,14 @@ build-type:          Simple
 extra-source-files:  ChangeLog.md
 cabal-version:       >=1.10
 
+source-repository head
+  type:     git
+  location: https://github.com/vitaB/dit-calendar
+
 library
   default-language:    Haskell2010
   hs-source-dirs:      library
+  Build-Tools:         happy >= 1.19
   exposed-modules:
                        Domain.User,
                        Route.PageEnum,
@@ -28,18 +34,17 @@ library
   build-depends:
                        base >=4.9 && <4.10,
                        text == 1.2.*,
-                       mtl,
+                       mtl == 2.2.*,
+                       ixset == 1.0.*,
+                       monad-control == 1.0.*,
+                       filepath == 1.4.*,
                        acid-state == 0.14.*,
                        safecopy == 0.9.*,
                        happstack-server == 7.4.*,
                        web-routes,
                        web-routes-th,
                        web-routes-happstack,
-                       hsp,
-                       monad-control,
-                       filepath,
-                       happstack-foundation,
-                       ixset == 1.0.*
+                       happstack-foundation
 
 
 executable dit-calendar
