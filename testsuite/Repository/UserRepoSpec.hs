@@ -3,7 +3,7 @@ module Repository.UserRepoSpec (spec) where
 import Test.Hspec
 
 import Data.Maybe           ( isJust, fromJust)
-import Data.Acid            ( AcidState, openLocalState, closeAcidState, query )
+import Data.Acid            ( AcidState, openLocalState, closeAcidState, query, update )
 import Control.Exception    ( bracket )
 import Data.IxSet           ( IxSet(..), insert, empty )
 
@@ -21,8 +21,35 @@ withDatabaseConnection =
 spec :: Spec
 spec =
     around withDatabaseConnection $
-        describe "find user" $
-            it "by id" $ \c -> do
-                userState <- query c $ UserRepo.UserById 0
-                userState `shouldSatisfy` isJust
-                fromJust userState `shouldBe` User{ name="Foo", userId=0 }
+        context "User" $ do
+          describe "find" $ do
+              it "by id" $
+                \c -> do
+                  userState <- query c $ UserRepo.UserById 0
+                  userState `shouldSatisfy` isJust
+                  fromJust userState `shouldBe` User{ name="Foo", userId=0 }
+
+              it "all and check length" $
+                \c -> do
+                  userList <- query c GetUserList
+                  let userCount = nextUserId userList
+                  userState <- query c UserRepo.AllUsers
+                  length userState `shouldBe` userCount
+
+          describe "create" $ do
+              it "new and check existence" $
+                \c -> do
+                  userList <- query c GetUserList
+                  _ <- update c (NewUser "Mike") 
+                  userState <- query c $ UserRepo.UserById $ nextUserId userList
+                  userState `shouldSatisfy` isJust
+                  fromJust userState `shouldBe` User{ name="Mike", userId=nextUserId userList}
+
+              it "new and check nextUserId" $
+                \c -> do
+                  userList <- query c GetUserList
+                  let oldId = nextUserId userList
+                  _ <- update c (NewUser "Mike") 
+                  userList <- query c GetUserList
+                  nextUserId userList `shouldBe` oldId + 1
+

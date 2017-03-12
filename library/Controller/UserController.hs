@@ -9,7 +9,7 @@ import Repository.UserRepo as UserRepo
 import Controller.AcidHelper    ( CtrlV )
 
 --handler for userPage
-userPage :: Integer -> CtrlV
+userPage :: Int -> CtrlV
 userPage i =
     do
        mUser <- query (UserRepo.UserById i)

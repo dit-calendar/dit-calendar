@@ -23,7 +23,7 @@ instance Indexable User where
 
 --type that represents the state we wish to store
 data UserList = UserList
-    { nextUserId :: Integer
+    { nextUserId :: Int
     , users      :: IxSet User
     }
     deriving (Data, Typeable)
@@ -35,6 +35,9 @@ initialUserListState =
     UserList { nextUserId = 1
         , users      = empty
         }
+
+getUserList :: Query UserList UserList
+getUserList = ask
 
 -- create a new, empty user and add it to the database
 newUser :: String -> Update UserList User
@@ -49,10 +52,10 @@ newUser n =
                 }
         return user
 
-userById :: Integer -> Query UserList (Maybe User)
+userById :: Int -> Query UserList (Maybe User)
 userById uid = getOne . getEQ uid . users <$> ask
 
 allUsers :: Query UserList [User]
 allUsers = toList . users <$> ask
 
-$(makeAcidic ''UserList ['newUser, 'userById, 'allUsers])
+$(makeAcidic ''UserList ['newUser, 'userById, 'allUsers, 'getUserList])

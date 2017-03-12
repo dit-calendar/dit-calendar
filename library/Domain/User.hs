@@ -6,6 +6,6 @@ import Data.Data                ( Data, Typeable )
 import Data.SafeCopy            ( base, deriveSafeCopy )
 
 
-data User = User { name :: String, userId :: Integer }
+data User = User { name :: String, userId :: Int }
     deriving (Eq, Ord, Read, Show, Data, Typeable)
 $(deriveSafeCopy 0 'base ''User)
