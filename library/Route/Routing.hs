@@ -1,34 +1,32 @@
 module Route.Routing where
 
-import Happstack.Server         ( ok, toResponse, Method(GET, POST)
-                                , nullDir, Request(rqMethod), askRq 
-                                , BodyPolicy(..), decodeBody, defaultBodyPolicy, look)
-
+import Happstack.Server         ( ok, toResponse, Method(GET, POST), nullDir
+                                , Request(rqMethod), askRq , BodyPolicy(..)
+                                , decodeBody, defaultBodyPolicy, look)
 import Controller.AcidHelper     ( CtrlV )
-import Controller.UserController ( userPage )
-import Controller.HomeController ( homePage )
-import Route.PageEnum            ( SiteMap(..) )
 
 import Controller.UserController as UserController
+import Controller.HomeController as HomeController
+import Route.PageEnum            ( SiteMap(..) )
 
 
 myPolicy :: BodyPolicy
-myPolicy = (defaultBodyPolicy "/tmp/" 0 1000 1000)
+myPolicy = defaultBodyPolicy "/tmp/" 0 1000 1000
 
 -- | the route mapping function
 route :: SiteMap -> CtrlV
 route url =
   do  decodeBody myPolicy
       case url of
-        Home     -> homePage
-        Userdetail     -> routeUser
-        (User i) -> userPage i
+        Home        -> HomeController.homePage
+        Userdetail  -> routeUser
+        (User i)    -> UserController.userPage i
 
 routeUser :: CtrlV
 routeUser = do
   nullDir
   g <- greet
-  ok $ toResponse (show g)
+  ok g
     where
   greet = do
     m <- rqMethod <$> askRq
@@ -38,5 +36,5 @@ routeUser = do
         UserController.usersPage
     -- curl -X POST -d "name=FooBar" http://localhost:8000/userdetail
       POST -> do
-        name     <- look "name"
+        name <- look "name"
         UserController.createUser name
