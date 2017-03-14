@@ -1,7 +1,8 @@
 module Route.Routing where
 
 import Happstack.Server         ( ok, toResponse, Method(GET, POST)
-                                , nullDir, Request(rqMethod), askRq )
+                                , nullDir, Request(rqMethod), askRq 
+                                , BodyPolicy(..), decodeBody, defaultBodyPolicy, look)
 
 import Controller.AcidHelper     ( CtrlV )
 import Controller.UserController ( userPage )
@@ -11,13 +12,17 @@ import Route.PageEnum            ( SiteMap(..) )
 import Controller.UserController as UserController
 
 
+myPolicy :: BodyPolicy
+myPolicy = (defaultBodyPolicy "/tmp/" 0 1000 1000)
+
 -- | the route mapping function
 route :: SiteMap -> CtrlV
 route url =
-    case url of
-      Home     -> homePage
-      Userdetail     -> routeUser
-      (User i) -> userPage i
+  do  decodeBody myPolicy
+      case url of
+        Home     -> homePage
+        Userdetail     -> routeUser
+        (User i) -> userPage i
 
 routeUser :: CtrlV
 routeUser = do
@@ -31,6 +36,7 @@ routeUser = do
     -- curl http://localhost:8000/userdetail
       GET  ->
         UserController.usersPage
-    -- curl -d '' http://localhost:8000/userdetail
-      POST ->
-        UserController.createUser "test"
+    -- curl -X POST -d "name=FooBar" http://localhost:8000/userdetail
+      POST -> do
+        name     <- look "name"
+        UserController.createUser name
