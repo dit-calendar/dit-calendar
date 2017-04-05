@@ -8,4 +8,4 @@ import Data.SafeCopy            ( base, deriveSafeCopy )
 
 data Calendar = Calendar { description :: String, calendarId :: Int }
     deriving (Eq, Ord, Read, Show, Data, Typeable)
-$(deriveSafeCopy 0 'base ''User)
+$(deriveSafeCopy 0 'base ''Calendar)
