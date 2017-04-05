@@ -24,12 +24,15 @@ library
   Build-Tools:         happy >= 1.19
   exposed-modules:
                        Domain.User,
+                       Domain.Calendar,
                        Route.PageEnum,
                        Route.Routing,
                        Controller.HomeController,
                        Controller.UserController,
+                       Controller.CalendarController,
                        Controller.AcidHelper,
                        Repository.UserRepo,
+                       Repository.CalendarRepo,
                        AppStart
   build-depends:
                        base >=4.9 && <4.10,

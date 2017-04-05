@@ -13,5 +13,6 @@ data SiteMap
   = Home
   | User Int
   | Userdetail
+  | Calendar Int
   deriving (Eq, Ord, Read, Show, Data, Typeable)
 $(derivePathInfo ''SiteMap)

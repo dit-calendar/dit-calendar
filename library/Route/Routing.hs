@@ -7,6 +7,7 @@ import Controller.AcidHelper     ( CtrlV )
 
 import Controller.UserController as UserController
 import Controller.HomeController as HomeController
+import Controller.CalendarController as CalendarController
 import Route.PageEnum            ( SiteMap(..) )
 
 
@@ -18,9 +19,10 @@ route :: SiteMap -> CtrlV
 route url =
   do  decodeBody myPolicy
       case url of
-        Home        -> HomeController.homePage
-        Userdetail  -> routeUser
-        (User i)    -> UserController.userPage i
+        Home            -> HomeController.homePage
+        Userdetail      -> routeUser
+        (User i)        -> UserController.userPage i
+        (Calendar i)    -> CalendarController.calendarPage i
 
 routeUser :: CtrlV
 routeUser = do
