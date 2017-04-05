@@ -15,7 +15,7 @@ import Data.IxSet               ( Indexable(..), IxSet(..), (@=)
                                 , Proxy(..), getOne, ixFun, ixSet
                                 , toList, getEQ, insert )
 
-import Domain.Calendar              ( Calendar(..) )
+import Domain.Calendar          ( Calendar(..) )
 
 
 instance Indexable Calendar where

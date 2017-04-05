@@ -4,8 +4,8 @@ import Happstack.Server         ( ok, toResponse, lookRead
                                 , Method(GET), method)
 import Happstack.Foundation     ( query, update )
 
-import Domain.Calendar as Calendar      ( Calendar(..) )
-import Repository.CalendarRepo as CalendarRepo
+import Domain.Calendar          as Calendar       ( Calendar(..) )
+import Repository.CalendarRepo  as CalendarRepo
 import Controller.AcidHelper    ( CtrlV )
 
 --handler for calendarPage
