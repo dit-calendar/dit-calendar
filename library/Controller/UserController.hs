@@ -4,12 +4,12 @@ import Happstack.Server         ( ok, toResponse, lookRead
                                 , Method(GET), method)
 import Happstack.Foundation     ( query, update )
 
-import Domain.User              as User      ( User(..) )
+import Domain.User              as User      ( User(..), UserId )
 import Repository.UserRepo      as UserRepo
 import Controller.AcidHelper    ( CtrlV )
 
 --handler for userPage
-userPage :: Int -> CtrlV
+userPage :: UserId -> CtrlV
 userPage i =
     do
        mUser <- query (UserRepo.UserById i)

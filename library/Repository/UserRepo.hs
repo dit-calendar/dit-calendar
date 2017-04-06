@@ -15,7 +15,7 @@ import Data.IxSet               ( Indexable(..), IxSet(..), (@=)
                                 , Proxy(..), getOne, ixFun, ixSet
                                 , toList, getEQ, insert )
 
-import Domain.User              ( User(..) )
+import Domain.User              ( User(..), UserId )
 
 
 instance Indexable User where
@@ -23,7 +23,7 @@ instance Indexable User where
 
 --type that represents the state we wish to store
 data UserList = UserList
-    { nextUserId :: Int
+    { nextUserId :: UserId
     , users      :: IxSet User
     }
     deriving (Data, Typeable)
@@ -52,7 +52,7 @@ newUser n =
                 }
         return user
 
-userById :: Int -> Query UserList (Maybe User)
+userById :: UserId -> Query UserList (Maybe User)
 userById uid = getOne . getEQ uid . users <$> ask
 
 allUsers :: Query UserList [User]

@@ -12,8 +12,8 @@ import Data.Acid.Local      ( createCheckpointAndClose )
 import Happstack.Server     ( Response )
 import Happstack.Foundation ( FoundationT, HasAcidState(..), FoundationT', getAcidSt )
 
-import Repository.UserRepo                      as UserRepo
-import Repository.Calendar.CalendarEntryRepo    as CalendarEntryRepo
+import Repository.UserRepo                   as UserRepo
+import Repository.Calendar.CalendarRepo      as CalendarRepo
 import Route.PageEnum       ( SiteMap )
 
 
@@ -23,13 +23,13 @@ type CtrlV   = App Response
 data Acid = Acid
    {
      acidUserListState         :: AcidState UserRepo.UserList
-     , acidEntryListState      :: AcidState CalendarEntryRepo.EntryList
+     , acidEntryListState      :: AcidState CalendarRepo.EntryList
    }
 
 instance (Functor m, Monad m) => HasAcidState (FoundationT' url Acid reqSt m) UserRepo.UserList where
     getAcidState = acidUserListState <$> getAcidSt
 
-instance (Functor m, Monad m) => HasAcidState (FoundationT' url Acid reqSt m) CalendarEntryRepo.EntryList where
+instance (Functor m, Monad m) => HasAcidState (FoundationT' url Acid reqSt m) CalendarRepo.EntryList where
     getAcidState = acidEntryListState <$> getAcidSt
 
 withAcid :: Maybe FilePath -- ^ state directory
@@ -40,5 +40,5 @@ withAcid mBasePath f =
         userPath = basePath </> "userList"
         calendarEntryPath = basePath </> "entryList"
     in bracket (openLocalStateFrom userPath UserRepo.initialUserListState) createCheckpointAndClose $ \c ->
-       bracket (openLocalStateFrom calendarEntryPath CalendarEntryRepo.initialEntryListState) createCheckpointAndClose $ \g ->
+       bracket (openLocalStateFrom calendarEntryPath CalendarRepo.initialEntryListState) createCheckpointAndClose $ \g ->
         f (Acid c g)
