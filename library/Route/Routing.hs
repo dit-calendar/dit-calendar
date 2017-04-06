@@ -19,10 +19,10 @@ route :: SiteMap -> CtrlV
 route url =
   do  decodeBody myPolicy
       case url of
-        Home            -> HomeController.homePage
-        Userdetail      -> routeUser
-        (User i)        -> UserController.userPage i
-        (Calendar i)    -> CalendarController.calendarPage i
+        Home                 -> HomeController.homePage
+        Userdetail           -> routeUser
+        (User i)             -> UserController.userPage i
+        (CalendarEntry i)    -> CalendarController.entryPage i
 
 routeUser :: CtrlV
 routeUser = do
