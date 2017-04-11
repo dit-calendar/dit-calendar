@@ -13,7 +13,7 @@ import Happstack.Server     ( Response )
 import Happstack.Foundation ( FoundationT, HasAcidState(..), FoundationT', getAcidSt )
 
 import Repository.UserRepo                   as UserRepo
-import Repository.Calendar.CalendarRepo      as CalendarRepo
+import Repository.CalendarRepo      as CalendarRepo
 import Route.PageEnum       ( SiteMap )
 
 

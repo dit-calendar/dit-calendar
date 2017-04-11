@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveDataTypeable, TemplateHaskell, TypeFamilies,
   RecordWildCards #-}
 
-module Repository.Calendar.CalendarRepo where
+module Repository.CalendarRepo where
 
 import Prelude                  hiding ( head )
 
@@ -17,7 +17,7 @@ import Data.IxSet                      ( Indexable(..), IxSet(..), (@=)
                                        , Proxy(..), getOne, ixFun, ixSet
                                        , toList, getEQ, insert )
 
-import Domain.Calendar.CalendarEntry   ( CalendarEntry(..), EntryId )
+import Domain.CalendarEntry   ( CalendarEntry(..), EntryId )
 import Domain.User                     ( UserId )
 
 

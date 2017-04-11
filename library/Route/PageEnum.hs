@@ -8,7 +8,7 @@ import Data.Data                     ( Data, Typeable )
 import Web.Routes.TH                 ( derivePathInfo )
 
 import Domain.User                   ( UserId )
-import Domain.Calendar.CalendarEntry ( EntryId )
+import Domain.CalendarEntry ( EntryId )
 
 
 --A url type
