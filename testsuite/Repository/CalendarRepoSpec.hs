@@ -1,4 +1,4 @@
-module Repository.Calendar.CalendarRepoSpec (spec) where
+module Repository.CalendarRepoSpec (spec) where
 
 import Test.Hspec
 
@@ -8,8 +8,8 @@ import Control.Exception          ( bracket )
 import Data.IxSet                 ( IxSet(..), insert, empty )
 import qualified Data.Map as Map  ( Map, insert, empty )
 
-import Repository.Calendar.CalendarRepo      as CalendarRepo
-import Domain.Calendar.CalendarEntry         as CalendarEntry
+import Repository.CalendarRepo      as CalendarRepo
+import Domain.CalendarEntry         as CalendarEntry
 
 --problem here is what we create a connection to our database
 withDatabaseConnection :: (AcidState CalendarRepo.EntryList -> IO ()) -> IO ()

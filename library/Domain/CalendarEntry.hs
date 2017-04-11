@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveDataTypeable, TemplateHaskell #-}
 
-module Domain.Calendar.CalendarEntry where
+module Domain.CalendarEntry where
 
 import Data.Data                ( Data, Typeable )
 import Data.SafeCopy            ( base, deriveSafeCopy )
