@@ -62,10 +62,7 @@ newEntry n userId =
 entryById :: EntryId -> Query EntryList (Maybe CalendarEntry)
 entryById eid = getOne . getEQ eid . entrySet <$> ask
 
-entryByUserId :: UserId -> Query EntryList (Maybe EntryId)
-entryByUserId uid = undefined
-
 allEntrys :: Query EntryList [CalendarEntry]
 allEntrys = toList . entrySet <$> ask
 
-$(makeAcidic ''EntryList ['newEntry, 'entryById, 'entryByUserId, 'allEntrys, 'getEntryList])
+$(makeAcidic ''EntryList ['newEntry, 'entryById, 'allEntrys, 'getEntryList])

@@ -26,14 +26,11 @@ spec =
     around withDatabaseConnection $
         context "CalendarEntry" $ do
           describe "find" $ do
-              it "by id" $
+              it "by EntryId" $
                 \c -> do
                   entryState   <- query c $ CalendarRepo.EntryById 0
                   entryState `shouldSatisfy` isJust
                   fromJust entryState `shouldBe` CalendarEntry{ description="Foo", entryId=0, userId=0 }
-                  entryId      <- query c $ CalendarRepo.EntryByUserId 0
-                  entryId `shouldSatisfy` isJust
-                  fromJust entryId `shouldBe` 0
 
               it "all and check length" $
                 \c -> do
@@ -46,7 +43,7 @@ spec =
               it "new and check existence" $
                 \c -> do
                   entryList   <- query c GetEntryList
-                  _           <- update c (NewEntry "Zahnarzt" 1) 
+                  _           <- update c (NewEntry "Zahnarzt" 0)
                   entryState  <- query c $ CalendarRepo.EntryById $ nextEntryId entryList
                   entryState `shouldSatisfy` isJust
                   fromJust entryState `shouldBe` CalendarEntry{ description="Zahnarzt", entryId=nextEntryId entryList, userId=0}
@@ -55,7 +52,7 @@ spec =
                 \c -> do
                   entryList    <- query c GetEntryList
                   let oldId    = nextEntryId entryList
-                  _            <- update c (NewEntry "Zahnarzt" 1) 
+                  _            <- update c (NewEntry "Zahnarzt" 1)
                   entryList    <- query c GetEntryList
                   nextEntryId entryList `shouldBe` oldId + 1
 
