@@ -39,7 +39,6 @@ library
                        text == 1.2.*,
                        mtl == 2.2.*,
                        ixset == 1.0.*,
-                       containers == 0.5.10.*,
                        monad-control == 1.0.*,
                        filepath == 1.4.*,
                        acid-state == 0.14.*,

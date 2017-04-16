@@ -7,8 +7,9 @@ import Data.SafeCopy            ( base, deriveSafeCopy )
 import Domain.Types             ( UserId, EntryId )
 
 data CalendarEntry = CalendarEntry {
-    description :: String
-    , entryId :: EntryId
+    description    :: String
+    , entryId      :: EntryId
+    , userId       :: UserId
     }
     deriving (Eq, Ord, Read, Show, Data, Typeable)
 $(deriveSafeCopy 0 'base ''CalendarEntry)

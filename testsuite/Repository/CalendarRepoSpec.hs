@@ -14,11 +14,10 @@ import Domain.CalendarEntry         as CalendarEntry
 --problem here is what we create a connection to our database
 withDatabaseConnection :: (AcidState CalendarRepo.EntryList -> IO ()) -> IO ()
 withDatabaseConnection =
-  let firstCalendarEntry = CalendarEntry{ CalendarEntry.description="Foo", CalendarEntry.entryId=0 } in
+  let firstCalendarEntry = CalendarEntry{ CalendarEntry.description="Foo", CalendarEntry.entryId=0, userId=0 } in
       bracket (openLocalState CalendarRepo.EntryList{
         nextEntryId            = 1
         , entrySet             = insert firstCalendarEntry empty
-        , calendarUserRelation = Map.insert 0 0 Map.empty
         })
               closeAcidState
 
@@ -31,7 +30,7 @@ spec =
                 \c -> do
                   entryState   <- query c $ CalendarRepo.EntryById 0
                   entryState `shouldSatisfy` isJust
-                  fromJust entryState `shouldBe` CalendarEntry{ description="Foo", entryId=0 }
+                  fromJust entryState `shouldBe` CalendarEntry{ description="Foo", entryId=0, userId=0 }
                   entryId      <- query c $ CalendarRepo.EntryByUserId 0
                   entryId `shouldSatisfy` isJust
                   fromJust entryId `shouldBe` 0
@@ -50,7 +49,7 @@ spec =
                   _           <- update c (NewEntry "Zahnarzt" 1) 
                   entryState  <- query c $ CalendarRepo.EntryById $ nextEntryId entryList
                   entryState `shouldSatisfy` isJust
-                  fromJust entryState `shouldBe` CalendarEntry{ description="Zahnarzt", entryId=nextEntryId entryList}
+                  fromJust entryState `shouldBe` CalendarEntry{ description="Zahnarzt", entryId=nextEntryId entryList, userId=0}
 
               it "new and check nextEntryId" $
                 \c -> do
@@ -59,13 +58,4 @@ spec =
                   _            <- update c (NewEntry "Zahnarzt" 1) 
                   entryList    <- query c GetEntryList
                   nextEntryId entryList `shouldBe` oldId + 1
-
-              it "new and check calendarUserRelation" $
-                \c -> do
-                  entryList    <- query c GetEntryList
-                  _            <- update c (NewEntry "Zahnarzt" 123) 
-                  entryList    <- query c GetEntryList
-                  entryId      <- query c $ CalendarRepo.EntryByUserId 123
-                  entryId `shouldSatisfy` isJust
-                  fromJust entryId `shouldBe` nextEntryId entryList - 1
 
