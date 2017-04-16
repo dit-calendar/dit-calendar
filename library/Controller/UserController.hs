@@ -4,7 +4,8 @@ import Happstack.Server         ( ok, toResponse, lookRead
                                 , Method(GET), method)
 import Happstack.Foundation     ( query, update )
 
-import Domain.User              as User      ( User(..), UserId )
+import Domain.User              as User      ( User(..))
+import Domain.Types             ( UserId )
 import Repository.UserRepo      as UserRepo
 import Controller.AcidHelper    ( CtrlV )
 

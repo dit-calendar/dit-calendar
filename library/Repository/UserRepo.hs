@@ -15,7 +15,8 @@ import Data.IxSet               ( Indexable(..), IxSet(..), (@=)
                                 , Proxy(..), getOne, ixFun, ixSet
                                 , toList, getEQ, insert )
 
-import Domain.User              ( User(..), UserId )
+import Domain.User              ( User(..) )
+import Domain.Types             ( UserId )
 
 
 instance Indexable User where
@@ -45,6 +46,7 @@ newUser n =
     do  b@UserList{..} <- get
         let user = User { name = n
                         , userId  = nextUserId
+                        , calendarEntrys = []
                         }
         --Because UserId is an instance of Enum we can use succ to increment it.
         put $ b { nextUserId = succ nextUserId

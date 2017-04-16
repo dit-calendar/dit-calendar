@@ -6,7 +6,7 @@ h3. User
 h4. repo
 * create User
 * delete User
-** remove also User.Id from CalendarEntry
+** delete also all CalenderEntry's with User.Id from
 ** remove also User.Id from Task
 * update
 * add CalendarEntry with CalendarEntry.Id
@@ -25,7 +25,7 @@ h3. CalendarEntry
 * Id
 * Description
 * Date
-* Set {User.Id}
+* User.Id
 * Set {Task.Id}
 
 h4. repo

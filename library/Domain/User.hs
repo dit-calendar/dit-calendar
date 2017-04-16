@@ -5,9 +5,8 @@ module Domain.User where
 import Data.Data                ( Data, Typeable )
 import Data.SafeCopy            ( base, deriveSafeCopy )
 
+import Domain.Types             ( UserId, EntryId )
 
-type UserId = Int
-
-data User = User { name :: String, userId :: UserId }
+data User = User { name :: String, userId :: UserId, calendarEntrys :: [EntryId] }
     deriving (Eq, Ord, Read, Show, Data, Typeable)
 $(deriveSafeCopy 0 'base ''User)
