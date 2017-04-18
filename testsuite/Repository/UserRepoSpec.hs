@@ -2,7 +2,7 @@ module Repository.UserRepoSpec (spec) where
 
 import Test.Hspec
 
-import Data.Maybe           ( isJust, fromJust)
+import Data.Maybe           ( isJust, fromJust, isNothing)
 import Data.Acid            ( AcidState, openLocalState, closeAcidState, query, update )
 import Control.Exception    ( bracket )
 import Data.IxSet           ( IxSet(..), insert, empty )
@@ -29,18 +29,11 @@ spec =
                   userState `shouldSatisfy` isJust
                   fromJust userState `shouldBe` User{ name="Foo", userId=0, calendarEntrys=[] }
 
-              it "all and check length" $
-                \c -> do
-                  userList <- query c GetUserList
-                  let userCount = nextUserId userList
-                  userState <- query c UserRepo.AllUsers
-                  length userState `shouldBe` userCount
-
           describe "create" $ do
               it "new and check existence" $
                 \c -> do
                   userList <- query c GetUserList
-                  _ <- update c (NewUser "Mike") 
+                  _ <- update c (NewUser "Mike")
                   userState <- query c $ UserRepo.UserById $ nextUserId userList
                   userState `shouldSatisfy` isJust
                   fromJust userState `shouldBe` User{ name="Mike", userId=nextUserId userList, calendarEntrys=[]}
@@ -52,4 +45,13 @@ spec =
                   _ <- update c (NewUser "Mike") 
                   userList <- query c GetUserList
                   nextUserId userList `shouldBe` oldId + 1
-
+         
+          describe "delete" $ do
+              it "create/delete user and check existence" $
+                \ c -> do 
+                  userList <- query c GetUserList
+                  _ <- update c (NewUser "Mike")
+                  userState <- update c $ UserRepo.DeleteUser (nextUserId userList)
+                  userList <- query c GetUserList
+                  userState <- query c $ UserRepo.UserById (nextUserId userList)
+                  userState `shouldSatisfy` isNothing

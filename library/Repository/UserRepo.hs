@@ -13,7 +13,7 @@ import Data.Acid                ( Query, Update, makeAcidic )
 import Data.SafeCopy            ( base, deriveSafeCopy )
 import Data.IxSet               ( Indexable(..), IxSet(..), (@=)
                                 , Proxy(..), getOne, ixFun, ixSet
-                                , toList, getEQ, insert, updateIx )
+                                , toList, getEQ, insert, updateIx, deleteIx )
 
 import Domain.User              ( User(..) )
 import Domain.Types             ( UserId, EntryId )
@@ -66,5 +66,12 @@ updateUser updatedUser =
         put $ b { users =
             updateIx (userId updatedUser) updatedUser users
             }
+            
+deleteUser :: UserId -> Update UserList ()
+deleteUser userToDelete =
+    do  b@UserList{..} <- get
+        put $ b { users =
+            deleteIx userToDelete users
+            }
 
-$(makeAcidic ''UserList ['newUser, 'userById, 'allUsers, 'getUserList, 'updateUser])
+$(makeAcidic ''UserList ['newUser, 'userById, 'allUsers, 'getUserList, 'updateUser, 'deleteUser])
