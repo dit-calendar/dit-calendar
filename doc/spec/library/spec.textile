@@ -1,0 +1,56 @@
+h3. User
+* Name
+* Id
+* Set {Entry.Id}
+
+h4. repo
+* create User
+* delete User
+** delete also all CalenderEntry's with User.Id from
+** remove also User.Id from Task
+* update
+* add CalendarEntry with CalendarEntry.Id
+** add also User.Id to CalendarEntry
+* remove CalendarEntry with CalendarEntry.Id
+** remove also User.Id from CalendarEntry
+* add Task with Id
+** add also User.Id to Task
+* remove Task with Id
+** remove also User.Id from Task
+
+h4. controller
+* find User by Id
+
+h3. CalendarEntry
+* Id
+* Description
+* Date
+* User.Id
+* Set {Task.Id}
+
+h4. repo
+* create
+* delete
+** also execute User.removeCalendarEntry
+** also execute Task.delete for all Task.Id
+* update
+* add Task with Id
+* remove Task with Id
+
+h4. controller
+* find CalendarEntry by Id
+
+h3. Task
+* id
+* description
+* Set {User.Id}
+
+h4. repo
+* create
+* delte
+* update
+* add User with Id
+* remove User with Id
+
+h4. controller
+* find Task by Id

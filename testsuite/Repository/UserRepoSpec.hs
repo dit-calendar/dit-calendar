@@ -15,7 +15,7 @@ withDatabaseConnection :: (AcidState UserRepo.UserList -> IO ()) -> IO ()
 withDatabaseConnection = 
     bracket (openLocalState UserRepo.UserList{
       nextUserId = 1,
-      users = insert User{ User.name="Foo", User.userId=0 } empty })
+      users = insert User{ User.name="Foo", User.userId=0, calendarEntrys=[] } empty })
             closeAcidState
 
 spec :: Spec
@@ -27,7 +27,7 @@ spec =
                 \c -> do
                   userState <- query c $ UserRepo.UserById 0
                   userState `shouldSatisfy` isJust
-                  fromJust userState `shouldBe` User{ name="Foo", userId=0 }
+                  fromJust userState `shouldBe` User{ name="Foo", userId=0, calendarEntrys=[] }
 
               it "all and check length" $
                 \c -> do
@@ -43,7 +43,7 @@ spec =
                   _ <- update c (NewUser "Mike") 
                   userState <- query c $ UserRepo.UserById $ nextUserId userList
                   userState `shouldSatisfy` isJust
-                  fromJust userState `shouldBe` User{ name="Mike", userId=nextUserId userList}
+                  fromJust userState `shouldBe` User{ name="Mike", userId=nextUserId userList, calendarEntrys=[]}
 
               it "new and check nextUserId" $
                 \c -> do

@@ -13,9 +13,10 @@ import Data.Acid                ( Query, Update, makeAcidic )
 import Data.SafeCopy            ( base, deriveSafeCopy )
 import Data.IxSet               ( Indexable(..), IxSet(..), (@=)
                                 , Proxy(..), getOne, ixFun, ixSet
-                                , toList, getEQ, insert )
+                                , toList, getEQ, insert, updateIx )
 
-import Domain.User              ( User(..), UserId )
+import Domain.User              ( User(..) )
+import Domain.Types             ( UserId, EntryId )
 
 
 instance Indexable User where
@@ -45,6 +46,7 @@ newUser n =
     do  b@UserList{..} <- get
         let user = User { name = n
                         , userId  = nextUserId
+                        , calendarEntrys = []
                         }
         --Because UserId is an instance of Enum we can use succ to increment it.
         put $ b { nextUserId = succ nextUserId
@@ -58,4 +60,11 @@ userById uid = getOne . getEQ uid . users <$> ask
 allUsers :: Query UserList [User]
 allUsers = toList . users <$> ask
 
-$(makeAcidic ''UserList ['newUser, 'userById, 'allUsers, 'getUserList])
+updateUser :: User -> Update UserList ()
+updateUser updatedUser =
+    do  b@UserList{..} <- get
+        put $ b { users =
+            updateIx (userId updatedUser) updatedUser users
+            }
+
+$(makeAcidic ''UserList ['newUser, 'userById, 'allUsers, 'getUserList, 'updateUser])
