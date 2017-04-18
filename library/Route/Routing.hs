@@ -1,6 +1,6 @@
 module Route.Routing where
 
-import Happstack.Server          ( ok, toResponse, Method(GET, POST), nullDir
+import Happstack.Server          ( ok, toResponse, Method(GET, POST, DELETE), nullDir
                                  , Request(rqMethod), askRq , BodyPolicy(..)
                                  , decodeBody, defaultBodyPolicy, look)
 
@@ -40,3 +40,6 @@ routeUser = do
       POST -> do
         name <- look "name"
         UserController.createUser name
+      DELETE -> do
+        userId <- look "id"
+        UserController.deleteUser (read userId)

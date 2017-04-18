@@ -37,6 +37,12 @@ createUser name =
     do
         mUser <- update (UserRepo.NewUser name)
         ok $ toResponse $ "User created: " ++ show mUser
+        
+deleteUser :: UserId -> CtrlV
+deleteUser i = 
+    do
+        mUser <- update (UserRepo.DeleteUser i)
+        ok $ toResponse $ "User deleted"
 
 printUsersList :: [User] -> String
 printUsersList l = case l of
