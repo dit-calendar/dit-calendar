@@ -42,7 +42,7 @@ deleteUser :: UserId -> CtrlV
 deleteUser i = 
     do
         mUser <- update (UserRepo.DeleteUser i)
-        ok $ toResponse $ "User deleted"
+        ok $ toResponse $ "User with id:" ++ show i ++ "deleted"
 
 printUsersList :: [User] -> String
 printUsersList l = case l of
@@ -55,5 +55,5 @@ addCalendarEntryToUser :: User -> EntryId -> CtrlV
 addCalendarEntryToUser user entryId =
     let updatedUser = user {calendarEntrys = calendarEntrys user ++ [entryId]} in
     do  update $ UserRepo.UpdateUser updatedUser
-        ok $ toResponse $ "User with id: " ++ show (User.userId user) ++ "deleted"
+        ok $ toResponse $ "Add Entry: " ++ show entryId ++ "to User: " ++ show (User.userId user)
 
