@@ -5,7 +5,7 @@ import Happstack.Server         ( ok, toResponse, lookRead
 import Happstack.Foundation     ( query, update )
 
 import Domain.User              as User      ( User(..))
-import Domain.Types             ( UserId )
+import Domain.Types             ( UserId, EntryId )
 import Repository.UserRepo      as UserRepo
 import Controller.AcidHelper    ( CtrlV )
 
@@ -50,3 +50,10 @@ printUsersList l = case l of
     []     -> ""
     (x:xs) -> ("User: " ++ User.name x ++ "mit Id: "++ show (User.userId x))
         ++ "\n" ++ printUsersList xs
+
+addCalendarEntryToUser :: User -> EntryId -> CtrlV
+addCalendarEntryToUser user entryId =
+    let updatedUser = user {calendarEntrys = calendarEntrys user ++ [entryId]} in
+    do  update $ UserRepo.UpdateUser updatedUser
+        ok $ toResponse $ "User with id: " ++ show (User.userId user) ++ "deleted"
+
