@@ -14,7 +14,7 @@ import Data.Acid                       ( Query, Update, makeAcidic )
 import Data.SafeCopy                   ( base, deriveSafeCopy )
 import Data.IxSet                      ( Indexable(..), IxSet(..), (@=)
                                        , Proxy(..), getOne, ixFun, ixSet
-                                       , toList, getEQ, insert )
+                                       , toList, getEQ, insert, deleteIx, updateIx )
 
 import Domain.CalendarEntry            ( CalendarEntry(..) )
 import Domain.Types                    ( EntryId, UserId )
@@ -65,4 +65,18 @@ entryById eid = getOne . getEQ eid . entrySet <$> ask
 allEntrys :: Query EntryList [CalendarEntry]
 allEntrys = toList . entrySet <$> ask
 
-$(makeAcidic ''EntryList ['newEntry, 'entryById, 'allEntrys, 'getEntryList])
+updateEntry :: CalendarEntry -> Update EntryList ()
+updateEntry updatedEntry =
+    do  b@EntryList{..} <- get
+        put $ b { entrySet =
+            updateIx (entryId updatedEntry) updatedEntry entrySet
+            }
+            
+deleteUser :: EntryId -> Update EntryList ()
+deleteUser entryToDelete =
+    do  b@EntryList{..} <- get
+        put $ b { entrySet =
+            deleteIx entryToDelete entrySet
+            }
+
+$(makeAcidic ''EntryList ['newEntry, 'entryById, 'allEntrys, 'getEntryList, 'updateEntry, 'deleteUser])

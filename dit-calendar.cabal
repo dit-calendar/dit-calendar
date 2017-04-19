@@ -25,6 +25,7 @@ library
   exposed-modules:
                        Domain.User,
                        Domain.CalendarEntry,
+                       Domain.Types,
                        Route.PageEnum,
                        Route.Routing,
                        Controller.HomeController,
