@@ -52,8 +52,7 @@ printUsersList l = case l of
         ++ "\n" ++ printUsersList xs
 
 addCalendarEntryToUser :: User -> EntryId -> CtrlV
-addCalendarEntryToUser user entryId =
-    let updatedUser = user {calendarEntrys = calendarEntrys user ++ [entryId]} in
-    do  update $ UserRepo.UpdateUser updatedUser
-        ok $ toResponse $ "Add Entry: " ++ show entryId ++ "to User: " ++ show (User.userId user)
+addCalendarEntryToUser user entryId = do 
+    mUser <- update (UserRepo.AddCalendarEntryToUser user entryId)
+    ok $ toResponse $ "Add Entry: " ++ show entryId ++ "to User: " ++ show (User.userId user)
 

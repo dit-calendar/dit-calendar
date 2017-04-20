@@ -17,6 +17,7 @@ import Data.IxSet               ( Indexable(..), IxSet(..), (@=)
 
 import Domain.User              ( User(..) )
 import Domain.Types             ( UserId, EntryId )
+import Happstack.Foundation     ( update )
 
 
 instance Indexable User where
@@ -74,4 +75,10 @@ deleteUser userToDelete =
             deleteIx userToDelete users
             }
 
-$(makeAcidic ''UserList ['newUser, 'userById, 'allUsers, 'getUserList, 'updateUser, 'deleteUser])
+--muss eigentlich nicht Acidic sein
+addCalendarEntryToUser :: User -> EntryId -> Update UserList ()
+addCalendarEntryToUser user entryId =
+    let updatedUser = user {calendarEntrys = calendarEntrys user ++ [entryId]} in
+        updateUser updatedUser
+
+$(makeAcidic ''UserList ['newUser, 'userById, 'allUsers, 'getUserList, 'updateUser, 'deleteUser, 'addCalendarEntryToUser])
