@@ -4,12 +4,15 @@ h3. Cabal
 
 h4. Sandbox
 * beim erstem Mal sandbox aufsetzen: cabal sandbox init
-* alles Dependency und Compelierte Dateinen werden nicht mehr global sondern local(im Projektverzeichnis) installiert
+** alles Dependency und Compelierte Dateinen werden nicht mehr global sondern local(im Projektverzeichnis) installiert
+* Play around with the code in GHCi
+** cabal repl
 
 h4. Programm bauen und ausführen
 * bauen: cabal build 
 * starten: .cabal-sandbox/bin/dit-calendar
 * einzelne Datein ausführen: ?
+* bei kaputtem cabal: cabal clean
 
 h4. Test ausführen
 * builds tests and runs them: cabal install --enable-tests
