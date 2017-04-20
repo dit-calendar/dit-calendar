@@ -12,8 +12,8 @@ import Data.Acid.Local      ( createCheckpointAndClose )
 import Happstack.Server     ( Response )
 import Happstack.Foundation ( FoundationT, HasAcidState(..), FoundationT', getAcidSt )
 
-import Repository.UserRepo                   as UserRepo
-import Repository.CalendarRepo      as CalendarRepo
+import Repository.Acid.UserAcid          as UserAcid
+import Repository.Acid.CalendarAcid      as CalendarAcid
 import Route.PageEnum       ( SiteMap )
 
 
@@ -22,14 +22,14 @@ type CtrlV   = App Response
 
 data Acid = Acid
    {
-     acidUserListState         :: AcidState UserRepo.UserList
-     , acidEntryListState      :: AcidState CalendarRepo.EntryList
+     acidUserListState         :: AcidState UserAcid.UserList
+     , acidEntryListState      :: AcidState CalendarAcid.EntryList
    }
 
-instance (Functor m, Monad m) => HasAcidState (FoundationT' url Acid reqSt m) UserRepo.UserList where
+instance (Functor m, Monad m) => HasAcidState (FoundationT' url Acid reqSt m) UserAcid.UserList where
     getAcidState = acidUserListState <$> getAcidSt
 
-instance (Functor m, Monad m) => HasAcidState (FoundationT' url Acid reqSt m) CalendarRepo.EntryList where
+instance (Functor m, Monad m) => HasAcidState (FoundationT' url Acid reqSt m) CalendarAcid.EntryList where
     getAcidState = acidEntryListState <$> getAcidSt
 
 withAcid :: Maybe FilePath -- ^ state directory
@@ -39,6 +39,6 @@ withAcid mBasePath f =
     let basePath = fromMaybe "state" mBasePath
         userPath = basePath </> "userList"
         calendarEntryPath = basePath </> "entryList"
-    in bracket (openLocalStateFrom userPath UserRepo.initialUserListState) createCheckpointAndClose $ \c ->
-       bracket (openLocalStateFrom calendarEntryPath CalendarRepo.initialEntryListState) createCheckpointAndClose $ \g ->
+    in bracket (openLocalStateFrom userPath UserAcid.initialUserListState) createCheckpointAndClose $ \c ->
+       bracket (openLocalStateFrom calendarEntryPath CalendarAcid.initialEntryListState) createCheckpointAndClose $ \g ->
         f (Acid c g)

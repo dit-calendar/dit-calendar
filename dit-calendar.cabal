@@ -32,6 +32,8 @@ library
                        Controller.UserController,
                        Controller.CalendarController,
                        Controller.AcidHelper,
+                       Repository.Acid.UserAcid,
+                       Repository.Acid.CalendarAcid,
                        Repository.UserRepo,
                        Repository.CalendarRepo,
                        AppStart

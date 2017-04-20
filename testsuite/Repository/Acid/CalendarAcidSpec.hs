@@ -1,4 +1,4 @@
-module Repository.CalendarRepoSpec (spec) where
+module Repository.Acid.CalendarAcidSpec (spec) where
 
 import Test.Hspec
 
@@ -8,14 +8,14 @@ import Control.Exception          ( bracket )
 import Data.IxSet                 ( IxSet(..), insert, empty )
 import qualified Data.Map as Map  ( Map, insert, empty )
 
-import Repository.CalendarRepo      as CalendarRepo
-import Domain.CalendarEntry         as CalendarEntry
+import Repository.Acid.CalendarAcid  as CalendarAcid
+import Domain.CalendarEntry          as CalendarEntry
 
 --problem here is what we create a connection to our database
-withDatabaseConnection :: (AcidState CalendarRepo.EntryList -> IO ()) -> IO ()
+withDatabaseConnection :: (AcidState CalendarAcid.EntryList -> IO ()) -> IO ()
 withDatabaseConnection =
   let firstCalendarEntry = CalendarEntry{ CalendarEntry.description="Foo", CalendarEntry.entryId=0, userId=0 } in
-      bracket (openLocalState CalendarRepo.EntryList{
+      bracket (openLocalState CalendarAcid.EntryList{
         nextEntryId            = 1
         , entrySet             = insert firstCalendarEntry empty
         })
@@ -28,7 +28,7 @@ spec =
           describe "find" $ do
               it "by EntryId" $
                 \c -> do
-                  entryState   <- query c $ CalendarRepo.EntryById 0
+                  entryState   <- query c $ CalendarAcid.EntryById 0
                   entryState `shouldSatisfy` isJust
                   fromJust entryState `shouldBe` CalendarEntry{ description="Foo", entryId=0, userId=0 }
 
@@ -36,7 +36,7 @@ spec =
                 \c -> do
                   entryList      <- query c GetEntryList
                   let entryCount = nextEntryId entryList
-                  entryState     <- query c CalendarRepo.AllEntrys
+                  entryState     <- query c CalendarAcid.AllEntrys
                   length entryState `shouldBe` entryCount
 
           describe "create" $ do
@@ -44,7 +44,7 @@ spec =
                 \c -> do
                   entryList   <- query c GetEntryList
                   _           <- update c (NewEntry "Zahnarzt" 0)
-                  entryState  <- query c $ CalendarRepo.EntryById $ nextEntryId entryList
+                  entryState  <- query c $ CalendarAcid.EntryById $ nextEntryId entryList
                   entryState `shouldSatisfy` isJust
                   fromJust entryState `shouldBe` CalendarEntry{ description="Zahnarzt", entryId=nextEntryId entryList, userId=0}
 
