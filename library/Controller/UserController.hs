@@ -6,6 +6,7 @@ import Happstack.Foundation     ( query, update )
 
 import Domain.User              as User      ( User(..))
 import Domain.Types             ( UserId, EntryId )
+import Repository.Acid.UserAcid as UserAcid
 import Repository.UserRepo      as UserRepo
 import Controller.AcidHelper    ( CtrlV )
 
@@ -13,7 +14,7 @@ import Controller.AcidHelper    ( CtrlV )
 userPage :: UserId -> CtrlV
 userPage i =
     do
-       mUser <- query (UserRepo.UserById i)
+       mUser <- query (UserAcid.UserById i)
        case mUser of
             Nothing ->
                 ok $ toResponse $ "Could not find a user with id " ++ show i
@@ -25,7 +26,7 @@ usersPage :: CtrlV
 usersPage =
     let temp = "Anzeige aller User \n" in
     do method GET
-       userList <- query UserRepo.AllUsers
+       userList <- query UserAcid.AllUsers
        case userList of
             [] ->
                 ok $ toResponse (temp ++ "Liste ist leer")
@@ -35,13 +36,13 @@ usersPage =
 createUser :: String -> CtrlV
 createUser name =
     do
-        mUser <- update (UserRepo.NewUser name)
+        mUser <- update (UserAcid.NewUser name)
         ok $ toResponse $ "User created: " ++ show mUser
         
 deleteUser :: UserId -> CtrlV
 deleteUser i = 
     do
-        mUser <- update (UserRepo.DeleteUser i)
+        mUser <- update (UserAcid.DeleteUser i)
         ok $ toResponse $ "User with id:" ++ show i ++ "deleted"
 
 printUsersList :: [User] -> String
@@ -53,6 +54,6 @@ printUsersList l = case l of
 
 addCalendarEntryToUser :: User -> EntryId -> CtrlV
 addCalendarEntryToUser user entryId = do 
-    mUser <- update (UserRepo.AddCalendarEntryToUser user entryId)
+    mUser <- UserRepo.addCalendarEntryToUser user entryId
     ok $ toResponse $ "Add Entry: " ++ show entryId ++ "to User: " ++ show (User.userId user)
 
