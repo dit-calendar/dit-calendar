@@ -72,11 +72,11 @@ updateEntry updatedEntry =
             updateIx (entryId updatedEntry) updatedEntry entrySet
             }
             
-deleteUser :: EntryId -> Update EntryList ()
-deleteUser entryToDelete =
+deleteEntry :: EntryId -> Update EntryList ()
+deleteEntry entryToDelete =
     do  b@EntryList{..} <- get
         put $ b { entrySet =
             deleteIx entryToDelete entrySet
             }
 
-$(makeAcidic ''EntryList ['newEntry, 'entryById, 'allEntrys, 'getEntryList, 'updateEntry, 'deleteUser])
+$(makeAcidic ''EntryList ['newEntry, 'entryById, 'allEntrys, 'getEntryList, 'updateEntry, 'deleteEntry])
