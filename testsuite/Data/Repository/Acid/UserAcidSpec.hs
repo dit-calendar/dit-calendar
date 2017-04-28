@@ -1,4 +1,4 @@
-module Repository.Acid.UserAcidSpec (spec) where
+module Data.Repository.Acid.UserAcidSpec (spec) where
 
 import Test.Hspec
 
@@ -7,8 +7,8 @@ import Data.Acid            ( AcidState, openLocalState, closeAcidState, query, 
 import Control.Exception    ( bracket )
 import Data.IxSet           ( IxSet(..), insert, empty )
 
-import Repository.Acid.UserAcid as UserAcid
-import Domain.User as User
+import Data.Repository.Acid.UserAcid as UserAcid
+import Data.Domain.User as User
 
 --problem here is what we create a connection to our database
 withDatabaseConnection :: (AcidState UserAcid.UserList -> IO ()) -> IO ()

@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveDataTypeable, TemplateHaskell, TypeFamilies,
   RecordWildCards #-}
 
-module Repository.Acid.CalendarAcid where
+module Data.Repository.Acid.CalendarAcid where
 
 import Prelude                  hiding ( head )
 
@@ -16,8 +16,8 @@ import Data.IxSet                      ( Indexable(..), IxSet(..), (@=)
                                        , Proxy(..), getOne, ixFun, ixSet
                                        , toList, getEQ, insert, deleteIx, updateIx )
 
-import Domain.CalendarEntry            ( CalendarEntry(..) )
-import Domain.Types                    ( EntryId, UserId )
+import Data.Domain.CalendarEntry            ( CalendarEntry(..) )
+import Data.Domain.Types                    ( EntryId, UserId )
 
 
 instance Indexable CalendarEntry where

@@ -1,4 +1,4 @@
-module Domain.Types where
+module Data.Domain.Types where
 
 type UserId = Int
 type EntryId = Int

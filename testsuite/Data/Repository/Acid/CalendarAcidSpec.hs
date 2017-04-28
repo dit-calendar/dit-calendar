@@ -1,4 +1,4 @@
-module Repository.Acid.CalendarAcidSpec (spec) where
+module Data.Repository.Acid.CalendarAcidSpec (spec) where
 
 import Test.Hspec
 
@@ -8,8 +8,8 @@ import Control.Exception          ( bracket )
 import Data.IxSet                 ( IxSet(..), insert, empty )
 import qualified Data.Map as Map  ( Map, insert, empty )
 
-import Repository.Acid.CalendarAcid  as CalendarAcid
-import Domain.CalendarEntry          as CalendarEntry
+import Data.Repository.Acid.CalendarAcid  as CalendarAcid
+import Data.Domain.CalendarEntry          as CalendarEntry
 
 --problem here is what we create a connection to our database
 withDatabaseConnection :: (AcidState CalendarAcid.EntryList -> IO ()) -> IO ()

@@ -7,7 +7,7 @@ import Prelude                 hiding ( head )
 import Data.Data                     ( Data, Typeable )
 import Web.Routes.TH                 ( derivePathInfo )
 
-import Domain.Types                  ( UserId, EntryId )
+import Data.Domain.Types                  ( UserId, EntryId )
 
 
 --A url type

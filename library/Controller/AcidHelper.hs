@@ -12,8 +12,8 @@ import Data.Acid.Local      ( createCheckpointAndClose )
 import Happstack.Server     ( Response )
 import Happstack.Foundation ( FoundationT, HasAcidState(..), FoundationT', getAcidSt )
 
-import Repository.Acid.UserAcid          as UserAcid
-import Repository.Acid.CalendarAcid      as CalendarAcid
+import Data.Repository.Acid.UserAcid          as UserAcid
+import Data.Repository.Acid.CalendarAcid      as CalendarAcid
 import Route.PageEnum       ( SiteMap )
 
 

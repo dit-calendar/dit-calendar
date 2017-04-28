@@ -23,19 +23,19 @@ library
   hs-source-dirs:      library
   Build-Tools:         happy >= 1.19
   exposed-modules:
-                       Domain.User,
-                       Domain.CalendarEntry,
-                       Domain.Types,
+                       Data.Domain.User,
+                       Data.Domain.CalendarEntry,
+                       Data.Domain.Types,
                        Route.PageEnum,
                        Route.Routing,
                        Controller.HomeController,
                        Controller.UserController,
                        Controller.CalendarController,
                        Controller.AcidHelper,
-                       Repository.Acid.UserAcid,
-                       Repository.Acid.CalendarAcid,
-                       Repository.UserRepo,
-                       Repository.CalendarRepo,
+                       Data.Repository.Acid.UserAcid,
+                       Data.Repository.Acid.CalendarAcid,
+                       Data.Repository.UserRepo,
+                       Data.Repository.CalendarRepo,
                        AppStart
   build-depends:
                        base >=4.9 && <4.10,
