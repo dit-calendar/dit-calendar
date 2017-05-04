@@ -51,9 +51,3 @@ printUsersList l = case l of
     []     -> ""
     (x:xs) -> ("User: " ++ User.name x ++ "mit Id: "++ show (User.userId x))
         ++ "\n" ++ printUsersList xs
-
-addCalendarEntryToUser :: User -> EntryId -> CtrlV
-addCalendarEntryToUser user entryId = do 
-    mUser <- UserRepo.addCalendarEntryToUser user entryId
-    ok $ toResponse $ "Add Entry: " ++ show entryId ++ "to User: " ++ show (User.userId user)
-

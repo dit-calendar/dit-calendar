@@ -11,12 +11,6 @@ import Data.Domain.Types             ( UserId, EntryId )
 import Data.Repository.Acid.UserAcid as UserAcid
 import Data.Repository.Acid.CalendarAcid as CalendarAcid
 
-addCalendarEntryToUser :: (HasAcidState m UserAcid.UserList, MonadIO m) => 
-    User -> EntryId -> m ()
-addCalendarEntryToUser user entryId =
-    let updatedUser = user {calendarEntrys = calendarEntrys user ++ [entryId]} in
-        update $ UserAcid.UpdateUser updatedUser
-
 deleteUser :: (MonadIO m, HasAcidState m EntryList, HasAcidState m UserList) =>
      User -> m ()
 deleteUser user =

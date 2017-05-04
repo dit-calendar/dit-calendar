@@ -9,6 +9,7 @@ import Controller.UserController      as UserController
 import Controller.HomeController      as HomeController
 import Controller.CalendarController  as CalendarController
 import Route.PageEnum            ( SiteMap(..) )
+import Data.Domain.Types         ( UserId )
 
 
 myPolicy :: BodyPolicy
@@ -20,26 +21,35 @@ route url =
   do  decodeBody myPolicy
       case url of
         Home                 -> HomeController.homePage
-        Userdetail           -> routeUser
-        (User i)             -> UserController.userPage i
+        Userdetail           -> routeDetailUser
+        (User i)             -> routeUser i
         (CalendarEntry i)    -> CalendarController.entryPage i
 
-routeUser :: CtrlV
-routeUser = do
+getHttpMethod = do
   nullDir
   g <- greet
   ok g
     where
   greet = do
-    m <- rqMethod <$> askRq
-    case m of
-    -- curl http://localhost:8000/userdetail
-      GET  ->
-        UserController.usersPage
-    -- curl -X POST -d "name=FooBar" http://localhost:8000/userdetail
-      POST -> do
-        name <- look "name"
-        UserController.createUser name
-      DELETE -> do
-        userId <- look "id"
-        UserController.deleteUser (read userId)
+    rqMethod <$> askRq
+
+routeUser :: UserId -> CtrlV
+routeUser userId = do
+  m <- getHttpMethod
+  case m of
+    GET  ->
+      UserController.userPage userId
+    DELETE ->
+      UserController.deleteUser userId
+    POST -> do
+      desription <- look "desription"
+      CalendarController.createCalendarEntry userId desription
+
+routeDetailUser :: CtrlV
+routeDetailUser = do
+  m <- getHttpMethod
+  case m of
+  -- curl -X POST -d "name=FooBar" http://localhost:8000/userdetail
+    POST -> do
+      name <- look "name"
+      UserController.createUser name
