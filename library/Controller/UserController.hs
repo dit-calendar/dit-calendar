@@ -40,10 +40,14 @@ createUser name =
         ok $ toResponse $ "User created: " ++ show mUser
         
 deleteUser :: UserId -> CtrlV
-deleteUser i = 
-    do
-        mUser <- update (UserAcid.DeleteUser i)
-        ok $ toResponse $ "User with id:" ++ show i ++ "deleted"
+deleteUser i = do
+    mUser <- query (UserAcid.UserById i)
+    case mUser of
+        Nothing ->
+            ok $ toResponse $ "Could not find a user with id " ++ show i
+        (Just u) -> do
+            UserRepo.deleteUser u
+            ok $ toResponse $ "User with id:" ++ show i ++ "deleted"
 
 printUsersList :: [User] -> String
 printUsersList l = case l of

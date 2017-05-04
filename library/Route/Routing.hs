@@ -30,7 +30,7 @@ getHttpMethod = do
   g <- greet
   ok g
     where
-  greet = do
+  greet =
     rqMethod <$> askRq
 
 routeUser :: UserId -> CtrlV
