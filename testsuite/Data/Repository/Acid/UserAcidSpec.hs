@@ -45,13 +45,26 @@ spec =
                   _ <- update c (NewUser "Mike") 
                   userList <- query c GetUserList
                   nextUserId userList `shouldBe` oldId + 1
-         
+
           describe "delete" $ do
               it "create/delete user and check existence" $
-                \ c -> do 
+                \ c -> do
                   userList <- query c GetUserList
                   _ <- update c (NewUser "Mike")
                   userState <- update c $ UserAcid.DeleteUser (nextUserId userList)
                   userList <- query c GetUserList
                   userState <- query c $ UserAcid.UserById (nextUserId userList)
                   userState `shouldSatisfy` isNothing
+
+          describe "update" $ do
+              it "update and check changes" $
+                \c -> do
+                  userList <- query c GetUserList
+                  let x = nextUserId userList
+                  _ <- update c (NewUser "Mike")
+                  userState <- query c $ UserAcid.UserById $ x
+                  let updatedUser = (fromJust userState) {name = "Alex"}
+                  _ <- update c $ UserAcid.UpdateUser updatedUser
+                  userState <- query c $ UserAcid.UserById $ x
+                  userState `shouldSatisfy` isJust
+                  fromJust userState `shouldBe` User{ name="Alex", userId=x, calendarEntrys=[]}
