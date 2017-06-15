@@ -19,3 +19,9 @@ deleteUser user =
         do
             deleteCalendar calendarToDelete
             update $ UserAcid.DeleteUser (userId user)
+
+updateUser :: (MonadIO m, HasAcidState m EntryList, HasAcidState m UserList) =>
+     User -> String -> m ()
+updateUser user newName =
+    let updatedUser = user {name = newName} in
+            update $ UserAcid.UpdateUser updatedUser

@@ -38,7 +38,18 @@ createUser name =
     do
         mUser <- update (UserAcid.NewUser name)
         ok $ toResponse $ "User created: " ++ show mUser
-        
+
+updateUser :: UserId -> String -> CtrlV
+updateUser id name =
+    do
+       mUser <- query (UserAcid.UserById id)
+       case mUser of
+            Nothing ->
+                ok $ toResponse $ "Could not find a user with id " ++ show id
+            (Just u) -> do
+                 UserRepo.updateUser u name
+                 ok $ toResponse $ "User with id:" ++ show id ++ "updated"
+
 deleteUser :: UserId -> CtrlV
 deleteUser i = do
     mUser <- query (UserAcid.UserById i)
