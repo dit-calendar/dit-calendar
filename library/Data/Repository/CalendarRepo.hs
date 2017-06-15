@@ -24,3 +24,8 @@ addCalendarEntryToUser :: (HasAcidState m UserAcid.UserList, MonadIO m) =>
 addCalendarEntryToUser user entryId =
     let updatedUser = user {calendarEntrys = calendarEntrys user ++ [entryId]} in
         update $ UserAcid.UpdateUser updatedUser
+
+deleteCalendar :: (HasAcidState m CalendarAcid.EntryList, MonadIO m) =>
+                   [EntryId] -> m ()
+deleteCalendar = foldr (\ x -> (>>) (update $ CalendarAcid.DeleteEntry x))
+        (return ())

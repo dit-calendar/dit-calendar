@@ -9,7 +9,7 @@ import Controller.UserController      as UserController
 import Controller.HomeController      as HomeController
 import Controller.CalendarController  as CalendarController
 import Route.PageEnum            ( SiteMap(..) )
-import Data.Domain.Types         ( UserId )
+import Data.Domain.Types         ( UserId, EntryId )
 
 
 myPolicy :: BodyPolicy
@@ -53,3 +53,10 @@ routeDetailUser = do
     POST -> do
       name <- look "name"
       UserController.createUser name
+
+routeCalendarEntry :: EntryId -> CtrlV
+routeCalendarEntry entryId = do
+  m <- getHttpMethod
+  case m of
+    DELETE ->
+      CalendarController.deleteCalendarEntry entryId

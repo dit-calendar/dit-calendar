@@ -34,3 +34,13 @@ createCalendarEntry userId desription =
                 do
                     CalendarRepo.createEntry desription u
                     ok $ toResponse $ "Add Entry: x" ++ "to User: " ++ show userId
+
+deleteCalendarEntry :: EntryId -> CtrlV
+deleteCalendarEntry i = do
+    mEntry <- query (CalendarAcid.EntryById i)
+    case mEntry of
+        Nothing ->
+            ok $ toResponse $ "Could not find a CalendarEntry with id " ++ show i
+        (Just u) -> do
+            CalendarRepo.deleteCalendar [i]
+            ok $ toResponse $ "CalendarEntry with id:" ++ show i ++ "deleted"
