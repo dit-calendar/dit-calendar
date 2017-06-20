@@ -58,7 +58,7 @@ routeTask taskId = do
     GET  ->
       TaskController.taskPage taskId
     DELETE ->
-      TaskController.taskUser taskId
+      TaskController.deleteTask taskId
     PUT -> do
       description <- look "description"
       TaskController.updateTask taskId description
