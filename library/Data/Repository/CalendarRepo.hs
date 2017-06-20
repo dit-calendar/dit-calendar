@@ -24,14 +24,14 @@ createEntry description user =
 addCalendarEntryToUser :: (HasAcidState m UserAcid.UserList, MonadIO m) =>
     User -> EntryId -> m ()
 addCalendarEntryToUser user entryId =
-    let updatedUser = user {calendarEntrys = calendarEntrys user ++ [entryId]} in
+    let updatedUser = user {calendarEntries = calendarEntries user ++ [entryId]} in
         update $ UserAcid.UpdateUser updatedUser
 
 removeCalendar calendarEntry = let cEntryId = entryId calendarEntry in
     do
        mUser <- query (UserAcid.UserById (CalendarEntry.userId calendarEntry))
        let u = fromJust mUser
-           updatedUser = u {calendarEntrys = delete cEntryId (calendarEntrys u)} in
+           updatedUser = u {calendarEntries = delete cEntryId (calendarEntries u)} in
               update $ UserAcid.UpdateUser updatedUser
        deleteCalendar [cEntryId]
 

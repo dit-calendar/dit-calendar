@@ -15,7 +15,7 @@ withDatabaseConnection :: (AcidState UserAcid.UserList -> IO ()) -> IO ()
 withDatabaseConnection = 
     bracket (openLocalState UserAcid.UserList{
       nextUserId = 1,
-      users = insert User{ User.name="Foo", User.userId=0, calendarEntrys=[] } empty })
+      users = insert User{ User.name="Foo", User.userId=0, calendarEntries=[] } empty })
             closeAcidState
 
 spec :: Spec
@@ -27,7 +27,7 @@ spec =
                 \c -> do
                   userState <- query c $ UserAcid.UserById 0
                   userState `shouldSatisfy` isJust
-                  fromJust userState `shouldBe` User{ name="Foo", userId=0, calendarEntrys=[] }
+                  fromJust userState `shouldBe` User{ name="Foo", userId=0, calendarEntries=[] }
 
           describe "create" $ do
               it "new and check existence" $
@@ -36,7 +36,7 @@ spec =
                   _ <- update c (NewUser "Mike")
                   userState <- query c $ UserAcid.UserById $ nextUserId userList
                   userState `shouldSatisfy` isJust
-                  fromJust userState `shouldBe` User{ name="Mike", userId=nextUserId userList, calendarEntrys=[]}
+                  fromJust userState `shouldBe` User{ name="Mike", userId=nextUserId userList, calendarEntries=[]}
 
               it "new and check nextUserId" $
                 \c -> do
@@ -67,4 +67,4 @@ spec =
                   _ <- update c $ UserAcid.UpdateUser updatedUser
                   userState <- query c $ UserAcid.UserById $ x
                   userState `shouldSatisfy` isJust
-                  fromJust userState `shouldBe` User{ name="Alex", userId=x, calendarEntrys=[]}
+                  fromJust userState `shouldBe` User{ name="Alex", userId=x, calendarEntries=[]}

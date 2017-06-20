@@ -47,7 +47,7 @@ newUser n =
     do  b@UserList{..} <- get
         let user = User { name = n
                         , userId  = nextUserId
-                        , calendarEntrys = []
+                        , calendarEntries = []
                         }
         --Because UserId is an instance of Enum we can use succ to increment it.
         put $ b { nextUserId = succ nextUserId
