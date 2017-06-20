@@ -12,10 +12,6 @@ h4. functionality
 * add CalendarEntry
 ** create new CalendarEntry with CalendarEntry.Id
 ** add also User.Id to CalendarEntry
-* add Task with Id
-** add also User.Id to Task
-* remove Task with Id
-** remove also User.Id from Task
 * find User by Id
 
 h3. CalendarEntry
@@ -30,8 +26,9 @@ h4. functionality
 ** remove also CalendarEntry.Id from User
 ** also execute Task.delete for all Task.Id
 * update
-* add Task with Id
-* remove Task with Id
+* create Task
+** add TaskId to CalendarEntry
+** Task is belonging to a CalendarEntry and has to User.Ids at begin
 * find CalendarEntry by Id
 
 h3. Task
@@ -40,9 +37,9 @@ h3. Task
 * Set {User.Id}
 
 h4. functionality
-* create
-* delte
+* delete Task
+** remove TaskId from CalendarEntry
 * update
-* add User with Id
-* remove User with Id
+* add User with Id to Task
+* remove User with Id from Task
 * find Task by Id
