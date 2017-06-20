@@ -1,6 +1,6 @@
 module Route.Routing where
 
-import Happstack.Server          ( ok, toResponse, Method(GET, POST, DELETE), nullDir
+import Happstack.Server          ( ok, toResponse, Method(GET, POST, DELETE, PUT), nullDir
                                  , Request(rqMethod), askRq , BodyPolicy(..)
                                  , decodeBody, defaultBodyPolicy, look)
 
@@ -44,6 +44,9 @@ routeUser userId = do
     POST -> do
       desription <- look "desription"
       CalendarController.createCalendarEntry userId desription
+    PUT -> do
+      name <- look "name"
+      UserController.updateUser userId name
 
 routeDetailUser :: CtrlV
 routeDetailUser = do
