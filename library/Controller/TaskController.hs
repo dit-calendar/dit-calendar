@@ -2,12 +2,11 @@ module Controller.TaskController where
 
 import Happstack.Server         ( ok, toResponse, lookRead 
                                 , Method(GET), method)
-import Happstack.Foundation     ( query, update, delete )
+import Happstack.Foundation     ( query, update )
 
 import Data.Domain.Task              as Task      ( Task(..))
 import Data.Domain.Types             ( TaskId, EntryId )
 import Data.Repository.Acid.TaskAcid as TaskAcid
-import Data.Repository.TaskRepo      as TaskRepo
 import Controller.AcidHelper    ( CtrlV )
 
 --handler for taskPage
@@ -35,7 +34,7 @@ updateTask id description =
             Nothing ->
                 ok $ toResponse $ "Could not find a task with id " ++ show id
             (Just u) -> do
-                 update (TaskAcid.NewTask description)
+                 update (TaskAcid.UpdateTask u)
                  ok $ toResponse $ "Task with id:" ++ show id ++ "updated"
 
 deleteTask :: TaskId -> CtrlV
@@ -45,5 +44,5 @@ deleteTask i = do
         Nothing ->
             ok $ toResponse $ "Could not find a task with id " ++ show i
         (Just u) -> do
-            delete (TaskAcid.NewTask description)
+            update (TaskAcid.DeleteTask i)
             ok $ toResponse $ "Task with id:" ++ show i ++ "deleted"
