@@ -60,3 +60,5 @@ routeCalendarEntry entryId = do
   case m of
     DELETE ->
       CalendarController.deleteCalendarEntry entryId
+    GET  ->
+      CalendarController.entryPage entryId
