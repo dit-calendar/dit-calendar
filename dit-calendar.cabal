@@ -32,6 +32,7 @@ library
                        Controller.HomeController,
                        Controller.UserController,
                        Controller.CalendarController,
+                       Controller.TaskController,
                        Controller.AcidHelper,
                        Data.Repository.Acid.UserAcid,
                        Data.Repository.Acid.CalendarAcid,
