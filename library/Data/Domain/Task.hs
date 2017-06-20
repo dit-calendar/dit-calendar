@@ -8,7 +8,7 @@ import Data.Domain.Types        ( UserId, TaskId )
 
 data Task = Task {
     description      :: String
-    , entryId        :: TaskId
+    , taskId         :: TaskId
     , belongingUsers :: [UserId]
     }
     deriving (Eq, Ord, Read, Show, Data, Typeable)

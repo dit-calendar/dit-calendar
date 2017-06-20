@@ -45,7 +45,7 @@ getTaskList = ask
 newTask :: String -> Update TaskList Task
 newTask n =
     do  b@TaskList{..} <- get
-        let task = Task { name = n
+        let task = Task { description = n
                         , taskId  = nextTaskId
                         , belongingUsers = []
                         }

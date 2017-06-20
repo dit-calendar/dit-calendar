@@ -25,6 +25,7 @@ library
   exposed-modules:
                        Data.Domain.User,
                        Data.Domain.CalendarEntry,
+                       Data.Domain.Task,
                        Data.Domain.Types,
                        Route.PageEnum,
                        Route.Routing,
@@ -34,6 +35,7 @@ library
                        Controller.AcidHelper,
                        Data.Repository.Acid.UserAcid,
                        Data.Repository.Acid.CalendarAcid,
+                       Data.Repository.Acid.TaskAcid,
                        Data.Repository.UserRepo,
                        Data.Repository.CalendarRepo,
                        AppStart
