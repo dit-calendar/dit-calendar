@@ -23,7 +23,7 @@ route url =
         Home                 -> HomeController.homePage
         Userdetail           -> routeDetailUser
         (User i)             -> routeUser i
-        (CalendarEntry i)    -> CalendarController.entryPage i
+        (CalendarEntry i)    -> routeCalendarEntry i
 
 getHttpMethod = do
   nullDir
