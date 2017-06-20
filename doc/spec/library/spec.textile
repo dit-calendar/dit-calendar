@@ -26,7 +26,7 @@ h3. CalendarEntry
 * Set {Task.Id}
 
 h4. functionality
-* remove CalendarEntry with CalendarEntry.Id
+* delete CalendarEntry with CalendarEntry.Id
 ** remove also CalendarEntry.Id from User
 ** also execute Task.delete for all Task.Id
 * update
