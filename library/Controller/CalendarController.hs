@@ -42,5 +42,5 @@ deleteCalendarEntry i = do
         Nothing ->
             ok $ toResponse $ "Could not find a CalendarEntry with id " ++ show i
         (Just u) -> do
-            CalendarRepo.deleteCalendar [i]
+            CalendarRepo.removeCalendar u
             ok $ toResponse $ "CalendarEntry with id:" ++ show i ++ "deleted"

@@ -2,8 +2,10 @@
 
 module Data.Repository.CalendarRepo where
 
-import Happstack.Foundation     ( update, HasAcidState )
+import Happstack.Foundation     ( query, update, HasAcidState )
 import Control.Monad.IO.Class
+import Data.List                ( delete )
+import Data.Maybe                 ( fromJust )
 
 import Data.Domain.User                     as User
 import Data.Repository.Acid.UserAcid        as UserAcid
@@ -24,6 +26,14 @@ addCalendarEntryToUser :: (HasAcidState m UserAcid.UserList, MonadIO m) =>
 addCalendarEntryToUser user entryId =
     let updatedUser = user {calendarEntrys = calendarEntrys user ++ [entryId]} in
         update $ UserAcid.UpdateUser updatedUser
+
+removeCalendar calendarEntry = let cEntryId = entryId calendarEntry in
+    do
+       mUser <- query (UserAcid.UserById (CalendarEntry.userId calendarEntry))
+       let u = fromJust mUser
+           updatedUser = u {calendarEntrys = delete cEntryId (calendarEntrys u)} in
+              update $ UserAcid.UpdateUser updatedUser
+       deleteCalendar [cEntryId]
 
 deleteCalendar :: (HasAcidState m CalendarAcid.EntryList, MonadIO m) =>
                    [EntryId] -> m ()
