@@ -45,8 +45,8 @@ routeUser userId = do
     DELETE ->
       UserController.deleteUser userId
     POST -> do
-      desription <- look "desription"
-      CalendarController.createCalendarEntry userId desription
+      description <- look "description"
+      CalendarController.createCalendarEntry userId description
     PUT -> do
       name <- look "name"
       UserController.updateUser userId name
