@@ -8,8 +8,9 @@ import Controller.AcidHelper     ( CtrlV )
 import Controller.UserController      as UserController
 import Controller.HomeController      as HomeController
 import Controller.CalendarController  as CalendarController
+import Controller.TaskController      as TaskController
 import Route.PageEnum            ( SiteMap(..) )
-import Data.Domain.Types         ( UserId, EntryId )
+import Data.Domain.Types         ( UserId, EntryId, TaskId )
 
 
 myPolicy :: BodyPolicy
@@ -22,8 +23,10 @@ route url =
       case url of
         Home                 -> HomeController.homePage
         Userdetail           -> routeDetailUser
+        Taskdetail           -> routeDetailUser
         (User i)             -> routeUser i
         (CalendarEntry i)    -> routeCalendarEntry i
+        (Task i)             -> routeTask i
 
 getHttpMethod = do
   nullDir
@@ -47,6 +50,27 @@ routeUser userId = do
     PUT -> do
       name <- look "name"
       UserController.updateUser userId name
+
+routeTask :: TaskId -> CtrlV
+routeTask taskId = do
+  m <- getHttpMethod
+  case m of
+    GET  ->
+      TaskController.taskPage taskId
+    DELETE ->
+      TaskController.taskUser taskId
+    PUT -> do
+      description <- look "description"
+      TaskController.updateTask taskId description
+
+routeDetailTask :: CtrlV
+routeDetailTask = do
+  m <- getHttpMethod
+  case m of
+  -- curl -X POST -d "name=FooBar" http://localhost:8000/taskdetail
+    POST -> do
+      description <- look "description"
+      TaskController.createTask description
 
 routeDetailUser :: CtrlV
 routeDetailUser = do

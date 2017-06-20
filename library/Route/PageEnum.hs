@@ -7,7 +7,7 @@ import Prelude                 hiding ( head )
 import Data.Data                     ( Data, Typeable )
 import Web.Routes.TH                 ( derivePathInfo )
 
-import Data.Domain.Types                  ( UserId, EntryId )
+import Data.Domain.Types                  ( UserId, EntryId, TaskId )
 
 
 --A url type
@@ -16,5 +16,7 @@ data SiteMap
   | User UserId
   | Userdetail
   | CalendarEntry EntryId
+  | Task TaskId
+  | Taskdetail
   deriving (Eq, Ord, Read, Show, Data, Typeable)
 $(derivePathInfo ''SiteMap)
