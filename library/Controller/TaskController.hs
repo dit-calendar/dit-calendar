@@ -5,7 +5,7 @@ import Happstack.Server         ( ok, toResponse, lookRead
 import Happstack.Foundation     ( query, update )
 
 import Data.Domain.Task              as Task      ( Task(..))
-import Data.Domain.Types             ( TaskId, EntryId )
+import Data.Domain.Types             ( TaskId )
 import Data.Repository.Acid.TaskAcid as TaskAcid
 import Controller.AcidHelper    ( CtrlV )
 
