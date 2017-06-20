@@ -16,7 +16,7 @@ import Data.IxSet               ( Indexable(..), IxSet(..), (@=)
                                 , toList, getEQ, insert, updateIx, deleteIx )
 
 import Data.Domain.User              ( User(..) )
-import Data.Domain.Types             ( UserId, EntryId )
+import Data.Domain.Types             ( UserId )
 import Happstack.Foundation     ( update )
 
 
