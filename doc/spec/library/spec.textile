@@ -3,7 +3,7 @@ h3. User
 * Id
 * Set {Entry.Id}
 
-h4. data
+h4. functionality
 * create User
 * delete User
 ** delete also all CalenderEntry's with User.Id from
@@ -13,13 +13,11 @@ h4. data
 ** create new CalendarEntry with CalendarEntry.Id
 ** add also User.Id to CalendarEntry
 * remove CalendarEntry with CalendarEntry.Id
-** remove also User.Id from CalendarEntry
+** remove also CalendarEntry.Id from User
 * add Task with Id
 ** add also User.Id to Task
 * remove Task with Id
 ** remove also User.Id from Task
-
-h4. controller
 * find User by Id
 
 h3. CalendarEntry
@@ -29,15 +27,13 @@ h3. CalendarEntry
 * User.Id
 * Set {Task.Id}
 
-h4. data
+h4. functionality
 * delete
 ** also execute User.removeCalendarEntry
 ** also execute Task.delete for all Task.Id
 * update
 * add Task with Id
 * remove Task with Id
-
-h4. controller
 * find CalendarEntry by Id
 
 h3. Task
@@ -45,12 +41,10 @@ h3. Task
 * description
 * Set {User.Id}
 
-h4. data
+h4. functionality
 * create
 * delte
 * update
 * add User with Id
 * remove User with Id
-
-h4. controller
 * find Task by Id
