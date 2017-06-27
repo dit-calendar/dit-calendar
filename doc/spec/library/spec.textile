@@ -28,7 +28,7 @@ h4. functionality
 * update
 * create Task
 ** add TaskId to CalendarEntry
-** Task is belonging to a CalendarEntry and has to User.Ids at begin
+** Task is belonging to a CalendarEntry and has no User.Ids at begin
 * find CalendarEntry by Id
 
 h3. Task
