@@ -14,7 +14,7 @@ import Data.Domain.CalendarEntry          as CalendarEntry
 --problem here is what we create a connection to our database
 withDatabaseConnection :: (AcidState CalendarAcid.EntryList -> IO ()) -> IO ()
 withDatabaseConnection =
-  let firstCalendarEntry = CalendarEntry{ CalendarEntry.description="Foo", CalendarEntry.entryId=0, userId=0 } in
+  let firstCalendarEntry = CalendarEntry{ CalendarEntry.description="Foo", CalendarEntry.entryId=0, userId=0, calendarTasks=[] } in
       bracket (openLocalState CalendarAcid.EntryList{
         nextEntryId            = 1
         , entrySet             = insert firstCalendarEntry empty
@@ -30,7 +30,7 @@ spec =
                 \c -> do
                   entryState   <- query c $ CalendarAcid.EntryById 0
                   entryState `shouldSatisfy` isJust
-                  fromJust entryState `shouldBe` CalendarEntry{ description="Foo", entryId=0, userId=0 }
+                  fromJust entryState `shouldBe` CalendarEntry{ description="Foo", entryId=0, userId=0, calendarTasks=[] }
 
           describe "create" $ do
               it "new and check existence" $
@@ -39,7 +39,7 @@ spec =
                   _           <- update c (NewEntry "Zahnarzt" 0)
                   entryState  <- query c $ CalendarAcid.EntryById $ nextEntryId entryList
                   entryState `shouldSatisfy` isJust
-                  fromJust entryState `shouldBe` CalendarEntry{ description="Zahnarzt", entryId=nextEntryId entryList, userId=0}
+                  fromJust entryState `shouldBe` CalendarEntry{ description="Zahnarzt", entryId=nextEntryId entryList, userId=0, calendarTasks=[]}
 
               it "new and check nextEntryId" $
                 \c -> do
@@ -70,4 +70,4 @@ spec =
                   _           <- update c $ CalendarAcid.UpdateEntry updatedEntry
                   entryState  <- query c $ CalendarAcid.EntryById $ eId
                   entryState `shouldSatisfy` isJust
-                  fromJust entryState `shouldBe` CalendarEntry{ description="Termin 2", entryId=eId, userId=2}
+                  fromJust entryState `shouldBe` CalendarEntry{ description="Termin 2", entryId=eId, userId=2, calendarTasks=[]}
