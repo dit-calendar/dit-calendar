@@ -15,11 +15,12 @@ import Data.Repository.Acid.CalendarAcid    as CalendarAcid
 
 
 createEntry :: (HasAcidState m EntryList, HasAcidState m UserAcid.UserList,
-            MonadIO m) => String -> User -> m ()
+            MonadIO m) => String -> User -> m CalendarEntry
 createEntry description user =
     do
         calendarEntry <- update (CalendarAcid.NewEntry description $ User.userId user)
         addCalendarEntryToUser user $ CalendarEntry.entryId calendarEntry
+        return calendarEntry
 
 addCalendarEntryToUser :: (HasAcidState m UserAcid.UserList, MonadIO m) =>
     User -> EntryId -> m ()

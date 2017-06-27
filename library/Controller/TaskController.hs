@@ -4,12 +4,15 @@ import Happstack.Server         ( ok, toResponse, lookRead
                                 , Method(GET), method)
 import Happstack.Foundation     ( query, update )
 
-import Data.Domain.Task              as Task      ( Task(..))
-import Data.Domain.Types             ( TaskId, UserId )
-import Data.Repository.Acid.UserAcid as UserAcid
-import Data.Repository.Acid.TaskAcid as TaskAcid
-import Data.Repository.UserRepo      as UserRepo
-import Controller.AcidHelper    ( CtrlV )
+import Data.Domain.Task                  as Task      ( Task(..))
+import Data.Domain.Types        ( TaskId, EntryId, UserId )
+import Data.Domain.CalendarEntry         as CalendarEntry
+import Data.Repository.Acid.TaskAcid     as TaskAcid
+import Data.Repository.Acid.CalendarAcid as CalendarAcid
+import Data.Repository.Acid.UserAcid     as UserAcid
+import Data.Repository.TaskRepo          as TaskRepo
+import Data.Repository.UserRepo          as UserRepo
+import Controller.AcidHelper     ( CtrlV )
 
 --handler for taskPage
 taskPage :: TaskId -> CtrlV
@@ -22,11 +25,18 @@ taskPage i =
             (Just u) ->
                 ok $ toResponse $ "peeked at the task and saw: " ++ show u
 
-createTask :: String -> CtrlV
-createTask description =
+createTask :: EntryId -> String -> CtrlV
+createTask calendarId description =
     do
-        mTask <- update (TaskAcid.NewTask description)
-        ok $ toResponse $ "Task created: " ++ show mTask
+        mCalendarEntry <- query (CalendarAcid.EntryById calendarId)
+        case mCalendarEntry of
+            Nothing ->
+                ok $ toResponse $ "Could not find a calendarEntry with id " ++ show calendarId
+            (Just u) ->
+                do
+                    t <- TaskRepo.createTask u description
+                    ok $ toResponse $ "Task created: " ++ show (Task.taskId t) ++ "to CalendarEntry: " ++ show calendarId
+
 
 updateTask :: TaskId -> String -> CtrlV
 updateTask id description =

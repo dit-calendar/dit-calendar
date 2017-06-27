@@ -22,7 +22,7 @@ spec :: Spec
 spec =
     around withDatabaseConnection $
         context "Task" $ do
-          describe "find" $ do
+          describe "find" $
               it "by id" $
                 \c -> do
                   taskState <- query c $ TaskAcid.TaskById 0
@@ -46,7 +46,7 @@ spec =
                   taskList <- query c GetTaskList
                   nextTaskId taskList `shouldBe` oldId + 1
 
-          describe "delete" $ do
+          describe "delete" $
               it "create/delete task and check existence" $
                 \ c -> do
                   taskList <- query c GetTaskList
@@ -56,15 +56,15 @@ spec =
                   taskState <- query c $ TaskAcid.TaskById (nextTaskId taskList)
                   taskState `shouldSatisfy` isNothing
 
-          describe "update" $ do
+          describe "update" $
               it "update and check changes" $
                 \c -> do
                   taskList <- query c GetTaskList
                   let x = nextTaskId taskList
                   _ <- update c (NewTask "Efa")
-                  taskState <- query c $ TaskAcid.TaskById $ x
+                  taskState <- query c $ TaskAcid.TaskById x
                   let updatedTask = (fromJust taskState) {description = "Konzert"}
                   _ <- update c $ TaskAcid.UpdateTask updatedTask
-                  taskState <- query c $ TaskAcid.TaskById $ x
+                  taskState <- query c $ TaskAcid.TaskById x
                   taskState `shouldSatisfy` isJust
                   fromJust taskState `shouldBe` Task{ description="Konzert", taskId=x, belongingUsers=[]}

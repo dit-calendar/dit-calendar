@@ -69,9 +69,7 @@ routeDetailTask = do
   m <- getHttpMethod
   case m of
   -- curl -X POST -d "name=FooBar" http://localhost:8000/taskdetail
-    POST -> do
-      description <- look "description"
-      TaskController.createTask description
+    POST -> TaskController.taskPage 1
 
 routeTaskWithUser :: TaskId -> UserId -> CtrlV
 routeTaskWithUser taskId userId = do
@@ -99,3 +97,6 @@ routeCalendarEntry entryId = do
       CalendarController.deleteCalendarEntry entryId
     GET  ->
       CalendarController.entryPage entryId
+    POST -> do
+      description <- look "description"
+      TaskController.createTask entryId description

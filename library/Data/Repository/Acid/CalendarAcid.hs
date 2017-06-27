@@ -49,9 +49,10 @@ newEntry n userId =
     do  b@EntryList{..} <- get
         let nexCalendarEntryId = nextEntryId
             entry = CalendarEntry { 
-                        description    = n
-                        , entryId      = nexCalendarEntryId
-                        , userId       = userId
+                        description      = n
+                        , entryId        = nexCalendarEntryId
+                        , userId         = userId
+                        , calendarTasks  = []
                         }
         --Because EntryId is an instance of Enum we can use succ to increment it.
         put $ b { nextEntryId          = succ nextEntryId
