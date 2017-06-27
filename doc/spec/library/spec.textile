@@ -26,7 +26,8 @@ h4. functionality
 ** remove also CalendarEntry.Id from User
 ** also execute Task.delete for all Task.Id
 * update
-* create Task
+* add Task to CalendarEntry
+** create Task
 ** add TaskId to CalendarEntry
 ** Task is belonging to a CalendarEntry and has no User.Ids at begin
 * find CalendarEntry by Id
