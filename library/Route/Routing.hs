@@ -27,6 +27,7 @@ route url =
         (User i)             -> routeUser i
         (CalendarEntry i)    -> routeCalendarEntry i
         (Task i)             -> routeTask i
+        (TaskWithUser taskId userId) -> routeTaskWithUser taskId userId
 
 getHttpMethod = do
   nullDir
@@ -71,6 +72,13 @@ routeDetailTask = do
     POST -> do
       description <- look "description"
       TaskController.createTask description
+
+routeTaskWithUser :: TaskId -> UserId -> CtrlV
+routeTaskWithUser taskId userId = do
+  m <- getHttpMethod
+  case m of
+    PUT ->
+      TaskController.addUserToTask taskId userId
 
 routeDetailUser :: CtrlV
 routeDetailUser = do
