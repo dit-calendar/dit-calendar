@@ -64,13 +64,6 @@ routeTask taskId = do
       description <- look "description"
       TaskController.updateTask taskId description
 
-routeDetailTask :: CtrlV
-routeDetailTask = do
-  m <- getHttpMethod
-  case m of
-  -- curl -X POST -d "name=FooBar" http://localhost:8000/taskdetail
-    POST -> TaskController.taskPage 1
-
 routeTaskWithUser :: TaskId -> UserId -> CtrlV
 routeTaskWithUser taskId userId = do
   m <- getHttpMethod
