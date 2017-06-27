@@ -77,6 +77,8 @@ routeTaskWithUser :: TaskId -> UserId -> CtrlV
 routeTaskWithUser taskId userId = do
   m <- getHttpMethod
   case m of
+    DELETE ->
+      TaskController.removeUserFromTask taskId userId
     PUT ->
       TaskController.addUserToTask taskId userId
 

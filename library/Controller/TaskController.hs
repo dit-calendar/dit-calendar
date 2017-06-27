@@ -53,7 +53,23 @@ addUserToTask userId taskId =
                         ok $ toResponse $ "Could not find a task with id " ++ show taskId
                      (Just t) -> do
                         UserRepo.addUserToTask t userId
-                        ok $ toResponse $ "Task added to userId: " ++ show userId
+                        ok $ toResponse $ "User added to task: " ++ show userId
+
+removeUserFromTask :: UserId -> TaskId -> CtrlV
+removeUserFromTask userId taskId =
+    do
+       mUser <- query (UserAcid.UserById userId)
+       case mUser of
+            Nothing ->
+                ok $ toResponse $ "Could not find a user with id " ++ show userId
+            (Just u) -> do
+                 mTask <- query (TaskAcid.TaskById taskId)
+                 case mTask of
+                     Nothing ->
+                        ok $ toResponse $ "Could not find a task with id " ++ show taskId
+                     (Just t) -> do
+                        UserRepo.removeUserFromTask t userId
+                        ok $ toResponse $ "User removed from task" ++ show userId
 
 deleteTask :: TaskId -> CtrlV
 deleteTask i = do

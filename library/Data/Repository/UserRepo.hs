@@ -5,6 +5,7 @@ module Data.Repository.UserRepo where
 import Prelude                  hiding ( head )
 import Happstack.Foundation     ( update, HasAcidState )
 import Control.Monad.IO.Class
+import Data.List                ( delete )
 
 import Data.Domain.User              ( User(..) )
 import Data.Domain.Task              ( Task(..) )
@@ -32,4 +33,10 @@ addUserToTask :: (HasAcidState m TaskAcid.TaskList, MonadIO m) =>
     Task -> UserId -> m ()
 addUserToTask task userId =
     let updatedTask = task {belongingUsers = belongingUsers task ++ [userId]} in
+        update $ TaskAcid.UpdateTask updatedTask
+
+removeUserFromTask :: (HasAcidState m TaskAcid.TaskList, MonadIO m) =>
+                      Task -> UserId -> m ()
+removeUserFromTask task userId =
+    let updatedTask = task {belongingUsers = delete userId (belongingUsers task)} in
         update $ TaskAcid.UpdateTask updatedTask
