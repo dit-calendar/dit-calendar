@@ -32,8 +32,8 @@ createCalendarEntry userId desription =
                 ok $ toResponse $ "Could not find a user with id " ++ show userId
             (Just u) ->
                 do
-                    CalendarRepo.createEntry desription u
-                    ok $ toResponse $ "Add Entry: x" ++ "to User: " ++ show userId
+                    entry <- CalendarRepo.createEntry desription u
+                    ok $ toResponse $ "Add Entry: " ++ show (CalendarEntry.entryId entry) ++ "to User: " ++ show userId
 
 deleteCalendarEntry :: EntryId -> CtrlV
 deleteCalendarEntry i = do
