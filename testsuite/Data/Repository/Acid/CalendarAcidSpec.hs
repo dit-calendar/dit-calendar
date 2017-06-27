@@ -25,7 +25,7 @@ spec :: Spec
 spec =
     around withDatabaseConnection $
         context "CalendarEntry" $ do
-          describe "find" $ do
+          describe "find" $
               it "by EntryId" $
                 \c -> do
                   entryState   <- query c $ CalendarAcid.EntryById 0
@@ -49,7 +49,7 @@ spec =
                   entryList    <- query c GetEntryList
                   nextEntryId entryList `shouldBe` oldId + 1
 
-          describe "delete" $ do
+          describe "delete" $
               it "create/delete Entry and check existence" $
                 \ c -> do 
                   entryList <- query c GetEntryList
@@ -59,15 +59,15 @@ spec =
                   entryState <- query c $ CalendarAcid.EntryById $ nextEntryId entryList
                   entryState `shouldSatisfy` isNothing
 
-          describe "update" $ do
+          describe "update" $
               it "change attributes and check changes" $
                 \c -> do
                   entryList   <- query c GetEntryList
                   let eId = nextEntryId entryList
                   _           <- update c (NewEntry "Termin 1" 2)
-                  entryState  <- query c $ CalendarAcid.EntryById $ eId
+                  entryState  <- query c $ CalendarAcid.EntryById eId
                   let updatedEntry = (fromJust entryState) {description = "Termin 2"}
                   _           <- update c $ CalendarAcid.UpdateEntry updatedEntry
-                  entryState  <- query c $ CalendarAcid.EntryById $ eId
+                  entryState  <- query c $ CalendarAcid.EntryById eId
                   entryState `shouldSatisfy` isJust
                   fromJust entryState `shouldBe` CalendarEntry{ description="Termin 2", entryId=eId, userId=2, calendarTasks=[]}

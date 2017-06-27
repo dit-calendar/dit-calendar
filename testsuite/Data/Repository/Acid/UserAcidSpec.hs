@@ -22,7 +22,7 @@ spec :: Spec
 spec =
     around withDatabaseConnection $
         context "User" $ do
-          describe "find" $ do
+          describe "find" $
               it "by id" $
                 \c -> do
                   userState <- query c $ UserAcid.UserById 0
@@ -46,7 +46,7 @@ spec =
                   userList <- query c GetUserList
                   nextUserId userList `shouldBe` oldId + 1
 
-          describe "delete" $ do
+          describe "delete" $
               it "create/delete user and check existence" $
                 \ c -> do
                   userList <- query c GetUserList
@@ -56,15 +56,15 @@ spec =
                   userState <- query c $ UserAcid.UserById (nextUserId userList)
                   userState `shouldSatisfy` isNothing
 
-          describe "update" $ do
+          describe "update" $
               it "update and check changes" $
                 \c -> do
                   userList <- query c GetUserList
                   let x = nextUserId userList
                   _ <- update c (NewUser "Mike")
-                  userState <- query c $ UserAcid.UserById $ x
+                  userState <- query c $ UserAcid.UserById x
                   let updatedUser = (fromJust userState) {name = "Alex"}
                   _ <- update c $ UserAcid.UpdateUser updatedUser
-                  userState <- query c $ UserAcid.UserById $ x
+                  userState <- query c $ UserAcid.UserById x
                   userState `shouldSatisfy` isJust
                   fromJust userState `shouldBe` User{ name="Alex", userId=x, calendarEntries=[]}
