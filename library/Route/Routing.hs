@@ -23,9 +23,9 @@ route url =
       case url of
         Home                 -> HomeController.homePage
         Userdetail           -> routeDetailUser
-        Taskdetail           -> routeDetailUser
         (User i)             -> routeUser i
         (CalendarEntry i)    -> routeCalendarEntry i
+        Taskdetail           -> routeDetailUser
         (Task i)             -> routeTask i
         (TaskWithUser taskId userId) -> routeTaskWithUser taskId userId
 
