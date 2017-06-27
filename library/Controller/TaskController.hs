@@ -5,10 +5,11 @@ import Happstack.Server         ( ok, toResponse, lookRead
 import Happstack.Foundation     ( query, update )
 
 import Data.Domain.Task                  as Task      ( Task(..))
-import Data.Domain.Types        ( TaskId, EntryId )
+import Data.Domain.Types        ( TaskId, EntryId, UserId )
 import Data.Domain.CalendarEntry         as CalendarEntry
 import Data.Repository.Acid.TaskAcid     as TaskAcid
 import Data.Repository.Acid.CalendarAcid as CalendarAcid
+import Data.Repository.Acid.UserAcid     as UserAcid
 import Data.Repository.TaskRepo          as TaskRepo
 import Data.Repository.UserRepo          as UserRepo
 import Controller.AcidHelper     ( CtrlV )
