@@ -1,7 +1,7 @@
 h3. User
 * Name
 * Id
-* Set {Entry.Id}
+* Set {CalendarEntry.Id}
 
 h4. functionality
 * create User
@@ -11,6 +11,7 @@ h4. functionality
 * update
 * add CalendarEntry
 ** create new CalendarEntry with CalendarEntry.Id
+** add CalendarEntry.Id to User
 ** add also User.Id to CalendarEntry
 * find User by Id
 
