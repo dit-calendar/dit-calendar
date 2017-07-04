@@ -28,3 +28,9 @@ addTaskToCalendarEntry :: (HasAcidState m CalendarAcid.EntryList, MonadIO m) =>
 addTaskToCalendarEntry taskId calendarEntry =
     let updatedCalendarEntry = calendarEntry {calendarTasks = calendarTasks calendarEntry ++ [taskId]} in
         update $ CalendarAcid.UpdateEntry updatedCalendarEntry
+
+updateTask :: (HasAcidState m CalendarAcid.EntryList, HasAcidState m TaskList, MonadIO m) =>
+                  Task -> String -> m ()
+updateTask task newDescription =
+    let updatedTask = task {Task.description = newDescription} in
+            update $ TaskAcid.UpdateTask updatedTask
