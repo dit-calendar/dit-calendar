@@ -55,5 +55,5 @@ updateCalendar calendarEntry newDescription =
 deleteTaskFromCalendarEntry :: (HasAcidState m CalendarAcid.EntryList, MonadIO m) =>
                 Int -> CalendarEntry -> m ()
 deleteTaskFromCalendarEntry taskId calendarEntry =
-  let updatedCalendaerEntry = calendarEntry {calendarTasks = delete taskId (calendarTasks calendarEntry)} in
-        update $ CalendarAcid.UpdateEntry updatedCalendaerEntry
+  let updatedCalendarEntry = calendarEntry {calendarTasks = delete taskId (calendarTasks calendarEntry)} in
+        update $ CalendarAcid.UpdateEntry updatedCalendarEntry
