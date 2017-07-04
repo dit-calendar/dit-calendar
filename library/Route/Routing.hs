@@ -93,3 +93,6 @@ routeCalendarEntry entryId = do
     POST -> do
       description <- look "description"
       TaskController.createTask entryId description
+    PUT -> do
+      description <- look "description"
+      CalendarController.updateCalendarEntry entryId description

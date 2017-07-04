@@ -44,3 +44,14 @@ deleteCalendarEntry i = do
         (Just u) -> do
             CalendarRepo.removeCalendar u
             ok $ toResponse $ "CalendarEntry with id:" ++ show i ++ "deleted"
+
+updateCalendarEntry :: EntryId -> String -> CtrlV
+updateCalendarEntry id description =
+    do
+       mEntry <- query (CalendarAcid.EntryById id)
+       case mEntry of
+            Nothing ->
+                ok $ toResponse $ "Could not find a CalendarEntry with id " ++ show id
+            (Just c) -> do
+                 CalendarRepo.updateCalendar c description
+                 ok $ toResponse $ "CalendarEntry with id:" ++ show id ++ "updated"

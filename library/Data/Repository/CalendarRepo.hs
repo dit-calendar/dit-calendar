@@ -42,3 +42,9 @@ deleteCalendar :: (HasAcidState m CalendarAcid.EntryList, MonadIO m) =>
                    [EntryId] -> m ()
 deleteCalendar = foldr (\ x -> (>>) (update $ CalendarAcid.DeleteEntry x))
         (return ())
+
+updateCalendar :: (HasAcidState m CalendarAcid.EntryList, MonadIO m) =>
+                  CalendarEntry -> String -> m ()
+updateCalendar calendarEntry newDescription =
+    let updatedEntry = calendarEntry {CalendarEntry.description = newDescription} in
+            update $ CalendarAcid.UpdateEntry updatedEntry
