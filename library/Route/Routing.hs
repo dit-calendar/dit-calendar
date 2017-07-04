@@ -52,6 +52,15 @@ routeUser userId = do
       name <- look "name"
       UserController.updateUser userId name
 
+routeDetailUser :: CtrlV
+routeDetailUser = do
+  m <- getHttpMethod
+  case m of
+  -- curl -X POST -d "name=FooBar" http://localhost:8000/userdetail
+    POST -> do
+      name <- look "name"
+      UserController.createUser name
+
 routeTask :: TaskId -> CtrlV
 routeTask taskId = do
   m <- getHttpMethod
@@ -77,15 +86,6 @@ routeTaskWithUser taskId userId = do
       TaskController.removeUserFromTask taskId userId
     PUT ->
       TaskController.addUserToTask taskId userId
-
-routeDetailUser :: CtrlV
-routeDetailUser = do
-  m <- getHttpMethod
-  case m of
-  -- curl -X POST -d "name=FooBar" http://localhost:8000/userdetail
-    POST -> do
-      name <- look "name"
-      UserController.createUser name
 
 routeCalendarEntry :: EntryId -> CtrlV
 routeCalendarEntry entryId = do
