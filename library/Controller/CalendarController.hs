@@ -6,7 +6,7 @@ import Happstack.Foundation     ( query, update )
 
 import Data.Domain.User                         as User
 import Data.Domain.CalendarEntry                as CalendarEntry    ( CalendarEntry(..) )
-import Data.Domain.Types         ( EntryId, UserId )
+import Data.Domain.Types         ( EntryId, UserId, TaskId )
 import Data.Repository.Acid.CalendarAcid        as CalendarAcid
 import Data.Repository.Acid.UserAcid            as UserAcid
 import Controller.AcidHelper    ( CtrlV )

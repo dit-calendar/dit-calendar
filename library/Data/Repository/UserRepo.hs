@@ -27,7 +27,7 @@ updateUser :: (MonadIO m, HasAcidState m EntryList, HasAcidState m UserList) =>
      User -> String -> m ()
 updateUser user newName =
     let updatedUser = user {name = newName} in
-            update $ UserAcid.UpdateUser updatedUser
+      update $ UserAcid.UpdateUser updatedUser
 
 addUserToTask :: (HasAcidState m TaskAcid.TaskList, MonadIO m) =>
     Task -> UserId -> m ()

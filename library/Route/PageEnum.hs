@@ -17,7 +17,7 @@ data SiteMap
   | Userdetail
   | CalendarEntry EntryId
   | Task TaskId
-  | Taskdetail
+  | TaskWithCalendar EntryId UserId
   | TaskWithUser TaskId UserId
   deriving (Eq, Ord, Read, Show, Data, Typeable)
 $(derivePathInfo ''SiteMap)

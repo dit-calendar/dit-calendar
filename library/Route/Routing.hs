@@ -23,11 +23,11 @@ route url =
       case url of
         Home                 -> HomeController.homePage
         Userdetail           -> routeDetailUser
-        (User i)             -> routeUser i
-        (CalendarEntry i)    -> routeCalendarEntry i
-        Taskdetail           -> routeDetailUser
-        (Task i)             -> routeTask i
-        (TaskWithUser taskId userId) -> routeTaskWithUser taskId userId
+        User i               -> routeUser i
+        CalendarEntry i      -> routeCalendarEntry i
+        Task i               -> routeTask i
+        TaskWithCalendar e u -> routeTaskWithCalendar e u
+        TaskWithUser t u     -> routeTaskWithUser t u
 
 getHttpMethod = do
   nullDir
@@ -58,11 +58,16 @@ routeTask taskId = do
   case m of
     GET  ->
       TaskController.taskPage taskId
-    DELETE ->
-      TaskController.deleteTask taskId
     PUT -> do
       description <- look "description"
       TaskController.updateTask taskId description
+
+routeTaskWithCalendar :: EntryId ->  TaskId -> CtrlV
+routeTaskWithCalendar entryId taskId = do
+  m <- getHttpMethod
+  case m of
+    DELETE ->
+      TaskController.deleteTask entryId taskId
 
 routeTaskWithUser :: TaskId -> UserId -> CtrlV
 routeTaskWithUser taskId userId = do
@@ -88,7 +93,7 @@ routeCalendarEntry entryId = do
   case m of
     DELETE ->
       CalendarController.deleteCalendarEntry entryId
-    GET  ->
+    GET ->
       CalendarController.entryPage entryId
     POST -> do
       description <- look "description"

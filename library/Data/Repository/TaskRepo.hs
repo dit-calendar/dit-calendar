@@ -33,4 +33,4 @@ updateTask :: (HasAcidState m CalendarAcid.EntryList, HasAcidState m TaskList, M
                   Task -> String -> m ()
 updateTask task newDescription =
     let updatedTask = task {Task.description = newDescription} in
-            update $ TaskAcid.UpdateTask updatedTask
+        update $ TaskAcid.UpdateTask updatedTask

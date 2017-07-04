@@ -11,6 +11,7 @@ import Data.Repository.Acid.TaskAcid     as TaskAcid
 import Data.Repository.Acid.CalendarAcid as CalendarAcid
 import Data.Repository.Acid.UserAcid     as UserAcid
 import Data.Repository.TaskRepo          as TaskRepo
+import Data.Repository.CalendarRepo      as CalendarRepo
 import Data.Repository.UserRepo          as UserRepo
 import Controller.AcidHelper     ( CtrlV )
 
@@ -56,7 +57,7 @@ addUserToTask userId taskId =
        case mUser of
             Nothing ->
                 ok $ toResponse $ "Could not find a user with id " ++ show userId
-            (Just u) -> do
+            (Just _) -> do
                  mTask <- query (TaskAcid.TaskById taskId)
                  case mTask of
                      Nothing ->
@@ -81,12 +82,18 @@ removeUserFromTask userId taskId =
                         UserRepo.removeUserFromTask t userId
                         ok $ toResponse $ "User removed from task" ++ show userId
 
-deleteTask :: TaskId -> CtrlV
-deleteTask i = do
-    mTask <- query (TaskAcid.TaskById i)
-    case mTask of
+deleteTask :: EntryId -> TaskId -> CtrlV
+deleteTask entryId taskId = do
+    mEntry <- query (CalendarAcid.EntryById entryId)
+    case mEntry of
         Nothing ->
-            ok $ toResponse $ "Could not find a task with id " ++ show i
-        (Just u) -> do
-            update (TaskAcid.DeleteTask i)
-            ok $ toResponse $ "Task with id:" ++ show i ++ "deleted"
+            ok $ toResponse $ "Could not find a entry with id " ++ show entryId
+        (Just e) -> do
+            mTask <- query (TaskAcid.TaskById taskId)
+            case mTask of
+                Nothing ->
+                    ok $ toResponse $ "Could not find a task with id " ++ show taskId
+                (Just _) -> do
+                    CalendarRepo.deleteTaskFromCalendarEntry taskId e
+                    update (TaskAcid.DeleteTask taskId)
+                    ok $ toResponse $ "Task with id:" ++ show taskId ++ "deleted"
