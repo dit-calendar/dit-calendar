@@ -7,11 +7,11 @@ import Control.Monad.IO.Class
 import Data.List                  ( delete )
 import Data.Maybe                 ( fromJust )
 
-import Data.Domain.Task                       as Task
 import Data.Repository.Acid.TaskAcid          as TaskAcid
 import Data.Repository.Acid.CalendarAcid      as CalendarAcid
 import Data.Domain.CalendarEntry              as CalendarEntry
-import Data.Domain.Types          ( TaskId, EntryId )
+import Data.Domain.Task                       as Task
+import Data.Domain.Types          ( UserId, TaskId, EntryId )
 
 
 createTask :: (HasAcidState m CalendarAcid.EntryList,
@@ -33,4 +33,16 @@ updateTask :: (HasAcidState m CalendarAcid.EntryList, HasAcidState m TaskList, M
                   Task -> String -> m ()
 updateTask task newDescription =
     let updatedTask = task {Task.description = newDescription} in
+        update $ TaskAcid.UpdateTask updatedTask
+
+addUserToTask :: (HasAcidState m TaskAcid.TaskList, MonadIO m) =>
+    Task -> UserId -> m ()
+addUserToTask task userId =
+    let updatedTask = task {belongingUsers = belongingUsers task ++ [userId]} in
+        update $ TaskAcid.UpdateTask updatedTask
+
+removeUserFromTask :: (HasAcidState m TaskAcid.TaskList, MonadIO m) =>
+                      Task -> UserId -> m ()
+removeUserFromTask task userId =
+    let updatedTask = task {belongingUsers = delete userId (belongingUsers task)} in
         update $ TaskAcid.UpdateTask updatedTask

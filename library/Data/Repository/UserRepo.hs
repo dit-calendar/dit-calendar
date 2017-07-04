@@ -9,9 +9,8 @@ import Data.List                ( delete )
 
 import Data.Domain.User              ( User(..) )
 import Data.Domain.Task              ( Task(..) )
-import Data.Domain.Types             ( UserId, EntryId )
+import Data.Domain.Types             (  EntryId )
 import Data.Repository.Acid.UserAcid as UserAcid
-import Data.Repository.Acid.TaskAcid as TaskAcid
 import Data.Repository.Acid.CalendarAcid as CalendarAcid
 import Data.Repository.CalendarRepo  ( deleteCalendar )
 
@@ -28,15 +27,3 @@ updateUser :: (MonadIO m, HasAcidState m EntryList, HasAcidState m UserList) =>
 updateUser user newName =
     let updatedUser = user {name = newName} in
       update $ UserAcid.UpdateUser updatedUser
-
-addUserToTask :: (HasAcidState m TaskAcid.TaskList, MonadIO m) =>
-    Task -> UserId -> m ()
-addUserToTask task userId =
-    let updatedTask = task {belongingUsers = belongingUsers task ++ [userId]} in
-        update $ TaskAcid.UpdateTask updatedTask
-
-removeUserFromTask :: (HasAcidState m TaskAcid.TaskList, MonadIO m) =>
-                      Task -> UserId -> m ()
-removeUserFromTask task userId =
-    let updatedTask = task {belongingUsers = delete userId (belongingUsers task)} in
-        update $ TaskAcid.UpdateTask updatedTask
