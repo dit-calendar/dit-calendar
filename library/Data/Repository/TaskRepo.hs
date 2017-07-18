@@ -46,3 +46,8 @@ removeUserFromTask :: (HasAcidState m TaskAcid.TaskList, MonadIO m) =>
 removeUserFromTask task userId =
     let updatedTask = task {belongingUsers = delete userId (belongingUsers task)} in
         update $ TaskAcid.UpdateTask updatedTask
+
+deleteTask :: (HasAcidState m TaskAcid.TaskList, MonadIO m) =>
+                   [TaskId] -> m ()
+deleteTask = foldr (\ x -> (>>) (update $ TaskAcid.DeleteTask x))
+        (return ())
