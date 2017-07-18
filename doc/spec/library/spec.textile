@@ -2,6 +2,7 @@ h3. User
 * Name
 * Id
 * Set {CalendarEntry.Id}
+* Set {TaskId.Id}
 
 h4. functionality
 * create User
@@ -41,7 +42,10 @@ h3. Task
 h4. functionality
 * delete Task
 ** remove TaskId from CalendarEntry
+** remove TaskId from User
 * update
 * add User with Id to Task
+** add TaskId to User
 * remove User with Id from Task
+** remove TaskId from User
 * find Task by Id
