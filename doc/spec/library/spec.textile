@@ -40,7 +40,6 @@ h3. Task
 * Set {User.Id}
 
 h4. functionality
-* create Task
 * delete Task
 ** remove TaskId from CalendarEntry
 ** remove TaskId from User
