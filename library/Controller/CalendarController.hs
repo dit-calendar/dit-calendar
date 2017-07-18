@@ -24,7 +24,7 @@ entryPage i =
                 ok $ toResponse $ "peeked at the description and saw: " ++ show u
 
 createCalendarEntry :: UserId -> String -> CtrlV
-createCalendarEntry userId desription =
+createCalendarEntry userId description =
     do
         mUser <- query (UserAcid.UserById userId)
         case mUser of
@@ -32,7 +32,7 @@ createCalendarEntry userId desription =
                 ok $ toResponse $ "Could not find a user with id " ++ show userId
             (Just u) ->
                 do
-                    entry <- CalendarRepo.createEntry desription u
+                    entry <- CalendarRepo.createEntry description u
                     ok $ toResponse $ "Add Entry: " ++ show (CalendarEntry.entryId entry) ++ "to User: " ++ show userId
 
 deleteCalendarEntry :: EntryId -> CtrlV
