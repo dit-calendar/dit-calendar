@@ -48,6 +48,7 @@ newUser n =
         let user = User { name = n
                         , userId  = nextUserId
                         , calendarEntries = []
+                        , belongingTasks = []
                         }
         --Because UserId is an instance of Enum we can use succ to increment it.
         put $ b { nextUserId = succ nextUserId
