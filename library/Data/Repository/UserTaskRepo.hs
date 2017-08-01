@@ -39,7 +39,12 @@ removeUserFromTask task userId =
 
 deleteTaskFromTasksUsers :: (HasAcidState m UserAcid.UserList, MonadIO m) =>
     Task -> m ()
-deleteTaskFromTasksUsers task = undefined
+deleteTaskFromTasksUsers task =
+    foldr (\ x ->
+      (>>) (do
+        mUser <- query (UserAcid.UserById x)
+        deleteTaskFromUser x (fromJust mUser) ))
+    (return ()) $ Task.belongingUsers task
 
 deleteTaskFromUser :: (HasAcidState m UserAcid.UserList, MonadIO m) =>
     TaskId -> User -> m ()
