@@ -40,6 +40,7 @@ library
                        Data.Repository.UserRepo,
                        Data.Repository.CalendarRepo,
                        Data.Repository.TaskRepo,
+                       Data.Repository.UserTaskRepo,
                        AppStart
   build-depends:
                        base >=4.9 && <4.10,
