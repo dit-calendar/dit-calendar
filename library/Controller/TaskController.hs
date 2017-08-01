@@ -11,7 +11,7 @@ import Data.Repository.Acid.TaskAcid     as TaskAcid
 import Data.Repository.Acid.CalendarAcid as CalendarAcid
 import Data.Repository.Acid.UserAcid     as UserAcid
 import Data.Repository.TaskRepo          as TaskRepo
-import Data.Repository.UserTaskRepo          as UserTaskRepo
+import Data.Repository.UserTaskRepo      as UserTaskRepo
 import Data.Repository.CalendarRepo      as CalendarRepo
 import Controller.AcidHelper     ( CtrlV )
 

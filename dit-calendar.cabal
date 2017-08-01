@@ -39,6 +39,7 @@ library
                        Data.Repository.Acid.TaskAcid,
                        Data.Repository.UserRepo,
                        Data.Repository.CalendarRepo,
+                       Data.Repository.CalendarTaskRepo,
                        Data.Repository.TaskRepo,
                        Data.Repository.UserTaskRepo,
                        AppStart

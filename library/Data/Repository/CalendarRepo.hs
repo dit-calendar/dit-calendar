@@ -11,7 +11,7 @@ import Data.Domain.User                     as User
 import Data.Domain.CalendarEntry            as CalendarEntry
 import Data.Domain.Task                     as Task
 import Data.Domain.Types        ( UserId, EntryId )
-import Data.Repository.TaskRepo             as TaskRepo
+import Data.Repository.CalendarTaskRepo     as CalendarTaskRepo
 import Data.Repository.Acid.UserAcid        as UserAcid
 import Data.Repository.Acid.TaskAcid        as TaskAcid
 import Data.Repository.Acid.CalendarAcid    as CalendarAcid
@@ -36,17 +36,8 @@ removeCalendar calendarEntry = let cEntryId = entryId calendarEntry in
     do
        mUser <- query (UserAcid.UserById (CalendarEntry.userId calendarEntry))
        deleteCalendarEntryFromUser (fromJust mUser) cEntryId
-       deleteCalendarsTasks calendarEntry
+       CalendarTaskRepo.deleteCalendarsTasks calendarEntry
        deleteCalendar [cEntryId]
-
-deleteCalendarsTasks :: (HasAcidState m UserAcid.UserList, HasAcidState m TaskAcid.TaskList, MonadIO m)
-    => CalendarEntry -> m ()
-deleteCalendarsTasks calendar =
-    foldr (\ x ->
-      (>>) (do
-        mTask <- query (TaskAcid.TaskById x)
-        TaskRepo.deleteTask (fromJust mTask) ))
-    (return ()) $ CalendarEntry.calendarTasks calendar
 
 deleteCalendarEntryFromUser :: (HasAcidState m UserAcid.UserList, MonadIO m) =>
                                    User -> EntryId -> m ()
