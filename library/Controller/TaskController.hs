@@ -93,7 +93,7 @@ deleteTask entryId taskId = do
             case mTask of
                 Nothing ->
                     ok $ toResponse $ "Could not find a task with id " ++ show taskId
-                (Just _) -> do
+                (Just t) -> do
                     CalendarRepo.deleteTaskFromCalendarEntry taskId e
-                    TaskRepo.deleteTask [taskId]
+                    TaskRepo.deleteTask t
                     ok $ toResponse $ "Task with id:" ++ show taskId ++ "deleted"

@@ -37,6 +37,10 @@ removeUserFromTask task userId =
             deleteTaskFromUser (taskId task) (fromJust mUser)
             update $ TaskAcid.UpdateTask updatedTask
 
+deleteTaskFromTasksUsers :: (HasAcidState m UserAcid.UserList, MonadIO m) =>
+    Task -> m ()
+deleteTaskFromTasksUsers task = undefined
+
 deleteTaskFromUser :: (HasAcidState m UserAcid.UserList, MonadIO m) =>
     TaskId -> User -> m ()
 deleteTaskFromUser taskId user =
