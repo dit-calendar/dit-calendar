@@ -2,19 +2,14 @@
 
 module Data.Repository.TaskRepo where
 
-import Happstack.Foundation       ( query, update, HasAcidState )
+import Happstack.Foundation       ( update, HasAcidState )
 import Control.Monad.IO.Class
-import Data.List                  ( delete )
-import Data.Maybe                 ( fromJust )
 
 import Data.Repository.Acid.TaskAcid          as TaskAcid
 import Data.Repository.Acid.CalendarAcid      as CalendarAcid
-import Data.Repository.Acid.UserAcid          as UserAcid
-import Data.Repository.UserTaskRepo               as UserTaskRepo
 import Data.Domain.CalendarEntry              as CalendarEntry
 import Data.Domain.Task                       as Task
-import Data.Domain.User                       as User
-import Data.Domain.Types          ( UserId, TaskId, EntryId )
+import Data.Domain.Types          ( TaskId )
 
 
 createTask :: (HasAcidState m CalendarAcid.EntryList,
