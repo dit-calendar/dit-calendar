@@ -12,7 +12,6 @@ import Data.Domain.Types        ( UserId, EntryId )
 import Data.Repository.TaskRepo             as TaskRepo
 import Data.Repository.Acid.UserAcid        as UserAcid
 import Data.Repository.Acid.TaskAcid        as TaskAcid
-import Data.Repository.Acid.CalendarAcid    as CalendarAcid
 
 
 deleteCalendarsTasks :: (HasAcidState m UserAcid.UserList, HasAcidState m TaskAcid.TaskList, MonadIO m)
