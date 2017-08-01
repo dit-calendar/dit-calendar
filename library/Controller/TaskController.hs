@@ -11,6 +11,7 @@ import Data.Repository.Acid.TaskAcid     as TaskAcid
 import Data.Repository.Acid.CalendarAcid as CalendarAcid
 import Data.Repository.Acid.UserAcid     as UserAcid
 import Data.Repository.TaskRepo          as TaskRepo
+import Data.Repository.UserTaskRepo          as UserTaskRepo
 import Data.Repository.CalendarRepo      as CalendarRepo
 import Controller.AcidHelper     ( CtrlV )
 
@@ -62,7 +63,7 @@ addUserToTask userId taskId =
                      Nothing ->
                         ok $ toResponse $ "Could not find a task with id " ++ show taskId
                      (Just t) -> do
-                        TaskRepo.addUserToTask t userId
+                        UserTaskRepo.addUserToTask t userId
                         ok $ toResponse $ "User added to task: " ++ show userId
 
 removeUserFromTask :: UserId -> TaskId -> CtrlV
@@ -78,7 +79,7 @@ removeUserFromTask userId taskId =
                      Nothing ->
                         ok $ toResponse $ "Could not find a task with id " ++ show taskId
                      (Just t) -> do
-                        TaskRepo.removeUserFromTask t userId
+                        UserTaskRepo.removeUserFromTask t userId
                         ok $ toResponse $ "User removed from task" ++ show userId
 
 deleteTask :: EntryId -> TaskId -> CtrlV

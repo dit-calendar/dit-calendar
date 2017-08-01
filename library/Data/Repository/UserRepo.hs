@@ -10,8 +10,8 @@ import Data.List                ( delete )
 import Data.Domain.User              ( User(..) )
 import Data.Domain.Task              ( Task(..) )
 import Data.Domain.Types             (  EntryId )
-import Data.Repository.Acid.UserAcid as UserAcid
-import Data.Repository.Acid.CalendarAcid as CalendarAcid
+import Data.Repository.Acid.UserAcid       as UserAcid
+import Data.Repository.Acid.CalendarAcid   as CalendarAcid
 import Data.Repository.CalendarRepo  ( deleteCalendar )
 
 deleteUser :: (MonadIO m, HasAcidState m EntryList, HasAcidState m UserList) =>
