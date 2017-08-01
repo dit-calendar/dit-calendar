@@ -12,6 +12,7 @@ import Data.Domain.CalendarEntry            as CalendarEntry
 import Data.Domain.Task                     as Task
 import Data.Domain.Types        ( UserId, EntryId )
 import Data.Repository.CalendarTaskRepo     as CalendarTaskRepo
+import Data.Repository.UserRepo             as UserRepo
 import Data.Repository.Acid.UserAcid        as UserAcid
 import Data.Repository.Acid.TaskAcid        as TaskAcid
 import Data.Repository.Acid.CalendarAcid    as CalendarAcid
@@ -21,29 +22,17 @@ createEntry :: (HasAcidState m EntryList, HasAcidState m UserAcid.UserList,
             MonadIO m) => String -> User -> m CalendarEntry
 createEntry description user = do
     calendarEntry <- update (CalendarAcid.NewEntry description $ User.userId user)
-    addCalendarEntryToUser user $ CalendarEntry.entryId calendarEntry
+    UserRepo.addCalendarEntryToUser user $ CalendarEntry.entryId calendarEntry
     return calendarEntry
-
-addCalendarEntryToUser :: (HasAcidState m UserAcid.UserList, MonadIO m) =>
-    User -> EntryId -> m ()
-addCalendarEntryToUser user entryId =
-    let updatedUser = user {calendarEntries = calendarEntries user ++ [entryId]} in
-        update $ UserAcid.UpdateUser updatedUser
 
 removeCalendar :: (HasAcidState m EntryList, HasAcidState m UserAcid.UserList,
       HasAcidState m TaskList, MonadIO m) => CalendarEntry -> m ()
 removeCalendar calendarEntry = let cEntryId = entryId calendarEntry in
     do
        mUser <- query (UserAcid.UserById (CalendarEntry.userId calendarEntry))
-       deleteCalendarEntryFromUser (fromJust mUser) cEntryId
+       UserRepo.deleteCalendarEntryFromUser (fromJust mUser) cEntryId
        CalendarTaskRepo.deleteCalendarsTasks calendarEntry
        deleteCalendar [cEntryId]
-
-deleteCalendarEntryFromUser :: (HasAcidState m UserAcid.UserList, MonadIO m) =>
-                                   User -> EntryId -> m ()
-deleteCalendarEntryFromUser user entryId =
-    let updatedUser = user {calendarEntries = delete entryId (calendarEntries user)} in
-        update $ UserAcid.UpdateUser updatedUser
 
 deleteCalendar :: (HasAcidState m CalendarAcid.EntryList, MonadIO m) =>
                    [EntryId] -> m ()

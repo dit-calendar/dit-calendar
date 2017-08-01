@@ -39,9 +39,10 @@ library
                        Data.Repository.Acid.TaskAcid,
                        Data.Repository.UserRepo,
                        Data.Repository.CalendarRepo,
-                       Data.Repository.CalendarTaskRepo,
                        Data.Repository.TaskRepo,
                        Data.Repository.UserTaskRepo,
+                       Data.Repository.CalendarTaskRepo,
+                       Data.Repository.UserCalendarRepo,
                        AppStart
   build-depends:
                        base >=4.9 && <4.10,

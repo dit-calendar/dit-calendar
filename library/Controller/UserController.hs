@@ -4,10 +4,11 @@ import Happstack.Server         ( ok, toResponse, lookRead
                                 , Method(GET), method)
 import Happstack.Foundation     ( query, update )
 
-import Data.Domain.User              as User      ( User(..))
+import Data.Domain.User                      as User      ( User(..))
 import Data.Domain.Types             ( UserId, EntryId )
-import Data.Repository.Acid.UserAcid as UserAcid
-import Data.Repository.UserRepo      as UserRepo
+import Data.Repository.Acid.UserAcid         as UserAcid
+import Data.Repository.UserRepo              as UserRepo
+import Data.Repository.UserCalendarRepo      as UserCalendarRepo
 import Controller.AcidHelper    ( CtrlV )
 
 --handler for userPage
@@ -57,7 +58,7 @@ deleteUser i = do
         Nothing ->
             ok $ toResponse $ "Could not find a user with id " ++ show i
         (Just u) -> do
-            UserRepo.deleteUser u
+            UserCalendarRepo.deleteUser u
             ok $ toResponse $ "User with id:" ++ show i ++ "deleted"
 
 printUsersList :: [User] -> String
