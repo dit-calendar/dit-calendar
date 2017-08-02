@@ -1,7 +1,9 @@
 {-# LANGUAGE DeriveDataTypeable, TemplateHaskell, TypeFamilies,
   RecordWildCards #-}
 
-module Data.Repository.Acid.UserAcid where
+module Data.Repository.Acid.UserAcid 
+    (initialUserListState, UserList(..), NewUser(..), UserById(..), AllUsers(..),
+    GetUserList(..), UpdateUser(..), DeleteUser(..)) where
 
 import Prelude                  hiding ( head )
 
@@ -15,8 +17,8 @@ import Data.IxSet               ( Indexable(..), IxSet(..), (@=)
                                 , Proxy(..), getOne, ixFun, ixSet
                                 , toList, getEQ, insert, updateIx, deleteIx )
 
-import Data.Domain.User              ( User(..) )
-import Data.Domain.Types             ( UserId )
+import Data.Domain.User         ( User(..) )
+import Data.Domain.Types        ( UserId )
 import Happstack.Foundation     ( update )
 
 

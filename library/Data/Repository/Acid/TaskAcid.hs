@@ -1,7 +1,9 @@
 {-# LANGUAGE DeriveDataTypeable, TemplateHaskell, TypeFamilies,
   RecordWildCards #-}
 
-module Data.Repository.Acid.TaskAcid where
+module Data.Repository.Acid.TaskAcid 
+    (initialTaskListState, TaskList(..), NewTask(..), TaskById(..), AllTasks(..),
+    GetTaskList(..), UpdateTask(..), DeleteTask(..)) where
 
 import Prelude                  hiding ( head )
 
@@ -15,8 +17,8 @@ import Data.IxSet               ( Indexable(..), IxSet(..), (@=)
                                 , Proxy(..), getOne, ixFun, ixSet
                                 , toList, getEQ, insert, updateIx, deleteIx )
 
-import Data.Domain.Task              ( Task(..) )
-import Data.Domain.Types             ( TaskId )
+import Data.Domain.Task         ( Task(..) )
+import Data.Domain.Types        ( TaskId )
 import Happstack.Foundation     ( update )
 
 
