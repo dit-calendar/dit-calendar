@@ -13,6 +13,7 @@ import Data.Repository.Acid.UserAcid     as UserAcid
 import Data.Repository.TaskRepo          as TaskRepo
 import Data.Repository.UserTaskRepo      as UserTaskRepo
 import Data.Repository.CalendarRepo      as CalendarRepo
+import Data.Repository.CalendarTaskRepo  as CalendarTaskRepo
 import Controller.AcidHelper     ( CtrlV )
 
 --handler for taskPage
@@ -35,7 +36,7 @@ createTask calendarId description =
                 ok $ toResponse $ "Could not find a calendarEntry with id " ++ show calendarId
             (Just u) ->
                 do
-                    t <- TaskRepo.createTask u description
+                    t <- CalendarTaskRepo.createTask u description
                     ok $ toResponse $ "Task created: " ++ show (Task.taskId t) ++ "to CalendarEntry: " ++ show calendarId
 
 

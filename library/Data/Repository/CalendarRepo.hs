@@ -2,16 +2,14 @@
 
 module Data.Repository.CalendarRepo where
 
-import Happstack.Foundation     ( query, update, HasAcidState )
+import Happstack.Foundation     ( update, HasAcidState )
 import Control.Monad.IO.Class
 import Data.List                ( delete )
-import Data.Maybe               ( fromJust )
 
 import Data.Domain.User                     as User
 import Data.Domain.CalendarEntry            as CalendarEntry
 import Data.Domain.Task                     as Task
-import Data.Domain.Types        ( UserId, EntryId )
-import Data.Repository.CalendarTaskRepo     as CalendarTaskRepo
+import Data.Domain.Types        ( UserId, EntryId, TaskId )
 import Data.Repository.UserRepo             as UserRepo
 import Data.Repository.Acid.UserAcid        as UserAcid
 import Data.Repository.Acid.TaskAcid        as TaskAcid
@@ -24,15 +22,6 @@ createEntry description user = do
     calendarEntry <- update (CalendarAcid.NewEntry description $ User.userId user)
     UserRepo.addCalendarEntryToUser user $ CalendarEntry.entryId calendarEntry
     return calendarEntry
-
-removeCalendar :: (HasAcidState m EntryList, HasAcidState m UserAcid.UserList,
-      HasAcidState m TaskList, MonadIO m) => CalendarEntry -> m ()
-removeCalendar calendarEntry = let cEntryId = entryId calendarEntry in
-    do
-       mUser <- query (UserAcid.UserById (CalendarEntry.userId calendarEntry))
-       UserRepo.deleteCalendarEntryFromUser (fromJust mUser) cEntryId
-       CalendarTaskRepo.deleteCalendarsTasks calendarEntry
-       deleteCalendar [cEntryId]
 
 deleteCalendar :: (HasAcidState m CalendarAcid.EntryList, MonadIO m) =>
                    [EntryId] -> m ()
@@ -49,4 +38,10 @@ deleteTaskFromCalendarEntry :: (HasAcidState m CalendarAcid.EntryList, MonadIO m
                 Int -> CalendarEntry -> m ()
 deleteTaskFromCalendarEntry taskId calendarEntry =
   let updatedCalendarEntry = calendarEntry {calendarTasks = delete taskId (calendarTasks calendarEntry)} in
+        update $ CalendarAcid.UpdateEntry updatedCalendarEntry
+
+addTaskToCalendarEntry :: (HasAcidState m CalendarAcid.EntryList, MonadIO m) =>
+    TaskId -> CalendarEntry -> m ()
+addTaskToCalendarEntry taskId calendarEntry =
+    let updatedCalendarEntry = calendarEntry {calendarTasks = calendarTasks calendarEntry ++ [taskId]} in
         update $ CalendarAcid.UpdateEntry updatedCalendarEntry
