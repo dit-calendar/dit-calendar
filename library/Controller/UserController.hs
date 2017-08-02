@@ -6,9 +6,11 @@ import Happstack.Foundation     ( query, update )
 
 import Data.Domain.User                      as User      ( User(..))
 import Data.Domain.Types             ( UserId, EntryId )
-import Data.Repository.Acid.UserAcid         as UserAcid
-import Data.Repository.UserRepo              as UserRepo
-import Data.Repository.UserCalendarRepo      as UserCalendarRepo
+
+import qualified Data.Repository.Acid.UserAcid         as UserAcid
+import qualified Data.Repository.UserRepo              as UserRepo
+import qualified Data.Repository.UserCalendarRepo      as UserCalendarRepo
+
 import Controller.AcidHelper    ( CtrlV )
 
 --handler for userPage

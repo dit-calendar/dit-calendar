@@ -2,12 +2,12 @@
 
 module Route.PageEnum where
 
-import Prelude                 hiding ( head )
+import Prelude                hiding ( head )
 
 import Data.Data                     ( Data, Typeable )
 import Web.Routes.TH                 ( derivePathInfo )
 
-import Data.Domain.Types                  ( UserId, EntryId, TaskId )
+import Data.Domain.Types             ( UserId, EntryId, TaskId )
 
 
 --A url type

@@ -1,6 +1,6 @@
 {-# LANGUAGE MultiParamTypeClasses, FlexibleInstances #-}
 
-module Controller.AcidHelper where
+module Controller.AcidHelper ( CtrlV, withAcid ) where
 
 import Prelude              hiding ( head, id )
 import System.FilePath      ( (</>) )
@@ -12,9 +12,9 @@ import Data.Acid.Local      ( createCheckpointAndClose )
 import Happstack.Server     ( Response )
 import Happstack.Foundation ( FoundationT, HasAcidState(..), FoundationT', getAcidSt )
 
-import Data.Repository.Acid.UserAcid          as UserAcid
-import Data.Repository.Acid.CalendarAcid      as CalendarAcid
-import Data.Repository.Acid.TaskAcid          as TaskAcid
+import qualified Data.Repository.Acid.UserAcid          as UserAcid
+import qualified Data.Repository.Acid.CalendarAcid      as CalendarAcid
+import qualified Data.Repository.Acid.TaskAcid          as TaskAcid
 import Route.PageEnum       ( SiteMap )
 
 

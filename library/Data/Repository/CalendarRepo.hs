@@ -6,17 +6,18 @@ import Happstack.Foundation     ( update, HasAcidState )
 import Control.Monad.IO.Class
 import Data.List                ( delete )
 
-import Data.Domain.User                     as User
-import Data.Domain.CalendarEntry            as CalendarEntry
-import Data.Domain.Task                     as Task
+import Data.Domain.User                      as User
+import Data.Domain.CalendarEntry             as CalendarEntry
+import Data.Domain.Task                      as Task
 import Data.Domain.Types        ( UserId, EntryId, TaskId )
-import Data.Repository.UserRepo             as UserRepo
-import Data.Repository.Acid.UserAcid        as UserAcid
-import Data.Repository.Acid.TaskAcid        as TaskAcid
-import Data.Repository.Acid.CalendarAcid    as CalendarAcid
+
+import qualified Data.Repository.UserRepo             as UserRepo
+import qualified Data.Repository.Acid.UserAcid        as UserAcid
+import qualified Data.Repository.Acid.TaskAcid        as TaskAcid
+import qualified Data.Repository.Acid.CalendarAcid    as CalendarAcid
 
 
-createEntry :: (HasAcidState m EntryList, HasAcidState m UserAcid.UserList,
+createEntry :: (HasAcidState m CalendarAcid.EntryList, HasAcidState m UserAcid.UserList,
             MonadIO m) => String -> User -> m CalendarEntry
 createEntry description user = do
     calendarEntry <- update (CalendarAcid.NewEntry description $ User.userId user)

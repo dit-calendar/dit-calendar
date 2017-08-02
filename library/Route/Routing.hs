@@ -1,16 +1,18 @@
-module Route.Routing where
+module Route.Routing ( route ) where
 
 import Happstack.Server          ( ok, toResponse, Method(GET, POST, DELETE, PUT), nullDir
                                  , Request(rqMethod), askRq , BodyPolicy(..)
                                  , decodeBody, defaultBodyPolicy, look)
 
-import Controller.AcidHelper     ( CtrlV )
-import Controller.UserController      as UserController
-import Controller.HomeController      as HomeController
-import Controller.CalendarController  as CalendarController
-import Controller.TaskController      as TaskController
-import Route.PageEnum            ( SiteMap(..) )
 import Data.Domain.Types         ( UserId, EntryId, TaskId )
+import Route.PageEnum            ( SiteMap(..) )
+
+import Controller.AcidHelper     ( CtrlV )
+import qualified Controller.UserController      as UserController
+import qualified Controller.HomeController      as HomeController
+import qualified Controller.CalendarController  as CalendarController
+import qualified Controller.TaskController      as TaskController
+
 
 
 myPolicy :: BodyPolicy

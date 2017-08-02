@@ -7,13 +7,15 @@ import Happstack.Foundation     ( query, update )
 import Data.Domain.Task                  as Task      ( Task(..))
 import Data.Domain.Types        ( TaskId, EntryId, UserId )
 import Data.Domain.CalendarEntry         as CalendarEntry
-import Data.Repository.Acid.TaskAcid     as TaskAcid
-import Data.Repository.Acid.CalendarAcid as CalendarAcid
-import Data.Repository.Acid.UserAcid     as UserAcid
-import Data.Repository.TaskRepo          as TaskRepo
-import Data.Repository.UserTaskRepo      as UserTaskRepo
-import Data.Repository.CalendarRepo      as CalendarRepo
-import Data.Repository.CalendarTaskRepo  as CalendarTaskRepo
+
+import qualified Data.Repository.Acid.TaskAcid     as TaskAcid
+import qualified Data.Repository.Acid.CalendarAcid as CalendarAcid
+import qualified Data.Repository.Acid.UserAcid     as UserAcid
+import qualified Data.Repository.TaskRepo          as TaskRepo
+import qualified Data.Repository.UserTaskRepo      as UserTaskRepo
+import qualified Data.Repository.CalendarRepo      as CalendarRepo
+import qualified Data.Repository.CalendarTaskRepo  as CalendarTaskRepo
+
 import Controller.AcidHelper     ( CtrlV )
 
 --handler for taskPage

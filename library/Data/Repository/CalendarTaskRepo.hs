@@ -9,12 +9,14 @@ import Data.Maybe               ( fromJust )
 
 import Data.Domain.CalendarEntry            as CalendarEntry
 import Data.Domain.Types        ( UserId, EntryId )
-import Data.Repository.TaskRepo             as TaskRepo
-import Data.Repository.CalendarRepo         as CalendarRepo
-import Data.Repository.Acid.UserAcid        as UserAcid
-import Data.Repository.Acid.TaskAcid        as TaskAcid
-import Data.Repository.Acid.CalendarAcid    as CalendarAcid
 import Data.Domain.Task                     as Task
+
+import qualified Data.Repository.TaskRepo             as TaskRepo
+import qualified Data.Repository.CalendarRepo         as CalendarRepo
+import qualified Data.Repository.Acid.UserAcid        as UserAcid
+import qualified Data.Repository.Acid.TaskAcid        as TaskAcid
+import qualified Data.Repository.Acid.CalendarAcid    as CalendarAcid
+
 
 
 deleteCalendarsTasks :: (HasAcidState m UserAcid.UserList, HasAcidState m TaskAcid.TaskList, MonadIO m)

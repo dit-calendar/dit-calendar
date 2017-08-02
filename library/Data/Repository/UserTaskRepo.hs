@@ -7,11 +7,13 @@ import Control.Monad.IO.Class
 import Data.List                  ( delete )
 import Data.Maybe                 ( fromJust )
 
-import Data.Repository.Acid.TaskAcid          as TaskAcid
-import Data.Repository.Acid.UserAcid          as UserAcid
 import Data.Domain.Task                       as Task
 import Data.Domain.User                       as User
 import Data.Domain.Types          ( UserId, TaskId, EntryId )
+
+import qualified Data.Repository.Acid.TaskAcid          as TaskAcid
+import qualified Data.Repository.Acid.UserAcid          as UserAcid
+
 
 addUserToTask :: (HasAcidState m TaskAcid.TaskList, HasAcidState m UserAcid.UserList, MonadIO m) =>
     Task -> UserId -> m ()

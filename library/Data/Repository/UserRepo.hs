@@ -2,17 +2,19 @@
 
 module Data.Repository.UserRepo where
 
-import Prelude                  hiding ( head )
-import Happstack.Foundation     ( update, HasAcidState )
+import Prelude hiding ( head )
+import Happstack.Foundation              ( update, HasAcidState )
 import Control.Monad.IO.Class
-import Data.List                ( delete )
+import Data.List                         ( delete )
 
-import Data.Domain.User              ( User(..) )
-import Data.Repository.Acid.UserAcid       as UserAcid
-import Data.Repository.Acid.CalendarAcid ( EntryList )
-import Data.Domain.Types        ( EntryId )
+import Data.Domain.User                  ( User(..) )
+import Data.Domain.Types                 ( EntryId )
 
-updateUser :: (MonadIO m, HasAcidState m EntryList, HasAcidState m UserList) =>
+import qualified Data.Repository.Acid.UserAcid       as UserAcid
+import qualified Data.Repository.Acid.CalendarAcid   as CalendarAcid
+
+
+updateUser :: (MonadIO m, HasAcidState m CalendarAcid.EntryList, HasAcidState m UserAcid.UserList) =>
      User -> String -> m ()
 updateUser user newName =
     let updatedUser = user {name = newName} in
