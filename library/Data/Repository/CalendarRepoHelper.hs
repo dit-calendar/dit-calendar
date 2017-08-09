@@ -19,3 +19,12 @@ createEntry description user = do
     calendarEntry <- CalendarRepo.createEntry description user
     UserRepo.addCalendarEntryToUser user $ CalendarEntry.entryId calendarEntry
     return calendarEntry
+
+removeCalendar :: (HasAcidState m CalendarAcid.EntryList, HasAcidState m UserAcid.UserList,
+      HasAcidState m TaskAcid.TaskList, MonadIO m) => CalendarEntry -> m ()
+removeCalendar calendarEntry = let cEntryId = entryId calendarEntry in
+    do
+       mUser <- query (UserAcid.UserById (CalendarEntry.userId calendarEntry))
+       UserRepo.deleteCalendarEntryFromUser (fromJust mUser) cEntryId
+       CalendarTaskRepo.deleteCalendarsTasks calendarEntry
+       CalendarRepo.deleteCalendar [cEntryId]

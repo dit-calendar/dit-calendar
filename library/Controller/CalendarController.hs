@@ -12,7 +12,6 @@ import qualified Data.Repository.Acid.CalendarAcid        as CalendarAcid
 import qualified Data.Repository.Acid.UserAcid            as UserAcid
 import qualified Data.Repository.CalendarRepo             as CalendarRepo
 import qualified Data.Repository.CalendarRepoHelper       as CalendarRepoHelper
-import qualified Data.Repository.UserCalendarRepo         as UserCalendarRepo
 
 import Controller.AcidHelper    ( CtrlV )
 
@@ -46,7 +45,7 @@ deleteCalendarEntry i = do
         Nothing ->
             ok $ toResponse $ "Could not find a CalendarEntry with id " ++ show i
         (Just u) -> do
-            UserCalendarRepo.removeCalendar u
+            CalendarRepoHelper.removeCalendar u
             ok $ toResponse $ "CalendarEntry with id:" ++ show i ++ "deleted"
 
 updateCalendarEntry :: EntryId -> String -> CtrlV
