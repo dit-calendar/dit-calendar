@@ -1,22 +1,19 @@
 module Data.Repository.Acid.TaskAcidSpec (spec) where
 
 import Test.Hspec
-
 import Data.Maybe           ( isJust, fromJust, isNothing)
-import Data.Acid            ( AcidState, openLocalState, closeAcidState, query, update )
-import Control.Exception    ( bracket )
+import Data.Acid            ( AcidState, query, update )
 import Data.IxSet           ( IxSet(..), insert, empty )
 
+import Data.Repository.Acid.DataBaseHelper   ( createDatabaseConnection )
 import Data.Repository.Acid.TaskAcid as TaskAcid
 import Data.Domain.Task as Task
 
---problem here is what we create a connection to our database
 withDatabaseConnection :: (AcidState TaskAcid.TaskList -> IO ()) -> IO ()
-withDatabaseConnection = 
-    bracket (openLocalState TaskAcid.TaskList{
+withDatabaseConnection = createDatabaseConnection TaskAcid.TaskList{
       nextTaskId = 1,
-      tasks = insert Task{ Task.description="Foo", Task.taskId=0, belongingUsers=[] } empty })
-            closeAcidState
+      tasks = insert Task{ Task.description="Foo", Task.taskId=0, belongingUsers=[] } empty
+    }
 
 spec :: Spec
 spec =

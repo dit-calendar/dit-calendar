@@ -1,22 +1,20 @@
 module Data.Repository.Acid.UserAcidSpec (spec) where
 
 import Test.Hspec
-
 import Data.Maybe           ( isJust, fromJust, isNothing)
-import Data.Acid            ( AcidState, openLocalState, closeAcidState, query, update )
-import Control.Exception    ( bracket )
+import Data.Acid            ( AcidState, query, update )
 import Data.IxSet           ( IxSet(..), insert, empty )
 
+import Data.Repository.Acid.DataBaseHelper   ( createDatabaseConnection )
 import Data.Repository.Acid.UserAcid as UserAcid
 import Data.Domain.User as User
 
 --problem here is what we create a connection to our database
 withDatabaseConnection :: (AcidState UserAcid.UserList -> IO ()) -> IO ()
-withDatabaseConnection = 
-    bracket (openLocalState UserAcid.UserList{
+withDatabaseConnection = createDatabaseConnection UserAcid.UserList{
       nextUserId = 1,
-      users = insert User{ User.name="Foo", User.userId=0, calendarEntries=[], belongingTasks=[] } empty})
-            closeAcidState
+      users      = insert User{ User.name="Foo", User.userId=0, calendarEntries=[], belongingTasks=[] } empty
+    }
 
 spec :: Spec
 spec =

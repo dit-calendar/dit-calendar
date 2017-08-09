@@ -1,25 +1,20 @@
 module Data.Repository.Acid.CalendarAcidSpec (spec) where
 
 import Test.Hspec
-
 import Data.Maybe                 ( isJust, fromJust, isNothing)
-import Data.Acid                  ( AcidState, openLocalState, closeAcidState, query, update )
-import Control.Exception          ( bracket )
+import Data.Acid                  ( AcidState, query, update )
 import Data.IxSet                 ( IxSet(..), insert, empty )
-import qualified Data.Map as Map  ( Map, insert, empty )
 
+import Data.Repository.Acid.DataBaseHelper   ( createDatabaseConnection )
 import Data.Repository.Acid.CalendarAcid  as CalendarAcid
 import Data.Domain.CalendarEntry          as CalendarEntry
 
 --problem here is what we create a connection to our database
 withDatabaseConnection :: (AcidState CalendarAcid.EntryList -> IO ()) -> IO ()
-withDatabaseConnection =
-  let firstCalendarEntry = CalendarEntry{ CalendarEntry.description="Foo", CalendarEntry.entryId=0, userId=0, calendarTasks=[] } in
-      bracket (openLocalState CalendarAcid.EntryList{
-        nextEntryId            = 1
-        , entrySet             = insert firstCalendarEntry empty
-        })
-              closeAcidState
+withDatabaseConnection = createDatabaseConnection CalendarAcid.EntryList{
+        nextEntryId    = 1
+        , entrySet     = insert CalendarEntry{ CalendarEntry.description="Foo", CalendarEntry.entryId=0, userId=0, calendarTasks=[] }  empty
+        }
 
 spec :: Spec
 spec =
