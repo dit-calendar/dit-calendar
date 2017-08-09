@@ -14,6 +14,13 @@ import qualified Data.Repository.Acid.UserAcid       as UserAcid
 import qualified Data.Repository.Acid.CalendarAcid   as CalendarAcid
 
 
+deleteUser :: (MonadIO m, HasAcidState m CalendarAcid.EntryList, HasAcidState m UserAcid.UserList) =>
+     User -> m ()
+deleteUser user =
+    let calendarToDelete = calendarEntries user in
+        do
+            update $ UserAcid.DeleteUser (Data.Domain.User.userId user)
+
 updateUser :: (MonadIO m, HasAcidState m CalendarAcid.EntryList, HasAcidState m UserAcid.UserList) =>
      User -> String -> m ()
 updateUser user newName =

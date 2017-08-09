@@ -18,14 +18,6 @@ import qualified Data.Repository.CalendarRepo        as CalendarRepo
 import qualified Data.Repository.UserRepo            as UserRepo
 
 
-deleteUser :: (MonadIO m, HasAcidState m CalendarAcid.EntryList, HasAcidState m UserAcid.UserList) =>
-     User -> m ()
-deleteUser user =
-    let calendarToDelete = calendarEntries user in
-        do
-            CalendarRepo.deleteCalendar calendarToDelete
-            update $ UserAcid.DeleteUser (Data.Domain.User.userId user)
-
 removeCalendar :: (HasAcidState m CalendarAcid.EntryList, HasAcidState m UserAcid.UserList,
       HasAcidState m TaskAcid.TaskList, MonadIO m) => CalendarEntry -> m ()
 removeCalendar calendarEntry = let cEntryId = entryId calendarEntry in
