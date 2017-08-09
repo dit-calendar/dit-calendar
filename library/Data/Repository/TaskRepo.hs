@@ -8,7 +8,6 @@ import Control.Monad.IO.Class
 import Data.Domain.CalendarEntry               as CalendarEntry
 import Data.Domain.Task                        as Task
 
-import qualified Data.Repository.UserTaskRepo           as UserTaskRepo
 import qualified Data.Repository.Acid.TaskAcid          as TaskAcid
 import qualified Data.Repository.Acid.UserAcid          as UserAcid
 import qualified Data.Repository.Acid.CalendarAcid      as CalendarAcid
@@ -25,4 +24,11 @@ deleteTask :: (HasAcidState m TaskAcid.TaskList, HasAcidState m UserAcid.UserLis
                    Task -> m ()
 deleteTask task = do
     update $ TaskAcid.DeleteTask $ taskId task
-    UserTaskRepo.deleteTaskFromTasksUsers task
+
+createTask :: (HasAcidState m CalendarAcid.EntryList,
+      HasAcidState m TaskAcid.TaskList, MonadIO m) =>
+    CalendarEntry -> String -> m Task
+createTask calendarEntry description =
+    do
+        mTask <- update $ TaskAcid.NewTask description
+        return mTask

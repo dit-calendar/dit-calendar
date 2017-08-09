@@ -12,9 +12,10 @@ import qualified Data.Repository.Acid.TaskAcid     as TaskAcid
 import qualified Data.Repository.Acid.CalendarAcid as CalendarAcid
 import qualified Data.Repository.Acid.UserAcid     as UserAcid
 import qualified Data.Repository.TaskRepo          as TaskRepo
+import qualified Data.Repository.TaskRepoHelper    as TaskRepoHelper
 import qualified Data.Repository.UserTaskRepo      as UserTaskRepo
 import qualified Data.Repository.CalendarRepo      as CalendarRepo
-import qualified Data.Repository.CalendarTaskRepo  as CalendarTaskRepo
+import qualified Data.Repository.TaskRepoHelper    as TaskRepoHelper
 
 import Controller.AcidHelper     ( CtrlV )
 
@@ -38,7 +39,7 @@ createTask calendarId description =
                 ok $ toResponse $ "Could not find a calendarEntry with id " ++ show calendarId
             (Just u) ->
                 do
-                    t <- CalendarTaskRepo.createTask u description
+                    t <- TaskRepoHelper.createTask u description
                     ok $ toResponse $ "Task created: " ++ show (Task.taskId t) ++ "to CalendarEntry: " ++ show calendarId
 
 
@@ -98,5 +99,5 @@ deleteTask entryId taskId = do
                     ok $ toResponse $ "Could not find a task with id " ++ show taskId
                 (Just t) -> do
                     CalendarRepo.deleteTaskFromCalendarEntry taskId e
-                    TaskRepo.deleteTask t
+                    TaskRepoHelper.deleteTask t
                     ok $ toResponse $ "Task with id:" ++ show taskId ++ "deleted"
