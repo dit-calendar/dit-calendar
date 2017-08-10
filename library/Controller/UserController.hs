@@ -50,7 +50,7 @@ updateUser id name =
             Nothing ->
                 ok $ toResponse $ "Could not find a user with id " ++ show id
             (Just u) -> do
-                 UserRepo.updateUser u name
+                 UserRepo.updateName u name
                  ok $ toResponse $ "User with id:" ++ show id ++ "updated"
 
 deleteUser :: UserId -> CtrlV

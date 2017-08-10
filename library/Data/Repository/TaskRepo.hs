@@ -19,12 +19,9 @@ updateTask task newDescription =
 
 deleteTask :: (HasAcidState m TaskAcid.TaskList, MonadIO m) =>
                    Task -> m ()
-deleteTask task = do
-    update $ TaskAcid.DeleteTask $ taskId task
+deleteTask task = update $ TaskAcid.DeleteTask $ taskId task
 
 createTask :: (HasAcidState m TaskAcid.TaskList, MonadIO m) =>
               CalendarEntry -> String -> m Task
 createTask calendarEntry description =
-    do
-        mTask <- update $ TaskAcid.NewTask description
-        return mTask
+	update $ TaskAcid.NewTask description

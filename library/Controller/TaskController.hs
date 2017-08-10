@@ -12,7 +12,6 @@ import qualified Data.Repository.Acid.TaskAcid     as TaskAcid
 import qualified Data.Repository.Acid.CalendarAcid as CalendarAcid
 import qualified Data.Repository.Acid.UserAcid     as UserAcid
 import qualified Data.Repository.TaskRepo          as TaskRepo
-import qualified Data.Repository.TaskRepoHelper    as TaskRepoHelper
 import qualified Data.Repository.UserTaskRepo      as UserTaskRepo
 import qualified Data.Repository.CalendarRepo      as CalendarRepo
 import qualified Data.Repository.TaskRepoHelper    as TaskRepoHelper

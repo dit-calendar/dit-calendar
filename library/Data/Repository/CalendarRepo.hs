@@ -15,9 +15,8 @@ import qualified Data.Repository.Acid.CalendarAcid    as CalendarAcid
 
 createEntry :: (HasAcidState m CalendarAcid.EntryList, MonadIO m) =>
                 String -> User -> m CalendarEntry
-createEntry description user = do
-    calendarEntry <- update (CalendarAcid.NewEntry description $ User.userId user)
-    return calendarEntry
+createEntry description user =
+    update (CalendarAcid.NewEntry description $ User.userId user)
 
 deleteCalendar :: (HasAcidState m CalendarAcid.EntryList, MonadIO m) =>
                    [EntryId] -> m ()
