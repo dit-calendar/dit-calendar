@@ -1,12 +1,16 @@
 {-# LANGUAGE FlexibleContexts #-}
-module Data.Repository.TaskRepoHelper where
+module Data.Repository.TaskRepoHelper 
+    ( deleteTask, createTask, addUserToTask, removeUserFromTask ) where
 
-import Happstack.Foundation     ( HasAcidState )
+import Happstack.Foundation     ( HasAcidState, query, update )
 import Data.Domain.Task                      as Task
 import Data.Domain.CalendarEntry             as CalendarEntry
 import Control.Monad.IO.Class
+import Data.Maybe               ( fromJust )
+import Data.List                ( delete )
 
-import qualified Data.Repository.UserTaskRepo         as UserTaskRepo
+import Data.Domain.Types        ( UserId )
+import qualified Data.Repository.UserRepo             as UserRepo
 import qualified Data.Repository.TaskRepo             as TaskRepo
 import qualified Data.Repository.CalendarRepo         as CalendarRepo
 
@@ -18,7 +22,7 @@ deleteTask :: (HasAcidState m TaskAcid.TaskList, HasAcidState m UserAcid.UserLis
                    Task -> m ()
 deleteTask task = do
     TaskRepo.deleteTask task
-    UserTaskRepo.deleteTaskFromTasksUsers task
+    deleteTaskFromAllUsers task
 
 createTask :: (HasAcidState m CalendarAcid.EntryList,
       HasAcidState m TaskAcid.TaskList, MonadIO m) =>
@@ -28,3 +32,30 @@ createTask calendarEntry description =
         mTask <- TaskRepo.createTask calendarEntry description
         CalendarRepo.addTaskToCalendarEntry (Task.taskId mTask) calendarEntry
         return mTask
+
+deleteTaskFromAllUsers :: (HasAcidState m UserAcid.UserList, MonadIO m) =>
+    Task -> m ()
+deleteTaskFromAllUsers task =
+    foldr (\ x ->
+      (>>) (do
+        mUser <- query (UserAcid.UserById x)
+        UserRepo.deleteTaskFromUser x (fromJust mUser) ))
+    (return ()) $ Task.belongingUsers task
+
+addUserToTask :: (HasAcidState m TaskAcid.TaskList, HasAcidState m UserAcid.UserList, MonadIO m) =>
+    Task -> UserId -> m ()
+addUserToTask task userId =
+    let updatedTask = task {belongingUsers = belongingUsers task ++ [userId]} in
+        do
+            mUser <- query (UserAcid.UserById userId)
+            UserRepo.addTaskToUser (taskId task) (fromJust mUser)
+            update $ TaskAcid.UpdateTask updatedTask
+
+removeUserFromTask :: (HasAcidState m TaskAcid.TaskList, HasAcidState m UserAcid.UserList, MonadIO m) =>
+                      Task -> UserId -> m ()
+removeUserFromTask task userId =
+    let updatedTask = task {belongingUsers = delete userId (belongingUsers task)} in
+        do
+            mUser <- query (UserAcid.UserById userId)
+            UserRepo.deleteTaskFromUser (taskId task) (fromJust mUser)
+            update $ TaskAcid.UpdateTask updatedTask
