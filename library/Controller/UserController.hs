@@ -9,7 +9,7 @@ import Data.Domain.Types             ( UserId, EntryId )
 
 import qualified Data.Repository.Acid.UserAcid         as UserAcid
 import qualified Data.Repository.UserRepo              as UserRepo
-import qualified Data.Repository.UserCalendarRepo      as UserCalendarRepo
+import qualified Data.Repository.UserRepoHelper        as UserRepoHelper
 
 import Controller.AcidHelper    ( CtrlV )
 
@@ -50,7 +50,7 @@ updateUser id name =
             Nothing ->
                 ok $ toResponse $ "Could not find a user with id " ++ show id
             (Just u) -> do
-                 UserRepo.updateUser u name
+                 UserRepo.updateName u name
                  ok $ toResponse $ "User with id:" ++ show id ++ "updated"
 
 deleteUser :: UserId -> CtrlV
@@ -60,7 +60,7 @@ deleteUser i = do
         Nothing ->
             ok $ toResponse $ "Could not find a user with id " ++ show i
         (Just u) -> do
-            UserCalendarRepo.deleteUser u
+            UserRepoHelper.deleteUser u
             ok $ toResponse $ "User with id:" ++ show i ++ "deleted"
 
 printUsersList :: [User] -> String

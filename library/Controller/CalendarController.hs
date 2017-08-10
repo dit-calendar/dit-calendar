@@ -11,7 +11,7 @@ import Data.Domain.Types         ( EntryId, UserId, TaskId )
 import qualified Data.Repository.Acid.CalendarAcid        as CalendarAcid
 import qualified Data.Repository.Acid.UserAcid            as UserAcid
 import qualified Data.Repository.CalendarRepo             as CalendarRepo
-import qualified Data.Repository.UserCalendarRepo         as UserCalendarRepo
+import qualified Data.Repository.CalendarRepoHelper       as CalendarRepoHelper
 
 import Controller.AcidHelper    ( CtrlV )
 
@@ -35,7 +35,7 @@ createCalendarEntry userId description =
                 ok $ toResponse $ "Could not find a user with id " ++ show userId
             (Just u) ->
                 do
-                    entry <- CalendarRepo.createEntry description u
+                    entry <- CalendarRepoHelper.createEntry description u
                     ok $ toResponse $ "Add Entry: " ++ show (CalendarEntry.entryId entry) ++ "to User: " ++ show userId
 
 deleteCalendarEntry :: EntryId -> CtrlV
@@ -45,7 +45,7 @@ deleteCalendarEntry i = do
         Nothing ->
             ok $ toResponse $ "Could not find a CalendarEntry with id " ++ show i
         (Just u) -> do
-            UserCalendarRepo.removeCalendar u
+            CalendarRepoHelper.removeCalendar u
             ok $ toResponse $ "CalendarEntry with id:" ++ show i ++ "deleted"
 
 updateCalendarEntry :: EntryId -> String -> CtrlV
@@ -56,5 +56,5 @@ updateCalendarEntry id description =
             Nothing ->
                 ok $ toResponse $ "Could not find a CalendarEntry with id " ++ show id
             (Just c) -> do
-                 CalendarRepo.updateCalendar c description
+                 CalendarRepo.updateDescription c description
                  ok $ toResponse $ "CalendarEntry with id:" ++ show id ++ "updated"

@@ -8,21 +8,20 @@ import Control.Monad.IO.Class
 import Data.Domain.CalendarEntry               as CalendarEntry
 import Data.Domain.Task                        as Task
 
-import qualified Data.Repository.UserTaskRepo           as UserTaskRepo
 import qualified Data.Repository.Acid.TaskAcid          as TaskAcid
-import qualified Data.Repository.Acid.UserAcid          as UserAcid
-import qualified Data.Repository.Acid.CalendarAcid      as CalendarAcid
 
 
+updateTask :: (HasAcidState m TaskAcid.TaskList, MonadIO m) => Task -> m ()
+updateTask task = update $ TaskAcid.UpdateTask task
 
-updateTask :: (HasAcidState m CalendarAcid.EntryList, HasAcidState m TaskAcid.TaskList, MonadIO m) =>
+updateDescription :: (HasAcidState m TaskAcid.TaskList, MonadIO m) =>
                   Task -> String -> m ()
-updateTask task newDescription =
-    let updatedTask = task {Task.description = newDescription} in
-        update $ TaskAcid.UpdateTask updatedTask
+updateDescription task newDescription = updateTask task {Task.description = newDescription}
 
-deleteTask :: (HasAcidState m TaskAcid.TaskList, HasAcidState m UserAcid.UserList, MonadIO m) =>
+deleteTask :: (HasAcidState m TaskAcid.TaskList, MonadIO m) =>
                    Task -> m ()
-deleteTask task = do
-    update $ TaskAcid.DeleteTask $ taskId task
-    UserTaskRepo.deleteTaskFromTasksUsers task
+deleteTask task = update $ TaskAcid.DeleteTask $ taskId task
+
+createTask :: (HasAcidState m TaskAcid.TaskList, MonadIO m) =>
+              CalendarEntry -> String -> m Task
+createTask calendarEntry description = update $ TaskAcid.NewTask description
