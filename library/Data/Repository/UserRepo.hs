@@ -2,18 +2,21 @@
 
 module Data.Repository.UserRepo
     ( deleteUser, updateName, addCalendarEntryToUser, addTaskToUser
-    , deleteCalendarEntryFromUser, deleteTaskFromUser ) where
+    , deleteCalendarEntryFromUser, deleteTaskFromUser, getUser, createUser ) where
 
 import Prelude hiding ( head )
-import Happstack.Foundation              ( update, HasAcidState )
+import Happstack.Foundation              ( query, update, HasAcidState )
 import Control.Monad.IO.Class
 import Data.List                         ( delete )
+import Data.Maybe                        ( fromJust )
 
 import Data.Domain.User                  ( User(..) )
-import Data.Domain.Types                 ( EntryId, TaskId )
+import Data.Domain.Types                 ( EntryId, TaskId, UserId )
 
 import qualified Data.Repository.Acid.UserAcid       as UserAcid
 
+createUser :: (HasAcidState m UserAcid.UserList, MonadIO m) => String -> m User
+createUser name = update (UserAcid.NewUser name)
 
 deleteUser :: (MonadIO m, HasAcidState m UserAcid.UserList) =>
      User -> m ()
@@ -45,3 +48,8 @@ deleteTaskFromUser :: (HasAcidState m UserAcid.UserList, MonadIO m) =>
     TaskId -> User -> m ()
 deleteTaskFromUser taskId user =
     updateUser user {belongingTasks = delete taskId (belongingTasks user)}
+
+getUser :: (HasAcidState m UserAcid.UserList, MonadIO m) => UserId -> m User
+getUser userId = do
+        mUser <- query $ UserAcid.UserById userId
+        return $ fromJust mUser

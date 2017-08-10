@@ -1,12 +1,10 @@
 module Controller.TaskController where
 
-import Happstack.Server         ( ok, toResponse, lookRead 
-                                , Method(GET), method)
-import Happstack.Foundation     ( query, update )
+import Happstack.Server         ( ok, toResponse, Method(GET), method)
+import Happstack.Foundation     ( query )
 
 import Data.Domain.Task                  as Task      ( Task(..))
 import Data.Domain.Types        ( TaskId, EntryId, UserId )
-import Data.Domain.CalendarEntry         as CalendarEntry
 
 import qualified Data.Repository.Acid.TaskAcid     as TaskAcid
 import qualified Data.Repository.Acid.CalendarAcid as CalendarAcid

@@ -1,10 +1,8 @@
 module Controller.CalendarController where
 
-import Happstack.Server         ( ok, toResponse, lookRead 
-                                , Method(GET), method)
-import Happstack.Foundation     ( query, update )
+import Happstack.Server         ( ok, toResponse, Method(GET), method)
+import Happstack.Foundation     ( query )
 
-import Data.Domain.User                         as User
 import Data.Domain.CalendarEntry                as CalendarEntry    ( CalendarEntry(..) )
 import Data.Domain.Types         ( EntryId, UserId, TaskId )
 

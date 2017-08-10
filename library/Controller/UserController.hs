@@ -1,8 +1,7 @@
 module Controller.UserController where
 
-import Happstack.Server         ( ok, toResponse, lookRead 
-                                , Method(GET), method)
-import Happstack.Foundation     ( query, update )
+import Happstack.Server         ( ok, toResponse, Method(GET), method)
+import Happstack.Foundation     ( query )
 
 import Data.Domain.User                      as User      ( User(..))
 import Data.Domain.Types             ( UserId, EntryId )
@@ -39,7 +38,7 @@ usersPage =
 createUser :: String -> CtrlV
 createUser name =
     do
-        mUser <- update (UserAcid.NewUser name)
+        mUser <- UserRepo.createUser name
         ok $ toResponse $ "User created: " ++ show mUser
 
 updateUser :: UserId -> String -> CtrlV

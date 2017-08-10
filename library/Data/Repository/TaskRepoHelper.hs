@@ -2,11 +2,10 @@
 module Data.Repository.TaskRepoHelper 
     ( deleteTask, createTask, addUserToTask, removeUserFromTask ) where
 
-import Happstack.Foundation     ( HasAcidState, query, update )
+import Happstack.Foundation     ( HasAcidState )
 import Data.Domain.Task                      as Task
 import Data.Domain.CalendarEntry             as CalendarEntry
 import Control.Monad.IO.Class
-import Data.Maybe               ( fromJust )
 import Data.List                ( delete )
 
 import Data.Domain.Types        ( UserId )
@@ -38,24 +37,22 @@ deleteTaskFromAllUsers :: (HasAcidState m UserAcid.UserList, MonadIO m) =>
 deleteTaskFromAllUsers task =
     foldr (\ x ->
       (>>) (do
-        mUser <- query (UserAcid.UserById x)
-        UserRepo.deleteTaskFromUser x (fromJust mUser) ))
+        user <- UserRepo.getUser x
+        UserRepo.deleteTaskFromUser x user ))
     (return ()) $ Task.belongingUsers task
 
 addUserToTask :: (HasAcidState m TaskAcid.TaskList, HasAcidState m UserAcid.UserList, MonadIO m) =>
     Task -> UserId -> m ()
 addUserToTask task userId =
-    let updatedTask = task {belongingUsers = belongingUsers task ++ [userId]} in
-        do
-            mUser <- query (UserAcid.UserById userId)
-            UserRepo.addTaskToUser (taskId task) (fromJust mUser)
-            update $ TaskAcid.UpdateTask updatedTask
+    do
+        user <- UserRepo.getUser userId
+        UserRepo.addTaskToUser (taskId task) user
+        TaskRepo.updateTask task {belongingUsers = belongingUsers task ++ [userId]}
 
 removeUserFromTask :: (HasAcidState m TaskAcid.TaskList, HasAcidState m UserAcid.UserList, MonadIO m) =>
                       Task -> UserId -> m ()
 removeUserFromTask task userId =
-    let updatedTask = task {belongingUsers = delete userId (belongingUsers task)} in
         do
-            mUser <- query (UserAcid.UserById userId)
-            UserRepo.deleteTaskFromUser (taskId task) (fromJust mUser)
-            update $ TaskAcid.UpdateTask updatedTask
+            user <- UserRepo.getUser userId
+            UserRepo.deleteTaskFromUser (taskId task) user
+            TaskRepo.updateTask task {belongingUsers = delete userId (belongingUsers task)}

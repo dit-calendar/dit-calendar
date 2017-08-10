@@ -1,11 +1,10 @@
 {-# LANGUAGE FlexibleContexts #-}
 module Data.Repository.CalendarRepoHelper ( createEntry, removeCalendar ) where
 
-import Happstack.Foundation     ( HasAcidState, query )
+import Happstack.Foundation     ( HasAcidState )
 import Data.Domain.User                      as User
 import Data.Domain.CalendarEntry             as CalendarEntry
 import Control.Monad.IO.Class
-import Data.Maybe               ( fromJust )
 
 import qualified Data.Repository.UserRepo             as UserRepo
 import qualified Data.Repository.CalendarRepo         as CalendarRepo
@@ -25,8 +24,8 @@ removeCalendar :: (HasAcidState m CalendarAcid.EntryList, HasAcidState m UserAci
       HasAcidState m TaskAcid.TaskList, MonadIO m) => CalendarEntry -> m ()
 removeCalendar calendarEntry = let cEntryId = entryId calendarEntry in
     do
-       mUser <- query (UserAcid.UserById (CalendarEntry.userId calendarEntry))
-       UserRepo.deleteCalendarEntryFromUser (fromJust mUser) cEntryId
+       user <- UserRepo.getUser (CalendarEntry.userId calendarEntry)
+       UserRepo.deleteCalendarEntryFromUser user cEntryId
        deleteCalendarsTasks calendarEntry
        CalendarRepo.deleteCalendar [cEntryId]
 
@@ -35,6 +34,6 @@ deleteCalendarsTasks :: (HasAcidState m TaskAcid.TaskList, MonadIO m)
 deleteCalendarsTasks calendar =
     foldr (\ x ->
       (>>) (do
-        mTask <- query (TaskAcid.TaskById x)
-        TaskRepo.deleteTask (fromJust mTask) ))
+        task <- TaskRepo.getTask x
+        TaskRepo.deleteTask task ))
     (return ()) $ CalendarEntry.calendarTasks calendar

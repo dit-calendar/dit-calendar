@@ -1,6 +1,6 @@
 module Controller.HomeController where
 
-import Happstack.Server         ( ok, toResponse, lookRead, Method(GET, POST)
+import Happstack.Server         ( ok, toResponse, Method(GET, POST)
                                 , method, nullDir, Request(rqMethod), askRq )
 
 import Controller.UserController as UserController
