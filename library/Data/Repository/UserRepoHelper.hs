@@ -1,5 +1,5 @@
 {-# LANGUAGE FlexibleContexts #-}
-module Data.Repository.UserRepoHelper where
+module Data.Repository.UserRepoHelper ( deleteUser ) where
 
 import Happstack.Foundation     ( HasAcidState )
 import Control.Monad.IO.Class

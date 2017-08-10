@@ -1,6 +1,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module Data.Repository.TaskRepo where
+module Data.Repository.TaskRepo
+	( updateDescription, deleteTask, createTask ) where
 
 import Happstack.Foundation       ( update, HasAcidState )
 import Control.Monad.IO.Class

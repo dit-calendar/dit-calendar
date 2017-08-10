@@ -1,6 +1,8 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module Data.Repository.UserRepo  where
+module Data.Repository.UserRepo
+    ( deleteUser, updateName, addCalendarEntryToUser, addTaskToUser
+    , deleteCalendarEntryFromUser, deleteTaskFromUser ) where
 
 import Prelude hiding ( head )
 import Happstack.Foundation              ( update, HasAcidState )

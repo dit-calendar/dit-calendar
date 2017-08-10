@@ -1,6 +1,8 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module Data.Repository.CalendarRepo where
+module Data.Repository.CalendarRepo
+    ( createEntry, deleteCalendar, updateDescription,
+    deleteTaskFromCalendarEntry, addTaskToCalendarEntry ) where
 
 import Happstack.Foundation     ( update, HasAcidState )
 import Control.Monad.IO.Class
