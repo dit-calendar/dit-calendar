@@ -38,6 +38,7 @@ library
                        Data.Repository.Acid.CalendarAcid,
                        Data.Repository.Acid.TaskAcid,
                        Data.Repository.UserRepo,
+                       Data.Repository.UserRepoHelper,
                        Data.Repository.CalendarRepo,
                        Data.Repository.TaskRepo,
                        Data.Repository.UserTaskRepo,

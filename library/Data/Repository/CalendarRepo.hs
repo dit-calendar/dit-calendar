@@ -8,16 +8,13 @@ import Data.List                ( delete )
 
 import Data.Domain.User                      as User
 import Data.Domain.CalendarEntry             as CalendarEntry
-import Data.Domain.Task                      as Task
-import Data.Domain.Types        ( UserId, EntryId, TaskId )
+import Data.Domain.Types        ( EntryId, TaskId )
 
-import qualified Data.Repository.Acid.UserAcid        as UserAcid
-import qualified Data.Repository.Acid.TaskAcid        as TaskAcid
 import qualified Data.Repository.Acid.CalendarAcid    as CalendarAcid
 
 
-createEntry :: (HasAcidState m CalendarAcid.EntryList, HasAcidState m UserAcid.UserList,
-            MonadIO m) => String -> User -> m CalendarEntry
+createEntry :: (HasAcidState m CalendarAcid.EntryList, MonadIO m) =>
+                String -> User -> m CalendarEntry
 createEntry description user = do
     calendarEntry <- update (CalendarAcid.NewEntry description $ User.userId user)
     return calendarEntry

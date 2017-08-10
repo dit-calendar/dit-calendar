@@ -4,7 +4,6 @@ module Data.Repository.CalendarRepoHelper ( createEntry, removeCalendar ) where
 import Happstack.Foundation     ( HasAcidState, query )
 import Data.Domain.User                      as User
 import Data.Domain.CalendarEntry             as CalendarEntry
-import Data.Domain.Types        ( EntryId )
 import Control.Monad.IO.Class
 import Data.Maybe               ( fromJust )
 
@@ -31,7 +30,7 @@ removeCalendar calendarEntry = let cEntryId = entryId calendarEntry in
        deleteCalendarsTasks calendarEntry
        CalendarRepo.deleteCalendar [cEntryId]
 
-deleteCalendarsTasks :: (HasAcidState m UserAcid.UserList, HasAcidState m TaskAcid.TaskList, MonadIO m)
+deleteCalendarsTasks :: (HasAcidState m TaskAcid.TaskList, MonadIO m)
     => CalendarEntry -> m ()
 deleteCalendarsTasks calendar =
     foldr (\ x ->

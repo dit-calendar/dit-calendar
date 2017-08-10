@@ -2,7 +2,6 @@
 module Data.Repository.TaskRepoHelper where
 
 import Happstack.Foundation     ( HasAcidState )
-import Data.Domain.User                      as User
 import Data.Domain.Task                      as Task
 import Data.Domain.CalendarEntry             as CalendarEntry
 import Control.Monad.IO.Class

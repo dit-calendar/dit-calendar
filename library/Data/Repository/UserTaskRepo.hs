@@ -9,7 +9,7 @@ import Data.Maybe                 ( fromJust )
 
 import Data.Domain.Task                       as Task
 import Data.Domain.User                       as User
-import Data.Domain.Types          ( UserId, TaskId, EntryId )
+import Data.Domain.Types          ( UserId, TaskId )
 
 import qualified Data.Repository.Acid.TaskAcid          as TaskAcid
 import qualified Data.Repository.Acid.UserAcid          as UserAcid
