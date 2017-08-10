@@ -19,8 +19,7 @@ deleteUser user =
     let calendarToDelete = calendarEntries user in
         update $ UserAcid.DeleteUser (Data.Domain.User.userId user)
 
-updateUser :: (MonadIO m, HasAcidState m UserAcid.UserList) =>
-     User -> m ()
+updateUser :: (MonadIO m, HasAcidState m UserAcid.UserList) => User -> m ()
 updateUser user = update $ UserAcid.UpdateUser user
 
 updateName :: (MonadIO m, HasAcidState m UserAcid.UserList) =>

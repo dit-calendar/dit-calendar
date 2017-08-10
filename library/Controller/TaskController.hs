@@ -50,7 +50,7 @@ updateTask id description =
             Nothing ->
                 ok $ toResponse $ "Could not find a task with id " ++ show id
             (Just t) -> do
-                 TaskRepo.updateTask t description
+                 TaskRepo.updateDescription t description
                  ok $ toResponse $ "Task with id:" ++ show id ++ "updated"
 
 addUserToTask :: UserId -> TaskId -> CtrlV

@@ -23,20 +23,20 @@ deleteCalendar :: (HasAcidState m CalendarAcid.EntryList, MonadIO m) =>
 deleteCalendar = foldr (\ x -> (>>) (update $ CalendarAcid.DeleteEntry x))
         (return ())
 
-updateCalendar :: (HasAcidState m CalendarAcid.EntryList, MonadIO m) =>
+updateCalendar :: (HasAcidState m CalendarAcid.EntryList, MonadIO m) => CalendarEntry -> m ()
+updateCalendar calendarEntry = update $ CalendarAcid.UpdateEntry calendarEntry
+
+updateDescription:: (HasAcidState m CalendarAcid.EntryList, MonadIO m) =>
                   CalendarEntry -> String -> m ()
-updateCalendar calendarEntry newDescription =
-    let updatedEntry = calendarEntry {CalendarEntry.description = newDescription} in
-            update $ CalendarAcid.UpdateEntry updatedEntry
+updateDescription calendarEntry newDescription =
+    updateCalendar calendarEntry {CalendarEntry.description = newDescription}
 
 deleteTaskFromCalendarEntry :: (HasAcidState m CalendarAcid.EntryList, MonadIO m) =>
                 Int -> CalendarEntry -> m ()
 deleteTaskFromCalendarEntry taskId calendarEntry =
-  let updatedCalendarEntry = calendarEntry {calendarTasks = delete taskId (calendarTasks calendarEntry)} in
-        update $ CalendarAcid.UpdateEntry updatedCalendarEntry
+  updateCalendar calendarEntry {calendarTasks = delete taskId (calendarTasks calendarEntry)}
 
 addTaskToCalendarEntry :: (HasAcidState m CalendarAcid.EntryList, MonadIO m) =>
     TaskId -> CalendarEntry -> m ()
 addTaskToCalendarEntry taskId calendarEntry =
-    let updatedCalendarEntry = calendarEntry {calendarTasks = calendarTasks calendarEntry ++ [taskId]} in
-        update $ CalendarAcid.UpdateEntry updatedCalendarEntry
+    updateCalendar calendarEntry {calendarTasks = calendarTasks calendarEntry ++ [taskId]}

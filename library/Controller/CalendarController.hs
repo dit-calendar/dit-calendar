@@ -56,5 +56,5 @@ updateCalendarEntry id description =
             Nothing ->
                 ok $ toResponse $ "Could not find a CalendarEntry with id " ++ show id
             (Just c) -> do
-                 CalendarRepo.updateCalendar c description
+                 CalendarRepo.updateDescription c description
                  ok $ toResponse $ "CalendarEntry with id:" ++ show id ++ "updated"
