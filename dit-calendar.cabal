@@ -42,7 +42,6 @@ library
                        Data.Repository.TaskRepo,
                        Data.Repository.UserTaskRepo,
                        Data.Repository.CalendarTaskRepo,
-                       Data.Repository.UserCalendarRepo,
                        Data.Repository.CalendarRepoHelper,
                        Data.Repository.TaskRepoHelper,
                        AppStart
