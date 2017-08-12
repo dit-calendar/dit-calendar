@@ -9,7 +9,7 @@ import Data.Repository.Acid.DataBaseHelper   ( createDatabaseConnection )
 import Data.Repository.Acid.CalendarAcid  as CalendarAcid
 import Data.Domain.CalendarEntry          as CalendarEntry
 
---problem here is what we create a connection to our database
+
 withDatabaseConnection :: (AcidState CalendarAcid.EntryList -> IO ()) -> IO ()
 withDatabaseConnection = createDatabaseConnection CalendarAcid.EntryList{
         nextEntryId    = 1

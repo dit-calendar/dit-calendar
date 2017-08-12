@@ -9,6 +9,7 @@ import Data.Repository.Acid.DataBaseHelper   ( createDatabaseConnection )
 import Data.Repository.Acid.TaskAcid as TaskAcid
 import Data.Domain.Task as Task
 
+
 withDatabaseConnection :: (AcidState TaskAcid.TaskList -> IO ()) -> IO ()
 withDatabaseConnection = createDatabaseConnection TaskAcid.TaskList{
       nextTaskId = 1,
