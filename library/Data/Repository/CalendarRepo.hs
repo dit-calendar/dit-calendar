@@ -12,13 +12,14 @@ import Data.Domain.User                      as User
 import Data.Domain.CalendarEntry             as CalendarEntry
 import Data.Domain.Types        ( EntryId, TaskId )
 
+import qualified Data.Repository.DBRepo               as DBRepo
 import qualified Data.Repository.Acid.CalendarAcid    as CalendarAcid
 
 
-createEntry :: (HasAcidState m CalendarAcid.EntryList, MonadIO m) =>
+createEntry :: (DBRepo.MonadDB m, HasAcidState m CalendarAcid.EntryList, MonadIO m) =>
                 String -> User -> m CalendarEntry
 createEntry description user =
-    update (CalendarAcid.NewEntry description $ User.userId user)
+    DBRepo.update (CalendarAcid.NewEntry description $ User.userId user)
 
 deleteCalendar :: (HasAcidState m CalendarAcid.EntryList, MonadIO m) =>
                    [EntryId] -> m ()

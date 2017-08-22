@@ -1,6 +1,6 @@
 {-# LANGUAGE MultiParamTypeClasses, FlexibleInstances #-}
 
-module Controller.AcidHelper ( CtrlV, withAcid ) where
+module Controller.AcidHelper ( CtrlV, withAcid, Acid ) where
 
 import Prelude              hiding ( head, id )
 import System.FilePath      ( (</>) )
