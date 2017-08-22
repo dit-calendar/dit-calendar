@@ -32,5 +32,5 @@ removeUserFromTasks ::(HasAcidState m TaskAcid.TaskList, HasAcidState m UserAcid
 removeUserFromTasks user = foldr (\ taskId ->
        (>>) (do
             mTask <- query (TaskAcid.TaskById taskId)
-            (TaskRepoHelper.removeUserFromTask (fromJust mTask) (userId user))))
+            TaskRepoHelper.removeUserFromTask (fromJust mTask) (userId user)))
         (return ()) (belongingTasks user)
