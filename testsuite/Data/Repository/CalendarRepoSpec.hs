@@ -17,6 +17,7 @@ import Data.Domain.User                     as User
 
 import qualified Data.Repository.Acid.CalendarAcid     as CalendarAcid
 import qualified Data.Repository.CalendarRepo          as CalendarRepo
+import qualified Data.Repository.Acid.InterfaceAcid    as InterfaceAcid
 
 
 newtype TestM a = TestM (Identity a)
@@ -28,7 +29,7 @@ unTestM (TestM (Identity x)) = x
 instance MonadIO TestM where
     liftIO = undefined
 
-instance HasAcidState TestM CalendarAcid.EntryList where
+instance HasAcidState TestM (InterfaceAcid.EntrySet a) where
     getAcidState = undefined
 
 instance MonadDB TestM where

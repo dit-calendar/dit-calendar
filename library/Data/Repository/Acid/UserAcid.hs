@@ -1,81 +1,57 @@
-{-# LANGUAGE DeriveDataTypeable, TemplateHaskell, TypeFamilies,
-  RecordWildCards #-}
+{-# LANGUAGE  TemplateHaskell, TypeFamilies,
+  RecordWildCards, TypeSynonymInstances, FlexibleInstances #-}
 
 module Data.Repository.Acid.UserAcid 
     (initialUserListState, UserList(..), NewUser(..), UserById(..), AllUsers(..),
     GetUserList(..), UpdateUser(..), DeleteUser(..)) where
 
-import Prelude                  hiding ( head )
-
-import Control.Applicative      ( (<$>) )
-import Control.Monad.Reader     ( ask )
-import Control.Monad.State      ( get, put )
-import Data.Data                ( Data, Typeable )
-import Data.Acid                ( Query, Update, makeAcidic )
-import Data.SafeCopy            ( base, deriveSafeCopy )
-import Data.IxSet               ( Indexable(..), IxSet(..), (@=)
-                                , Proxy(..), getOne, ixFun, ixSet
-                                , toList, getEQ, insert, updateIx, deleteIx )
+import Control.Monad.State             ( get, put )
+import Data.Acid                       ( Query, Update, makeAcidic )
+import Data.IxSet                      ( Indexable(..), ixFun, ixSet, insert )
 
 import Data.Domain.User         ( User(..) )
 import Data.Domain.Types        ( UserId )
-import Happstack.Foundation     ( update )
+
+import qualified Data.Repository.Acid.InterfaceAcid      as   InterfaceAcid
 
 
 instance Indexable User where
   empty = ixSet [ ixFun $ \bp -> [ userId bp ] ]
 
---type that represents the state we wish to store
-data UserList = UserList
-    { nextUserId :: UserId
-    , users      :: IxSet User
-    }
-    deriving (Data, Typeable)
-
-$(deriveSafeCopy 0 'base ''UserList)
+type UserList = InterfaceAcid.EntrySet User
 
 initialUserListState :: UserList
-initialUserListState =
-    UserList { nextUserId = 1
-        , users      = empty
-        }
+initialUserListState = InterfaceAcid.initialState
 
 getUserList :: Query UserList UserList
-getUserList = ask
+getUserList = InterfaceAcid.getEntrySet
 
 -- create a new, empty user and add it to the database
 newUser :: String -> Update UserList User
 newUser n =
-    do  b@UserList{..} <- get
-        let user = User { name = n
+    do  b@InterfaceAcid.EntrySet{..} <- get
+        let nextUserId = nextEntryId
+            user = User { name = n
                         , userId  = nextUserId
                         , calendarEntries = []
                         , belongingTasks = []
                         }
         --Because UserId is an instance of Enum we can use succ to increment it.
-        put $ b { nextUserId = succ nextUserId
-                , users      = insert user users
+        put $ b { InterfaceAcid.nextEntryId = succ nextUserId
+                , InterfaceAcid.entrys      = insert user entrys
                 }
         return user
 
 userById :: UserId -> Query UserList (Maybe User)
-userById uid = getOne . getEQ uid . users <$> ask
+userById = InterfaceAcid.entryById
 
 allUsers :: Query UserList [User]
-allUsers = toList . users <$> ask
+allUsers = InterfaceAcid.allEntrysAsList
 
 updateUser :: User -> Update UserList ()
-updateUser updatedUser =
-    do  b@UserList{..} <- get
-        put $ b { users =
-            updateIx (userId updatedUser) updatedUser users
-            }
+updateUser updatedUser = InterfaceAcid.updateEntry updatedUser userId
             
 deleteUser :: UserId -> Update UserList ()
-deleteUser userToDelete =
-    do  b@UserList{..} <- get
-        put $ b { users =
-            deleteIx userToDelete users
-            }
+deleteUser = InterfaceAcid.deleteEntry
 
 $(makeAcidic ''UserList ['newUser, 'userById, 'allUsers, 'getUserList, 'updateUser, 'deleteUser])
