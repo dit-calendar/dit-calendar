@@ -6,16 +6,13 @@ import Test.Hspec
 import Control.Monad.Identity
 import Control.Monad.IO.Class
 
-import Data.Acid            ( AcidState(..) )
-import Happstack.Foundation ( HasAcidState(..), FoundationT' )
+import Happstack.Foundation ( HasAcidState(..) )
 
-import Controller.AcidHelper                ( Acid )
 import Data.Repository.DBRepo
 import Data.Repository.Acid.CalendarAcid    ( NewEntry(..) )
 import Data.Domain.CalendarEntry            as CalendarEntry
 import Data.Domain.User                     as User
 
-import qualified Data.Repository.Acid.CalendarAcid     as CalendarAcid
 import qualified Data.Repository.CalendarRepo          as CalendarRepo
 import qualified Data.Repository.Acid.InterfaceAcid    as InterfaceAcid
 
