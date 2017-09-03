@@ -8,8 +8,10 @@ import Control.Monad.State             ( get, put )
 import Data.Data                       ( Data, Typeable )
 import Data.Acid                       ( Query, Update )
 import Data.SafeCopy                   ( base, deriveSafeCopy )
-import Data.IxSet                      ( Indexable(..), IxSet(..), getOne
+import Data.IxSet                      ( Indexable(..), IxSet(..), getOne, insert
                                        , toList, getEQ, deleteIx, updateIx )
+
+import Data.Domain.Types     ( Entry, setId, getId )
 
 
 --type that represents the state we wish to store
@@ -44,9 +46,20 @@ deleteEntry entryToDelete =
             deleteIx entryToDelete entrys
             }
 
-updateEntry :: (Ord a, Typeable a, Indexable a) => a -> (a -> Int) -> Update (EntrySet a) ()
-updateEntry updatedEntry getId =
+updateEntry :: (Ord a, Typeable a, Indexable a, Entry a) => a -> Update (EntrySet a) ()
+updateEntry updatedEntry =
      do b@EntrySet{..} <- get
         put $ b { entrys =
             updateIx (getId updatedEntry) updatedEntry entrys
             }
+
+-- create a new entry and add it to the database
+newEntry :: (Ord a, Typeable a, Indexable a, Entry a) => a -> Update (EntrySet a) a
+newEntry entry =
+    do  b@EntrySet{..} <- get
+        let nEntry = setId entry nextEntryId
+        --Because UserId is an instance of Enum we can use succ to increment it.
+        put $ b { nextEntryId = succ nextEntryId
+                , entrys      = insert nEntry entrys
+                }
+        return nEntry

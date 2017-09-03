@@ -26,8 +26,12 @@ deleteTask :: (HasAcidState m TaskAcid.TaskList, MonadIO m) =>
 deleteTask task = update $ TaskAcid.DeleteTask $ taskId task
 
 createTask :: (HasAcidState m TaskAcid.TaskList, MonadIO m) =>
-              CalendarEntry -> String -> m Task
-createTask calendarEntry description = update $ TaskAcid.NewTask description
+              String -> m Task
+createTask description = let task = Task { Task.description = description
+                        , taskId  = undefined
+                        , belongingUsers = []
+                        } in
+    	update $ TaskAcid.NewTask task
 
 getTask :: (HasAcidState m TaskAcid.TaskList, MonadIO m) => TaskId -> m Task
 getTask taskId = do

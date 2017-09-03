@@ -17,6 +17,30 @@ spec :: Spec
 spec =
     around withDatabaseConnection $
         context "CalendarEntry" $ do
+          describe "create" $ do
+              it "new and check existence" $
+                \c -> do
+                  entryList   <- query c GetEntryList
+                  let calendarEntry = CalendarEntry { CalendarEntry.description="Zahnarzt", CalendarEntry.entryId=0, userId=0, calendarTasks=[] }
+                  _           <- update c (NewEntry calendarEntry)
+                  entryState  <- query c $ CalendarAcid.EntryById $ InterfaceAcid.nextEntryId entryList
+                  entryState `shouldSatisfy` isJust
+                  fromJust entryState `shouldBe` CalendarEntry{ description="Zahnarzt", entryId=InterfaceAcid.nextEntryId entryList, userId=0, calendarTasks=[]}
+
+              it "new and check nextEntryId" $
+                \c -> do
+                  entryList    <- query c GetEntryList
+                  let oldId    = InterfaceAcid.nextEntryId entryList
+                  let calendarEntry = CalendarEntry { CalendarEntry.description="Zahnarzt", CalendarEntry.entryId=0, userId=1, calendarTasks=[] }
+                  _            <- update c (NewEntry calendarEntry)
+                  entryList    <- query c GetEntryList
+                  InterfaceAcid.nextEntryId entryList `shouldBe` oldId + 1
+                  let calendarEntry = CalendarEntry { CalendarEntry.description="Zahnarzt2", CalendarEntry.entryId=0, userId=1, calendarTasks=[] }
+                  _            <- update c (NewEntry calendarEntry)
+                  entryState  <- query c $ CalendarAcid.EntryById (oldId + 1)
+                  entryState `shouldSatisfy` isJust
+                  fromJust entryState `shouldBe` CalendarEntry{ description="Zahnarzt2", entryId=oldId + 1, userId=1, calendarTasks=[]}
+
           describe "find" $
               it "by EntryId" $
                 \c -> do
@@ -28,7 +52,8 @@ spec =
               it "create/delete Entry and check existence" $
                 \ c -> do 
                   entryList <- query c GetEntryList
-                  _ <- update c (NewEntry "Zahnarzt" 1)
+                  let calendarEntry = CalendarEntry { CalendarEntry.description="Zahnarzt", CalendarEntry.entryId=0, userId=1, calendarTasks=[] }
+                  _ <- update c (NewEntry calendarEntry)
                   entryState <- update c $ CalendarAcid.DeleteEntry $ InterfaceAcid.nextEntryId entryList
                   entryList <- query c GetEntryList
                   entryState <- query c $ CalendarAcid.EntryById $ InterfaceAcid.nextEntryId entryList
@@ -39,7 +64,8 @@ spec =
                 \c -> do
                   entryList   <- query c GetEntryList
                   let eId = InterfaceAcid.nextEntryId entryList
-                  _           <- update c (NewEntry "Termin 1" 2)
+                  let calendarEntry = CalendarEntry { CalendarEntry.description="Termin 1", CalendarEntry.entryId=0, userId=2, calendarTasks=[] }
+                  _           <- update c (NewEntry calendarEntry)
                   entryState  <- query c $ CalendarAcid.EntryById eId
                   let updatedEntry = (fromJust entryState) {description = "Termin 2"}
                   _           <- update c $ CalendarAcid.UpdateEntry updatedEntry

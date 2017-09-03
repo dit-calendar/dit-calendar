@@ -28,7 +28,7 @@ createTask :: (HasAcidState m CalendarAcid.EntryList,
     CalendarEntry -> String -> m Task
 createTask calendarEntry description =
     do
-        mTask <- TaskRepo.createTask calendarEntry description
+        mTask <- TaskRepo.createTask description
         CalendarRepo.addTaskToCalendarEntry (Task.taskId mTask) calendarEntry
         return mTask
 

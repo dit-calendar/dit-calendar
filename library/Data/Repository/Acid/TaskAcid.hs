@@ -1,13 +1,11 @@
-{-# LANGUAGE  TemplateHaskell, TypeFamilies,
-  RecordWildCards, TypeSynonymInstances, FlexibleInstances #-}
+{-# LANGUAGE  TemplateHaskell, TypeFamilies, TypeSynonymInstances, FlexibleInstances #-}
 
 module Data.Repository.Acid.TaskAcid 
     (initialTaskListState, TaskList, NewTask(..), TaskById(..), AllTasks(..),
     GetTaskList(..), UpdateTask(..), DeleteTask(..)) where
 
-import Control.Monad.State             ( get, put )
 import Data.Acid                       ( Query, Update, makeAcidic )
-import Data.IxSet                      ( Indexable(..), ixFun, ixSet, insert )
+import Data.IxSet                      ( Indexable(..), ixFun, ixSet )
 
 import Data.Domain.Task         ( Task(..) )
 import Data.Domain.Types        ( TaskId )
@@ -26,19 +24,8 @@ getTaskList :: Query TaskList TaskList
 getTaskList = InterfaceAcid.getEntrySet
 
 -- create a new, empty task and add it to the database
-newTask :: String -> Update TaskList Task
-newTask n =
-    do  b@InterfaceAcid.EntrySet{..} <- get
-        let nextTaskId = nextEntryId
-            task = Task { description = n
-                        , taskId  = nextTaskId
-                        , belongingUsers = []
-                        }
-        --Because TaskId is an instance of Enum we can use succ to increment it.
-        put $ b { InterfaceAcid.nextEntryId = succ nextTaskId
-                , InterfaceAcid.entrys      = insert task entrys
-                }
-        return task
+newTask :: Task -> Update TaskList Task
+newTask = InterfaceAcid.newEntry
 
 taskById :: TaskId -> Query TaskList (Maybe Task)
 taskById = InterfaceAcid.entryById
@@ -47,7 +34,7 @@ allTasks :: Query TaskList [Task]
 allTasks = InterfaceAcid.allEntrysAsList
 
 updateTask :: Task -> Update TaskList ()
-updateTask updatedTask = InterfaceAcid.updateEntry updatedTask taskId
+updateTask = InterfaceAcid.updateEntry
             
 deleteTask :: TaskId -> Update TaskList ()
 deleteTask = InterfaceAcid.deleteEntry

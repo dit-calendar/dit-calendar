@@ -18,8 +18,13 @@ import qualified Data.Repository.Acid.CalendarAcid    as CalendarAcid
 
 createEntry :: (DBRepo.MonadDB m, HasAcidState m CalendarAcid.EntryList, MonadIO m) =>
                 String -> User -> m CalendarEntry
-createEntry description user =
-    DBRepo.update (CalendarAcid.NewEntry description $ User.userId user)
+createEntry description user = let entry = CalendarEntry { 
+                        description              = description
+                        , entryId                = undefined
+                        , CalendarEntry.userId   = User.userId user
+                        , calendarTasks          = []
+                        } in
+    DBRepo.update (CalendarAcid.NewEntry entry)
 
 deleteCalendar :: (HasAcidState m CalendarAcid.EntryList, MonadIO m) =>
                    [EntryId] -> m ()

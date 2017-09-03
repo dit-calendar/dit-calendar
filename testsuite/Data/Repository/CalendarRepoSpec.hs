@@ -30,7 +30,7 @@ instance HasAcidState TestM (InterfaceAcid.EntrySet a) where
     getAcidState = undefined
 
 instance MonadDB TestM where
-    update (NewEntry a b) = return CalendarEntry{ description=a, entryId=0, CalendarEntry.userId=b, calendarTasks=[] }
+    update (NewEntry caledarEntry) = return caledarEntry
 
 
 spec = describe "CalendarRepo" $

@@ -1,13 +1,11 @@
-{-# LANGUAGE  TemplateHaskell, TypeFamilies,
-  RecordWildCards, TypeSynonymInstances, FlexibleInstances #-}
+{-# LANGUAGE  TemplateHaskell, TypeFamilies, TypeSynonymInstances, FlexibleInstances #-}
 
 module Data.Repository.Acid.UserAcid 
     (initialUserListState, UserList(..), NewUser(..), UserById(..), AllUsers(..),
     GetUserList(..), UpdateUser(..), DeleteUser(..)) where
 
-import Control.Monad.State             ( get, put )
 import Data.Acid                       ( Query, Update, makeAcidic )
-import Data.IxSet                      ( Indexable(..), ixFun, ixSet, insert )
+import Data.IxSet                      ( Indexable(..), ixFun, ixSet )
 
 import Data.Domain.User         ( User(..) )
 import Data.Domain.Types        ( UserId )
@@ -27,20 +25,8 @@ getUserList :: Query UserList UserList
 getUserList = InterfaceAcid.getEntrySet
 
 -- create a new, empty user and add it to the database
-newUser :: String -> Update UserList User
-newUser n =
-    do  b@InterfaceAcid.EntrySet{..} <- get
-        let nextUserId = nextEntryId
-            user = User { name = n
-                        , userId  = nextUserId
-                        , calendarEntries = []
-                        , belongingTasks = []
-                        }
-        --Because UserId is an instance of Enum we can use succ to increment it.
-        put $ b { InterfaceAcid.nextEntryId = succ nextUserId
-                , InterfaceAcid.entrys      = insert user entrys
-                }
-        return user
+newUser :: User -> Update UserList User
+newUser = InterfaceAcid.newEntry
 
 userById :: UserId -> Query UserList (Maybe User)
 userById = InterfaceAcid.entryById
@@ -49,7 +35,7 @@ allUsers :: Query UserList [User]
 allUsers = InterfaceAcid.allEntrysAsList
 
 updateUser :: User -> Update UserList ()
-updateUser updatedUser = InterfaceAcid.updateEntry updatedUser userId
+updateUser = InterfaceAcid.updateEntry
             
 deleteUser :: UserId -> Update UserList ()
 deleteUser = InterfaceAcid.deleteEntry

@@ -16,7 +16,12 @@ import Data.Domain.Types                 ( EntryId, TaskId, UserId )
 import qualified Data.Repository.Acid.UserAcid       as UserAcid
 
 createUser :: (HasAcidState m UserAcid.UserList, MonadIO m) => String -> m User
-createUser name = update (UserAcid.NewUser name)
+createUser name = let user = User { name = name
+                    , userId = undefined
+                    , calendarEntries = []
+                    , belongingTasks = []
+                    } in
+        update $ UserAcid.NewUser user
 
 deleteUser :: (MonadIO m, HasAcidState m UserAcid.UserList) =>
      User -> m ()
