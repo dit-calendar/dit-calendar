@@ -8,7 +8,7 @@ import Control.Monad.IO.Class
 
 import Happstack.Foundation ( HasAcidState(..) )
 
-import Data.Repository.DBRepo
+import Data.Repository.MonadDB.Calendar
 import Data.Repository.Acid.CalendarAcid    ( NewEntry(..) )
 import Data.Domain.CalendarEntry            as CalendarEntry
 import Data.Domain.User                     as User
@@ -29,8 +29,8 @@ instance MonadIO TestM where
 instance HasAcidState TestM (InterfaceAcid.EntrySet a) where
     getAcidState = undefined
 
-instance MonadDB TestM where
-    update (NewEntry caledarEntry) = return caledarEntry
+instance MonadDBCalendar TestM where
+    create (NewEntry caledarEntry) = return caledarEntry
 
 
 spec = describe "CalendarRepo" $

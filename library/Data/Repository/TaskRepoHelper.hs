@@ -8,31 +8,34 @@ import Data.Domain.CalendarEntry             as CalendarEntry
 import Control.Monad.IO.Class
 import Data.List                ( delete )
 
-import Data.Domain.Types        ( UserId )
+import Data.Domain.Types                 ( UserId )
+import Data.Repository.MonadDB.Calendar  ( MonadDBCalendar )
+import Data.Repository.MonadDB.Task      ( MonadDBTask )
+import Data.Repository.MonadDB.User      ( MonadDBUser )
+
 import qualified Data.Repository.UserRepo             as UserRepo
 import qualified Data.Repository.TaskRepo             as TaskRepo
 import qualified Data.Repository.CalendarRepo         as CalendarRepo
-
 import qualified Data.Repository.Acid.UserAcid        as UserAcid
 import qualified Data.Repository.Acid.TaskAcid        as TaskAcid
 import qualified Data.Repository.Acid.CalendarAcid    as CalendarAcid
 
-deleteTask :: (HasAcidState m TaskAcid.TaskList, HasAcidState m UserAcid.UserList, MonadIO m) =>
+deleteTask :: (MonadDBUser m, MonadDBTask m, HasAcidState m TaskAcid.TaskList, HasAcidState m UserAcid.UserList, MonadIO m) =>
                    Task -> m ()
 deleteTask task = do
     TaskRepo.deleteTask task
     deleteTaskFromAllUsers task
 
-createTask :: (HasAcidState m CalendarAcid.EntryList,
+createTask :: (MonadDBUser m, MonadDBTask m, MonadDBCalendar m, HasAcidState m CalendarAcid.EntryList,
       HasAcidState m TaskAcid.TaskList, MonadIO m) =>
-    CalendarEntry -> String -> m Task
+            CalendarEntry -> String -> m Task
 createTask calendarEntry description =
     do
         mTask <- TaskRepo.createTask description
         CalendarRepo.addTaskToCalendarEntry (Task.taskId mTask) calendarEntry
         return mTask
 
-deleteTaskFromAllUsers :: (HasAcidState m UserAcid.UserList, MonadIO m) =>
+deleteTaskFromAllUsers :: (MonadDBUser m, HasAcidState m UserAcid.UserList, MonadIO m) =>
     Task -> m ()
 deleteTaskFromAllUsers task =
     foldr (\ x ->
@@ -41,15 +44,15 @@ deleteTaskFromAllUsers task =
         UserRepo.deleteTaskFromUser x user ))
     (return ()) $ Task.belongingUsers task
 
-addUserToTask :: (HasAcidState m TaskAcid.TaskList, HasAcidState m UserAcid.UserList, MonadIO m) =>
-    Task -> UserId -> m ()
+addUserToTask :: (MonadDBUser m, MonadDBTask m, HasAcidState m TaskAcid.TaskList, HasAcidState m UserAcid.UserList, MonadIO m) =>
+                Task -> UserId -> m ()
 addUserToTask task userId =
     do
         user <- UserRepo.getUser userId
         UserRepo.addTaskToUser (taskId task) user
         TaskRepo.updateTask task {belongingUsers = belongingUsers task ++ [userId]}
 
-removeUserFromTask :: (HasAcidState m TaskAcid.TaskList, HasAcidState m UserAcid.UserList, MonadIO m) =>
+removeUserFromTask :: (MonadDBUser m, MonadDBTask m, HasAcidState m TaskAcid.TaskList, HasAcidState m UserAcid.UserList, MonadIO m) =>
                       Task -> UserId -> m ()
 removeUserFromTask task userId =
         do
