@@ -15,19 +15,19 @@ import qualified Data.Repository.MonadDB.Task     as DBRepo
 import qualified Data.Repository.Acid.TaskAcid    as TaskAcid
 
 
-updateTask :: (DBRepo.MonadDBTask m, HasAcidState m TaskAcid.TaskList, MonadIO m) =>
+updateTask :: (DBRepo.MonadDBTask m, HasAcidState m TaskAcid.TaskList) =>
           Task -> m ()
 updateTask task = DBRepo.update $ TaskAcid.UpdateTask task
 
-updateDescription :: (DBRepo.MonadDBTask m, HasAcidState m TaskAcid.TaskList, MonadIO m) =>
+updateDescription :: (DBRepo.MonadDBTask m, HasAcidState m TaskAcid.TaskList) =>
                   Task -> String -> m ()
 updateDescription task newDescription = updateTask task {Task.description = newDescription}
 
-deleteTask :: (DBRepo.MonadDBTask m, HasAcidState m TaskAcid.TaskList, MonadIO m) =>
+deleteTask :: (DBRepo.MonadDBTask m, HasAcidState m TaskAcid.TaskList) =>
             Task -> m ()
 deleteTask task = DBRepo.delete $ TaskAcid.DeleteTask $ taskId task
 
-createTask :: (DBRepo.MonadDBTask m, HasAcidState m TaskAcid.TaskList, MonadIO m) =>
+createTask :: (DBRepo.MonadDBTask m, HasAcidState m TaskAcid.TaskList) =>
               String -> m Task
 createTask description = let task = Task { Task.description = description
                         , taskId  = undefined
