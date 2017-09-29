@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 module Data.Repository.UserRepoHelper ( deleteUser ) where
 
-import Happstack.Foundation     ( query, HasAcidState )
+import Happstack.Foundation     ( query )
 import Control.Monad.IO.Class
 import Data.Maybe                 ( fromJust )
 
@@ -20,8 +20,7 @@ import qualified Data.Repository.Acid.CalendarAcid    as CalendarAcid
 import qualified Data.Repository.TaskRepoHelper       as TaskRepoHelper
 
 
-deleteUser :: (MonadDBUser m, MonadDBTask m, MonadDBCalendar m, HasAcidState m CalendarAcid.EntryList,
-        HasAcidState m UserAcid.UserList, HasAcidState m TaskAcid.TaskList) =>
+deleteUser :: (MonadDBUser m, MonadDBTask m, MonadDBCalendar m, MonadIO m) =>
             User -> m ()
 deleteUser user =
      let calendarToDelete = calendarEntries user in
@@ -30,9 +29,7 @@ deleteUser user =
             removeUserFromTasks user
             UserRepo.deleteUser user
 
-removeUserFromTasks ::(MonadDBUser m, MonadDBTask m, HasAcidState m TaskAcid.TaskList,
-    HasAcidState m UserAcid.UserList, MonadIO m) =>
-                     User -> m ()
+removeUserFromTasks ::(MonadDBUser m, MonadDBTask m, MonadIO m) => User -> m ()
 removeUserFromTasks user = foldr (\ taskId ->
        (>>) (do
             mTask <- query (TaskAcid.TaskById taskId)

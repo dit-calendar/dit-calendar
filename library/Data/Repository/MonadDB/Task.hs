@@ -2,9 +2,8 @@
 
 module Data.Repository.MonadDB.Task where
 
-import Control.Monad.IO.Class
 import HSP.XMLGenerator                       ( XMLGenT )
-import Happstack.Foundation   as Foundation   ( update, query, FoundationT' )
+import Happstack.Foundation   as Foundation   ( update, query, FoundationT', HasAcidState )
 
 import Controller.AcidHelper      ( Acid )
 import Route.PageEnum             ( SiteMap )
@@ -12,7 +11,7 @@ import Route.PageEnum             ( SiteMap )
 import Data.Domain.Task        ( Task )
 import qualified Data.Repository.Acid.TaskAcid    as TaskAcid
 
-class Monad m => MonadDBTask m where
+class (Monad m, HasAcidState m TaskAcid.TaskList) => MonadDBTask m where
   create :: TaskAcid.NewTask -> m Task
   update :: TaskAcid.UpdateTask -> m ()
   delete :: TaskAcid.DeleteTask -> m ()
