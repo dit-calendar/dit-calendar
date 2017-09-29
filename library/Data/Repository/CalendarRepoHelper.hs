@@ -18,7 +18,7 @@ import qualified Data.Repository.Acid.CalendarAcid    as CalendarAcid
 import qualified Data.Repository.Acid.TaskAcid        as TaskAcid
 
 createEntry :: (MonadDBUser m, MonadDBCalendar m, HasAcidState m CalendarAcid.EntryList,
-    HasAcidState m UserAcid.UserList, MonadIO m) =>
+    HasAcidState m UserAcid.UserList) =>
             String -> User -> m CalendarEntry
 createEntry description user = do
     calendarEntry <- CalendarRepo.createEntry description user

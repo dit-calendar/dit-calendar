@@ -27,7 +27,7 @@ deleteTask task = do
     deleteTaskFromAllUsers task
 
 createTask :: (MonadDBUser m, MonadDBTask m, MonadDBCalendar m, HasAcidState m CalendarAcid.EntryList,
-      HasAcidState m TaskAcid.TaskList, MonadIO m) =>
+      HasAcidState m TaskAcid.TaskList) =>
             CalendarEntry -> String -> m Task
 createTask calendarEntry description =
     do
