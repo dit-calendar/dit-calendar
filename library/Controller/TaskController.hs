@@ -4,7 +4,9 @@ import Happstack.Server         ( ok, toResponse, Method(GET), method)
 import Happstack.Foundation     ( query )
 
 import Data.Domain.Task                  as Task      ( Task(..))
-import Data.Domain.Types        ( TaskId, EntryId, UserId )
+import Data.Domain.Types           ( TaskId, EntryId, UserId )
+import Controller.AcidHelper       ( CtrlV )
+import Controller.ControllerHelper ( userExist, entryExist, taskExist, okResponse )
 
 import qualified Data.Repository.Acid.TaskAcid     as TaskAcid
 import qualified Data.Repository.Acid.CalendarAcid as CalendarAcid
@@ -13,87 +15,51 @@ import qualified Data.Repository.TaskRepo          as TaskRepo
 import qualified Data.Repository.CalendarRepo      as CalendarRepo
 import qualified Data.Repository.TaskRepoHelper    as TaskRepoHelper
 
-import Controller.AcidHelper     ( CtrlV )
 
 --handler for taskPage
 taskPage :: TaskId -> CtrlV
-taskPage i =
-    do
-       mTask <- query (TaskAcid.TaskById i)
-       case mTask of
-            Nothing ->
-                ok $ toResponse $ "Could not find a task with id " ++ show i
-            (Just u) ->
-                ok $ toResponse $ "peeked at the task and saw: " ++ show u
+taskPage i = do
+    mTask <- query (TaskAcid.TaskById i)
+    taskExist i (\t -> ok $ toResponse $ "peeked at the task and saw: " ++ show t) mTask
 
 createTask :: EntryId -> String -> CtrlV
-createTask calendarId description =
-    do
-        mCalendarEntry <- query (CalendarAcid.EntryById calendarId)
-        case mCalendarEntry of
-            Nothing ->
-                ok $ toResponse $ "Could not find a calendarEntry with id " ++ show calendarId
-            (Just u) ->
-                do
-                    t <- TaskRepoHelper.createTask u description
-                    ok $ toResponse $ "Task created: " ++ show (Task.taskId t) ++ "to CalendarEntry: " ++ show calendarId
-
+createTask calendarId description = do
+    mCalendarEntry <- query (CalendarAcid.EntryById calendarId)
+    entryExist calendarId (\e -> do
+        t <- TaskRepoHelper.createTask e description
+        ok $ toResponse $ "Task created: " ++ show (Task.taskId t) ++ "to CalendarEntry: " ++ show calendarId) mCalendarEntry
 
 updateTask :: TaskId -> String -> CtrlV
-updateTask id description =
-    do
-       mTask <- query (TaskAcid.TaskById id)
-       case mTask of
-            Nothing ->
-                ok $ toResponse $ "Could not find a task with id " ++ show id
-            (Just t) -> do
-                 TaskRepo.updateDescription t description
-                 ok $ toResponse $ "Task with id:" ++ show id ++ "updated"
+updateTask id description = do
+    mTask <- query (TaskAcid.TaskById id)
+    taskExist id (\t -> do
+        TaskRepo.updateDescription t description
+        ok $ toResponse $ "Task with id:" ++ show id ++ "updated") mTask
 
 addUserToTask :: UserId -> TaskId -> CtrlV
-addUserToTask userId taskId =
-    do
-       mUser <- query (UserAcid.UserById userId)
-       case mUser of
-            Nothing ->
-                ok $ toResponse $ "Could not find a user with id " ++ show userId
-            (Just _) -> do
-                 mTask <- query (TaskAcid.TaskById taskId)
-                 case mTask of
-                     Nothing ->
-                        ok $ toResponse $ "Could not find a task with id " ++ show taskId
-                     (Just t) -> do
-                        TaskRepoHelper.addUserToTask t userId
-                        ok $ toResponse $ "User added to task: " ++ show userId
+addUserToTask userId taskId = do
+    mUser <- query (UserAcid.UserById userId)
+    userExist userId (\ _ -> do
+        mTask <- query (TaskAcid.TaskById taskId)
+        taskExist taskId (\t -> do
+            TaskRepoHelper.addUserToTask t userId
+            ok $ toResponse $ "User added to task: " ++ show userId) mTask) mUser
 
 removeUserFromTask :: UserId -> TaskId -> CtrlV
-removeUserFromTask userId taskId =
-    do
-       mUser <- query (UserAcid.UserById userId)
-       case mUser of
-            Nothing ->
-                ok $ toResponse $ "Could not find a user with id " ++ show userId
-            (Just u) -> do
-                 mTask <- query (TaskAcid.TaskById taskId)
-                 case mTask of
-                     Nothing ->
-                        ok $ toResponse $ "Could not find a task with id " ++ show taskId
-                     (Just t) -> do
-                        TaskRepoHelper.removeUserFromTask t userId
-                        ok $ toResponse $ "User removed from task" ++ show userId
+removeUserFromTask userId taskId = do
+    mUser <- query (UserAcid.UserById userId)
+    userExist userId (\ _ -> do
+        mTask <- query (TaskAcid.TaskById taskId)
+        taskExist taskId (\t -> do
+            TaskRepoHelper.removeUserFromTask t userId
+            ok $ toResponse $ "User removed from task" ++ show userId) mTask) mUser
 
 deleteTask :: EntryId -> TaskId -> CtrlV
 deleteTask entryId taskId = do
     mEntry <- query (CalendarAcid.EntryById entryId)
-    case mEntry of
-        Nothing ->
-            ok $ toResponse $ "Could not find a entry with id " ++ show entryId
-        (Just e) -> do
-            mTask <- query (TaskAcid.TaskById taskId)
-            case mTask of
-                Nothing ->
-                    ok $ toResponse $ "Could not find a task with id " ++ show taskId
-                (Just t) -> do
-                    CalendarRepo.deleteTaskFromCalendarEntry taskId e
-                    TaskRepoHelper.deleteTask t
-                    ok $ toResponse $ "Task with id:" ++ show taskId ++ "deleted"
+    entryExist entryId (\e -> do
+        mTask <- query (TaskAcid.TaskById taskId)
+        taskExist taskId (\t -> do
+            CalendarRepo.deleteTaskFromCalendarEntry taskId e
+            TaskRepoHelper.deleteTask t
+            ok $ toResponse $ "Task with id:" ++ show taskId ++ "deleted") mTask) mEntry

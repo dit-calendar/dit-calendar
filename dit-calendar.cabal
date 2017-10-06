@@ -29,6 +29,7 @@ library
                        Data.Domain.Types,
                        Route.PageEnum,
                        Route.Routing,
+                       Controller.ControllerHelper,
                        Controller.HomeController,
                        Controller.UserController,
                        Controller.CalendarController,
