@@ -54,9 +54,9 @@ spec = describe "CalendarRepo" $ do
     it "createEntry" $ do
         let user = User{ name="Foo", User.userId=10, calendarEntries=[], belongingTasks=[] }
         let result = unTestM (CalendarRepo.createEntry "foo" user)
-        (CalendarEntry.description result) `shouldBe` "foo"
-        (CalendarEntry.userId result) `shouldBe` 10
+        CalendarEntry.description result `shouldBe` "foo"
+        CalendarEntry.userId result `shouldBe` 10
     it "deleteEntry" $ do
         let calendar = CalendarEntry{ description="Foo", entryId=10, CalendarEntry.userId=1, calendarTasks=[] }
         let result = logTestM (CalendarRepo.deleteCalendar [10])
-        result `shouldBe` [("10"::String)]
+        result `shouldBe` ["10"::String]
