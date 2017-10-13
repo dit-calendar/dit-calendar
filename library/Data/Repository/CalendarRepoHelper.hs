@@ -43,4 +43,4 @@ deleteCalendarsTasks calendar =
       (>>) (do
         task <- TaskRepo.getTask x
         TaskRepo.deleteTask task ))
-    (return ()) $ CalendarEntry.calendarTasks calendar
+    (return ()) $ CalendarEntry.tasks calendar

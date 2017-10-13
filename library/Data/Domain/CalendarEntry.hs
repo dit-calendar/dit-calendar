@@ -10,7 +10,7 @@ data CalendarEntry = CalendarEntry {
     description      :: String
     , entryId        :: EntryId
     , userId         :: UserId
-    , calendarTasks  :: [TaskId]
+    , tasks          :: [TaskId]
     }
     deriving (Eq, Ord, Read, Show, Data, Typeable)
 $(deriveSafeCopy 0 'base ''CalendarEntry)

@@ -21,7 +21,7 @@ createEntry description user = let entry = CalendarEntry {
                         description              = description
                         , entryId                = undefined
                         , CalendarEntry.userId   = User.userId user
-                        , calendarTasks          = []
+                        , tasks          = []
                         } in
     DBRepo.create (CalendarAcid.NewEntry entry)
 
@@ -42,9 +42,9 @@ updateDescription calendarEntry newDescription =
 deleteTaskFromCalendarEntry :: (DBRepo.MonadDBCalendar m, HasAcidState m CalendarAcid.EntryList) =>
                             Int -> CalendarEntry -> m ()
 deleteTaskFromCalendarEntry taskId calendarEntry =
-  updateCalendar calendarEntry {calendarTasks = delete taskId (calendarTasks calendarEntry)}
+  updateCalendar calendarEntry {tasks = delete taskId (tasks calendarEntry)}
 
 addTaskToCalendarEntry :: (DBRepo.MonadDBCalendar m, HasAcidState m CalendarAcid.EntryList) =>
                         TaskId -> CalendarEntry -> m ()
 addTaskToCalendarEntry taskId calendarEntry =
-    updateCalendar calendarEntry {calendarTasks = calendarTasks calendarEntry ++ [taskId]}
+    updateCalendar calendarEntry {tasks = tasks calendarEntry ++ [taskId]}
