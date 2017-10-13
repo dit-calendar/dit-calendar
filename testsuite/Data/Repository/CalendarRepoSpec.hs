@@ -1,62 +1,45 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving, MultiParamTypeClasses  #-}
+{-# LANGUAGE MultiParamTypeClasses  #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module Data.Repository.CalendarRepoSpec (spec) where
 
 import Test.Hspec
-import Control.Monad.Identity
-import Control.Monad.IO.Class
-import Control.Monad.Writer.Class ( MonadWriter, tell )
-import Control.Monad.Writer ( Writer, execWriter )
+import Control.Monad.TestFixture
+import Control.Monad.TestFixture.TH
 
-import Happstack.Foundation ( HasAcidState(..) )
+import Control.Monad.Identity        ( Identity )
+import Control.Monad.Writer.Class    ( tell )
+import Control.Monad.Writer          ( execWriter )
 
-import Data.Repository.MonadDB.Calendar
-import Data.Repository.Acid.CalendarAcid    ( NewEntry(..), DeleteEntry(..) )
+import Happstack.Foundation          ( HasAcidState(..) )
+
+import Data.Repository.MonadDB.Calendar     ( MonadDBCalendar )
+import Data.Repository.Acid.CalendarAcid    ( NewEntry(..), DeleteEntry(..), EntryList )
 import Data.Domain.CalendarEntry            as CalendarEntry
 import Data.Domain.User                     as User
 
 import qualified Data.Repository.CalendarRepo          as CalendarRepo
-import qualified Data.Repository.Acid.InterfaceAcid    as InterfaceAcid
 
 
-newtype TestM a = TestM (Identity a)
-  deriving (Functor, Applicative, Monad)
+mkFixture "Fixture" [ts| MonadDBCalendar |]
 
-newtype TestMWriter a = TestMWriter (Writer [String] a)
-  deriving (Functor, Applicative, Monad, MonadWriter [String])
-
-unTestM :: TestM a -> a
-unTestM (TestM (Identity x)) = x
-
-logTestM :: TestMWriter a -> [String]
-logTestM (TestMWriter w) = execWriter w
-
-instance MonadIO TestM where
-    liftIO = undefined
-
-instance MonadIO TestMWriter where
-    liftIO = undefined
-
-instance HasAcidState TestM (InterfaceAcid.EntrySet a) where
+instance HasAcidState (TestFixtureT Fixture a () Identity) EntryList where
     getAcidState = undefined
 
-instance HasAcidState TestMWriter (InterfaceAcid.EntrySet a) where
-    getAcidState = undefined
-
-instance MonadDBCalendar TestM where
-    create (NewEntry caledarEntry) = return caledarEntry
-
-instance MonadDBCalendar TestMWriter where
-    delete (DeleteEntry a) = tell [show a]
-
+fixture = Fixture { _create = \(NewEntry caledarEntry) -> return caledarEntry
+                  , _delete = \(DeleteEntry a) -> tell [show a]
+                  , _update = undefined
+                  ,_query = undefined }
 
 spec = describe "CalendarRepo" $ do
     it "createEntry" $ do
         let user = User{ name="Foo", User.userId=10, calendarEntries=[], belongingTasks=[] }
-        let result = unTestM (CalendarRepo.createEntry "foo" user)
+        let (result, _) = evalTestFixture (CalendarRepo.createEntry "foo" user) fixture
         CalendarEntry.description result `shouldBe` "foo"
         CalendarEntry.userId result `shouldBe` 10
     it "deleteEntry" $ do
-        let calendar = CalendarEntry{ description="Foo", entryId=10, CalendarEntry.userId=1, calendarTasks=[] }
-        let result = logTestM (CalendarRepo.deleteCalendar [10])
-        result `shouldBe` ["10"::String]
+        let (_, log) = evalTestFixture (CalendarRepo.deleteCalendar [10]) fixture
+        log `shouldBe` ["10"::String]

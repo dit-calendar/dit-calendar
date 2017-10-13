@@ -8,7 +8,6 @@ arguments :: [String]
 arguments =
     [ "src"
     , "library"
-    , "testsuite"
     ]
 
 main :: IO ()

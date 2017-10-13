@@ -21,7 +21,7 @@ import qualified Data.Repository.TaskRepoHelper       as TaskRepoHelper
 
 
 deleteUser :: (MonadDBUser m, MonadDBTask m, MonadDBCalendar m, HasAcidState m CalendarAcid.EntryList,
-        HasAcidState m UserAcid.UserList, HasAcidState m TaskAcid.TaskList) =>
+        HasAcidState m UserAcid.UserList, HasAcidState m TaskAcid.TaskList, MonadIO m) =>
             User -> m ()
 deleteUser user =
      let calendarToDelete = calendarEntries user in
