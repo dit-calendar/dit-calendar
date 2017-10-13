@@ -1,4 +1,4 @@
-{-# LANGUAGE  TemplateHaskell, TypeFamilies, TypeSynonymInstances, FlexibleInstances #-}
+{-# LANGUAGE  TemplateHaskell, TypeFamilies, FlexibleInstances #-}
 
 module Data.Repository.Acid.UserAcid 
     (initialUserListState, UserList(..), NewUser(..), UserById(..), AllUsers(..),

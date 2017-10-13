@@ -5,7 +5,7 @@ import Happstack.Foundation     ( query )
 
 import Controller.ControllerHelper   ( userExist, okResponse )
 import Data.Domain.User                      as User      ( User(..))
-import Data.Domain.Types             ( UserId, EntryId )
+import Data.Domain.Types             ( UserId )
 import Controller.AcidHelper         ( CtrlV )
 
 import qualified Data.Repository.Acid.UserAcid         as UserAcid

@@ -1,10 +1,9 @@
 module Controller.CalendarController where
 
-import Happstack.Server         ( ok, toResponse, Method(GET), method)
 import Happstack.Foundation     ( query )
 
-import Data.Domain.CalendarEntry                as CalendarEntry    ( CalendarEntry(..) )
-import Data.Domain.Types           ( EntryId, UserId, TaskId )
+import Data.Domain.CalendarEntry                as CalendarEntry
+import Data.Domain.Types           ( EntryId, UserId )
 import Controller.AcidHelper       ( CtrlV )
 import Controller.ControllerHelper ( userExist, entryExist, okResponse )
 

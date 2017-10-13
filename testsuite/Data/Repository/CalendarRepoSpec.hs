@@ -26,9 +26,6 @@ import qualified Data.Repository.CalendarRepo          as CalendarRepo
 
 mkFixture "Fixture" [ts| MonadDBCalendar |]
 
-instance HasAcidState (TestFixtureT Fixture a () Identity) EntryList where
-    getAcidState = undefined
-
 fixture = Fixture { _create = \(NewEntry caledarEntry) -> return caledarEntry
                   , _delete = \(DeleteEntry a) -> tell [show a]
                   , _update = undefined

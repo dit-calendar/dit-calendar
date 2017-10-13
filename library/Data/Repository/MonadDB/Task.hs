@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleInstances, AllowAmbiguousTypes, FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
 
 module Data.Repository.MonadDB.Task where
 

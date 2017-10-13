@@ -1,4 +1,4 @@
-{-# LANGUAGE  TemplateHaskell, TypeFamilies, TypeSynonymInstances, FlexibleInstances #-}
+{-# LANGUAGE  TemplateHaskell, TypeFamilies, FlexibleInstances #-}
 
 module Data.Repository.Acid.CalendarAcid 
     (initialEntryListState, EntryList(..), NewEntry(..), EntryById(..), AllEntrys(..),
@@ -8,7 +8,7 @@ import Data.Acid                       ( Query, Update, makeAcidic )
 import Data.IxSet                      ( Indexable(..), ixFun, ixSet )
 
 import Data.Domain.CalendarEntry       ( CalendarEntry(..) )
-import Data.Domain.Types               ( EntryId, UserId )
+import Data.Domain.Types               ( EntryId )
 
 import qualified Data.Repository.Acid.InterfaceAcid      as   InterfaceAcid
 
