@@ -12,12 +12,9 @@ import Control.Monad.TestFixture.TH
 
 import Control.Monad.Identity        ( Identity )
 import Control.Monad.Writer.Class    ( tell )
-import Control.Monad.Writer          ( execWriter )
-
-import Happstack.Foundation          ( HasAcidState(..) )
 
 import Data.Repository.MonadDB.Calendar     ( MonadDBCalendar )
-import Data.Repository.Acid.CalendarAcid    ( NewEntry(..), DeleteEntry(..), UpdateEntry(..), EntryList )
+import Data.Repository.Acid.CalendarAcid    ( NewEntry(..), DeleteEntry(..), UpdateEntry(..) )
 import Data.Domain.CalendarEntry            as CalendarEntry
 import Data.Domain.User                     as User
 
