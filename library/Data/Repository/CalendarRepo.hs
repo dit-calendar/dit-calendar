@@ -33,11 +33,11 @@ updateDescription calendarEntry newDescription =
     updateCalendar calendarEntry {CalendarEntry.description = newDescription}
 
 deleteTaskFromCalendarEntry :: DBRepo.MonadDBCalendar m =>
-                            Int -> CalendarEntry -> m ()
-deleteTaskFromCalendarEntry taskId calendarEntry =
+                            CalendarEntry -> Int -> m ()
+deleteTaskFromCalendarEntry calendarEntry taskId =
   updateCalendar calendarEntry {tasks = delete taskId (tasks calendarEntry)}
 
 addTaskToCalendarEntry :: DBRepo.MonadDBCalendar m =>
-                        TaskId -> CalendarEntry -> m ()
-addTaskToCalendarEntry taskId calendarEntry =
+                        CalendarEntry -> TaskId -> m ()
+addTaskToCalendarEntry calendarEntry taskId =
     updateCalendar calendarEntry {tasks = tasks calendarEntry ++ [taskId]}

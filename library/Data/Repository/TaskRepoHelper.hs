@@ -26,7 +26,7 @@ createTask :: (MonadDBUser m, MonadDBTask m, MonadDBCalendar m) =>
             CalendarEntry -> String -> m Task
 createTask calendarEntry description = do
     mTask <- TaskRepo.createTask description
-    CalendarRepo.addTaskToCalendarEntry (Task.taskId mTask) calendarEntry
+    CalendarRepo.addTaskToCalendarEntry calendarEntry (Task.taskId mTask)
     return mTask
 
 deleteTaskFromAllUsers :: (MonadDBUser m, MonadIO m) =>
@@ -35,19 +35,19 @@ deleteTaskFromAllUsers task =
     foldr (\ x ->
       (>>) (do
         user <- UserRepo.getUser x
-        UserRepo.deleteTaskFromUser x user ))
+        UserRepo.deleteTaskFromUser user x ))
     (return ()) $ Task.belongingUsers task
 
 addUserToTask :: (MonadDBUser m, MonadDBTask m, MonadIO m) =>
                 Task -> UserId -> m ()
 addUserToTask task userId = do
     user <- UserRepo.getUser userId
-    UserRepo.addTaskToUser (taskId task) user
+    UserRepo.addTaskToUser user (taskId task)
     TaskRepo.updateTask task {belongingUsers = belongingUsers task ++ [userId]}
 
 removeUserFromTask :: (MonadDBUser m, MonadDBTask m, MonadIO m) =>
                     Task -> UserId -> m ()
 removeUserFromTask task userId = do
     user <- UserRepo.getUser userId
-    UserRepo.deleteTaskFromUser (taskId task) user
+    UserRepo.deleteTaskFromUser user (taskId task)
     TaskRepo.updateTask task {belongingUsers = delete userId (belongingUsers task)}

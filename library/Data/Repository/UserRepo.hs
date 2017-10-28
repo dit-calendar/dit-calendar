@@ -39,12 +39,12 @@ deleteCalendarEntryFromUser :: DBRepo.MonadDBUser m =>
 deleteCalendarEntryFromUser user entryId =
     updateUser user {calendarEntries = delete entryId (calendarEntries user)}
 
-addTaskToUser :: DBRepo.MonadDBUser m => TaskId -> User -> m ()
-addTaskToUser taskId user =
+addTaskToUser :: DBRepo.MonadDBUser m => User -> TaskId -> m ()
+addTaskToUser user taskId =
     updateUser user {belongingTasks = belongingTasks user ++ [taskId]}
 
-deleteTaskFromUser :: DBRepo.MonadDBUser m => TaskId -> User -> m ()
-deleteTaskFromUser taskId user =
+deleteTaskFromUser :: DBRepo.MonadDBUser m => User -> TaskId -> m ()
+deleteTaskFromUser user taskId =
     updateUser user {belongingTasks = delete taskId (belongingTasks user)}
 
 getUser :: (DBRepo.MonadDBUser m, MonadIO m) => UserId -> m User

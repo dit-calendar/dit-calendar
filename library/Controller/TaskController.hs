@@ -60,6 +60,6 @@ deleteTask entryId taskId = do
     entryExist entryId (\e -> do
         mTask <- query (TaskAcid.TaskById taskId)
         taskExist taskId (\t -> do
-            CalendarRepo.deleteTaskFromCalendarEntry taskId e
+            CalendarRepo.deleteTaskFromCalendarEntry e taskId
             TaskRepoHelper.deleteTask t
             ok $ toResponse $ "Task with id:" ++ show taskId ++ "deleted") mTask) mEntry

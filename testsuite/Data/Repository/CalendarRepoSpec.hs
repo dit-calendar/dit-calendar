@@ -48,11 +48,11 @@ spec = describe "CalendarRepo" $ do
         log!!0 `shouldBe` show newCalc
     it "addTaskToCalendarEntry" $ do
         let calc = CalendarEntry{ description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[1]}
-        let (_, log) = evalTestFixture (CalendarRepo.addTaskToCalendarEntry 2 calc) fixture
+        let (_, log) = evalTestFixture (CalendarRepo.addTaskToCalendarEntry calc 2) fixture
         let newCalc = calc {tasks = [1, 2]}
         log!!0 `shouldBe` show newCalc
     it "deleteTaskFromCalendarEntry" $ do
         let calc = CalendarEntry{ description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[1,2,3]}
-        let (_, log) = evalTestFixture (CalendarRepo.deleteTaskFromCalendarEntry 2 calc) fixture
+        let (_, log) = evalTestFixture (CalendarRepo.deleteTaskFromCalendarEntry calc 2) fixture
         let newCalc = calc {tasks = [1, 3]}
         log!!0 `shouldBe` show newCalc
