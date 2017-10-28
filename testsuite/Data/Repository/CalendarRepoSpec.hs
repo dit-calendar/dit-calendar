@@ -39,8 +39,8 @@ spec = describe "CalendarRepo" $ do
         CalendarEntry.userId result `shouldBe` 10
         CalendarEntry.tasks result `shouldBe` []
     it "deleteEntry" $ do
-        let (_, log) = evalTestFixture (CalendarRepo.deleteCalendar [10, 15]) fixture
-        log `shouldBe` ["10"::String, "15"::String]
+        let (_, log) = evalTestFixture (CalendarRepo.deleteCalendar 15) fixture
+        log `shouldBe` ["15"::String]
     it "updateDescription" $ do
         let calc = CalendarEntry{ description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[]}
         let (_, log) = evalTestFixture (CalendarRepo.updateDescription calc "termin3") fixture

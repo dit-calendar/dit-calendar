@@ -21,9 +21,8 @@ createEntry description user = let entry = CalendarEntry {
                         } in
     DBRepo.create (CalendarAcid.NewEntry entry)
 
-deleteCalendar :: DBRepo.MonadDBCalendar m => [EntryId] -> m ()
-deleteCalendar = foldr (\ x -> (>>) (DBRepo.delete $ CalendarAcid.DeleteEntry x))
-    (return ())
+deleteCalendar :: DBRepo.MonadDBCalendar m => EntryId -> m ()
+deleteCalendar entryId = DBRepo.delete $ CalendarAcid.DeleteEntry entryId
 
 updateCalendar :: DBRepo.MonadDBCalendar m => CalendarEntry -> m ()
 updateCalendar calendarEntry = DBRepo.update $ CalendarAcid.UpdateEntry calendarEntry
