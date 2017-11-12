@@ -79,11 +79,10 @@ test-suite hspec
                        hspec >= 2.2,
                        test-fixture == 0.5.*,
                        directory == 1.2.*,
-                       mtl,
-                       acid-state,
-                       happstack-foundation,
-                       ixset,
-                       containers,
+                       mtl == 2.2.*,
+                       acid-state == 0.14.*,
+                       happstack-foundation == 0.5.*,
+                       ixset == 1.0.*,
                        dit-calendar
   default-language:    Haskell2010
   hs-source-dirs:      testsuite
@@ -92,7 +91,7 @@ test-suite hspec
 
 test-suite hlint
   build-depends:
-                       base,
+                       base >=4.9 && <4.10,
                        hlint == 2.0.*,
                        dit-calendar
   default-language:    Haskell2010
