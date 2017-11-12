@@ -33,7 +33,7 @@ fixture = Fixture { _create = \(NewTask task) -> return task
                   , _update = \(UpdateTask a) -> tell (show a)
                   , _query  = \(TaskById a)   -> return (Just taskFromDb)}
 
-instance MonadIO (TestFixtureT Fixture Char () Identity) where
+instance MonadIO Identity where
     liftIO = undefined
 
 spec = describe "CalendarRepo" $ do

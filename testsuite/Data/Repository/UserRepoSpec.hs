@@ -30,7 +30,7 @@ fixture = Fixture { _create = \(NewUser a)    -> return a
                   , _update = \(UpdateUser a) -> tell [show a]
                   , _query = \(UserById a)    -> return (Just userFromDb)}
 
-instance MonadIO (TestFixtureT Fixture String () Identity) where
+instance MonadIO Identity where
     liftIO = undefined
 
 
