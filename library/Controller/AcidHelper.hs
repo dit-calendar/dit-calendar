@@ -2,7 +2,7 @@
 
 module Controller.AcidHelper ( CtrlV, withAcid, Acid ) where
 
-import Prelude              hiding ( head, id )
+import Prelude
 import System.FilePath      ( (</>) )
 import Data.Maybe           ( fromMaybe )
 import Control.Exception    ( bracket )

@@ -2,7 +2,7 @@
 
 module Route.PageEnum where
 
-import Prelude                hiding ( head )
+import Prelude
 
 import Data.Data                     ( Data, Typeable )
 import Web.Routes.TH                 ( derivePathInfo )

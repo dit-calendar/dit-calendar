@@ -2,7 +2,7 @@ module Data.Repository.UserRepo
     ( deleteUser, updateName, addCalendarEntryToUser, addTaskToUser
     , deleteCalendarEntryFromUser, deleteTaskFromUser, getUser, createUser ) where
 
-import Prelude hiding ( head )
+import Prelude
 import Control.Monad.IO.Class
 import Data.List                         ( delete )
 import Data.Maybe                        ( fromJust )
