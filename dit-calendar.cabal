@@ -59,11 +59,11 @@ library
                        acid-state == 0.14.*,
                        safecopy == 0.9.*,
                        happstack-server == 7.4.*,
-                       hsp,
-                       web-routes,
-                       web-routes-th,
-                       web-routes-happstack,
-                       happstack-foundation
+                       hsp == 0.10.*,
+                       web-routes == 0.27.*,
+                       web-routes-th == 0.22.*,
+                       web-routes-happstack == 0.23.*,
+                       happstack-foundation == 0.5.*
 
 
 executable dit-calendar
