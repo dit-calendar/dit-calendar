@@ -3,7 +3,7 @@ h3. Nutzer
 ** happstack-authenticate für Anmeldung und Regestirierung benutzten
 ** benötigt wohl web-routes https://groups.google.com/forum/#!topic/happs/n5NJFfx-KIs
 
-h4. Gruppen
+h4. Gruppen (Wurde fürs erste augeschlossen. Die Funktionalität wird durch Nutzer gegeben, die abonierbar sind)
 * Es sollen Gruppen von Nutzern angelegt werden können. Eine Gruppe hat mehr als einen Nutzer.
 ** Optional: Eine Gruppe kann eine Untergruppe besitzen (Schleifen muss man verbieten!)
 
