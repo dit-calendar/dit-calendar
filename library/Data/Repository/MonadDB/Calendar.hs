@@ -1,15 +1,10 @@
-{-# LANGUAGE FlexibleInstances #-}
-
 module Data.Repository.MonadDB.Calendar where
 
-import Control.Monad.IO.Class
-import HSP.XMLGenerator                       ( XMLGenT )
-import Happstack.Foundation   as Foundation   ( update, query, FoundationT' )
+import Happstack.Foundation   as Foundation
 
-import Controller.AcidHelper      ( Acid )
-import Route.PageEnum             ( SiteMap )
+import Controller.AcidHelper      ( App )
+import Data.Domain.CalendarEntry  ( CalendarEntry )
 
-import Data.Domain.CalendarEntry        ( CalendarEntry )
 import qualified Data.Repository.Acid.CalendarAcid    as CalendarAcid
 
 class Monad m => MonadDBCalendar m where
@@ -18,7 +13,7 @@ class Monad m => MonadDBCalendar m where
   delete :: CalendarAcid.DeleteEntry -> m ()
   query  :: CalendarAcid.EntryById -> m (Maybe CalendarEntry)
 
-instance MonadDBCalendar (XMLGenT (FoundationT' SiteMap Acid () IO)) where
+instance MonadDBCalendar App where
     create = Foundation.update
     update = Foundation.update
     delete = Foundation.update

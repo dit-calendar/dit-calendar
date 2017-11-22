@@ -1,41 +1,53 @@
-{-# LANGUAGE MultiParamTypeClasses, FlexibleInstances #-}
+{-# LANGUAGE FlexibleContexts, GeneralizedNewtypeDeriving,
+    MultiParamTypeClasses, OverloadedStrings, ScopedTypeVariables,
+    TypeFamilies, FlexibleInstances #-}
 
-module Controller.AcidHelper ( CtrlV, withAcid, Acid ) where
+module Controller.AcidHelper ( CtrlV, withAcid, Acid, App(..) ) where
 
 import Prelude
 import System.FilePath      ( (</>) )
 import Data.Maybe           ( fromMaybe )
 import Control.Exception    ( bracket )
+import Control.Monad        ( MonadPlus )
+import Control.Monad.Reader ( MonadReader, ReaderT, ask )
+import Control.Monad.Trans  ( MonadIO(..) )
+import Control.Applicative  ( Applicative, Alternative )
 
 import Data.Acid            ( openLocalStateFrom, AcidState(..) )
 import Data.Acid.Local      ( createCheckpointAndClose )
-import Happstack.Server     ( Response )
-import Happstack.Foundation ( FoundationT, HasAcidState(..), FoundationT', getAcidSt )
+import Happstack.Server
+    ( Happstack, HasRqData, Response, ServerPartT(..)
+    , WebMonad, FilterMonad, ServerMonad )
+import Happstack.Foundation ( HasAcidState(..) )
 
 import qualified Data.Repository.Acid.UserAcid          as UserAcid
 import qualified Data.Repository.Acid.CalendarAcid      as CalendarAcid
 import qualified Data.Repository.Acid.TaskAcid          as TaskAcid
-import Route.PageEnum       ( SiteMap )
 
 
-type App     = FoundationT SiteMap Acid () IO
+newtype App a = App { unApp :: ServerPartT (ReaderT Acid IO) a }
+    deriving ( Functor, Alternative, Applicative, Monad
+             , MonadPlus, MonadIO, HasRqData, ServerMonad
+             , WebMonad Response, FilterMonad Response
+             , Happstack, MonadReader Acid
+             )
 type CtrlV   = App Response
 
 data Acid = Acid
    {
      acidUserListState         :: AcidState UserAcid.UserList
      , acidEntryListState      :: AcidState CalendarAcid.EntryList
-     , acidTaskListState      :: AcidState TaskAcid.TaskList
+     , acidTaskListState       :: AcidState TaskAcid.TaskList
    }
 
-instance (Functor m, Monad m) => HasAcidState (FoundationT' url Acid reqSt m) UserAcid.UserList where
-    getAcidState = acidUserListState <$> getAcidSt
+instance HasAcidState App UserAcid.UserList where
+    getAcidState = acidUserListState <$> ask
 
-instance (Functor m, Monad m) => HasAcidState (FoundationT' url Acid reqSt m) CalendarAcid.EntryList where
-    getAcidState = acidEntryListState <$> getAcidSt
+instance HasAcidState App CalendarAcid.EntryList where
+    getAcidState = acidEntryListState <$> ask
 
-instance (Functor m, Monad m) => HasAcidState (FoundationT' url Acid reqSt m) TaskAcid.TaskList where
-    getAcidState = acidTaskListState <$> getAcidSt
+instance HasAcidState App TaskAcid.TaskList where
+    getAcidState = acidTaskListState <$> ask
 
 withAcid :: Maybe FilePath -- ^ state directory
          -> (Acid -> IO a) -- ^ action

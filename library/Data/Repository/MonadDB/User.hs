@@ -1,15 +1,10 @@
-{-# LANGUAGE FlexibleInstances #-}
-
 module Data.Repository.MonadDB.User where
 
-import Control.Monad.IO.Class
-import HSP.XMLGenerator                       ( XMLGenT )
-import Happstack.Foundation   as Foundation   ( update, query, FoundationT' )
+import Happstack.Foundation   as Foundation
 
-import Controller.AcidHelper      ( Acid )
-import Route.PageEnum             ( SiteMap )
-
+import Controller.AcidHelper      ( App )
 import Data.Domain.User           ( User )
+
 import qualified Data.Repository.Acid.UserAcid    as UserAcid
 
 class Monad m => MonadDBUser m where
@@ -18,7 +13,7 @@ class Monad m => MonadDBUser m where
   delete :: UserAcid.DeleteUser -> m ()
   query  :: UserAcid.UserById -> m (Maybe User)
 
-instance MonadDBUser (XMLGenT (FoundationT' SiteMap Acid () IO)) where
+instance MonadDBUser App where
     create = Foundation.update
     update = Foundation.update
     delete = Foundation.update
