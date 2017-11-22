@@ -2,7 +2,7 @@
     MultiParamTypeClasses, OverloadedStrings, ScopedTypeVariables,
     TypeFamilies, FlexibleInstances #-}
 
-module Controller.AcidHelper ( CtrlV, withAcid, Acid, App(..) ) where
+module Controller.AcidHelper ( CtrlV, CtrlV', App(..), withAcid, Acid ) where
 
 import Prelude
 import System.FilePath      ( (</>) )
@@ -15,10 +15,13 @@ import Control.Applicative  ( Applicative, Alternative )
 
 import Data.Acid            ( openLocalStateFrom, AcidState(..) )
 import Data.Acid.Local      ( createCheckpointAndClose )
+import Web.Routes           ( RouteT )
 import Happstack.Server
     ( Happstack, HasRqData, Response, ServerPartT(..)
     , WebMonad, FilterMonad, ServerMonad )
 import Happstack.Foundation ( HasAcidState(..) )
+
+import Route.PageEnum            ( SiteMap )
 
 import qualified Data.Repository.Acid.UserAcid          as UserAcid
 import qualified Data.Repository.Acid.CalendarAcid      as CalendarAcid
@@ -31,7 +34,8 @@ newtype App a = App { unApp :: ServerPartT (ReaderT Acid IO) a }
              , WebMonad Response, FilterMonad Response
              , Happstack, MonadReader Acid
              )
-type CtrlV   = App Response
+type CtrlV'   = RouteT SiteMap App
+type CtrlV    = CtrlV' Response
 
 data Acid = Acid
    {
@@ -40,13 +44,13 @@ data Acid = Acid
      , acidTaskListState       :: AcidState TaskAcid.TaskList
    }
 
-instance HasAcidState App UserAcid.UserList where
+instance HasAcidState CtrlV' UserAcid.UserList where
     getAcidState = acidUserListState <$> ask
 
-instance HasAcidState App CalendarAcid.EntryList where
+instance HasAcidState CtrlV' CalendarAcid.EntryList where
     getAcidState = acidEntryListState <$> ask
 
-instance HasAcidState App TaskAcid.TaskList where
+instance HasAcidState CtrlV' TaskAcid.TaskList where
     getAcidState = acidTaskListState <$> ask
 
 withAcid :: Maybe FilePath -- ^ state directory
