@@ -1,8 +1,8 @@
 module Route.Routing ( route ) where
 
-import Happstack.Server          ( ok, toResponse, Method(GET, POST, DELETE, PUT), nullDir
+import Happstack.Server          ( ok, Method(GET, POST, DELETE, PUT), nullDir
                                  , Request(rqMethod), askRq , BodyPolicy(..)
-                                 , decodeBody, defaultBodyPolicy, look)
+                                 , decodeBody, defaultBodyPolicy, look )
 
 import Data.Domain.Types         ( UserId, EntryId, TaskId )
 import Route.PageEnum            ( SiteMap(..) )
