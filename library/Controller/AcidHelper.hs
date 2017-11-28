@@ -21,7 +21,7 @@ import Happstack.Server
     , WebMonad, FilterMonad, ServerMonad )
 import Happstack.Foundation ( HasAcidState(..) )
 
-import Route.PageEnum            ( SiteMap )
+import Route.PageEnum            ( Sitemap )
 
 import qualified Data.Repository.Acid.UserAcid          as UserAcid
 import qualified Data.Repository.Acid.CalendarAcid      as CalendarAcid
@@ -34,7 +34,7 @@ newtype App a = App { unApp :: ServerPartT (ReaderT Acid IO) a }
              , WebMonad Response, FilterMonad Response
              , Happstack, MonadReader Acid
              )
-type CtrlV'   = RouteT SiteMap App
+type CtrlV'   = RouteT Sitemap App
 type CtrlV    = CtrlV' Response
 
 data Acid = Acid

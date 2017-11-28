@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell, TypeOperators, DeriveDataTypeable, OverloadedStrings #-}
 
-module Route.PageEnum ( SiteMap(..), sitemap ) where
+module Route.PageEnum ( Sitemap(..), urlSitemapParser ) where
 
 import Prelude                 hiding ( (.) )
 
@@ -13,7 +13,7 @@ import Data.Domain.Types             ( UserId, EntryId, TaskId )
 
 
 --A url type
-data SiteMap
+data Sitemap
   = Home
   | User UserId
   | Userdetail
@@ -22,10 +22,10 @@ data SiteMap
   | TaskWithCalendar TaskId EntryId
   | TaskWithUser TaskId UserId
   deriving (Eq, Ord, Read, Show, Data, Typeable)
-$(makeBoomerangs ''SiteMap)
+$(makeBoomerangs ''Sitemap)
 
-sitemap :: Router () (SiteMap :- ())
-sitemap =
+urlSitemapParser :: Router () (Sitemap :- ())
+urlSitemapParser =
        rHome
     <> rCalendarEntry . (lit "calendarentry" </> int)
     <> lit "user" . userMapping

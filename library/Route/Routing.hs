@@ -5,7 +5,7 @@ import Happstack.Server          ( ok, Method(GET, POST, DELETE, PUT), nullDir
                                  , decodeBody, defaultBodyPolicy, look )
 
 import Data.Domain.Types           ( UserId, EntryId, TaskId )
-import Route.PageEnum              ( SiteMap(..) )
+import Route.PageEnum              ( Sitemap(..) )
 import Controller.AcidHelper       ( CtrlV )
 import Controller.ControllerHelper ( okResponse )
 
@@ -20,7 +20,7 @@ myPolicy :: BodyPolicy
 myPolicy = defaultBodyPolicy "/tmp/" 0 1000 1000
 
 -- | the route mapping function
-route :: SiteMap -> CtrlV
+route :: Sitemap -> CtrlV
 route url =
   do  decodeBody myPolicy
       case url of
