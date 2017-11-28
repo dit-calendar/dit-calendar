@@ -59,10 +59,12 @@ library
                        acid-state == 0.14.*,
                        safecopy == 0.9.*,
                        happstack-server == 7.4.*,
+                       boomerang == 1.4.*,
                        hsp == 0.10.*,
                        web-routes == 0.27.*,
                        web-routes-th == 0.22.*,
                        web-routes-happstack == 0.23.*,
+                       web-routes-boomerang == 0.28.*,
                        happstack-foundation == 0.5.*
 
 
