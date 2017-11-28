@@ -28,5 +28,5 @@ site =
 --zu HomePage zu erreichen unter http://localhost:8000
 run :: IO ()
 run = withAcid Nothing $ \acid ->
-    let appWithRoutetSite = implSite "http://localhost:8000" "/route" site in
+    let appWithRoutetSite = implSite "http://localhost:8000" "" site in
         simpleHTTP nullConf $ runApp acid appWithRoutetSite

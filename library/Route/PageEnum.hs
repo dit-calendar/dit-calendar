@@ -33,6 +33,6 @@ sitemap =
     where
       userMapping = rUserdetail
             <> rUser </> int
-      taskMapping = rTask  </> int
+      taskMapping = rTask </> int
             <> rTaskWithUser </> int </> lit "user" </> int
             <> rTaskWithCalendar </> int </> lit "calendarentry" </> int
