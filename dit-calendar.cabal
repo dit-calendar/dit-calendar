@@ -51,16 +51,13 @@ library
                        AppStart
   build-depends:
                        base >=4.9 && <4.10,
-                       text == 1.2.*,
                        mtl == 2.2.*,
                        ixset == 1.0.*,
-                       monad-control == 1.0.*,
                        filepath == 1.4.*,
                        acid-state == 0.14.*,
                        safecopy == 0.9.*,
                        happstack-server == 7.4.*,
                        boomerang == 1.4.*,
-                       hsp == 0.10.*,
                        web-routes == 0.27.*,
                        web-routes-th == 0.22.*,
                        web-routes-happstack == 0.23.*,
@@ -79,7 +76,7 @@ test-suite hspec
   build-depends:
                        base >=4.9 && <4.10,
                        hspec >= 2.2,
-                       test-fixture == 0.5.*,
+                       test-fixture == 0.5.1.*,
                        directory == 1.2.*,
                        mtl == 2.2.*,
                        acid-state == 0.14.*,
