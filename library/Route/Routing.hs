@@ -6,8 +6,8 @@ import Happstack.Server          ( ok, Method(GET, POST, DELETE, PUT), nullDir
 
 import Data.Domain.Types         ( UserId, EntryId, TaskId )
 import Route.PageEnum            ( SiteMap(..) )
-
 import Controller.AcidHelper     ( CtrlV )
+
 import qualified Controller.UserController      as UserController
 import qualified Controller.HomeController      as HomeController
 import qualified Controller.CalendarController  as CalendarController
@@ -73,8 +73,8 @@ routeTask taskId = do
       description <- look "description"
       TaskController.updateTask taskId description
 
-routeTaskWithCalendar :: EntryId ->  TaskId -> CtrlV
-routeTaskWithCalendar entryId taskId = do
+routeTaskWithCalendar :: TaskId -> EntryId -> CtrlV
+routeTaskWithCalendar taskId entryId = do
   m <- getHttpMethod
   case m of
     DELETE ->
