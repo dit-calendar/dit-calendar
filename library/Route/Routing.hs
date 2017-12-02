@@ -4,9 +4,10 @@ import Happstack.Server          ( ok, Method(GET, POST, DELETE, PUT), nullDir
                                  , Request(rqMethod), askRq , BodyPolicy(..)
                                  , decodeBody, defaultBodyPolicy, look )
 
-import Data.Domain.Types         ( UserId, EntryId, TaskId )
-import Route.PageEnum            ( SiteMap(..) )
-import Controller.AcidHelper     ( CtrlV )
+import Data.Domain.Types           ( UserId, EntryId, TaskId )
+import Route.PageEnum              ( Sitemap(..) )
+import Controller.AcidHelper       ( CtrlV )
+import Controller.ControllerHelper ( okResponse )
 
 import qualified Controller.UserController      as UserController
 import qualified Controller.HomeController      as HomeController
@@ -19,7 +20,7 @@ myPolicy :: BodyPolicy
 myPolicy = defaultBodyPolicy "/tmp/" 0 1000 1000
 
 -- | the route mapping function
-route :: SiteMap -> CtrlV
+route :: Sitemap -> CtrlV
 route url =
   do  decodeBody myPolicy
       case url of
@@ -33,17 +34,14 @@ route url =
 
 getHttpMethod = do
   nullDir
-  g <- greet
+  g <- rqMethod <$> askRq
   ok g
-    where
-  greet =
-    rqMethod <$> askRq
 
 routeUser :: UserId -> CtrlV
 routeUser userId = do
   m <- getHttpMethod
   case m of
-    GET  ->
+    GET ->
       UserController.userPage userId
     DELETE ->
       UserController.deleteUser userId
@@ -62,6 +60,7 @@ routeDetailUser = do
     POST -> do
       name <- look "name"
       UserController.createUser name
+    other -> notImplemented other
 
 routeTask :: TaskId -> CtrlV
 routeTask taskId = do
@@ -72,6 +71,7 @@ routeTask taskId = do
     PUT -> do
       description <- look "description"
       TaskController.updateTask taskId description
+    other -> notImplemented other
 
 routeTaskWithCalendar :: TaskId -> EntryId -> CtrlV
 routeTaskWithCalendar taskId entryId = do
@@ -79,6 +79,7 @@ routeTaskWithCalendar taskId entryId = do
   case m of
     DELETE ->
       TaskController.deleteTask entryId taskId
+    other -> notImplemented other
 
 routeTaskWithUser :: TaskId -> UserId -> CtrlV
 routeTaskWithUser taskId userId = do
@@ -88,6 +89,7 @@ routeTaskWithUser taskId userId = do
       TaskController.removeUserFromTask taskId userId
     PUT ->
       TaskController.addUserToTask taskId userId
+    other -> notImplemented other
 
 routeCalendarEntry :: EntryId -> CtrlV
 routeCalendarEntry entryId = do
@@ -103,3 +105,6 @@ routeCalendarEntry entryId = do
     PUT -> do
       description <- look "description"
       CalendarController.updateCalendarEntry entryId description
+
+notImplemented :: Method -> CtrlV
+notImplemented httpMethod = okResponse ("HTTP-Method: " ++ show httpMethod ++ " not implemented")
