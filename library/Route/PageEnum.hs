@@ -15,6 +15,8 @@ import Data.Domain.Types             ( UserId, EntryId, TaskId )
 --A url type
 data Sitemap
   = Home
+ -- | Authenticate AuthenticateURL
+  | Restricted
   | User UserId
   | Userdetail
   | CalendarEntry EntryId
