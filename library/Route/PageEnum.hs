@@ -8,6 +8,7 @@ import Control.Category              ( (.) )
 import Web.Routes.Boomerang          ( Router, int, lit, (:-), (</>), (<>) )
 import Data.Data                     ( Data, Typeable )
 import Text.Boomerang.TH             ( makeBoomerangs )
+import Happstack.Authenticate.Core   ( AuthenticateURL )
 
 import Data.Domain.Types             ( UserId, EntryId, TaskId )
 
@@ -15,7 +16,7 @@ import Data.Domain.Types             ( UserId, EntryId, TaskId )
 --A url type
 data Sitemap
   = Home
- -- | Authenticate AuthenticateURL
+  | Authenticate AuthenticateURL
   | Restricted
   | User UserId
   | Userdetail

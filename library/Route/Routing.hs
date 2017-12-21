@@ -3,12 +3,13 @@ module Route.Routing ( route ) where
 import Happstack.Server          ( ServerPartT(..), Response, ok, Method(GET, POST, DELETE, PUT), nullDir
                                  , Request(rqMethod), askRq , BodyPolicy(..)
                                  , decodeBody, defaultBodyPolicy, look )
-import Web.Routes                  ( RouteT(..), nestURL )
+import Web.Routes                  ( RouteT(..), nestURL, mapRouteT )
 import Happstack.Server         ( ok, toResponse, unauthorized, getHeaderM )
 import Happstack.Authenticate.Core ( AuthenticateURL(..), AuthenticateConfig(..), AuthenticateState, decodeAndVerifyToken )
 import Data.Acid                   ( AcidState )
 import Control.Monad.IO.Class      ( liftIO )
 import Data.Time                   ( getCurrentTime )
+import Happstack.Foundation        ( lift )
 
 import Data.Domain.Types           ( UserId, EntryId, TaskId )
 import Route.PageEnum              ( Sitemap(..) )
@@ -37,7 +38,8 @@ route authenticateState routeAuthenticate url =
       case url of
         Home                 -> HomeController.homePage
         Restricted ->  api authenticateState
-        --Authenticate authenticateURL -> nestURL Authenticate $ routeAuthenticate authenticateURL
+        Authenticate authenticateURL -> nestURL Authenticate $
+            mapRouteT lift $ routeAuthenticate authenticateURL
         Userdetail           -> routeDetailUser
         User i               -> routeUser i
         CalendarEntry i      -> routeCalendarEntry i
