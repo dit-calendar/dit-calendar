@@ -2,33 +2,26 @@
 
 module AppStart where
 
-import Control.Exception (bracket, finally)
+import Control.Exception ( finally )
 import Control.Monad.Reader  ( runReaderT )
-import Happstack.Server      ( ServerPartT(..), mapServerPartT, nullConf, simpleHTTP
-                             , Response, ServerPartT )
+import Data.Acid ( AcidState )
+
 import Web.Routes.Boomerang  ( boomerangSite )
 import Web.Routes.Happstack  ( implSite )
 import Web.Routes            ( runRouteT, Site(..), setDefault, RouteT(..) )
+
+import Happstack.Server      ( ServerPartT(..), mapServerPartT, nullConf, simpleHTTP
+                             , Response, ServerPartT )
+import Happstack.Authenticate.Core ( AuthenticateURL(..), AuthenticateConfig(..), AuthenticateState, usernamePolicy )
+import Happstack.Authenticate.Route ( initAuthentication )
+import Happstack.Authenticate.Password.Core( PasswordConfig(..) )
+import Happstack.Authenticate.Password.Route ( initPassword )
 
 import Controller.AcidHelper        ( withAcid, Acid, App(..) )
 import Route.Routing                ( route )
 import Route.PageEnum               ( Sitemap(..), urlSitemapParser )
 
-import Data.Acid (AcidState)
-
-import Happstack.Authenticate.Core (AuthenticateURL(..), AuthenticateConfig(..), AuthenticateState, Email(..), User(..), Username(..), UserId(..), GetAuthenticateState(..), decodeAndVerifyToken, tokenUser, usernamePolicy)
-import Happstack.Authenticate.Route (initAuthentication)
-import Happstack.Authenticate.Password.Controllers(usernamePasswordCtrl)
-import Happstack.Authenticate.OpenId.Controllers(openIdCtrl)
-import Happstack.Authenticate.Password.Core(PasswordConfig(..), PasswordState)
-import Happstack.Authenticate.Password.Route (initPassword)
-import Happstack.Authenticate.Password.URL(PasswordURL(..))
-import Happstack.Authenticate.OpenId.Core  (OpenIdState)
-import Happstack.Authenticate.OpenId.Route (initOpenId)
-import Happstack.Authenticate.OpenId.URL (OpenIdURL(..))
-
 import qualified Data.Text as T
-import qualified Data.Text.Encoding as T
 
 
 runApp :: Acid -> App a -> ServerPartT IO a
