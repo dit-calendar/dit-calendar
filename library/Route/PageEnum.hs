@@ -5,10 +5,10 @@ module Route.PageEnum ( Sitemap(..), urlSitemapParser ) where
 import Prelude                 hiding ( (.) )
 
 import Control.Category              ( (.) )
-import Web.Routes.Boomerang          ( Router, int, lit, (:-), (</>), (<>) )
+import Web.Routes.Boomerang          ( Router, int, anyText, lit, (:-), (</>), (<>) )
 import Data.Data                     ( Data, Typeable )
 import Text.Boomerang.TH             ( makeBoomerangs )
-import Happstack.Authenticate.Core   ( AuthenticateURL )
+import Happstack.Authenticate.Core   ( AuthenticateURL, authenticateURL )
 
 import Data.Domain.Types             ( UserId, EntryId, TaskId )
 
@@ -31,6 +31,7 @@ urlSitemapParser :: Router () (Sitemap :- ())
 urlSitemapParser =
        rHome
     <> rCalendarEntry . (lit "calendarentry" </> int)
+    <> rAuthenticate . (lit "authenticate" </> authenticateURL)
     <> lit "user" . userMapping
     <> lit "task" . taskMapping
     where

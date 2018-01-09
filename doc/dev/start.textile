@@ -25,3 +25,11 @@ h4. Test Coverage
 
 h3. Code Quality
 * http://taylor.fausak.me/2014/03/04/haskeleton-a-haskell-project-skeleton/
+
+
+h3. URL's
+h4. Login
+* curl -H "Content-Type: application/json" -X POST -d '{"user":"alex","password":"12345"}' http://localhost:8000/authenticate/authentication-methods/password/token
+
+h4. User erstellen
+* curl -H "Content-Type: application/json" -X POST -d '{"naPassword":"12345","naPasswordConfirm":"12345", "naUser":{"email": "a.befort@googlemail.com", "username":"alex", "userId":0}}' http://localhost:8000/authenticate/authentication-methods/password/account
