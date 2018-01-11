@@ -2,7 +2,7 @@
     MultiParamTypeClasses, OverloadedStrings, ScopedTypeVariables,
     TypeFamilies, FlexibleInstances #-}
 
-module Controller.AcidHelper ( CtrlV, CtrlV', App(..), withAcid, Acid(..) ) where
+module Controller.AcidHelper ( CtrlV, CtrlV', App(..), withAcid, Acid ) where
 
 import Prelude
 import System.FilePath      ( (</>) )

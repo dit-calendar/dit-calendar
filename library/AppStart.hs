@@ -57,6 +57,9 @@ run =
        in
          initAuthentication Nothing authenticateConfig
            [ initPassword passwordConfig ]
-     (withAcid Nothing $ \acid ->
-          let appWithRoutetSite = implSite "http://localhost:8000" "" (site authenticateState routeAuthenticate) in
-              simpleHTTP nullConf $ runApp acid appWithRoutetSite) `finally` cleanup
+     withAcid Nothing
+      (\ acid ->
+         let appWithRoutetSite = implSite "http://localhost:8000" ""
+              (site authenticateState routeAuthenticate)
+            in simpleHTTP nullConf $ runApp acid appWithRoutetSite)
+      `finally` cleanup

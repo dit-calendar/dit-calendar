@@ -1,10 +1,9 @@
 module Route.Routing ( route ) where
 
 import Happstack.Server          ( ServerPartT(..), Response, ok, Method(GET, POST, DELETE, PUT), nullDir
-                                 , Request(rqMethod), askRq , BodyPolicy(..)
-                                 , decodeBody, defaultBodyPolicy, look, mapServerPartT )
+                                 , Request(rqMethod), askRq , BodyPolicy(..), unauthorized, getHeaderM
+                                 , decodeBody, defaultBodyPolicy, look, mapServerPartT, toResponse )
 import Web.Routes                  ( RouteT(..), nestURL, mapRouteT )
-import Happstack.Server         ( ok, toResponse, unauthorized, getHeaderM )
 import Happstack.Authenticate.Core ( AuthenticateURL(..), AuthenticateConfig(..), AuthenticateState, decodeAndVerifyToken )
 import Data.Acid                   ( AcidState )
 import Control.Monad.IO.Class      ( liftIO )
@@ -13,7 +12,7 @@ import Happstack.Foundation        ( lift, runReaderT, ReaderT, UnWebT )
 
 import Data.Domain.Types           ( UserId, EntryId, TaskId )
 import Route.PageEnum              ( Sitemap(..) )
-import Controller.AcidHelper       ( CtrlV, App(..), Acid(..) )
+import Controller.AcidHelper       ( CtrlV, App(..) )
 import Controller.ControllerHelper ( okResponse )
 
 import qualified Data.ByteString.Char8 as B
@@ -48,10 +47,7 @@ route authenticateState routeAuthenticate url =
         TaskWithUser t u     -> routeTaskWithUser t u
 
 mapServerPartTIO2App :: (ServerPartT IO) Response -> App Response
-mapServerPartTIO2App f = App{unApp = mapServerPartT mapIO2ReaderTAcid f}
-
-mapIO2ReaderTAcid :: UnWebT IO a -> UnWebT (ReaderT Acid IO) a
-mapIO2ReaderTAcid a = lift a
+mapServerPartTIO2App f = App{unApp = mapServerPartT lift f}
 
 api :: AcidState AuthenticateState -> CtrlV
 api authenticateState =
@@ -64,7 +60,7 @@ api authenticateState =
             mToken <- decodeAndVerifyToken authenticateState now (T.decodeUtf8 auth)
             case mToken of
               Nothing -> unauthorized $ toResponse "You are not authorized."
-              (Just (_, jwt)) -> ok $ toResponse $ "You are now authorized"
+              (Just (_, jwt)) -> okResponse "You are now authorized"
 
 getHttpMethod = do
   nullDir
