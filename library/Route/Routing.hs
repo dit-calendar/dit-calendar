@@ -1,23 +1,17 @@
 module Route.Routing ( route ) where
 
 import Happstack.Server          ( ServerPartT(..), Response, ok, Method(GET, POST, DELETE, PUT), nullDir
-                                 , Request(rqMethod), askRq , BodyPolicy(..), unauthorized, getHeaderM
-                                 , decodeBody, defaultBodyPolicy, look, mapServerPartT, toResponse )
+                                 , Request(rqMethod), askRq , BodyPolicy(..)
+                                 , decodeBody, defaultBodyPolicy, look, mapServerPartT )
 import Web.Routes                  ( RouteT(..), nestURL, mapRouteT )
-import Happstack.Authenticate.Core ( AuthenticateURL(..), AuthenticateConfig(..), AuthenticateState, decodeAndVerifyToken )
+import Happstack.Authenticate.Core ( AuthenticateURL(..) )
 import Data.Acid                   ( AcidState )
-import Control.Monad.IO.Class      ( liftIO )
-import Data.Time                   ( getCurrentTime )
 import Happstack.Foundation        ( lift, runReaderT, ReaderT, UnWebT )
 
 import Data.Domain.Types           ( UserId, EntryId, TaskId )
 import Route.PageEnum              ( Sitemap(..) )
 import Controller.AcidHelper       ( CtrlV, App(..) )
 import Controller.ControllerHelper ( okResponse )
-
-import qualified Data.ByteString.Char8 as B
-import qualified Data.Text as T
-import qualified Data.Text.Encoding as T
 
 import qualified Controller.UserController      as UserController
 import qualified Controller.HomeController      as HomeController
@@ -29,16 +23,13 @@ myPolicy :: BodyPolicy
 myPolicy = defaultBodyPolicy "/tmp/" 0 1000 1000
 
 -- | the route mapping function
-route :: AcidState AuthenticateState
-         -> (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response)
+route :: (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response)
          -> Sitemap -> CtrlV
-route authenticateState routeAuthenticate url =
+route routeAuthenticate url =
   do  decodeBody myPolicy
       case url of
         Home                 -> HomeController.homePage
-        Restricted ->  api authenticateState
-        -- Authenticate authenticateURL -> (test authenticateURL routeAuthenticate)
-        Authenticate authenticateURL -> mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
+        Authenticate authURL -> mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authURL
         Userdetail           -> routeDetailUser
         User i               -> routeUser i
         CalendarEntry i      -> routeCalendarEntry i
@@ -48,19 +39,6 @@ route authenticateState routeAuthenticate url =
 
 mapServerPartTIO2App :: (ServerPartT IO) Response -> App Response
 mapServerPartTIO2App f = App{unApp = mapServerPartT lift f}
-
-api :: AcidState AuthenticateState -> CtrlV
-api authenticateState =
-  do mAuth <- getHeaderM "Authorization"
-     case mAuth of
-       Nothing -> unauthorized $ toResponse "You are not authorized."
-       (Just auth') ->
-         do let auth = B.drop 7 auth'
-            now <- liftIO getCurrentTime
-            mToken <- decodeAndVerifyToken authenticateState now (T.decodeUtf8 auth)
-            case mToken of
-              Nothing -> unauthorized $ toResponse "You are not authorized."
-              (Just (_, jwt)) -> okResponse "You are now authorized"
 
 getHttpMethod = do
   nullDir
