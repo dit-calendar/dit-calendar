@@ -20,7 +20,7 @@ library
   hs-source-dirs:      library
   Build-Tools:         happy >= 1.19
   exposed-modules:
-                       Auth.Auth,
+                       Auth.Authorization,
                        Data.Domain.User,
                        Data.Domain.CalendarEntry,
                        Data.Domain.Task,

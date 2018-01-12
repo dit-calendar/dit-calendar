@@ -10,15 +10,19 @@ import Web.Routes.Boomerang  ( boomerangSite )
 import Web.Routes.Happstack  ( implSite )
 import Web.Routes            ( runRouteT, Site, setDefault, RouteT )
 
-import Happstack.Server                       ( ServerPartT, mapServerPartT, nullConf
-                                              , simpleHTTP, Response )
-import Happstack.Authenticate.Core            ( AuthenticateURL(..), AuthenticateState )
+import Happstack.Server                       ( ServerPartT, mapServerPartT, nullConf, Response )
+import Happstack.Server.SimpleHTTPS           ( simpleHTTPS, TLSConf(..), nullTLSConf  )
+import Happstack.Authenticate.Core            ( AuthenticateURL(..), AuthenticateState, usernamePolicy
+                                              , AuthenticateConfig(..) )
+import Happstack.Authenticate.Password.Core   ( PasswordConfig(..) )
 import Happstack.Authenticate.Route           ( initAuthentication )
 import Happstack.Authenticate.Password.Route  ( initPassword )
 
 import Controller.AcidHelper        ( withAcid, Acid, App(..) )
-import Auth.Auth                    ( authOrRoute, passwordConfig, authenticateConfig )
+import Auth.Authorization           ( authOrRoute )
 import Route.PageEnum               ( Sitemap(Home), urlSitemapParser )
+
+import qualified Data.Text as T
 
 
 runApp :: Acid -> App a -> ServerPartT IO a
@@ -34,6 +38,30 @@ site authenticateState routeAuthenticate =
   let realSite = boomerangSite realRoute urlSitemapParser in
         setDefault Home realSite
 
+authenticateConfig :: AuthenticateConfig
+authenticateConfig = AuthenticateConfig
+             { _isAuthAdmin        = const $ return True
+             , _usernameAcceptable = usernamePolicy
+             , _requireEmail       = True
+             }
+
+passwordConfig :: PasswordConfig
+passwordConfig = PasswordConfig
+             { _resetLink = T.pack "https://localhost:8443/#resetPassword"
+             , _domain    = T.pack "example.org"
+             , _passwordAcceptable = \t ->
+                 if T.length t >= 5
+                 then Nothing
+                 else Just $ T.pack "Must be at least 5 characters."
+             }
+
+tlsConf :: TLSConf
+tlsConf =
+    nullTLSConf { tlsPort = 8443
+                , tlsCert = "Auth/ssl/dummy.localhost.crt"
+                , tlsKey  = "Auth/ssl/dummy.privatelocalhost.key"
+                }
+
 --zu HomePage zu erreichen unter http://localhost:8000
 run :: IO ()
 run =
@@ -42,7 +70,7 @@ run =
           [ initPassword passwordConfig ]
      withAcid Nothing
       (\ acid ->
-         let appWithRoutetSite = implSite "http://localhost:8000" ""
+         let appWithRoutetSite = implSite "https://localhost:8443" ""
               (site authenticateState routeAuthenticate)
-            in simpleHTTP nullConf $ runApp acid appWithRoutetSite)
+            in simpleHTTPS tlsConf $ runApp acid appWithRoutetSite)
       `finally` cleanup
