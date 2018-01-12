@@ -20,6 +20,7 @@ library
   hs-source-dirs:      library
   Build-Tools:         happy >= 1.19
   exposed-modules:
+                       Auth.Auth,
                        Data.Domain.User,
                        Data.Domain.CalendarEntry,
                        Data.Domain.Task,
@@ -54,6 +55,7 @@ library
                        acid-state == 0.14.*,
                        safecopy == 0.9.*,
                        happstack-server == 7.4.6.4,
+                       happstack-server-tls == 7.1.6.*,
                        happstack-authenticate == 2.3.4.8,
                        web-routes == 0.27.*,
                        web-routes-th == 0.22.*,

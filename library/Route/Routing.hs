@@ -1,4 +1,4 @@
-module Route.Routing ( authThenRoute ) where
+module Route.Routing ( route ) where
 
 import Happstack.Server          ( ServerPartT(..), Response, ok, Method(GET, POST, DELETE, PUT), nullDir
                                  , Request(rqMethod), askRq , BodyPolicy(..), unauthorized, getHeaderM
@@ -15,9 +15,6 @@ import Route.PageEnum              ( Sitemap(..) )
 import Controller.AcidHelper       ( CtrlV, App(..) )
 import Controller.ControllerHelper ( okResponse )
 
-import qualified Data.ByteString.Char8 as B
-import qualified Data.Text.Encoding as T
-
 import qualified Controller.UserController      as UserController
 import qualified Controller.HomeController      as HomeController
 import qualified Controller.CalendarController  as CalendarController
@@ -27,43 +24,18 @@ import qualified Controller.TaskController      as TaskController
 myPolicy :: BodyPolicy
 myPolicy = defaultBodyPolicy "/tmp/" 0 1000 1000
 
---authenticate 
-authThenRoute :: AcidState AuthenticateState
-        -> (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response)
-        -> Sitemap -> CtrlV
-authThenRoute authenticateState routeAuthenticate url =
-  do  decodeBody myPolicy
-      case url of
-        Authenticate authenticateURL -> mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
-        other -> routheIfAuthorized authenticateState other
-
-mapServerPartTIO2App :: (ServerPartT IO) Response -> App Response
-mapServerPartTIO2App f = App{unApp = mapServerPartT lift f}
-
-routheIfAuthorized :: AcidState AuthenticateState -> Sitemap -> CtrlV
-routheIfAuthorized authenticateState url =
-    do  mAuth <- getHeaderM "Authorization"
-        case mAuth of
-            Nothing -> unauthorized $ toResponse "You are not authorized."
-            (Just auth') ->
-                do  let auth = B.drop 7 auth'
-                    now <- liftIO getCurrentTime
-                    mToken <- decodeAndVerifyToken authenticateState now (T.decodeUtf8 auth)
-                    case mToken of
-                        Nothing -> unauthorized $ toResponse "You are not authorized."
-                        (Just _) -> route url
-
 -- | the route mapping function
 route :: Sitemap -> CtrlV
 route url =
-    case url of
-        Home                 -> HomeController.homePage
-        Userdetail           -> routeDetailUser
-        User i               -> routeUser i
-        CalendarEntry i      -> routeCalendarEntry i
-        Task i               -> routeTask i
-        TaskWithCalendar e u -> routeTaskWithCalendar e u
-        TaskWithUser t u     -> routeTaskWithUser t u
+    do  decodeBody myPolicy
+        case url of
+            Home                 -> HomeController.homePage
+            Userdetail           -> routeDetailUser
+            User i               -> routeUser i
+            CalendarEntry i      -> routeCalendarEntry i
+            Task i               -> routeTask i
+            TaskWithCalendar e u -> routeTaskWithCalendar e u
+            TaskWithUser t u     -> routeTaskWithUser t u
 
 getHttpMethod = do
   nullDir
