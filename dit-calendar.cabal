@@ -45,7 +45,6 @@ library
                        Data.Repository.TaskRepo,
                        Data.Repository.CalendarRepoHelper,
                        Data.Repository.TaskRepoHelper,
-                       Auth,
                        AppStart
   build-depends:
                        base >=4.9 && <4.10,
