@@ -29,7 +29,10 @@ h3. Code Quality
 
 h3. URL's
 h4. Login
-* curl -H "Content-Type: application/json" -X POST -d '{"user":"alex","password":"12345"}' http://localhost:8000/authenticate/authentication-methods/password/token
+* curl -H "Content-Type: application/json" -X POST -d '{"user":"alex","password":"12345"}' https://localhost:8443/authenticate/authentication-methods/password/token
 
 h4. User erstellen
-* curl -H "Content-Type: application/json" -X POST -d '{"naPassword":"12345","naPasswordConfirm":"12345", "naUser":{"email": "a.befort@googlemail.com", "username":"alex", "userId":0}}' http://localhost:8000/authenticate/authentication-methods/password/account
+* curl -H "Content-Type: application/json" -X POST -d '{"naPassword":"12345","naPasswordConfirm":"12345", "naUser":{"email": "a.befort@googlemail.com", "username":"alex", "userId":0}}' https://localhost:8443/authenticate/authentication-methods/password/account
+
+h4. send request with token
+* curl -H "Authorization: xxx" -X GET https://localhost:8443/ --insecure
