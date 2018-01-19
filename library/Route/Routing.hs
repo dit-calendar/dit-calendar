@@ -1,12 +1,18 @@
 module Route.Routing ( route ) where
 
-import Happstack.Server          ( ok, Method(GET, POST, DELETE, PUT), nullDir
-                                 , Request(rqMethod), askRq , BodyPolicy(..)
-                                 , decodeBody, defaultBodyPolicy, look )
+import Happstack.Server          ( ServerPartT(..), Response, ok, Method(GET, POST, DELETE, PUT), nullDir
+                                 , Request(rqMethod), askRq , BodyPolicy(..), unauthorized, getHeaderM
+                                 , decodeBody, defaultBodyPolicy, look, mapServerPartT, toResponse )
+import Web.Routes                  ( RouteT(..), nestURL, mapRouteT )
+import Happstack.Authenticate.Core ( AuthenticateURL(..), AuthenticateConfig(..), AuthenticateState, decodeAndVerifyToken )
+import Data.Acid                   ( AcidState )
+import Control.Monad.IO.Class      ( liftIO )
+import Data.Time                   ( getCurrentTime )
+import Happstack.Foundation        ( lift, runReaderT, ReaderT, UnWebT )
 
 import Data.Domain.Types           ( UserId, EntryId, TaskId )
 import Route.PageEnum              ( Sitemap(..) )
-import Controller.AcidHelper       ( CtrlV )
+import Controller.AcidHelper       ( CtrlV, App(..) )
 import Controller.ControllerHelper ( okResponse )
 
 import qualified Controller.UserController      as UserController
@@ -15,22 +21,21 @@ import qualified Controller.CalendarController  as CalendarController
 import qualified Controller.TaskController      as TaskController
 
 
-
 myPolicy :: BodyPolicy
 myPolicy = defaultBodyPolicy "/tmp/" 0 1000 1000
 
 -- | the route mapping function
 route :: Sitemap -> CtrlV
 route url =
-  do  decodeBody myPolicy
-      case url of
-        Home                 -> HomeController.homePage
-        Userdetail           -> routeDetailUser
-        User i               -> routeUser i
-        CalendarEntry i      -> routeCalendarEntry i
-        Task i               -> routeTask i
-        TaskWithCalendar e u -> routeTaskWithCalendar e u
-        TaskWithUser t u     -> routeTaskWithUser t u
+    do  decodeBody myPolicy
+        case url of
+            Home                 -> HomeController.homePage
+            Userdetail           -> routeDetailUser
+            User i               -> routeUser i
+            CalendarEntry i      -> routeCalendarEntry i
+            Task i               -> routeTask i
+            TaskWithCalendar e u -> routeTaskWithCalendar e u
+            TaskWithUser t u     -> routeTaskWithUser t u
 
 getHttpMethod = do
   nullDir
