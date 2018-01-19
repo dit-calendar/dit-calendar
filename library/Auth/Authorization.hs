@@ -1,4 +1,4 @@
-module Auth.Authorization ( authOrRoute ) where
+module Auth.Authorization ( authOrRoute, authenticateConfig, passwordConfig, tlsConf ) where
 
 import Data.Acid              ( AcidState )
 import Control.Monad.IO.Class ( liftIO )
@@ -8,7 +8,10 @@ import Web.Routes                           ( RouteT(..), nestURL, mapRouteT )
 import Happstack.Server                     ( ServerPartT, Response, unauthorized, getHeaderM
                                             , mapServerPartT, toResponse )
 import Happstack.Authenticate.Core          ( AuthenticateURL(..), AuthenticateState
-                                            , decodeAndVerifyToken )
+                                            , decodeAndVerifyToken, usernamePolicy
+                                            , AuthenticateConfig(..) )
+import Happstack.Authenticate.Password.Core ( PasswordConfig(..) )
+import Happstack.Server.SimpleHTTPS         ( TLSConf(..), nullTLSConf  )
 import Happstack.Foundation                 ( lift )
 
 import Route.PageEnum              ( Sitemap(..) )
@@ -44,3 +47,28 @@ routheIfAuthorized authenticateState url =
                     case mToken of
                         Nothing -> unauthorized $ toResponse "You are not authorized."
                         (Just _) -> route url
+
+authenticateConfig :: AuthenticateConfig
+authenticateConfig = AuthenticateConfig
+             { _isAuthAdmin        = const $ return True
+             , _usernameAcceptable = usernamePolicy
+             , _requireEmail       = True
+             }
+
+passwordConfig :: PasswordConfig
+passwordConfig = PasswordConfig
+             { _resetLink = T.pack "https://localhost:8443/#resetPassword"
+             , _domain    = T.pack "example.org"
+             , _passwordAcceptable = \t ->
+                 if T.length t >= 5
+                 then Nothing
+                 else Just $ T.pack "Must be at least 5 characters."
+             }
+
+tlsConf :: TLSConf
+tlsConf =
+    nullTLSConf { tlsPort = 8443
+                , tlsCert = "library/Auth/ssl/localhost.crt"
+                , tlsKey  = "library/Auth/ssl/localhost.key"
+                }
+
