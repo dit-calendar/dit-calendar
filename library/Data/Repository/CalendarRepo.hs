@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
 
 module Data.Repository.CalendarRepo
-    ( MonadDBCalendar(..), createEntry, deleteCalendar, updateDescription,
+    ( MonadDBCalendar(..), newCalendarEntry, deleteCalendarEntry, updateDescription,
     deleteTaskFromCalendarEntry, addTaskToCalendarEntry ) where
 
 import qualified Data.List                  as List
@@ -28,8 +28,8 @@ instance MonadDBCalendar CtrlV' where
     query  = Foundation.query
 
 
-createEntry :: MonadDBCalendar m => String -> User -> m CalendarEntry
-createEntry description user = let entry = CalendarEntry { 
+newCalendarEntry :: MonadDBCalendar m => String -> User -> m CalendarEntry
+newCalendarEntry description user = let entry = CalendarEntry { 
                         description              = description
                         , entryId                = undefined
                         , CalendarEntry.userId   = User.userId user
@@ -37,8 +37,8 @@ createEntry description user = let entry = CalendarEntry {
                         } in
     create (CalendarAcid.NewEntry entry)
 
-deleteCalendar :: MonadDBCalendar m => EntryId -> m ()
-deleteCalendar entryId = delete $ CalendarAcid.DeleteEntry entryId
+deleteCalendarEntry :: MonadDBCalendar m => EntryId -> m ()
+deleteCalendarEntry entryId = delete $ CalendarAcid.DeleteEntry entryId
 
 updateCalendar :: MonadDBCalendar m => CalendarEntry -> m ()
 updateCalendar calendarEntry = update $ CalendarAcid.UpdateEntry calendarEntry

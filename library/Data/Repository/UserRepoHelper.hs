@@ -15,7 +15,7 @@ deleteUser :: (UserRepo.MonadDBUserHelper m, TaskRepo.MonadDBTaskRepo m, Calenda
             User -> m ()
 deleteUser user = let calendarToDelete = calendarEntries user in
     do
-        foldr ((>>) . CalendarRepo.deleteCalendar)
+        foldr ((>>) . CalendarRepo.deleteCalendarEntry)
             (return ()) (calendarEntries user)
         removeUserFromTasks user
         UserRepo.deleteUser user

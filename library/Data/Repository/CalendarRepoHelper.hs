@@ -16,7 +16,7 @@ import qualified Data.Repository.UserRepo             as UserRepo
 createEntry :: (MonadDBUser m, MonadDBCalendar m) =>
             String -> User -> m CalendarEntry
 createEntry description user = do
-    calendarEntry <- CalendarRepo.createEntry description user
+    calendarEntry <- CalendarRepo.newCalendarEntry description user
     UserRepo.addCalendarEntryToUser user $ CalendarEntry.entryId calendarEntry
     return calendarEntry
 
@@ -27,7 +27,7 @@ removeCalendar calendarEntry = let cEntryId = entryId calendarEntry in
        user <- UserRepo.getUser (CalendarEntry.userId calendarEntry)
        UserRepo.deleteCalendarEntryFromUser user cEntryId
        deleteCalendarsTasks calendarEntry
-       CalendarRepo.deleteCalendar cEntryId
+       CalendarRepo.deleteCalendarEntry cEntryId
 
 deleteCalendarsTasks :: (MonadDBTask m, MonadDBCalendar m, MonadIO m)
                 => CalendarEntry -> m ()

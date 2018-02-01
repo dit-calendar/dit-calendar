@@ -29,14 +29,14 @@ fixture = Fixture { _create = \(NewEntry caledarEntry) -> return caledarEntry
                   ,_query = undefined }
 
 spec = describe "CalendarRepo" $ do
-    it "createEntry" $ do
+    it "newCalendarEntry" $ do
         let user = User{ name="Foo", User.userId=10, calendarEntries=[], belongingTasks=[] }
-        let (result, _) = evalTestFixture (CalendarRepo.createEntry "termin1" user) fixture
+        let (result, _) = evalTestFixture (CalendarRepo.newCalendarEntry "termin1" user) fixture
         CalendarEntry.description result `shouldBe` "termin1"
         CalendarEntry.userId result `shouldBe` 10
         CalendarEntry.tasks result `shouldBe` []
-    it "deleteEntry" $ do
-        let (_, log) = evalTestFixture (CalendarRepo.deleteCalendar 15) fixture
+    it "deleteCalendarEntry" $ do
+        let (_, log) = evalTestFixture (CalendarRepo.deleteCalendarEntry 15) fixture
         log `shouldBe` ["15"::String]
     it "updateDescription" $ do
         let calc = CalendarEntry{ description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[]}

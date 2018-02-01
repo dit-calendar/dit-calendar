@@ -14,16 +14,16 @@ import Data.Repository.UserRepo             ( MonadDBUser )
 import qualified Data.Repository.CalendarRepo   as CalendarRepo
 
 class MonadDBCalendarRepo m where
-  createEntry                 :: String -> User -> m CalendarEntry
-  deleteCalendar              :: EntryId -> m ()
-  updateDescription           :: CalendarEntry -> String -> m ()
-  deleteTaskFromCalendarEntry :: CalendarEntry -> Int -> m ()
-  addTaskToCalendarEntry      :: CalendarEntry -> TaskId -> m ()
+    newCalendarEntry            :: String -> User -> m CalendarEntry
+    deleteCalendarEntry         :: EntryId -> m ()
+    updateDescription           :: CalendarEntry -> String -> m ()
+    deleteTaskFromCalendarEntry :: CalendarEntry -> Int -> m ()
+    addTaskToCalendarEntry      :: CalendarEntry -> TaskId -> m ()
 
 instance (MonadDBUser CtrlV', MonadDBCalendar CtrlV', MonadDBTask CtrlV')
         => MonadDBCalendarRepo CtrlV' where
-    createEntry                 = CalendarRepo.createEntry
-    deleteCalendar              = CalendarRepo.deleteCalendar
+    newCalendarEntry            = CalendarRepo.newCalendarEntry
+    deleteCalendarEntry         = CalendarRepo.deleteCalendarEntry
     updateDescription           = CalendarRepo.updateDescription
     deleteTaskFromCalendarEntry = CalendarRepo.deleteTaskFromCalendarEntry
     addTaskToCalendarEntry      = CalendarRepo.addTaskToCalendarEntry
