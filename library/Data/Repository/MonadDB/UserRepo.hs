@@ -22,7 +22,8 @@ class MonadDBUserHelper m where
     deleteTaskFromUser :: User -> TaskId -> m ()
     getUser :: UserId -> m User
 
-instance (MonadDBUser CtrlV', MonadDBCalendar CtrlV', MonadDBTask CtrlV', Monad CtrlV') => MonadDBUserHelper CtrlV' where
+instance (MonadDBUser CtrlV', MonadDBCalendar CtrlV', MonadDBTask CtrlV')
+        => MonadDBUserHelper CtrlV' where
     createUser = UseRepo.createUser
     deleteUser = UseRepo.deleteUser
     updateName = UseRepo.updateName

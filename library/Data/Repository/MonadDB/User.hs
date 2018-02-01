@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
+{-# LANGUAGE FlexibleInstances, TypeSynonymInstances, FlexibleContexts, UndecidableInstances #-}
 
 module Data.Repository.MonadDB.User where
 
@@ -9,7 +9,7 @@ import Data.Domain.User           ( User )
 
 import qualified Data.Repository.Acid.UserAcid    as UserAcid
 
-class Monad m => MonadDBUser m where
+class MonadDBUser m where
   create :: UserAcid.NewUser -> m User
   update :: UserAcid.UpdateUser -> m ()
   delete :: UserAcid.DeleteUser -> m ()

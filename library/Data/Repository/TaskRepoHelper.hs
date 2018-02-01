@@ -51,4 +51,4 @@ removeUserFromTask :: TaskMonad.MonadDBTaskRepo m =>
 removeUserFromTask task userId = do
     user <- UserRepo.getUser userId
     UserRepo.deleteTaskFromUser user (taskId task)
-    TaskRepo.updateTask task {belongingUsers = delete userId (belongingUsers task)}
+    TaskMonad.updateTask task {belongingUsers = delete userId (belongingUsers task)}
