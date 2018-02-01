@@ -1,6 +1,6 @@
 {-# LANGUAGE  TemplateHaskell, TypeFamilies, FlexibleInstances #-}
 
-module Data.Repository.Acid.UserAcid 
+module Data.Repository.Acid.User
     (initialUserListState, UserList(..), NewUser(..), UserById(..), AllUsers(..),
     GetUserList(..), UpdateUser(..), DeleteUser(..)) where
 

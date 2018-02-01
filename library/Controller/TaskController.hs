@@ -8,12 +8,12 @@ import Data.Domain.Types           ( TaskId, EntryId, UserId )
 import Controller.AcidHelper       ( CtrlV )
 import Controller.ControllerHelper ( userExist, entryExist, taskExist )
 
-import qualified Data.Repository.Acid.TaskAcid     as TaskAcid
-import qualified Data.Repository.Acid.CalendarAcid as CalendarAcid
-import qualified Data.Repository.Acid.UserAcid     as UserAcid
-import qualified Data.Repository.TaskRepo          as TaskRepo
-import qualified Data.Repository.CalendarRepo      as CalendarRepo
-import qualified Data.Repository.TaskRepoHelper    as TaskRepoHelper
+import qualified Data.Repository.Acid.Task                as TaskAcid
+import qualified Data.Repository.Acid.CalendarEntry       as CalendarEntryAcid
+import qualified Data.Repository.Acid.User                as UserAcid
+import qualified Data.Repository.TaskRepo                 as TaskRepo
+import qualified Data.Repository.CalendarRepo             as CalendarRepo
+import qualified Data.Repository.TaskRepoHelper           as TaskRepoHelper
 
 
 --handler for taskPage
@@ -24,7 +24,7 @@ taskPage i = do
 
 createTask :: EntryId -> String -> CtrlV
 createTask calendarId description = do
-    mCalendarEntry <- query (CalendarAcid.EntryById calendarId)
+    mCalendarEntry <- query (CalendarEntryAcid.EntryById calendarId)
     entryExist calendarId (\e -> do
         t <- TaskRepoHelper.createTask e description
         ok $ toResponse $ "Task created: " ++ show (Task.taskId t) ++ "to CalendarEntry: " ++ show calendarId) mCalendarEntry
@@ -56,7 +56,7 @@ removeUserFromTask userId taskId = do
 
 deleteTask :: EntryId -> TaskId -> CtrlV
 deleteTask entryId taskId = do
-    mEntry <- query (CalendarAcid.EntryById entryId)
+    mEntry <- query (CalendarEntryAcid.EntryById entryId)
     entryExist entryId (\e -> do
         mTask <- query (TaskAcid.TaskById taskId)
         taskExist taskId (\t -> do

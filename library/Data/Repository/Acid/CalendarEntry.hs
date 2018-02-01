@@ -1,6 +1,6 @@
 {-# LANGUAGE  TemplateHaskell, TypeFamilies, FlexibleInstances #-}
 
-module Data.Repository.Acid.CalendarAcid 
+module Data.Repository.Acid.CalendarEntry 
     (initialEntryListState, EntryList(..), NewEntry(..), EntryById(..), AllEntrys(..),
     GetEntryList(..), UpdateEntry(..), DeleteEntry(..)) where
 

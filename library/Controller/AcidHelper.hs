@@ -23,9 +23,9 @@ import Happstack.Foundation ( HasAcidState(..) )
 
 import Route.PageEnum            ( Sitemap )
 
-import qualified Data.Repository.Acid.UserAcid          as UserAcid
-import qualified Data.Repository.Acid.CalendarAcid      as CalendarAcid
-import qualified Data.Repository.Acid.TaskAcid          as TaskAcid
+import qualified Data.Repository.Acid.User              as UserAcid
+import qualified Data.Repository.Acid.CalendarEntry     as CalendarEntryAcid
+import qualified Data.Repository.Acid.Task              as TaskAcid
 
 
 newtype App a = App { unApp :: ServerPartT (ReaderT Acid IO) a }
@@ -40,14 +40,14 @@ type CtrlV    = CtrlV' Response
 data Acid = Acid
    {
      acidUserListState         :: AcidState UserAcid.UserList
-     , acidEntryListState      :: AcidState CalendarAcid.EntryList
+     , acidEntryListState      :: AcidState CalendarEntryAcid.EntryList
      , acidTaskListState       :: AcidState TaskAcid.TaskList
    }
 
 instance HasAcidState CtrlV' UserAcid.UserList where
     getAcidState = acidUserListState <$> ask
 
-instance HasAcidState CtrlV' CalendarAcid.EntryList where
+instance HasAcidState CtrlV' CalendarEntryAcid.EntryList where
     getAcidState = acidEntryListState <$> ask
 
 instance HasAcidState CtrlV' TaskAcid.TaskList where
@@ -62,6 +62,6 @@ withAcid mBasePath f =
         calendarEntryPath = basePath </> "entryList"
         taskPath = basePath </> "taskList"
     in bracket (openLocalStateFrom userPath UserAcid.initialUserListState) createCheckpointAndClose $ \c ->
-       bracket (openLocalStateFrom calendarEntryPath CalendarAcid.initialEntryListState) createCheckpointAndClose $ \g ->
+       bracket (openLocalStateFrom calendarEntryPath CalendarEntryAcid.initialEntryListState) createCheckpointAndClose $ \g ->
        bracket (openLocalStateFrom taskPath TaskAcid.initialTaskListState) createCheckpointAndClose $ \t ->
         f (Acid c g t)

@@ -1,6 +1,6 @@
 {-# LANGUAGE  TemplateHaskell, TypeFamilies, FlexibleInstances #-}
 
-module Data.Repository.Acid.TaskAcid 
+module Data.Repository.Acid.Task
     (initialTaskListState, TaskList, NewTask(..), TaskById(..), AllTasks(..),
     GetTaskList(..), UpdateTask(..), DeleteTask(..)) where
 

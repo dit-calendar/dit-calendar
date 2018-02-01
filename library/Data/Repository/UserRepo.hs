@@ -15,7 +15,7 @@ import Controller.AcidHelper            ( CtrlV' )
 import Data.Domain.User                 ( User(..) )
 import Data.Domain.Types                ( EntryId, TaskId, UserId )
 
-import qualified Data.Repository.Acid.UserAcid       as UserAcid
+import qualified Data.Repository.Acid.User       as UserAcid
 
 
 class MonadDBUser m where

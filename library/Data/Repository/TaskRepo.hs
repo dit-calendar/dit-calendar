@@ -13,7 +13,7 @@ import Data.Domain.Task                        as Task
 import Controller.AcidHelper          ( CtrlV' )
 import Data.Domain.Types              ( TaskId )
 
-import qualified Data.Repository.Acid.TaskAcid    as TaskAcid
+import qualified Data.Repository.Acid.Task    as TaskAcid
 
 
 class Monad m => MonadDBTask m where

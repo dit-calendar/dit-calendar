@@ -7,8 +7,8 @@ import Data.Domain.Types           ( EntryId, UserId )
 import Controller.AcidHelper       ( CtrlV )
 import Controller.ControllerHelper ( userExist, entryExist, okResponse )
 
-import qualified Data.Repository.Acid.CalendarAcid        as CalendarAcid
-import qualified Data.Repository.Acid.UserAcid            as UserAcid
+import qualified Data.Repository.Acid.CalendarEntry       as CalendarEntryAcid
+import qualified Data.Repository.Acid.User                as UserAcid
 import qualified Data.Repository.CalendarRepo             as CalendarRepo
 import qualified Data.Repository.CalendarRepoHelper       as CalendarRepoHelper
 
@@ -16,7 +16,7 @@ import qualified Data.Repository.CalendarRepoHelper       as CalendarRepoHelper
 --handler for entryPage
 entryPage :: EntryId -> CtrlV
 entryPage i = do
-    mEntry <- query (CalendarAcid.EntryById i)
+    mEntry <- query (CalendarEntryAcid.EntryById i)
     entryExist i (\e -> okResponse $ "peeked at the description and saw: " ++ show e) mEntry
 
 createCalendarEntry :: UserId -> String -> CtrlV
@@ -28,14 +28,14 @@ createCalendarEntry userId description = do
 
 deleteCalendarEntry :: EntryId -> CtrlV
 deleteCalendarEntry i = do
-    mEntry <- query (CalendarAcid.EntryById i)
+    mEntry <- query (CalendarEntryAcid.EntryById i)
     entryExist i (\e -> do
             CalendarRepoHelper.removeCalendar e
             okResponse $ "CalendarEntry with id:" ++ show i ++ "deleted") mEntry
 
 updateCalendarEntry :: EntryId -> String -> CtrlV
 updateCalendarEntry id description = do
-    mEntry <- query (CalendarAcid.EntryById id)
+    mEntry <- query (CalendarEntryAcid.EntryById id)
     entryExist id (\e -> do
         CalendarRepo.updateDescription e description
         okResponse $ "CalendarEntry with id:" ++ show id ++ "updated") mEntry
