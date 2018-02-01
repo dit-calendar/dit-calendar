@@ -13,7 +13,7 @@ import qualified Data.Repository.Acid.CalendarEntry       as CalendarEntryAcid
 import qualified Data.Repository.Acid.User                as UserAcid
 import qualified Data.Repository.TaskRepo                 as TaskRepo
 import qualified Data.Repository.CalendarRepo             as CalendarRepo
-import qualified Data.Repository.TaskRepoHelper           as TaskRepoHelper
+import qualified Data.Service.Task                        as TaskService
 
 
 --handler for taskPage
@@ -26,7 +26,7 @@ createTask :: EntryId -> String -> CtrlV
 createTask calendarId description = do
     mCalendarEntry <- query (CalendarEntryAcid.EntryById calendarId)
     entryExist calendarId (\e -> do
-        t <- TaskRepoHelper.createTask e description
+        t <- TaskService.createTask e description
         ok $ toResponse $ "Task created: " ++ show (Task.taskId t) ++ "to CalendarEntry: " ++ show calendarId) mCalendarEntry
 
 updateTask :: TaskId -> String -> CtrlV
@@ -42,7 +42,7 @@ addUserToTask userId taskId = do
     userExist userId (\ _ -> do
         mTask <- query (TaskAcid.TaskById taskId)
         taskExist taskId (\t -> do
-            TaskRepoHelper.addUserToTask t userId
+            TaskService.addUserToTask t userId
             ok $ toResponse $ "User added to task: " ++ show userId) mTask) mUser
 
 removeUserFromTask :: UserId -> TaskId -> CtrlV
@@ -51,7 +51,7 @@ removeUserFromTask userId taskId = do
     userExist userId (\ _ -> do
         mTask <- query (TaskAcid.TaskById taskId)
         taskExist taskId (\t -> do
-            TaskRepoHelper.removeUserFromTask t userId
+            TaskService.removeUserFromTask t userId
             ok $ toResponse $ "User removed from task" ++ show userId) mTask) mUser
 
 deleteTask :: EntryId -> TaskId -> CtrlV
@@ -61,5 +61,5 @@ deleteTask entryId taskId = do
         mTask <- query (TaskAcid.TaskById taskId)
         taskExist taskId (\t -> do
             CalendarRepo.deleteTaskFromCalendarEntry e taskId
-            TaskRepoHelper.deleteTask t
+            TaskService.deleteTask t
             ok $ toResponse $ "Task with id:" ++ show taskId ++ "deleted") mTask) mEntry

@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances, TypeSynonymInstances, FlexibleContexts, UndecidableInstances #-}
 
-module Data.Repository.MonadDB.TaskRepo where
+module Data.Service.MonadDB.Task where
 
 import Control.Monad.IO.Class
 
@@ -13,7 +13,7 @@ import Data.Repository.UserRepo             ( MonadDBUser )
 
 import qualified Data.Repository.TaskRepo   as TaskRepo
 
-class Monad m => MonadDBTaskRepo m where
+class Monad m => MonadDBTaskService m where
     updateTask        :: Task   -> m ()
     updateDescription :: Task   -> String -> m ()
     deleteTask        :: Task   -> m ()
@@ -21,7 +21,7 @@ class Monad m => MonadDBTaskRepo m where
     getTask           :: TaskId -> m Task
 
 instance (MonadDBUser CtrlV', MonadDBTask CtrlV', MonadDBCalendar CtrlV')
-        => MonadDBTaskRepo CtrlV' where
+        => MonadDBTaskService CtrlV' where
     updateTask        = TaskRepo.updateTask
     updateDescription = TaskRepo.updateDescription
     deleteTask        = TaskRepo.deleteTask

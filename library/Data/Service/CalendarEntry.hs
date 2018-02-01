@@ -1,4 +1,4 @@
-module Data.Repository.CalendarRepoHelper ( createEntry, removeCalendar ) where
+module Data.Service.CalendarEntry ( createEntry, removeCalendar ) where
 
 import Control.Monad.IO.Class
 

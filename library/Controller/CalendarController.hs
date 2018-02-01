@@ -10,7 +10,7 @@ import Controller.ControllerHelper ( userExist, entryExist, okResponse )
 import qualified Data.Repository.Acid.CalendarEntry       as CalendarEntryAcid
 import qualified Data.Repository.Acid.User                as UserAcid
 import qualified Data.Repository.CalendarRepo             as CalendarRepo
-import qualified Data.Repository.CalendarRepoHelper       as CalendarRepoHelper
+import qualified Data.Service.CalendarEntry               as CalendarService
 
 
 --handler for entryPage
@@ -23,14 +23,14 @@ createCalendarEntry :: UserId -> String -> CtrlV
 createCalendarEntry userId description = do
     mUser <- query (UserAcid.UserById userId)
     userExist userId (\u -> do
-            entry <- CalendarRepoHelper.createEntry description u
+            entry <- CalendarService.createEntry description u
             okResponse $ "Add Entry: " ++ show (CalendarEntry.entryId entry) ++ "to User: " ++ show userId) mUser
 
 deleteCalendarEntry :: EntryId -> CtrlV
 deleteCalendarEntry i = do
     mEntry <- query (CalendarEntryAcid.EntryById i)
     entryExist i (\e -> do
-            CalendarRepoHelper.removeCalendar e
+            CalendarService.removeCalendar e
             okResponse $ "CalendarEntry with id:" ++ show i ++ "deleted") mEntry
 
 updateCalendarEntry :: EntryId -> String -> CtrlV

@@ -1,4 +1,4 @@
-module Data.Repository.TaskRepoHelper 
+module Data.Service.Task
     ( deleteTask, createTask, addUserToTask, removeUserFromTask ) where
 
 import Data.Domain.Task                      as Task
@@ -10,34 +10,37 @@ import Data.Domain.Types                 ( UserId )
 import Data.Repository.TaskRepo          ( MonadDBTask )
 import Data.Repository.UserRepo          ( MonadDBUser )
 
-import qualified Data.Repository.MonadDB.TaskRepo     as TaskMonad
-import qualified Data.Repository.MonadDB.UserRepo     as UserMonad
-import qualified Data.Repository.MonadDB.CalendarRepo as CalendarMonad
+import qualified Data.Service.MonadDB.Task            as MonadDBTaskService
+import Data.Service.MonadDB.Task                      ( MonadDBTaskService )
+import qualified Data.Service.MonadDB.User            as MonadDBUserService
+import Data.Service.MonadDB.User                      ( MonadDBUserService )
+import qualified Data.Service.MonadDB.Calendar        as MonadDBCalendarService
+import Data.Service.MonadDB.Calendar                  ( MonadDBCalendarService )
 import qualified Data.Repository.UserRepo             as UserRepo
 import qualified Data.Repository.TaskRepo             as TaskRepo
 import qualified Data.Repository.CalendarRepo         as CalendarRepo
 
 
-deleteTask :: (TaskMonad.MonadDBTaskRepo m, UserMonad.MonadDBUserHelper m, MonadIO m) =>
+deleteTask :: (MonadDBTaskService m, MonadDBUserService m, MonadIO m) =>
             Task -> m ()
 deleteTask task = do
-    TaskMonad.deleteTask task
+    MonadDBTaskService.deleteTask task
     deleteTaskFromAllUsers task
 
-createTask :: (TaskMonad.MonadDBTaskRepo m, UserMonad.MonadDBUserHelper m, CalendarMonad.MonadDBCalendarRepo m) =>
+createTask :: (MonadDBTaskService m, MonadDBUserService m, MonadDBCalendarService m) =>
             CalendarEntry -> String -> m Task
 createTask calendarEntry description = do
-    mTask <- TaskMonad.createTask description
-    CalendarMonad.addTaskToCalendarEntry calendarEntry (Task.taskId mTask)
+    mTask <- MonadDBTaskService.createTask description
+    MonadDBCalendarService.addTaskToCalendarEntry calendarEntry (Task.taskId mTask)
     return mTask
 
-deleteTaskFromAllUsers :: (UserMonad.MonadDBUserHelper m, MonadIO m) =>
+deleteTaskFromAllUsers :: (MonadDBUserService m, MonadIO m) =>
                         Task -> m ()
 deleteTaskFromAllUsers task =
     foldr (\ x ->
       (>>) (do
-        user <- UserMonad.getUser x
-        UserMonad.deleteTaskFromUser user x ))
+        user <- MonadDBUserService.getUser x
+        MonadDBUserService.deleteTaskFromUser user x ))
     (return ()) $ Task.belongingUsers task
 
 addUserToTask :: (MonadDBUser m, MonadDBTask m, MonadIO m) =>
@@ -47,9 +50,9 @@ addUserToTask task userId = do
     UserRepo.addTaskToUser user (taskId task)
     TaskRepo.updateTask task {belongingUsers = belongingUsers task ++ [userId]}
 
-removeUserFromTask :: (TaskMonad.MonadDBTaskRepo m, UserMonad.MonadDBUserHelper m) =>
+removeUserFromTask :: (MonadDBTaskService m, MonadDBUserService m) =>
                     Task -> UserId -> m ()
 removeUserFromTask task userId = do
-    user <- UserMonad.getUser userId
-    UserMonad.deleteTaskFromUser user (taskId task)
-    TaskMonad.updateTask task {belongingUsers = delete userId (belongingUsers task)}
+    user <- MonadDBUserService.getUser userId
+    MonadDBUserService.deleteTaskFromUser user (taskId task)
+    MonadDBTaskService.updateTask task {belongingUsers = delete userId (belongingUsers task)}

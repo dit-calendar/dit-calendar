@@ -10,7 +10,7 @@ import Controller.AcidHelper         ( CtrlV )
 
 import qualified Data.Repository.Acid.User             as UserAcid
 import qualified Data.Repository.UserRepo              as UserRepo
-import qualified Data.Repository.UserRepoHelper        as UserRepoHelper
+import qualified Data.Service.User                     as UserService
 
 
 --handler for userPage
@@ -47,7 +47,7 @@ deleteUser :: UserId -> CtrlV
 deleteUser i = do
     mUser <- query (UserAcid.UserById i)
     userExist i (\u -> do
-            UserRepoHelper.deleteUser u
+            UserService.deleteUser u
             okResponse $ "User with id:" ++ show i ++ "deleted") mUser
 
 printUsersList :: [User] -> String
