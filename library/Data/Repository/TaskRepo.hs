@@ -30,6 +30,5 @@ createTask description =
         DBRepo.create $ TaskAcid.NewTask task
 
 getTask :: (DBRepo.MonadDBTask m, MonadIO m) => TaskId -> m Task
-getTask taskId = do
-    mTask <- DBRepo.query (TaskAcid.TaskById taskId)
-    return $ fromJust mTask
+getTask taskId =
+    do fromJust <$> DBRepo.query (TaskAcid.TaskById taskId)

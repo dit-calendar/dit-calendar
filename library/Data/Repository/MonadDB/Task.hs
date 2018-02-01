@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
 
-module Data.Repository.MonadDB.Task where
+module Data.Repository.MonadDB.Task ( MonadDBTask(..) ) where
 
 import Happstack.Foundation   as Foundation
 

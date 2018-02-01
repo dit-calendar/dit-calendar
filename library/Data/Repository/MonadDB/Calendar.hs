@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
 
-module Data.Repository.MonadDB.Calendar where
+module Data.Repository.MonadDB.Calendar ( MonadDBCalendar(..) ) where
 
 import Happstack.Foundation   as Foundation
 

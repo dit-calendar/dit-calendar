@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances, TypeSynonymInstances, FlexibleContexts, UndecidableInstances #-}
 
-module Data.Repository.MonadDB.User where
+module Data.Repository.MonadDB.User ( MonadDBUser(..) ) where
 
 import Happstack.Foundation   as Foundation
 

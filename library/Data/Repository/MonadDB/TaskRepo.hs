@@ -14,13 +14,14 @@ import Data.Repository.MonadDB.User         ( MonadDBUser )
 import qualified Data.Repository.TaskRepo   as TaskRepo
 
 class Monad m => MonadDBTaskRepo m where
-  updateTask        :: Task   -> m ()
-  updateDescription :: Task   -> String -> m ()
-  deleteTask        :: Task   -> m ()
-  createTask        :: String -> m Task
-  getTask           :: TaskId -> m Task
+    updateTask        :: Task   -> m ()
+    updateDescription :: Task   -> String -> m ()
+    deleteTask        :: Task   -> m ()
+    createTask        :: String -> m Task
+    getTask           :: TaskId -> m Task
 
-instance (MonadDBUser CtrlV', MonadDBTask  CtrlV', MonadDBCalendar CtrlV') => MonadDBTaskRepo CtrlV' where
+instance (MonadDBUser CtrlV', MonadDBTask CtrlV', MonadDBCalendar CtrlV')
+        => MonadDBTaskRepo CtrlV' where
     updateTask        = TaskRepo.updateTask
     updateDescription = TaskRepo.updateDescription
     deleteTask        = TaskRepo.deleteTask

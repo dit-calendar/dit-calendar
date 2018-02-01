@@ -4,10 +4,6 @@ import Control.Monad.IO.Class
 import Data.Maybe                 ( fromJust )
 
 import Data.Domain.User                     as User
-import Data.Domain.Types                    ( TaskId )
-import Data.Repository.MonadDB.Calendar     ( MonadDBCalendar )
-import Data.Repository.MonadDB.Task         ( MonadDBTask )
-import Data.Repository.MonadDB.User         ( MonadDBUser )
 
 import qualified Data.Repository.MonadDB.UserRepo     as UserRepo
 import qualified Data.Repository.MonadDB.TaskRepo     as TaskRepo

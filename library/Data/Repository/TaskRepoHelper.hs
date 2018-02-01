@@ -7,7 +7,6 @@ import Control.Monad.IO.Class
 import Data.List                ( delete )
 
 import Data.Domain.Types                 ( UserId )
-import Data.Repository.MonadDB.Calendar  ( MonadDBCalendar )
 import Data.Repository.MonadDB.Task      ( MonadDBTask )
 import Data.Repository.MonadDB.User      ( MonadDBUser )
 
