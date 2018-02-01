@@ -24,7 +24,7 @@ deleteUser user = let calendarToDelete = calendarEntries user in
         removeUserFromTasks user
         UserRepo.deleteUser user
 
-removeUserFromTasks ::(TaskRepo.MonadDBTaskRepo m) =>
+removeUserFromTasks ::(TaskRepo.MonadDBTaskRepo m, UserRepo.MonadDBUserHelper m) =>
                      User -> m ()
 removeUserFromTasks user = foldr (\ taskId ->
     (>>) (do
