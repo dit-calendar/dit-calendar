@@ -7,9 +7,9 @@ import Data.Domain.CalendarEntry  ( CalendarEntry )
 import Data.Domain.User           ( User )
 import Data.Domain.Types          ( EntryId, TaskId )
 
-import Data.Repository.MonadDB.User      ( MonadDBUser )
-import Data.Repository.MonadDB.Calendar  ( MonadDBCalendar )
-import Data.Repository.MonadDB.Task      ( MonadDBTask )
+import Data.Repository.CalendarRepo         ( MonadDBCalendar )
+import Data.Repository.TaskRepo             ( MonadDBTask )
+import Data.Repository.UserRepo             ( MonadDBUser )
 
 import qualified Data.Repository.CalendarRepo   as CalendarRepo
 

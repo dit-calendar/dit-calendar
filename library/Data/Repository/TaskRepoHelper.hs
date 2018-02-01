@@ -7,8 +7,8 @@ import Control.Monad.IO.Class
 import Data.List                ( delete )
 
 import Data.Domain.Types                 ( UserId )
-import Data.Repository.MonadDB.Task      ( MonadDBTask )
-import Data.Repository.MonadDB.User      ( MonadDBUser )
+import Data.Repository.TaskRepo          ( MonadDBTask )
+import Data.Repository.UserRepo          ( MonadDBUser )
 
 import qualified Data.Repository.MonadDB.TaskRepo     as TaskMonad
 import qualified Data.Repository.MonadDB.UserRepo     as UserMonad

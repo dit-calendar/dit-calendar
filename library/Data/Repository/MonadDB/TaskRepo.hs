@@ -7,9 +7,9 @@ import Control.Monad.IO.Class
 import Controller.AcidHelper      ( CtrlV' )
 import Data.Domain.Task           ( Task(..) )
 import Data.Domain.Types          ( TaskId )
-import Data.Repository.MonadDB.Calendar     ( MonadDBCalendar )
-import Data.Repository.MonadDB.Task         ( MonadDBTask )
-import Data.Repository.MonadDB.User         ( MonadDBUser )
+import Data.Repository.CalendarRepo         ( MonadDBCalendar )
+import Data.Repository.TaskRepo             ( MonadDBTask )
+import Data.Repository.UserRepo             ( MonadDBUser )
 
 import qualified Data.Repository.TaskRepo   as TaskRepo
 

@@ -1,34 +1,51 @@
+{-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
+
 module Data.Repository.TaskRepo
-    ( updateDescription, deleteTask, createTask, updateTask, getTask ) where
+    ( MonadDBTask(..), updateDescription, deleteTask, createTask, updateTask, getTask ) where
 
 import Control.Monad.IO.Class
 import Data.Maybe                 ( fromJust )
 
+import qualified Happstack.Foundation          as Foundation
+
 import Data.Domain.CalendarEntry               as CalendarEntry
 import Data.Domain.Task                        as Task
-import Data.Domain.Types            ( TaskId )
+import Controller.AcidHelper          ( CtrlV' )
+import Data.Domain.Types              ( TaskId )
 
-import qualified Data.Repository.MonadDB.Task     as DBRepo
 import qualified Data.Repository.Acid.TaskAcid    as TaskAcid
 
 
-updateTask :: DBRepo.MonadDBTask m => Task -> m ()
-updateTask task = DBRepo.update $ TaskAcid.UpdateTask task
+class Monad m => MonadDBTask m where
+  create :: TaskAcid.NewTask -> m Task
+  update :: TaskAcid.UpdateTask -> m ()
+  delete :: TaskAcid.DeleteTask -> m ()
+  query  :: TaskAcid.TaskById -> m (Maybe Task)
 
-updateDescription :: DBRepo.MonadDBTask m => Task -> String -> m ()
+instance MonadDBTask CtrlV' where
+    create = Foundation.update
+    update = Foundation.update
+    delete = Foundation.update
+    query  = Foundation.query
+
+
+updateTask :: MonadDBTask m => Task -> m ()
+updateTask task = update $ TaskAcid.UpdateTask task
+
+updateDescription :: MonadDBTask m => Task -> String -> m ()
 updateDescription task newDescription = updateTask task {Task.description = newDescription}
 
-deleteTask :: DBRepo.MonadDBTask m => Task -> m ()
-deleteTask task = DBRepo.delete $ TaskAcid.DeleteTask $ taskId task
+deleteTask :: MonadDBTask m => Task -> m ()
+deleteTask task = delete $ TaskAcid.DeleteTask $ taskId task
 
-createTask :: DBRepo.MonadDBTask m => String -> m Task
+createTask :: MonadDBTask m => String -> m Task
 createTask description = 
     let task = Task { Task.description = description
                     , taskId  = undefined
                     , belongingUsers = []
                     } in
-        DBRepo.create $ TaskAcid.NewTask task
+        create $ TaskAcid.NewTask task
 
-getTask :: (DBRepo.MonadDBTask m, MonadIO m) => TaskId -> m Task
+getTask :: (MonadDBTask m, MonadIO m) => TaskId -> m Task
 getTask taskId =
-    do fromJust <$> DBRepo.query (TaskAcid.TaskById taskId)
+    fromJust <$> query (TaskAcid.TaskById taskId)

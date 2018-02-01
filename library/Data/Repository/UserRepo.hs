@@ -1,53 +1,71 @@
+{-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
+
 module Data.Repository.UserRepo
-    ( deleteUser, updateName, addCalendarEntryToUser, addTaskToUser
+    ( MonadDBUser(..), deleteUser, updateName, addCalendarEntryToUser, addTaskToUser
     , deleteCalendarEntryFromUser, deleteTaskFromUser, getUser, createUser ) where
 
 import Prelude
 import Control.Monad.IO.Class
-import Data.List                         ( delete )
 import Data.Maybe                        ( fromJust )
 
-import Data.Domain.User                  ( User(..) )
-import Data.Domain.Types                 ( EntryId, TaskId, UserId )
+import qualified Data.List              as List
+import qualified Happstack.Foundation   as Foundation
 
-import qualified Data.Repository.MonadDB.User        as DBRepo
+import Controller.AcidHelper            ( CtrlV' )
+import Data.Domain.User                 ( User(..) )
+import Data.Domain.Types                ( EntryId, TaskId, UserId )
+
 import qualified Data.Repository.Acid.UserAcid       as UserAcid
 
-createUser :: DBRepo.MonadDBUser m => String -> m User
+
+class MonadDBUser m where
+  create :: UserAcid.NewUser -> m User
+  update :: UserAcid.UpdateUser -> m ()
+  delete :: UserAcid.DeleteUser -> m ()
+  query  :: UserAcid.UserById -> m (Maybe User)
+
+instance MonadDBUser CtrlV' where
+    create = Foundation.update
+    update = Foundation.update
+    delete = Foundation.update
+    query  = Foundation.query
+
+
+createUser :: MonadDBUser m => String -> m User
 createUser name = let user = User { name = name
                     , userId = undefined
                     , calendarEntries = []
                     , belongingTasks = []
                     } in
-        DBRepo.create $ UserAcid.NewUser user
+        create $ UserAcid.NewUser user
 
-deleteUser :: DBRepo.MonadDBUser m => User -> m ()
-deleteUser user = DBRepo.delete $ UserAcid.DeleteUser (Data.Domain.User.userId user)
+deleteUser :: MonadDBUser m => User -> m ()
+deleteUser user = delete $ UserAcid.DeleteUser (Data.Domain.User.userId user)
 
-updateUser :: DBRepo.MonadDBUser m => User -> m ()
-updateUser user = DBRepo.update $ UserAcid.UpdateUser user
+updateUser :: MonadDBUser m => User -> m ()
+updateUser user = update $ UserAcid.UpdateUser user
 
-updateName :: DBRepo.MonadDBUser m => User -> String -> m ()
+updateName :: MonadDBUser m => User -> String -> m ()
 updateName user newName = updateUser user {name = newName}
 
-addCalendarEntryToUser :: DBRepo.MonadDBUser m => User -> EntryId -> m ()
+addCalendarEntryToUser :: MonadDBUser m => User -> EntryId -> m ()
 addCalendarEntryToUser user entryId =
     updateUser user {calendarEntries = calendarEntries user ++ [entryId]}
 
-deleteCalendarEntryFromUser :: DBRepo.MonadDBUser m =>
+deleteCalendarEntryFromUser :: MonadDBUser m =>
                             User -> EntryId -> m ()
 deleteCalendarEntryFromUser user entryId =
-    updateUser user {calendarEntries = delete entryId (calendarEntries user)}
+    updateUser user {calendarEntries = List.delete entryId (calendarEntries user)}
 
-addTaskToUser :: DBRepo.MonadDBUser m => User -> TaskId -> m ()
+addTaskToUser :: MonadDBUser m => User -> TaskId -> m ()
 addTaskToUser user taskId =
     updateUser user {belongingTasks = belongingTasks user ++ [taskId]}
 
-deleteTaskFromUser :: DBRepo.MonadDBUser m => User -> TaskId -> m ()
+deleteTaskFromUser :: MonadDBUser m => User -> TaskId -> m ()
 deleteTaskFromUser user taskId =
-    updateUser user {belongingTasks = delete taskId (belongingTasks user)}
+    updateUser user {belongingTasks = List.delete taskId (belongingTasks user)}
 
-getUser :: (DBRepo.MonadDBUser m, MonadIO m) => UserId -> m User
+getUser :: (MonadDBUser m, MonadIO m) => UserId -> m User
 getUser userId = do
-    mUser <- DBRepo.query $ UserAcid.UserById userId
+    mUser <- query $ UserAcid.UserById userId
     return $ fromJust mUser

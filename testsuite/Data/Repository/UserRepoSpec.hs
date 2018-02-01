@@ -14,7 +14,7 @@ import Control.Monad.IO.Class
 import Control.Monad.Identity        ( Identity )
 import Control.Monad.Writer.Class    ( tell )
 
-import Data.Repository.MonadDB.User     ( MonadDBUser )
+import Data.Repository.UserRepo         ( MonadDBUser )
 import Data.Repository.Acid.UserAcid    ( NewUser(..), DeleteUser(..), UpdateUser(..), UserById(..) )
 import Data.Domain.User                     as User
 
