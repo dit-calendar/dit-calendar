@@ -11,6 +11,7 @@ import Data.Repository.MonadDB.Calendar  ( MonadDBCalendar )
 import Data.Repository.MonadDB.Task      ( MonadDBTask )
 import Data.Repository.MonadDB.User      ( MonadDBUser )
 
+import qualified Data.Repository.MonadDB.TaskRepo     as TaskMonad
 import qualified Data.Repository.UserRepo             as UserRepo
 import qualified Data.Repository.TaskRepo             as TaskRepo
 import qualified Data.Repository.CalendarRepo         as CalendarRepo
@@ -45,7 +46,7 @@ addUserToTask task userId = do
     UserRepo.addTaskToUser user (taskId task)
     TaskRepo.updateTask task {belongingUsers = belongingUsers task ++ [userId]}
 
-removeUserFromTask :: (MonadDBUser m, MonadDBTask m, MonadIO m) =>
+removeUserFromTask :: TaskMonad.MonadDBTaskRepo m =>
                     Task -> UserId -> m ()
 removeUserFromTask task userId = do
     user <- UserRepo.getUser userId

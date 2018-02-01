@@ -1,15 +1,18 @@
-{-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
+{-# LANGUAGE FlexibleInstances, TypeSynonymInstances, FlexibleContexts, UndecidableInstances #-}
 
 module Data.Repository.MonadDB.UserRepo where
 
 import Data.Domain.Types             ( TaskId, EntryId, UserId )
 import Controller.AcidHelper         ( CtrlV' )
 import Data.Domain.User              ( User )
-import Data.Repository.MonadDB.User  ( MonadDBUser )
+
+import Data.Repository.MonadDB.User      ( MonadDBUser )
+import Data.Repository.MonadDB.Calendar  ( MonadDBCalendar )
+import Data.Repository.MonadDB.Task      ( MonadDBTask )
 
 import qualified Data.Repository.UserRepo as UseRepo
 
-class (MonadDBUser m , Monad m) => MonadDBUserHelper m where
+class MonadDBUserHelper m where
     createUser :: String -> m User
     deleteUser :: User -> m ()
     updateName :: User -> String -> m ()
@@ -19,7 +22,7 @@ class (MonadDBUser m , Monad m) => MonadDBUserHelper m where
     deleteTaskFromUser :: User -> TaskId -> m ()
     getUser :: UserId -> m User
 
-instance MonadDBUserHelper CtrlV' where
+instance (MonadDBUser CtrlV', MonadDBCalendar CtrlV', MonadDBTask CtrlV', Monad CtrlV') => MonadDBUserHelper CtrlV' where
     createUser = UseRepo.createUser
     deleteUser = UseRepo.deleteUser
     updateName = UseRepo.updateName

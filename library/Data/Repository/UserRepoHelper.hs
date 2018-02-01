@@ -10,12 +10,12 @@ import Data.Repository.MonadDB.Task         ( MonadDBTask )
 import Data.Repository.MonadDB.User         ( MonadDBUser )
 
 import qualified Data.Repository.MonadDB.UserRepo     as UserRepo
-import qualified Data.Repository.CalendarRepo         as CalendarRepo
-import qualified Data.Repository.TaskRepo             as TaskRepo
+import qualified Data.Repository.MonadDB.TaskRepo     as TaskRepo
+import qualified Data.Repository.MonadDB.CalendarRepo as CalendarRepo
 import qualified Data.Repository.TaskRepoHelper       as TaskRepoHelper
 
 
-deleteUser :: (UserRepo.MonadDBUserHelper m, MonadDBTask m, MonadDBCalendar m, MonadIO m) =>
+deleteUser :: (UserRepo.MonadDBUserHelper m, TaskRepo.MonadDBTaskRepo m, CalendarRepo.MonadDBCalendarRepo m) =>
             User -> m ()
 deleteUser user = let calendarToDelete = calendarEntries user in
     do
@@ -24,7 +24,7 @@ deleteUser user = let calendarToDelete = calendarEntries user in
         removeUserFromTasks user
         UserRepo.deleteUser user
 
-removeUserFromTasks ::(MonadDBUser m, MonadDBTask m, MonadIO m) =>
+removeUserFromTasks ::(TaskRepo.MonadDBTaskRepo m) =>
                      User -> m ()
 removeUserFromTasks user = foldr (\ taskId ->
     (>>) (do
