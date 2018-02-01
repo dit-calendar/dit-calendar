@@ -2,13 +2,14 @@
 
 module Data.Repository.MonadDB.UserRepo where
 
-import Data.Domain.Types          ( TaskId, EntryId, UserId )
-import Controller.AcidHelper      ( CtrlV' )
-import Data.Domain.User           ( User )
+import Data.Domain.Types             ( TaskId, EntryId, UserId )
+import Controller.AcidHelper         ( CtrlV' )
+import Data.Domain.User              ( User )
+import Data.Repository.MonadDB.User  ( MonadDBUser )
 
 import qualified Data.Repository.UserRepo as UseRepo
 
-class Monad m => MonadDBUserHelper m where
+class (MonadDBUser m , Monad m) => MonadDBUserHelper m where
     createUser :: String -> m User
     deleteUser :: User -> m ()
     updateName :: User -> String -> m ()

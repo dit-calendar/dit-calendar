@@ -6,7 +6,6 @@ import Controller.AcidHelper      ( CtrlV' )
 import Data.Domain.Task           ( Task(..) )
 import Data.Domain.Types          ( TaskId )
 
-import qualified Data.Repository.MonadDB.Task     as DBRepo
 import qualified Data.Repository.TaskRepo   as TaskRepo
 
 class Monad m => MonadDBTaskRepo m where
