@@ -12,31 +12,33 @@ import Data.Repository.MonadDB.Task      ( MonadDBTask )
 import Data.Repository.MonadDB.User      ( MonadDBUser )
 
 import qualified Data.Repository.MonadDB.TaskRepo     as TaskMonad
+import qualified Data.Repository.MonadDB.UserRepo     as UserMonad
+import qualified Data.Repository.MonadDB.CalendarRepo as CalendarMonad
 import qualified Data.Repository.UserRepo             as UserRepo
 import qualified Data.Repository.TaskRepo             as TaskRepo
 import qualified Data.Repository.CalendarRepo         as CalendarRepo
 
 
-deleteTask :: (MonadDBUser m, MonadDBTask m, MonadIO m) =>
+deleteTask :: (TaskMonad.MonadDBTaskRepo m, UserMonad.MonadDBUserHelper m, MonadIO m) =>
             Task -> m ()
 deleteTask task = do
-    TaskRepo.deleteTask task
+    TaskMonad.deleteTask task
     deleteTaskFromAllUsers task
 
-createTask :: (MonadDBUser m, MonadDBTask m, MonadDBCalendar m) =>
+createTask :: (TaskMonad.MonadDBTaskRepo m, UserMonad.MonadDBUserHelper m, CalendarMonad.MonadDBCalendarRepo m) =>
             CalendarEntry -> String -> m Task
 createTask calendarEntry description = do
-    mTask <- TaskRepo.createTask description
-    CalendarRepo.addTaskToCalendarEntry calendarEntry (Task.taskId mTask)
+    mTask <- TaskMonad.createTask description
+    CalendarMonad.addTaskToCalendarEntry calendarEntry (Task.taskId mTask)
     return mTask
 
-deleteTaskFromAllUsers :: (MonadDBUser m, MonadIO m) =>
+deleteTaskFromAllUsers :: (UserMonad.MonadDBUserHelper m, MonadIO m) =>
                         Task -> m ()
 deleteTaskFromAllUsers task =
     foldr (\ x ->
       (>>) (do
-        user <- UserRepo.getUser x
-        UserRepo.deleteTaskFromUser user x ))
+        user <- UserMonad.getUser x
+        UserMonad.deleteTaskFromUser user x ))
     (return ()) $ Task.belongingUsers task
 
 addUserToTask :: (MonadDBUser m, MonadDBTask m, MonadIO m) =>
@@ -46,9 +48,9 @@ addUserToTask task userId = do
     UserRepo.addTaskToUser user (taskId task)
     TaskRepo.updateTask task {belongingUsers = belongingUsers task ++ [userId]}
 
-removeUserFromTask :: TaskMonad.MonadDBTaskRepo m =>
+removeUserFromTask :: (TaskMonad.MonadDBTaskRepo m, UserMonad.MonadDBUserHelper m) =>
                     Task -> UserId -> m ()
 removeUserFromTask task userId = do
-    user <- UserRepo.getUser userId
-    UserRepo.deleteTaskFromUser user (taskId task)
+    user <- UserMonad.getUser userId
+    UserMonad.deleteTaskFromUser user (taskId task)
     TaskMonad.updateTask task {belongingUsers = delete userId (belongingUsers task)}
