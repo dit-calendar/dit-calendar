@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
 
 module Data.Repository.UserRepo
-    ( MonadDBUser(..), deleteUser, updateName, addCalendarEntryToUser, addTaskToUser
+    ( deleteUser, updateName, addCalendarEntryToUser, addTaskToUser
     , deleteCalendarEntryFromUser, deleteTaskFromUser, getUser, createUser ) where
 
 import Prelude
@@ -11,24 +11,12 @@ import Data.Maybe                        ( fromJust )
 import qualified Data.List              as List
 import qualified Happstack.Foundation   as Foundation
 
+import Data.Repository.Acid.MonadDB.User ( MonadDBUser(..) )
 import Controller.AcidHelper            ( CtrlV' )
 import Data.Domain.User                 ( User(..) )
 import Data.Domain.Types                ( EntryId, TaskId, UserId )
 
 import qualified Data.Repository.Acid.User       as UserAcid
-
-
-class MonadDBUser m where
-  create :: UserAcid.NewUser -> m User
-  update :: UserAcid.UpdateUser -> m ()
-  delete :: UserAcid.DeleteUser -> m ()
-  query  :: UserAcid.UserById -> m (Maybe User)
-
-instance MonadDBUser CtrlV' where
-    create = Foundation.update
-    update = Foundation.update
-    delete = Foundation.update
-    query  = Foundation.query
 
 
 createUser :: MonadDBUser m => String -> m User

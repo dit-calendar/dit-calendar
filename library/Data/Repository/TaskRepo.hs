@@ -1,32 +1,20 @@
 {-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
 
 module Data.Repository.TaskRepo
-    ( MonadDBTask(..), updateDescription, deleteTask, createTask, updateTask, getTask ) where
+    ( updateDescription, deleteTask, createTask, updateTask, getTask ) where
 
 import Control.Monad.IO.Class
 import Data.Maybe                 ( fromJust )
 
 import qualified Happstack.Foundation          as Foundation
 
+import Data.Repository.Acid.MonadDB.Task ( MonadDBTask(..) )
 import Data.Domain.CalendarEntry               as CalendarEntry
 import Data.Domain.Task                        as Task
 import Controller.AcidHelper          ( CtrlV' )
 import Data.Domain.Types              ( TaskId )
 
 import qualified Data.Repository.Acid.Task    as TaskAcid
-
-
-class Monad m => MonadDBTask m where
-  create :: TaskAcid.NewTask -> m Task
-  update :: TaskAcid.UpdateTask -> m ()
-  delete :: TaskAcid.DeleteTask -> m ()
-  query  :: TaskAcid.TaskById -> m (Maybe Task)
-
-instance MonadDBTask CtrlV' where
-    create = Foundation.update
-    update = Foundation.update
-    delete = Foundation.update
-    query  = Foundation.query
 
 
 updateTask :: MonadDBTask m => Task -> m ()

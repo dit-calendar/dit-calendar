@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
 
 module Data.Repository.CalendarRepo
-    ( MonadDBCalendar(..), newCalendarEntry, deleteCalendarEntry, updateDescription,
+    ( newCalendarEntry, deleteCalendarEntry, updateDescription,
     deleteTaskFromCalendarEntry, addTaskToCalendarEntry ) where
 
 import qualified Data.List                  as List
@@ -9,23 +9,11 @@ import qualified Happstack.Foundation       as Foundation
 
 import Controller.AcidHelper      ( CtrlV' )
 import Data.Domain.Types          ( EntryId, TaskId )
+import Data.Repository.Acid.MonadDB.CalendarEntry ( MonadDBCalendar(..) )
 import Data.Domain.User                      as User
 import Data.Domain.CalendarEntry             as CalendarEntry
 
 import qualified Data.Repository.Acid.CalendarEntry    as CalendarEntryAcid
-
-
-class Monad m => MonadDBCalendar m where
-  create :: CalendarEntryAcid.NewEntry -> m CalendarEntry
-  update :: CalendarEntryAcid.UpdateEntry -> m ()
-  delete :: CalendarEntryAcid.DeleteEntry -> m ()
-  query  :: CalendarEntryAcid.EntryById -> m (Maybe CalendarEntry)
-
-instance MonadDBCalendar CtrlV' where
-    create = Foundation.update
-    update = Foundation.update
-    delete = Foundation.update
-    query  = Foundation.query
 
 
 newCalendarEntry :: MonadDBCalendar m => String -> User -> m CalendarEntry

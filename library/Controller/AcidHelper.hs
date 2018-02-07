@@ -28,6 +28,13 @@ import qualified Data.Repository.Acid.CalendarEntry     as CalendarEntryAcid
 import qualified Data.Repository.Acid.Task              as TaskAcid
 
 
+data Acid = Acid
+   {
+     acidUserListState         :: AcidState UserAcid.UserList
+     , acidEntryListState      :: AcidState CalendarEntryAcid.EntryList
+     , acidTaskListState       :: AcidState TaskAcid.TaskList
+   }
+
 newtype App a = App { unApp :: ServerPartT (ReaderT Acid IO) a }
     deriving ( Functor, Alternative, Applicative, Monad
              , MonadPlus, MonadIO, HasRqData, ServerMonad
@@ -36,13 +43,6 @@ newtype App a = App { unApp :: ServerPartT (ReaderT Acid IO) a }
              )
 type CtrlV'   = RouteT Sitemap App
 type CtrlV    = CtrlV' Response
-
-data Acid = Acid
-   {
-     acidUserListState         :: AcidState UserAcid.UserList
-     , acidEntryListState      :: AcidState CalendarEntryAcid.EntryList
-     , acidTaskListState       :: AcidState TaskAcid.TaskList
-   }
 
 instance HasAcidState CtrlV' UserAcid.UserList where
     getAcidState = acidUserListState <$> ask
