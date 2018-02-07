@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances, TypeSynonymInstances, FlexibleContexts, UndecidableInstances #-}
 
-module Data.Service.MonadDB.Calendar where
+module Data.Repository.MonadDB.Calendar where
 
 import Controller.AcidHelper      ( CtrlV' )
 import Data.Domain.CalendarEntry  ( CalendarEntry )
@@ -13,14 +13,14 @@ import Data.Repository.Acid.MonadDB.User             ( MonadDBUser )
 
 import qualified Data.Repository.CalendarRepo   as CalendarRepo
 
-class MonadDBCalendarService m where
+class MonadDBCalendarRepo m where
     newCalendarEntry            :: String -> User -> m CalendarEntry
     deleteCalendarEntry         :: EntryId -> m ()
     deleteTaskFromCalendarEntry :: CalendarEntry -> Int -> m ()
     addTaskToCalendarEntry      :: CalendarEntry -> TaskId -> m ()
 
 instance (MonadDBUser CtrlV', MonadDBCalendar CtrlV', MonadDBTask CtrlV')
-        => MonadDBCalendarService CtrlV' where
+        => MonadDBCalendarRepo CtrlV' where
     newCalendarEntry            = CalendarRepo.newCalendarEntry
     deleteCalendarEntry         = CalendarRepo.deleteCalendarEntry
     deleteTaskFromCalendarEntry = CalendarRepo.deleteTaskFromCalendarEntry

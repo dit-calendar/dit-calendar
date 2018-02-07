@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances, TypeSynonymInstances, FlexibleContexts, UndecidableInstances #-}
 
-module Data.Service.MonadDB.User where
+module Data.Repository.MonadDB.User where
 
 import Data.Domain.Types             ( TaskId, EntryId, UserId )
 import Controller.AcidHelper         ( CtrlV' )
@@ -12,7 +12,7 @@ import Data.Repository.Acid.MonadDB.User             ( MonadDBUser )
 
 import qualified Data.Repository.UserRepo as UseRepo
 
-class MonadDBUserService m where
+class MonadDBUserRepo m where
     createUser :: String -> m User
     deleteUser :: User -> m ()
     updateName :: User -> String -> m ()
@@ -23,7 +23,7 @@ class MonadDBUserService m where
     getUser :: UserId -> m User
 
 instance (MonadDBUser CtrlV', MonadDBCalendar CtrlV', MonadDBTask CtrlV')
-        => MonadDBUserService CtrlV' where
+        => MonadDBUserRepo CtrlV' where
     createUser = UseRepo.createUser
     deleteUser = UseRepo.deleteUser
     updateName = UseRepo.updateName

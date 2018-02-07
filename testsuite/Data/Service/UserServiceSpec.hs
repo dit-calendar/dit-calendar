@@ -19,14 +19,14 @@ import Data.Domain.User           as User
 import Data.Domain.Task           as Task
 import Data.Domain.Types          ( UserId, EntryId, TaskId )
 
-import Data.Service.MonadDB.User          ( MonadDBUserService )
-import Data.Service.MonadDB.Task          ( MonadDBTaskService )
-import Data.Service.MonadDB.Calendar      ( MonadDBCalendarService )
+import Data.Repository.MonadDB.User          ( MonadDBUserRepo )
+import Data.Repository.MonadDB.Task          ( MonadDBTaskRepo )
+import Data.Repository.MonadDB.Calendar      ( MonadDBCalendarRepo )
 
 import qualified Data.Service.User          as UserService
 
 
-mkFixture "Fixture" [ts| MonadDBUserService, MonadDBTaskService, MonadDBCalendarService |]
+mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBTaskRepo, MonadDBCalendarRepo |]
 
 userFromDb = User{ name="Foo", User.userId=10, calendarEntries=[], belongingTasks=[1,2,3] }
 taskFromDb = Task{ Task.description="task1", taskId=1, belongingUsers=[]}
