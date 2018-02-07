@@ -16,7 +16,6 @@ import qualified Data.Repository.CalendarRepo   as CalendarRepo
 class MonadDBCalendarService m where
     newCalendarEntry            :: String -> User -> m CalendarEntry
     deleteCalendarEntry         :: EntryId -> m ()
-    updateDescription           :: CalendarEntry -> String -> m ()
     deleteTaskFromCalendarEntry :: CalendarEntry -> Int -> m ()
     addTaskToCalendarEntry      :: CalendarEntry -> TaskId -> m ()
 
@@ -24,6 +23,5 @@ instance (MonadDBUser CtrlV', MonadDBCalendar CtrlV', MonadDBTask CtrlV')
         => MonadDBCalendarService CtrlV' where
     newCalendarEntry            = CalendarRepo.newCalendarEntry
     deleteCalendarEntry         = CalendarRepo.deleteCalendarEntry
-    updateDescription           = CalendarRepo.updateDescription
     deleteTaskFromCalendarEntry = CalendarRepo.deleteTaskFromCalendarEntry
     addTaskToCalendarEntry      = CalendarRepo.addTaskToCalendarEntry

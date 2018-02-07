@@ -15,7 +15,6 @@ import qualified Data.Repository.TaskRepo   as TaskRepo
 
 class Monad m => MonadDBTaskService m where
     updateTask        :: Task   -> m ()
-    updateDescription :: Task   -> String -> m ()
     deleteTask        :: Task   -> m ()
     createTask        :: String -> m Task
     getTask           :: TaskId -> m Task
@@ -23,7 +22,6 @@ class Monad m => MonadDBTaskService m where
 instance (MonadDBUser CtrlV', MonadDBTask CtrlV', MonadDBCalendar CtrlV')
         => MonadDBTaskService CtrlV' where
     updateTask        = TaskRepo.updateTask
-    updateDescription = TaskRepo.updateDescription
     deleteTask        = TaskRepo.deleteTask
     createTask        = TaskRepo.createTask
     getTask           = TaskRepo.getTask
