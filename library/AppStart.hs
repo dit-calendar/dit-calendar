@@ -16,7 +16,7 @@ import Happstack.Authenticate.Core            ( AuthenticateURL(..), Authenticat
 import Happstack.Authenticate.Route           ( initAuthentication )
 import Happstack.Authenticate.Password.Route  ( initPassword )
 
-import Controller.AcidHelper        ( withAcid, Acid, App(..) )
+import Controller.AcidHelper        ( withAcid, Acid, App )
 import Auth.Authorization           ( authOrRoute, authenticateConfig, passwordConfig, tlsConf )
 import Route.PageEnum               ( Sitemap(Home), urlSitemapParser )
 
@@ -24,7 +24,7 @@ import qualified Data.Text as T
 
 
 runApp :: Acid -> App a -> ServerPartT IO a
-runApp acid (App sp) = mapServerPartT (`runReaderT` acid) sp
+runApp acid = mapServerPartT (`runReaderT` acid)
 
 site :: AcidState AuthenticateState
        -> (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response)
@@ -36,7 +36,7 @@ site authenticateState routeAuthenticate =
   let realSite = boomerangSite realRoute urlSitemapParser in
         setDefault Home realSite
 
---zu HomePage zu erreichen unter http://localhost:8000
+--zu HomePage zu erreichen unter https://localhost:8443
 run :: IO ()
 run =
   do (cleanup, routeAuthenticate, authenticateState) <-

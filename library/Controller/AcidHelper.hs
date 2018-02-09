@@ -1,24 +1,19 @@
-{-# LANGUAGE FlexibleContexts, GeneralizedNewtypeDeriving,
-    MultiParamTypeClasses, OverloadedStrings, ScopedTypeVariables,
-    TypeFamilies, FlexibleInstances #-}
+{-# LANGUAGE FlexibleContexts, MultiParamTypeClasses,
+    OverloadedStrings, ScopedTypeVariables, TypeFamilies,
+    FlexibleInstances #-}
 
-module Controller.AcidHelper ( CtrlV, CtrlV', App(..), withAcid, Acid ) where
+module Controller.AcidHelper ( CtrlV, CtrlV', App, withAcid, Acid ) where
 
 import Prelude
 import System.FilePath      ( (</>) )
 import Data.Maybe           ( fromMaybe )
 import Control.Exception    ( bracket )
-import Control.Monad        ( MonadPlus )
-import Control.Monad.Reader ( MonadReader, ReaderT, ask )
-import Control.Monad.Trans  ( MonadIO(..) )
-import Control.Applicative  ( Applicative, Alternative )
+import Control.Monad.Reader ( ReaderT, ask )
 
 import Data.Acid            ( openLocalStateFrom, AcidState(..) )
 import Data.Acid.Local      ( createCheckpointAndClose )
 import Web.Routes           ( RouteT )
-import Happstack.Server
-    ( Happstack, HasRqData, Response, ServerPartT(..)
-    , WebMonad, FilterMonad, ServerMonad )
+import Happstack.Server     ( Response, ServerPartT )
 import Happstack.Foundation ( HasAcidState(..) )
 
 import Route.PageEnum            ( Sitemap )
@@ -35,12 +30,7 @@ data Acid = Acid
      , acidTaskListState       :: AcidState TaskAcid.TaskList
    }
 
-newtype App a = App { unApp :: ServerPartT (ReaderT Acid IO) a }
-    deriving ( Functor, Alternative, Applicative, Monad
-             , MonadPlus, MonadIO, HasRqData, ServerMonad
-             , WebMonad Response, FilterMonad Response
-             , Happstack, MonadReader Acid
-             )
+type App = ServerPartT (ReaderT Acid IO)
 type CtrlV'   = RouteT Sitemap App
 type CtrlV    = CtrlV' Response
 

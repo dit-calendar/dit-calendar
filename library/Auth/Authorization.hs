@@ -15,7 +15,7 @@ import Happstack.Server.SimpleHTTPS         ( TLSConf(..), nullTLSConf  )
 import Happstack.Foundation                 ( lift )
 
 import Route.PageEnum              ( Sitemap(..) )
-import Controller.AcidHelper       ( CtrlV, App(..) )
+import Controller.AcidHelper       ( CtrlV, App )
 import Route.Routing               ( route )
 
 import qualified Data.ByteString.Char8 as B
@@ -33,7 +33,7 @@ authOrRoute authenticateState routeAuthenticate url =
         other -> routheIfAuthorized authenticateState other
 
 mapServerPartTIO2App :: (ServerPartT IO) Response -> App Response
-mapServerPartTIO2App f = App{unApp = mapServerPartT lift f}
+mapServerPartTIO2App = mapServerPartT lift
 
 routheIfAuthorized :: AcidState AuthenticateState -> Sitemap -> CtrlV
 routheIfAuthorized authenticateState url =
