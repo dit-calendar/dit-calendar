@@ -21,7 +21,7 @@ import qualified Data.Repository.Acid.User       as UserAcid
 
 createUser :: MonadDBUser m => String -> m User
 createUser name = let user = User { name = name
-                    , userId = undefined
+                    , userId = 0 --TODO why it can't be undefined if creating user with post interface?
                     , calendarEntries = []
                     , belongingTasks = []
                     } in

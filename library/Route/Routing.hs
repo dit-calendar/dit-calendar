@@ -61,7 +61,7 @@ routeDetailUser :: CtrlV
 routeDetailUser = do
   m <- getHttpMethod
   case m of
-  -- curl -X POST -d "name=FooBar" http://localhost:8000/userdetail
+  -- curl -X POST -d "name=FooBar" http://localhost:8000/user
     POST -> do
       name <- look "name"
       UserController.createUser name
