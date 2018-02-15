@@ -32,7 +32,7 @@ userFromDb = User{ name="Foo", User.userId=10, calendarEntries=[], belongingTask
 taskFromDb = Task{ Task.description="task1", taskId=1, belongingUsers=[]}
 
 fixture = Fixture { _newCalendarEntry = undefined
-                  , _deleteCalendarEntry = \(a) -> tell (show a)
+                  , _deleteCalendarEntry = \(a) -> tell [show a]
                   , _deleteTaskFromCalendarEntry = undefined
                   , _addTaskToCalendarEntry = undefined
                   , _updateTask = undefined
@@ -40,7 +40,7 @@ fixture = Fixture { _newCalendarEntry = undefined
                   , _createTask = undefined
                   , _getTask = undefined
                   , _createUser = undefined
-                  , _deleteUser = \(a) -> tell (show a)
+                  , _deleteUser = \(a) -> tell [show a]
                   , _updateName = undefined
                   , _addCalendarEntryToUser = undefined
                   , _deleteCalendarEntryFromUser = undefined
@@ -57,4 +57,6 @@ spec = describe "UserService" $ do
     it "deleteUser" $ do
         let user = User{ name="Foo", User.userId=10, calendarEntries=[1,2], belongingTasks=[] }
         let (_, log) = evalTestFixture (UserService.deleteUser user) fixture
-        log `shouldBe` ("12" ++ show user)
+        log!!0 `shouldBe` "1"
+        log!!1 `shouldBe` "2"
+        log!!2 `shouldBe` (show user)
