@@ -13,7 +13,7 @@ import Control.Monad.TestFixture.TH
 import Control.Monad.Identity        ( Identity )
 import Control.Monad.Writer.Class    ( tell )
 
-import Data.Repository.Acid.MonadDB.CalendarEntry   ( MonadDBCalendar )
+import Data.Repository.Acid.CalendarEntry           ( MonadDBCalendar )
 import Data.Repository.Acid.CalendarEntry           ( NewEntry(..), DeleteEntry(..), UpdateEntry(..) )
 import Data.Domain.CalendarEntry            as CalendarEntry
 import Data.Domain.User                     as User

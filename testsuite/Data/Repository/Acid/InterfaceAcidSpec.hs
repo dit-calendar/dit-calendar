@@ -5,8 +5,9 @@ import Data.Maybe                 ( isJust, fromJust, isNothing)
 import Data.Acid                  ( AcidState, query, update )
 
 import Data.Repository.Acid.DataBaseHelper   ( initDatabase )
-import Data.Repository.Acid.CalendarEntry      as CalendarEntryAcid
+import Data.Repository.Acid.CalendarEntry    ( NewEntry(..), GetEntryList(..) )
 import Data.Domain.CalendarEntry               as CalendarEntry
+import qualified Data.Repository.Acid.CalendarEntry      as   CalendarEntryAcid
 import qualified Data.Repository.Acid.InterfaceAcid      as   InterfaceAcid
 
 

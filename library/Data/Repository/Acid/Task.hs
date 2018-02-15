@@ -1,8 +1,8 @@
 {-# LANGUAGE  TemplateHaskell, TypeFamilies, FlexibleInstances #-}
 
 module Data.Repository.Acid.Task
-    (initialTaskListState, TaskList, NewTask(..), TaskById(..), AllTasks(..),
-    GetTaskList(..), UpdateTask(..), DeleteTask(..)) where
+    ( MonadDBTask(..), initialTaskListState, TaskList, NewTask(..), TaskById(..), AllTasks(..),
+    GetTaskList(..), UpdateTask(..), DeleteTask(..) ) where
 
 import Data.Acid                       ( Query, Update, makeAcidic )
 import Data.IxSet                      ( Indexable(..), ixFun, ixSet )
@@ -40,3 +40,10 @@ deleteTask :: TaskId -> Update TaskList ()
 deleteTask = InterfaceAcid.deleteEntry
 
 $(makeAcidic ''TaskList ['newTask, 'taskById, 'allTasks, 'getTaskList, 'updateTask, 'deleteTask])
+
+
+class Monad m => MonadDBTask m where
+    create :: NewTask -> m Task
+    update :: UpdateTask -> m ()
+    delete :: DeleteTask -> m ()
+    query  :: TaskById -> m (Maybe Task)

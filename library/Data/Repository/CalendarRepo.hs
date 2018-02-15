@@ -9,12 +9,17 @@ import qualified Happstack.Foundation       as Foundation
 
 import Controller.AcidHelper      ( CtrlV' )
 import Data.Domain.Types          ( EntryId, TaskId )
-import Data.Repository.Acid.MonadDB.CalendarEntry ( MonadDBCalendar(..) )
+import Data.Repository.Acid.CalendarEntry ( MonadDBCalendar(..) )
 import Data.Domain.User                      as User
 import Data.Domain.CalendarEntry             as CalendarEntry
 
 import qualified Data.Repository.Acid.CalendarEntry    as CalendarEntryAcid
 
+instance MonadDBCalendar CtrlV' where
+    create = Foundation.update
+    update = Foundation.update
+    delete = Foundation.update
+    query  = Foundation.query
 
 newCalendarEntry :: MonadDBCalendar m => String -> User -> m CalendarEntry
 newCalendarEntry description user = let entry = CalendarEntry { 

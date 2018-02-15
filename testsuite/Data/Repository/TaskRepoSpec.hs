@@ -15,7 +15,7 @@ import Control.Monad.Identity        ( Identity )
 import Control.Monad.Writer.Class    ( tell )
 import Control.Monad.Writer          ( execWriter )
 
-import Data.Repository.Acid.MonadDB.Task    ( MonadDBTask )
+import Data.Repository.Acid.Task            ( MonadDBTask )
 import Data.Repository.Acid.Task            ( NewTask(..), DeleteTask(..), UpdateTask(..), TaskById(..) )
 import Data.Domain.Task                     as Task
 

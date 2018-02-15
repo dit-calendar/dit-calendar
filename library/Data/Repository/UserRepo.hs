@@ -11,13 +11,19 @@ import Data.Maybe                        ( fromJust )
 import qualified Data.List              as List
 import qualified Happstack.Foundation   as Foundation
 
-import Data.Repository.Acid.MonadDB.User ( MonadDBUser(..) )
+import Data.Repository.Acid.User        ( MonadDBUser(..) )
 import Controller.AcidHelper            ( CtrlV' )
 import Data.Domain.User                 ( User(..) )
 import Data.Domain.Types                ( EntryId, TaskId, UserId )
 
 import qualified Data.Repository.Acid.User       as UserAcid
 
+
+instance MonadDBUser CtrlV' where
+    create = Foundation.update
+    update = Foundation.update
+    delete = Foundation.update
+    query  = Foundation.query
 
 createUser :: MonadDBUser m => String -> m User
 createUser name = let user = User { name = name

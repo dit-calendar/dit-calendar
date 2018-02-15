@@ -8,7 +8,7 @@ import Data.Maybe                 ( fromJust )
 
 import qualified Happstack.Foundation          as Foundation
 
-import Data.Repository.Acid.MonadDB.Task ( MonadDBTask(..) )
+import Data.Repository.Acid.Task      ( MonadDBTask(..) )
 import Data.Domain.CalendarEntry               as CalendarEntry
 import Data.Domain.Task                        as Task
 import Controller.AcidHelper          ( CtrlV' )
@@ -16,6 +16,11 @@ import Data.Domain.Types              ( TaskId )
 
 import qualified Data.Repository.Acid.Task    as TaskAcid
 
+instance MonadDBTask CtrlV' where
+    create = Foundation.update
+    update = Foundation.update
+    delete = Foundation.update
+    query  = Foundation.query
 
 updateTask :: MonadDBTask m => Task -> m ()
 updateTask task = update $ TaskAcid.UpdateTask task

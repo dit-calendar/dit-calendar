@@ -1,8 +1,8 @@
 {-# LANGUAGE  TemplateHaskell, TypeFamilies, FlexibleInstances #-}
 
 module Data.Repository.Acid.User
-    (initialUserListState, UserList(..), NewUser(..), UserById(..), AllUsers(..),
-    GetUserList(..), UpdateUser(..), DeleteUser(..)) where
+    ( MonadDBUser(..), initialUserListState, UserList(..), NewUser(..), UserById(..), AllUsers(..),
+    GetUserList(..), UpdateUser(..), DeleteUser(..) ) where
 
 import Data.Acid                       ( Query, Update, makeAcidic )
 import Data.IxSet                      ( Indexable(..), ixFun, ixSet )
@@ -41,3 +41,9 @@ deleteUser :: UserId -> Update UserList ()
 deleteUser = InterfaceAcid.deleteEntry
 
 $(makeAcidic ''UserList ['newUser, 'userById, 'allUsers, 'getUserList, 'updateUser, 'deleteUser])
+
+class MonadDBUser m where
+    create :: NewUser -> m User
+    update :: UpdateUser -> m ()
+    delete :: DeleteUser -> m ()
+    query  :: UserById -> m (Maybe User)
