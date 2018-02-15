@@ -24,6 +24,7 @@ import Data.Repository.MonadDB.Task          ( MonadDBTaskRepo )
 import Data.Repository.MonadDB.Calendar      ( MonadDBCalendarRepo )
 
 import qualified Data.Service.User          as UserService
+import qualified Data.Service.Task          as TaskService
 
 
 mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBTaskRepo, MonadDBCalendarRepo |]
@@ -36,7 +37,7 @@ fixture = Fixture { _newCalendarEntry = undefined
                   , _deleteTaskFromCalendarEntry = undefined
                   , _addTaskToCalendarEntry = undefined
                   , _updateTask = undefined
-                  , _deleteTask = undefined
+                  , _deleteTask = \(a) -> tell [show a]
                   , _createTask = undefined
                   , _getTask = undefined
                   , _createUser = undefined
@@ -45,18 +46,24 @@ fixture = Fixture { _newCalendarEntry = undefined
                   , _addCalendarEntryToUser = undefined
                   , _deleteCalendarEntryFromUser = undefined
                   , _addTaskToUser = undefined
-                  , _deleteTaskFromUser = undefined
-                  , _getUser = undefined
+                  , _deleteTaskFromUser = \_ a -> tell [show a] --Wrong? deleteTaskFromUser gets 2 Parameter user and taskId. Both should be logged
+                  , _getUser = \(a) -> return userFromDb
                   }
 
 instance MonadIO Identity where
     liftIO = undefined
 
 
-spec = describe "UserService" $ do
-    it "deleteUser" $ do
+spec = describe "RepositoryService" $ do
+    it "UserService.deleteUser" $ do
         let user = User{ name="Foo", User.userId=10, calendarEntries=[1,2], belongingTasks=[] }
         let (_, log) = evalTestFixture (UserService.deleteUser user) fixture
         log!!0 `shouldBe` "1"
         log!!1 `shouldBe` "2"
         log!!2 `shouldBe` (show user)
+    it "TaskService.deleteTask" $ do
+        let task = Task{ Task.description="task1", taskId=1, belongingUsers=[1]}
+        let (_, log) = evalTestFixture (TaskService.deleteTask task) fixture
+        log!!0 `shouldBe` "1"
+        log!!1 `shouldBe` (show task)
+
