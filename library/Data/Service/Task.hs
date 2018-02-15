@@ -24,8 +24,8 @@ import qualified Data.Repository.CalendarRepo         as CalendarRepo
 deleteTask :: (MonadDBTaskRepo m, MonadDBUserRepo m, MonadIO m) =>
             Task -> m ()
 deleteTask task = do
-    MonadDBTaskRepo.deleteTask task
     deleteTaskFromAllUsers task
+    MonadDBTaskRepo.deleteTask task
 
 createTask :: (MonadDBTaskRepo m, MonadDBUserRepo m, MonadDBCalendarRepo m) =>
             CalendarEntry -> String -> m Task
