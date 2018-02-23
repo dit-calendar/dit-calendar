@@ -36,7 +36,7 @@ fixture = Fixture { _newCalendarEntry = undefined
                   , _deleteCalendarEntry = \(a) -> tell [show a]
                   , _deleteTaskFromCalendarEntry = undefined
                   , _addTaskToCalendarEntry = \entry taskId -> tell [show entry] >> tell [show taskId]
-                  , _updateTask = undefined
+                  , _updateTask = \(a) -> tell [show a]
                   , _deleteTask = \(a) -> tell [show a]
                   , _createTask = \(a) -> return taskFromDb
                   , _getTask = undefined
@@ -45,7 +45,7 @@ fixture = Fixture { _newCalendarEntry = undefined
                   , _updateName = undefined
                   , _addCalendarEntryToUser = undefined
                   , _deleteCalendarEntryFromUser = undefined
-                  , _addTaskToUser = undefined
+                  , _addTaskToUser = \user taskId -> tell [show user] >> tell [show taskId]
                   , _deleteTaskFromUser = \x a -> tell [show x] >> tell [show a]
                   , _getUser = \(a) -> return userFromDb
                   }
@@ -73,4 +73,11 @@ spec = describe "RepositoryService" $ do
         result `shouldBe` taskFromDb
         log!!0 `shouldBe` (show calc)
         log!!1 `shouldBe` (show (Task.taskId taskFromDb))
+    it "TaskService.addUserToTask" $ do
+        let task = Task{ Task.description="task1", taskId=1, belongingUsers=[2]}
+        let expectedTask = Task{ Task.description="task1", taskId=1, belongingUsers=[2,10]}
+        let (_, log) = evalTestFixture (TaskService.addUserToTask task 10) fixture
+        log!!0 `shouldBe` (show userFromDb)
+        log!!1 `shouldBe` (show (Task.taskId task))
+        log!!2 `shouldBe` (show expectedTask)
 
