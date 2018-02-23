@@ -8,32 +8,35 @@ import Data.Repository.Acid.CalendarEntry         ( MonadDBCalendar )
 import Data.Repository.Acid.Task                  ( MonadDBTask )
 import Data.Repository.Acid.User                  ( MonadDBUser )
 
-import qualified Data.Repository.CalendarRepo         as CalendarRepo
-import qualified Data.Repository.TaskRepo             as TaskRepo
-import qualified Data.Repository.UserRepo             as UserRepo
+import qualified Data.Repository.MonadDB.User            as MonadDBUserRepo
+import Data.Repository.MonadDB.User                      ( MonadDBUserRepo )
+import qualified Data.Repository.MonadDB.Task            as MonadDBTaskRepo
+import Data.Repository.MonadDB.Task                      ( MonadDBTaskRepo )
+import qualified Data.Repository.MonadDB.Calendar        as MonadDBCalendarRepo
+import Data.Repository.MonadDB.Calendar                  ( MonadDBCalendarRepo )
 
 
-createEntry :: (MonadDBUser m, MonadDBCalendar m) =>
+createEntry :: (MonadDBUserRepo m, MonadDBCalendarRepo m) =>
             String -> User -> m CalendarEntry
 createEntry description user = do
-    calendarEntry <- CalendarRepo.newCalendarEntry description user
-    UserRepo.addCalendarEntryToUser user $ CalendarEntry.entryId calendarEntry
+    calendarEntry <- MonadDBCalendarRepo.newCalendarEntry description user
+    MonadDBUserRepo.addCalendarEntryToUser user $ CalendarEntry.entryId calendarEntry
     return calendarEntry
 
-removeCalendar :: (MonadDBUser m, MonadDBTask m, MonadDBCalendar m, MonadIO m) =>
+removeCalendar :: (MonadDBUserRepo m, MonadDBTaskRepo m, MonadDBCalendarRepo m, MonadIO m) =>
                 CalendarEntry -> m ()
 removeCalendar calendarEntry = let cEntryId = entryId calendarEntry in
     do
-       user <- UserRepo.getUser (CalendarEntry.userId calendarEntry)
-       UserRepo.deleteCalendarEntryFromUser user cEntryId
+       user <- MonadDBUserRepo.getUser (CalendarEntry.userId calendarEntry)
+       MonadDBUserRepo.deleteCalendarEntryFromUser user cEntryId
        deleteCalendarsTasks calendarEntry
-       CalendarRepo.deleteCalendarEntry cEntryId
+       MonadDBCalendarRepo.deleteCalendarEntry cEntryId
 
-deleteCalendarsTasks :: (MonadDBTask m, MonadDBCalendar m, MonadIO m)
+deleteCalendarsTasks :: (MonadDBTaskRepo m, MonadDBCalendarRepo m, MonadIO m)
                 => CalendarEntry -> m ()
 deleteCalendarsTasks calendar =
     foldr (\ x ->
       (>>) (do
-        task <- TaskRepo.getTask x
-        TaskRepo.deleteTask task ))
+        task <- MonadDBTaskRepo.getTask x
+        MonadDBTaskRepo.deleteTask task ))
     (return ()) $ CalendarEntry.tasks calendar

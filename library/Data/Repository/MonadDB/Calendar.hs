@@ -13,7 +13,7 @@ import Data.Repository.Acid.User                 ( MonadDBUser )
 
 import qualified Data.Repository.CalendarRepo   as CalendarRepo
 
-class MonadDBCalendarRepo m where
+class Monad m => MonadDBCalendarRepo m where
     newCalendarEntry            :: String -> User -> m CalendarEntry
     deleteCalendarEntry         :: EntryId -> m ()
     deleteTaskFromCalendarEntry :: CalendarEntry -> Int -> m ()
