@@ -25,14 +25,16 @@ import Data.Repository.MonadDB.Calendar      ( MonadDBCalendarRepo )
 
 import qualified Data.Service.User          as UserService
 import qualified Data.Service.Task          as TaskService
+import qualified Data.Service.CalendarEntry as CalendarEntryService
 
 
 mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBTaskRepo, MonadDBCalendarRepo |]
 
 userFromDb = User{ name="Foo", User.userId=10, calendarEntries=[], belongingTasks=[1,2,3] }
 taskFromDb = Task{ Task.description="task1", taskId=1, belongingUsers=[]}
+entryFromDb = CalendarEntry{ CalendarEntry.description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[]}
 
-fixture = Fixture { _newCalendarEntry = undefined
+fixture = Fixture { _newCalendarEntry = \description user -> tell [description] >> tell [show user] >> return entryFromDb
                   , _deleteCalendarEntry = \(a) -> tell [show a]
                   , _deleteTaskFromCalendarEntry = undefined
                   , _addTaskToCalendarEntry = \entry taskId -> tell [show entry] >> tell [show taskId]
@@ -43,7 +45,7 @@ fixture = Fixture { _newCalendarEntry = undefined
                   , _createUser = undefined
                   , _deleteUser = \(a) -> tell [show a]
                   , _updateName = undefined
-                  , _addCalendarEntryToUser = undefined
+                  , _addCalendarEntryToUser = \user entryId -> tell [show user] >> tell [show entryId]
                   , _deleteCalendarEntryFromUser = undefined
                   , _addTaskToUser = \user taskId -> tell [show user] >> tell [show taskId]
                   , _deleteTaskFromUser = \x a -> tell [show x] >> tell [show a]
@@ -87,4 +89,12 @@ spec = describe "RepositoryService" $ do
         log!!0 `shouldBe` (show userFromDb)
         log!!1 `shouldBe` (show (Task.taskId task))
         log!!2 `shouldBe` (show expectedTask)
+    it "CalendarEntryService.createEntry" $ do
+        let user = User{ name="Foo", User.userId=10, calendarEntries=[1,2], belongingTasks=[] }
+        let (result, log) = evalTestFixture (CalendarEntryService.createEntry "termin2" user) fixture
+        result `shouldBe` entryFromDb
+        log!!0 `shouldBe` "termin2"
+        log!!1 `shouldBe` (show user)
+        log!!2 `shouldBe` (show user)
+        log!!3 `shouldBe` (show (CalendarEntry.entryId entryFromDb))
 
