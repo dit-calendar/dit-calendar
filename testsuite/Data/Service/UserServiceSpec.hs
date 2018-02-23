@@ -80,4 +80,11 @@ spec = describe "RepositoryService" $ do
         log!!0 `shouldBe` (show userFromDb)
         log!!1 `shouldBe` (show (Task.taskId task))
         log!!2 `shouldBe` (show expectedTask)
+    it "TaskService.removeUserFromTask" $ do
+        let task = Task{ Task.description="task1", taskId=1, belongingUsers=[2,10]}
+        let expectedTask = Task{ Task.description="task1", taskId=1, belongingUsers=[2]}
+        let (_, log) = evalTestFixture (TaskService.removeUserFromTask task 10) fixture
+        log!!0 `shouldBe` (show userFromDb)
+        log!!1 `shouldBe` (show (Task.taskId task))
+        log!!2 `shouldBe` (show expectedTask)
 
