@@ -14,9 +14,6 @@ import qualified Data.Repository.MonadDB.User            as MonadDBUserRepo
 import Data.Repository.MonadDB.User                      ( MonadDBUserRepo )
 import qualified Data.Repository.MonadDB.Calendar        as MonadDBCalendarRepo
 import Data.Repository.MonadDB.Calendar                  ( MonadDBCalendarRepo )
-import qualified Data.Repository.UserRepo             as UserRepo
-import qualified Data.Repository.TaskRepo             as TaskRepo
-import qualified Data.Repository.CalendarRepo         as CalendarRepo
 
 
 deleteTask :: (MonadDBTaskRepo m, MonadDBUserRepo m, MonadIO m) =>
