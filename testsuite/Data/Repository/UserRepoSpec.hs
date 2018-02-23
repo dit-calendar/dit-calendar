@@ -1,5 +1,5 @@
 {-# LANGUAGE MultiParamTypeClasses  #-}
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FlexibleInstances, FlexibleContexts #-}
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TemplateHaskell #-}
@@ -25,6 +25,7 @@ mkFixture "Fixture" [ts| MonadDBUser |]
 
 userFromDb = User{ name="Foo", User.userId=10, calendarEntries=[], belongingTasks=[1,2,3] }
 
+fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture { _create = \(NewUser a)    -> return a
                   , _delete = \(DeleteUser a) -> tell [show a]
                   , _update = \(UpdateUser a) -> tell [show a]

@@ -1,5 +1,5 @@
 {-# LANGUAGE MultiParamTypeClasses  #-}
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FlexibleInstances, FlexibleContexts #-}
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TemplateHaskell #-}
@@ -26,6 +26,7 @@ mkFixture "Fixture" [ts| MonadDBTask |]
 
 taskFromDb = Task{ description="task1", taskId=1, belongingUsers=[]}
 
+fixture :: (Monad m, MonadWriter String m) => Fixture m
 fixture = Fixture { _create = \(NewTask task) -> return task
                   , _delete = \(DeleteTask a) -> tell (show a)
                   , _update = \(UpdateTask a) -> tell (show a)

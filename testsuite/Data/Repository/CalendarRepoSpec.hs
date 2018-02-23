@@ -1,5 +1,5 @@
 {-# LANGUAGE MultiParamTypeClasses  #-}
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FlexibleInstances, FlexibleContexts #-}
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TemplateHaskell #-}
@@ -23,6 +23,7 @@ import qualified Data.Repository.CalendarRepo          as CalendarRepo
 
 mkFixture "Fixture" [ts| MonadDBCalendar |]
 
+fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture { _create = \(NewEntry caledarEntry) -> return caledarEntry
                   , _delete = \(DeleteEntry a) -> tell [show a]
                   , _update = \(UpdateEntry a)-> tell [show a]
