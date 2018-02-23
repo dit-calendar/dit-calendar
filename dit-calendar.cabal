@@ -91,6 +91,7 @@ test-suite hspec
   hs-source-dirs:      testsuite
   main-is:             Spec.hs
   type:                exitcode-stdio-1.0
+  ghc-options:         -fno-warn-missing-fields
 
 test-suite hlint
   build-depends:
