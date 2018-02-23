@@ -7,8 +7,6 @@ import Control.Monad.IO.Class
 import Data.List                ( delete )
 
 import Data.Domain.Types                  ( UserId )
-import Data.Repository.Acid.Task          ( MonadDBTask )
-import Data.Repository.Acid.User          ( MonadDBUser )
 
 import qualified Data.Repository.MonadDB.Task            as MonadDBTaskRepo
 import Data.Repository.MonadDB.Task                      ( MonadDBTaskRepo )
@@ -43,12 +41,12 @@ deleteTaskFromAllUsers task =
         MonadDBUserRepo.deleteTaskFromUser user x ))
     (return ()) $ Task.belongingUsers task
 
-addUserToTask :: (MonadDBUser m, MonadDBTask m, MonadIO m) =>
+addUserToTask :: (MonadDBUserRepo m, MonadDBTaskRepo m, MonadIO m) =>
                 Task -> UserId -> m ()
 addUserToTask task userId = do
-    user <- UserRepo.getUser userId
-    UserRepo.addTaskToUser user (taskId task)
-    TaskRepo.updateTask task {belongingUsers = belongingUsers task ++ [userId]}
+    user <- MonadDBUserRepo.getUser userId
+    MonadDBUserRepo.addTaskToUser user (taskId task)
+    MonadDBTaskRepo.updateTask task {belongingUsers = belongingUsers task ++ [userId]}
 
 removeUserFromTask :: (MonadDBTaskRepo m, MonadDBUserRepo m) =>
                     Task -> UserId -> m ()
