@@ -46,7 +46,7 @@ fixture = Fixture { _newCalendarEntry = undefined
                   , _addCalendarEntryToUser = undefined
                   , _deleteCalendarEntryFromUser = undefined
                   , _addTaskToUser = undefined
-                  , _deleteTaskFromUser = \_ a -> tell [show a] --Wrong? deleteTaskFromUser gets 2 Parameter user and taskId. Both should be logged
+                  , _deleteTaskFromUser = \x a -> tell [show x] >> tell [show a]
                   , _getUser = \(a) -> return userFromDb
                   }
 
@@ -64,6 +64,7 @@ spec = describe "RepositoryService" $ do
     it "TaskService.deleteTask" $ do
         let task = Task{ Task.description="task1", taskId=1, belongingUsers=[1]}
         let (_, log) = evalTestFixture (TaskService.deleteTask task) fixture
-        log!!0 `shouldBe` "1"
-        log!!1 `shouldBe` (show task)
+        log!!0 `shouldBe` (show userFromDb)
+        log!!1 `shouldBe` "1"
+        log!!2 `shouldBe` (show task)
 
