@@ -41,12 +41,12 @@ fixture = Fixture { _newCalendarEntry = \description user -> tell [description] 
                   , _updateTask = \(a) -> tell [show a]
                   , _deleteTask = \(a) -> tell [show a]
                   , _createTask = \(a) -> return taskFromDb
-                  , _getTask = undefined
+                  , _getTask = \(a) -> tell [show a] >> return taskFromDb
                   , _createUser = undefined
                   , _deleteUser = \(a) -> tell [show a]
                   , _updateName = undefined
                   , _addCalendarEntryToUser = \user entryId -> tell [show user] >> tell [show entryId]
-                  , _deleteCalendarEntryFromUser = undefined
+                  , _deleteCalendarEntryFromUser = \user entryId -> tell [show user] >> tell [show entryId]
                   , _addTaskToUser = \user taskId -> tell [show user] >> tell [show taskId]
                   , _deleteTaskFromUser = \x a -> tell [show x] >> tell [show a]
                   , _getUser = \(a) -> return userFromDb
@@ -97,4 +97,10 @@ spec = describe "RepositoryService" $ do
         log!!1 `shouldBe` (show user)
         log!!2 `shouldBe` (show user)
         log!!3 `shouldBe` (show (CalendarEntry.entryId entryFromDb))
-
+    it "CalendarEntryService.removeCalendar" $ do
+        let calc = CalendarEntry{ CalendarEntry.description="termin2", entryId=4, CalendarEntry.userId=2, tasks=[1]}
+        let (_, log) = evalTestFixture (CalendarEntryService.removeCalendar calc) fixture
+        log!!0 `shouldBe` (show userFromDb)
+        log!!1 `shouldBe` (show (CalendarEntry.entryId calc))
+        log!!2 `shouldBe` (show (Task.taskId taskFromDb))
+        log!!3 `shouldBe` (show taskFromDb)
