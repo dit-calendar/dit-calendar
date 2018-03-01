@@ -1,4 +1,4 @@
-module Controller.ControllerHelper
+module Controller.ResponseHelper
     ( userExist, entryExist, taskExist, okResponse ) where
 
 import Happstack.Server         ( ok, toResponse )

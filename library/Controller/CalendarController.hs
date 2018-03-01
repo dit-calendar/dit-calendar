@@ -5,7 +5,7 @@ import Happstack.Foundation     ( query )
 import Data.Domain.CalendarEntry                as CalendarEntry
 import Data.Domain.Types           ( EntryId, UserId )
 import Controller.AcidHelper       ( CtrlV )
-import Controller.ControllerHelper ( userExist, entryExist, okResponse )
+import Controller.ResponseHelper ( userExist, entryExist, okResponse )
 
 import qualified Data.Repository.Acid.CalendarEntry       as CalendarEntryAcid
 import qualified Data.Repository.Acid.User                as UserAcid

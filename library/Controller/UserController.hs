@@ -3,7 +3,7 @@ module Controller.UserController where
 import Happstack.Server         ( Method(GET), method)
 import Happstack.Foundation     ( query )
 
-import Controller.ControllerHelper   ( userExist, okResponse )
+import Controller.ResponseHelper   ( userExist, okResponse )
 import Data.Domain.User                      as User      ( User(..))
 import Data.Domain.Types             ( UserId )
 import Controller.AcidHelper         ( CtrlV )

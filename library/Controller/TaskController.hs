@@ -6,7 +6,7 @@ import Happstack.Foundation     ( query )
 import Data.Domain.Task                  as Task
 import Data.Domain.Types           ( TaskId, EntryId, UserId )
 import Controller.AcidHelper       ( CtrlV )
-import Controller.ControllerHelper ( userExist, entryExist, taskExist )
+import Controller.ResponseHelper ( userExist, entryExist, taskExist )
 
 import qualified Data.Repository.Acid.Task                as TaskAcid
 import qualified Data.Repository.Acid.CalendarEntry       as CalendarEntryAcid

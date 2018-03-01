@@ -13,7 +13,7 @@ import Happstack.Foundation        ( lift, runReaderT, ReaderT, UnWebT )
 import Data.Domain.Types           ( UserId, EntryId, TaskId )
 import Route.PageEnum              ( Sitemap(..) )
 import Controller.AcidHelper       ( CtrlV, App(..) )
-import Controller.ControllerHelper ( okResponse )
+import Controller.ResponseHelper   ( okResponse )
 
 import qualified Controller.UserController      as UserController
 import qualified Controller.HomeController      as HomeController
