@@ -14,6 +14,7 @@ import Data.Domain.Types           ( UserId, EntryId, TaskId )
 import Route.PageEnum              ( Sitemap(..) )
 import Controller.AcidHelper       ( CtrlV, App(..) )
 import Controller.ControllerHelper ( okResponse )
+import Data.Time.Clock             ( UTCTime )
 
 import qualified Controller.UserController      as UserController
 import qualified Controller.HomeController      as HomeController
@@ -52,7 +53,8 @@ routeUser userId = do
       UserController.deleteUser userId
     POST -> do
       description <- look "description"
-      CalendarController.createCalendarEntry userId description
+      newDate <- look "date"
+      CalendarController.createCalendarEntry userId newDate description
     PUT -> do
       name <- look "name"
       UserController.updateUser userId name

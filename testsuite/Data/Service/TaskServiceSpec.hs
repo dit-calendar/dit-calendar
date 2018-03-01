@@ -22,6 +22,7 @@ import Data.Domain.Types          ( UserId, EntryId, TaskId )
 import Data.Repository.UserRepo          ( MonadDBUserRepo )
 import Data.Repository.TaskRepo              ( MonadDBTaskRepo )
 import Data.Repository.CalendarRepo      ( MonadDBCalendarRepo )
+import Data.Time.Clock            ( UTCTime )
 
 import qualified Data.Service.User          as UserService
 import qualified Data.Service.Task          as TaskService
@@ -56,7 +57,8 @@ spec = describe "TaskServiceSpec" $ do
         log!!2 `shouldBe` "7"
         log!!3 `shouldBe` (show task)
     it "createTask" $ do
-        let calc = CalendarEntry{ CalendarEntry.description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[]}
+        let newDate = (read "2011-11-19 18:28:52.607875 UTC")::UTCTime
+        let calc = CalendarEntry{ CalendarEntry.description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[], date=newDate}
         let (result, log) = evalTestFixture (TaskService.createTask calc "task1") fixture
         result `shouldBe` taskFromDb
         log!!0 `shouldBe` (show calc)

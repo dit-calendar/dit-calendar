@@ -18,6 +18,7 @@ import Data.Domain.User           ( User )
 
 import Data.Repository.Acid.Task                 ( MonadDBTask )
 import Data.Repository.Acid.User                 ( MonadDBUser )
+import Data.Time.Clock            ( UTCTime )
 
 import qualified Data.Repository.Acid.CalendarEntry    as CalendarEntryAcid
 
@@ -27,12 +28,13 @@ instance MonadDBCalendar CtrlV' where
     delete = Foundation.update
     query  = Foundation.query
 
-newCalendarEntryImpl :: MonadDBCalendar m => String -> User -> m CalendarEntry
-newCalendarEntryImpl description user = let entry = CalendarEntry {
+newCalendarEntryImpl :: MonadDBCalendar m => String -> String -> User -> m CalendarEntry
+newCalendarEntryImpl newDate description user = let entry = CalendarEntry {
                         description              = description
                         , entryId                = undefined
                         , CalendarEntry.userId   = User.userId user
                         , tasks          = []
+                        , date                   = read newDate::UTCTime
                         } in
     create (CalendarEntryAcid.NewEntry entry)
 
@@ -57,7 +59,7 @@ addTaskToCalendarEntryImpl calendarEntry taskId =
     updateCalendar calendarEntry {tasks = tasks calendarEntry ++ [taskId]}
 
 class Monad m => MonadDBCalendarRepo m where
-    newCalendarEntry            :: String -> User -> m CalendarEntry
+    newCalendarEntry            :: String -> String -> User -> m CalendarEntry
     deleteCalendarEntry         :: EntryId -> m ()
     deleteTaskFromCalendarEntry :: CalendarEntry -> Int -> m ()
     addTaskToCalendarEntry      :: CalendarEntry -> TaskId -> m ()
