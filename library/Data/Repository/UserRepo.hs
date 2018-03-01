@@ -1,8 +1,9 @@
-{-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
+{-# LANGUAGE FlexibleInstances, TypeSynonymInstances, FlexibleContexts, UndecidableInstances #-}
 
 module Data.Repository.UserRepo
-    ( deleteUser, updateName, addCalendarEntryToUser, addTaskToUser
-    , deleteCalendarEntryFromUser, deleteTaskFromUser, getUser, createUser ) where
+    ( deleteUserImpl, updateNameImpl, addCalendarEntryToUserImpl, addTaskToUserImpl
+    , deleteCalendarEntryFromUserImpl, deleteTaskFromUserImpl, getUserImpl, createUserImpl,
+     MonadDBUserRepo(..) ) where
 
 import Prelude
 import Control.Monad.IO.Class
@@ -16,6 +17,9 @@ import Controller.AcidHelper            ( CtrlV' )
 import Data.Domain.User                 ( User(..) )
 import Data.Domain.Types                ( EntryId, TaskId, UserId )
 
+import Data.Repository.Acid.CalendarEntry        ( MonadDBCalendar )
+import Data.Repository.Acid.Task                 ( MonadDBTask )
+
 import qualified Data.Repository.Acid.User       as UserAcid
 
 
@@ -25,41 +29,62 @@ instance MonadDBUser CtrlV' where
     delete = Foundation.update
     query  = Foundation.query
 
-createUser :: MonadDBUser m => String -> m User
-createUser name = let user = User { name = name
+createUserImpl :: MonadDBUser m => String -> m User
+createUserImpl name = let user = User { name = name
                     , userId = 0 --TODO why it can't be undefined if creating user with post interface?
                     , calendarEntries = []
                     , belongingTasks = []
                     } in
         create $ UserAcid.NewUser user
 
-deleteUser :: MonadDBUser m => User -> m ()
-deleteUser user = delete $ UserAcid.DeleteUser (Data.Domain.User.userId user)
+deleteUserImpl :: MonadDBUser m => User -> m ()
+deleteUserImpl user = delete $ UserAcid.DeleteUser (Data.Domain.User.userId user)
 
 updateUser :: MonadDBUser m => User -> m ()
 updateUser user = update $ UserAcid.UpdateUser user
 
-updateName :: MonadDBUser m => User -> String -> m ()
-updateName user newName = updateUser user {name = newName}
+updateNameImpl :: MonadDBUser m => User -> String -> m ()
+updateNameImpl user newName = updateUser user {name = newName}
 
-addCalendarEntryToUser :: MonadDBUser m => User -> EntryId -> m ()
-addCalendarEntryToUser user entryId =
+addCalendarEntryToUserImpl :: MonadDBUser m => User -> EntryId -> m ()
+addCalendarEntryToUserImpl user entryId =
     updateUser user {calendarEntries = calendarEntries user ++ [entryId]}
 
-deleteCalendarEntryFromUser :: MonadDBUser m =>
+deleteCalendarEntryFromUserImpl :: MonadDBUser m =>
                             User -> EntryId -> m ()
-deleteCalendarEntryFromUser user entryId =
+deleteCalendarEntryFromUserImpl user entryId =
     updateUser user {calendarEntries = List.delete entryId (calendarEntries user)}
 
-addTaskToUser :: MonadDBUser m => User -> TaskId -> m ()
-addTaskToUser user taskId =
+addTaskToUserImpl :: MonadDBUser m => User -> TaskId -> m ()
+addTaskToUserImpl user taskId =
     updateUser user {belongingTasks = belongingTasks user ++ [taskId]}
 
-deleteTaskFromUser :: MonadDBUser m => User -> TaskId -> m ()
-deleteTaskFromUser user taskId =
+deleteTaskFromUserImpl :: MonadDBUser m => User -> TaskId -> m ()
+deleteTaskFromUserImpl user taskId =
     updateUser user {belongingTasks = List.delete taskId (belongingTasks user)}
 
-getUser :: (MonadDBUser m, MonadIO m) => UserId -> m User
-getUser userId = do
+getUserImpl :: (MonadDBUser m, MonadIO m) => UserId -> m User
+getUserImpl userId = do
     mUser <- query $ UserAcid.UserById userId
     return $ fromJust mUser
+
+class MonadDBUserRepo m where
+    createUser :: String -> m User
+    deleteUser :: User -> m ()
+    updateName :: User -> String -> m ()
+    addCalendarEntryToUser :: User -> EntryId -> m ()
+    deleteCalendarEntryFromUser :: User -> EntryId -> m ()
+    addTaskToUser :: User -> TaskId -> m ()
+    deleteTaskFromUser :: User -> TaskId -> m ()
+    getUser :: UserId -> m User
+
+instance (MonadDBUser CtrlV', MonadDBCalendar CtrlV', MonadDBTask CtrlV')
+        => MonadDBUserRepo CtrlV' where
+    createUser = createUserImpl
+    deleteUser = deleteUserImpl
+    updateName = updateNameImpl
+    addCalendarEntryToUser = addCalendarEntryToUserImpl
+    deleteCalendarEntryFromUser = deleteCalendarEntryFromUserImpl
+    addTaskToUser = addTaskToUserImpl
+    deleteTaskFromUser = deleteTaskFromUserImpl
+    getUser = getUserImpl

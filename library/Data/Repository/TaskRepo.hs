@@ -1,7 +1,7 @@
-{-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
+{-# LANGUAGE FlexibleInstances, TypeSynonymInstances, FlexibleContexts, UndecidableInstances #-}
 
 module Data.Repository.TaskRepo
-    ( updateDescription, deleteTask, createTask, updateTask, getTask ) where
+    ( updateDescription, deleteTaskImpl, createTaskImpl, updateTaskImpl, getTaskImpl, MonadDBTaskRepo(..) ) where
 
 import Control.Monad.IO.Class
 import Data.Maybe                 ( fromJust )
@@ -14,6 +14,9 @@ import Data.Domain.Task                        as Task
 import Controller.AcidHelper          ( CtrlV' )
 import Data.Domain.Types              ( TaskId )
 
+import Data.Repository.Acid.CalendarEntry        ( MonadDBCalendar )
+import Data.Repository.Acid.User                 ( MonadDBUser )
+
 import qualified Data.Repository.Acid.Task    as TaskAcid
 
 instance MonadDBTask CtrlV' where
@@ -22,23 +25,38 @@ instance MonadDBTask CtrlV' where
     delete = Foundation.update
     query  = Foundation.query
 
-updateTask :: MonadDBTask m => Task -> m ()
-updateTask task = update $ TaskAcid.UpdateTask task
+updateTaskImpl :: MonadDBTask m => Task -> m ()
+updateTaskImpl task = update $ TaskAcid.UpdateTask task
 
 updateDescription :: MonadDBTask m => Task -> String -> m ()
-updateDescription task newDescription = updateTask task {Task.description = newDescription}
+updateDescription task newDescription = updateTaskImpl task {Task.description = newDescription}
 
-deleteTask :: MonadDBTask m => Task -> m ()
-deleteTask task = delete $ TaskAcid.DeleteTask $ taskId task
+deleteTaskImpl :: MonadDBTask m => Task -> m ()
+deleteTaskImpl task = delete $ TaskAcid.DeleteTask $ taskId task
 
-createTask :: MonadDBTask m => String -> m Task
-createTask description = 
+createTaskImpl :: MonadDBTask m => String -> m Task
+createTaskImpl description =
     let task = Task { Task.description = description
                     , taskId  = undefined
                     , belongingUsers = []
                     } in
         create $ TaskAcid.NewTask task
 
-getTask :: (MonadDBTask m, MonadIO m) => TaskId -> m Task
-getTask taskId =
+getTaskImpl :: (MonadDBTask m, MonadIO m) => TaskId -> m Task
+getTaskImpl taskId =
     fromJust <$> query (TaskAcid.TaskById taskId)
+
+
+
+class Monad m => MonadDBTaskRepo m where
+    updateTask        :: Task   -> m ()
+    deleteTask        :: Task   -> m ()
+    createTask        :: String -> m Task
+    getTask           :: TaskId -> m Task
+
+instance (MonadDBUser CtrlV', MonadDBTask CtrlV', MonadDBCalendar CtrlV')
+        => MonadDBTaskRepo CtrlV' where
+    updateTask        = updateTaskImpl
+    deleteTask        = deleteTaskImpl
+    createTask        = createTaskImpl
+    getTask           = getTaskImpl

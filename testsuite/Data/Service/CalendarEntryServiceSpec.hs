@@ -19,9 +19,9 @@ import Data.Domain.User           as User
 import Data.Domain.Task           as Task
 import Data.Domain.Types          ( UserId, EntryId, TaskId )
 
-import Data.Repository.MonadDB.User          ( MonadDBUserRepo )
-import Data.Repository.MonadDB.Task          ( MonadDBTaskRepo )
-import Data.Repository.MonadDB.Calendar      ( MonadDBCalendarRepo )
+import Data.Repository.UserRepo          ( MonadDBUserRepo )
+import Data.Repository.TaskRepo              ( MonadDBTaskRepo )
+import Data.Repository.CalendarRepo      ( MonadDBCalendarRepo )
 
 import qualified Data.Service.User          as UserService
 import qualified Data.Service.Task          as TaskService

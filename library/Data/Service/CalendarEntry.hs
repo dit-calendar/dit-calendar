@@ -8,12 +8,12 @@ import Data.Repository.Acid.CalendarEntry         ( MonadDBCalendar )
 import Data.Repository.Acid.Task                  ( MonadDBTask )
 import Data.Repository.Acid.User                  ( MonadDBUser )
 
-import qualified Data.Repository.MonadDB.User            as MonadDBUserRepo
-import Data.Repository.MonadDB.User                      ( MonadDBUserRepo )
-import qualified Data.Repository.MonadDB.Task            as MonadDBTaskRepo
-import Data.Repository.MonadDB.Task                      ( MonadDBTaskRepo )
-import qualified Data.Repository.MonadDB.Calendar        as MonadDBCalendarRepo
-import Data.Repository.MonadDB.Calendar                  ( MonadDBCalendarRepo )
+import qualified Data.Repository.UserRepo            as MonadDBUserRepo
+import Data.Repository.UserRepo                      ( MonadDBUserRepo )
+import qualified Data.Repository.TaskRepo            as MonadDBTaskRepo
+import Data.Repository.TaskRepo                      ( MonadDBTaskRepo )
+import qualified Data.Repository.CalendarRepo        as MonadDBCalendarRepo
+import Data.Repository.CalendarRepo                  ( MonadDBCalendarRepo )
 
 
 createEntry :: (MonadDBUserRepo m, MonadDBCalendarRepo m) =>

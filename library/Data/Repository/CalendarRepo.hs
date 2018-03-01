@@ -1,8 +1,8 @@
-{-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
+{-# LANGUAGE FlexibleInstances, TypeSynonymInstances, FlexibleContexts, UndecidableInstances #-}
 
 module Data.Repository.CalendarRepo
-    ( newCalendarEntry, deleteCalendarEntry, updateDescription,
-    deleteTaskFromCalendarEntry, addTaskToCalendarEntry ) where
+    ( newCalendarEntryImpl, deleteCalendarEntryImpl, updateDescription,
+    deleteTaskFromCalendarEntryImpl, addTaskToCalendarEntryImpl, MonadDBCalendarRepo(..) ) where
 
 import qualified Data.List                  as List
 import qualified Happstack.Foundation       as Foundation
@@ -13,6 +13,12 @@ import Data.Repository.Acid.CalendarEntry ( MonadDBCalendar(..) )
 import Data.Domain.User                      as User
 import Data.Domain.CalendarEntry             as CalendarEntry
 
+import Data.Domain.CalendarEntry  ( CalendarEntry )
+import Data.Domain.User           ( User )
+
+import Data.Repository.Acid.Task                 ( MonadDBTask )
+import Data.Repository.Acid.User                 ( MonadDBUser )
+
 import qualified Data.Repository.Acid.CalendarEntry    as CalendarEntryAcid
 
 instance MonadDBCalendar CtrlV' where
@@ -21,8 +27,8 @@ instance MonadDBCalendar CtrlV' where
     delete = Foundation.update
     query  = Foundation.query
 
-newCalendarEntry :: MonadDBCalendar m => String -> User -> m CalendarEntry
-newCalendarEntry description user = let entry = CalendarEntry { 
+newCalendarEntryImpl :: MonadDBCalendar m => String -> User -> m CalendarEntry
+newCalendarEntryImpl description user = let entry = CalendarEntry {
                         description              = description
                         , entryId                = undefined
                         , CalendarEntry.userId   = User.userId user
@@ -30,8 +36,8 @@ newCalendarEntry description user = let entry = CalendarEntry {
                         } in
     create (CalendarEntryAcid.NewEntry entry)
 
-deleteCalendarEntry :: MonadDBCalendar m => EntryId -> m ()
-deleteCalendarEntry entryId = delete $ CalendarEntryAcid.DeleteEntry entryId
+deleteCalendarEntryImpl :: MonadDBCalendar m => EntryId -> m ()
+deleteCalendarEntryImpl entryId = delete $ CalendarEntryAcid.DeleteEntry entryId
 
 updateCalendar :: MonadDBCalendar m => CalendarEntry -> m ()
 updateCalendar calendarEntry = update $ CalendarEntryAcid.UpdateEntry calendarEntry
@@ -40,12 +46,25 @@ updateDescription:: MonadDBCalendar m => CalendarEntry -> String -> m ()
 updateDescription calendarEntry newDescription =
     updateCalendar calendarEntry {CalendarEntry.description = newDescription}
 
-deleteTaskFromCalendarEntry :: MonadDBCalendar m =>
+deleteTaskFromCalendarEntryImpl :: MonadDBCalendar m =>
                             CalendarEntry -> Int -> m ()
-deleteTaskFromCalendarEntry calendarEntry taskId =
+deleteTaskFromCalendarEntryImpl calendarEntry taskId =
   updateCalendar calendarEntry {tasks = List.delete taskId (tasks calendarEntry)}
 
-addTaskToCalendarEntry :: MonadDBCalendar m =>
+addTaskToCalendarEntryImpl :: MonadDBCalendar m =>
                         CalendarEntry -> TaskId -> m ()
-addTaskToCalendarEntry calendarEntry taskId =
+addTaskToCalendarEntryImpl calendarEntry taskId =
     updateCalendar calendarEntry {tasks = tasks calendarEntry ++ [taskId]}
+
+class Monad m => MonadDBCalendarRepo m where
+    newCalendarEntry            :: String -> User -> m CalendarEntry
+    deleteCalendarEntry         :: EntryId -> m ()
+    deleteTaskFromCalendarEntry :: CalendarEntry -> Int -> m ()
+    addTaskToCalendarEntry      :: CalendarEntry -> TaskId -> m ()
+
+instance (MonadDBUser CtrlV', MonadDBCalendar CtrlV', MonadDBTask CtrlV')
+        => MonadDBCalendarRepo CtrlV' where
+    newCalendarEntry            = newCalendarEntryImpl
+    deleteCalendarEntry         = deleteCalendarEntryImpl
+    deleteTaskFromCalendarEntry = deleteTaskFromCalendarEntryImpl
+    addTaskToCalendarEntry      = addTaskToCalendarEntryImpl

@@ -32,12 +32,12 @@ fixture = Fixture { _create = \(NewEntry caledarEntry) -> return caledarEntry
 spec = describe "CalendarRepo" $ do
     it "newCalendarEntry" $ do
         let user = User{ name="Foo", User.userId=10, calendarEntries=[], belongingTasks=[] }
-        let (result, _) = evalTestFixture (CalendarRepo.newCalendarEntry "termin1" user) fixture
+        let (result, _) = evalTestFixture (CalendarRepo.newCalendarEntryImpl "termin1" user) fixture
         CalendarEntry.description result `shouldBe` "termin1"
         CalendarEntry.userId result `shouldBe` 10
         CalendarEntry.tasks result `shouldBe` []
     it "deleteCalendarEntry" $ do
-        let (_, log) = evalTestFixture (CalendarRepo.deleteCalendarEntry 15) fixture
+        let (_, log) = evalTestFixture (CalendarRepo.deleteCalendarEntryImpl 15) fixture
         log `shouldBe` ["15"::String]
     it "updateDescription" $ do
         let calc = CalendarEntry{ description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[]}
@@ -46,11 +46,11 @@ spec = describe "CalendarRepo" $ do
         log!!0 `shouldBe` show newCalc
     it "addTaskToCalendarEntry" $ do
         let calc = CalendarEntry{ description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[1]}
-        let (_, log) = evalTestFixture (CalendarRepo.addTaskToCalendarEntry calc 2) fixture
+        let (_, log) = evalTestFixture (CalendarRepo.addTaskToCalendarEntryImpl calc 2) fixture
         let newCalc = calc {tasks = [1, 2]}
         log!!0 `shouldBe` show newCalc
     it "deleteTaskFromCalendarEntry" $ do
         let calc = CalendarEntry{ description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[1,2,3]}
-        let (_, log) = evalTestFixture (CalendarRepo.deleteTaskFromCalendarEntry calc 2) fixture
+        let (_, log) = evalTestFixture (CalendarRepo.deleteTaskFromCalendarEntryImpl calc 2) fixture
         let newCalc = calc {tasks = [1, 3]}
         log!!0 `shouldBe` show newCalc

@@ -37,12 +37,12 @@ instance MonadIO Identity where
 
 spec = describe "CalendarRepo" $ do
     it "createTask" $ do
-        let (result, _) = evalTestFixture (TaskRepo.createTask "task1") fixture
+        let (result, _) = evalTestFixture (TaskRepo.createTaskImpl "task1") fixture
         Task.description result `shouldBe` "task1"
         Task.belongingUsers result `shouldBe` []
     it "deleteTask" $ do
         let task = Task{ description="task1", taskId=1, belongingUsers=[]}
-        let (_, log) = evalTestFixture (TaskRepo.deleteTask task) fixture
+        let (_, log) = evalTestFixture (TaskRepo.deleteTaskImpl task) fixture
         log `shouldBe` "1"
     it "updateDescription" $ do
         let task = Task{ description="task1", taskId=1, belongingUsers=[]}
@@ -51,8 +51,8 @@ spec = describe "CalendarRepo" $ do
         log `shouldBe` show newTask
     it "updateTask" $ do
         let task = Task{ description="task1", taskId=1, belongingUsers=[]}
-        let (_, log) = evalTestFixture (TaskRepo.updateTask task) fixture
+        let (_, log) = evalTestFixture (TaskRepo.updateTaskImpl task) fixture
         log `shouldBe` show task
     it "getTask" $ do
-        let (result, _) = evalTestFixture (TaskRepo.getTask 1) fixture
+        let (result, _) = evalTestFixture (TaskRepo.getTaskImpl 1) fixture
         result `shouldBe` taskFromDb
