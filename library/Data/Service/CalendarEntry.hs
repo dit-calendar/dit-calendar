@@ -17,9 +17,9 @@ import Data.Repository.CalendarRepo                  ( MonadDBCalendarRepo )
 
 
 createEntry :: (MonadDBUserRepo m, MonadDBCalendarRepo m) =>
-            String -> User -> m CalendarEntry
-createEntry description user = do
-    calendarEntry <- MonadDBCalendarRepo.newCalendarEntry description user
+            String -> String -> User -> m CalendarEntry
+createEntry newDate description user = do
+    calendarEntry <- MonadDBCalendarRepo.newCalendarEntry newDate description user
     MonadDBUserRepo.addCalendarEntryToUser user $ CalendarEntry.entryId calendarEntry
     return calendarEntry
 

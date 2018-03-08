@@ -19,11 +19,11 @@ entryPage i = do
     mEntry <- query (CalendarEntryAcid.EntryById i)
     entryExist i (\e -> okResponse $ "peeked at the description and saw: " ++ show e) mEntry
 
-createCalendarEntry :: UserId -> String -> CtrlV
-createCalendarEntry userId description = do
+createCalendarEntry :: UserId -> String -> String -> CtrlV
+createCalendarEntry userId newDate description = do
     mUser <- query (UserAcid.UserById userId)
     userExist userId (\u -> do
-            entry <- CalendarService.createEntry description u
+            entry <- CalendarService.createEntry newDate description u
             okResponse $ "Add Entry: " ++ show (CalendarEntry.entryId entry) ++ "to User: " ++ show userId) mUser
 
 deleteCalendarEntry :: EntryId -> CtrlV
