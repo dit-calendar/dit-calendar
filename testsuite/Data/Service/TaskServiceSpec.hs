@@ -1,5 +1,5 @@
 {-# LANGUAGE MultiParamTypeClasses  #-}
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FlexibleInstances,FlexibleContexts #-}
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TemplateHaskell #-}
@@ -34,6 +34,7 @@ mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBTaskRepo, MonadDBCalendarRepo |
 userFromDb = User{ name="Foo", User.userId=10, calendarEntries=[], belongingTasks=[1,2,3] }
 taskFromDb = Task{ Task.description="task1", taskId=5, belongingUsers=[]}
 
+fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture { _addTaskToCalendarEntry = \entry taskId -> tell [show entry] >> tell [show taskId]
                   , _updateTask = \(a) -> tell [show a]
                   , _deleteTask = \(a) -> tell [show a]

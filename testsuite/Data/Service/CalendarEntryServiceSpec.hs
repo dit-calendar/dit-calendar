@@ -1,5 +1,5 @@
 {-# LANGUAGE MultiParamTypeClasses  #-}
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FlexibleInstances,FlexibleContexts #-}
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TemplateHaskell #-}
@@ -36,6 +36,7 @@ taskFromDb = Task{ Task.description="task1", taskId=1, belongingUsers=[]}
 dbDate = (read "2011-11-19 18:28:52.607875 UTC")::UTCTime
 entryFromDb = CalendarEntry{ CalendarEntry.description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[], date=dbDate}
 
+fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture { _newCalendarEntry = \newDate description user -> tell [newDate] >> tell [description] >> tell [show user] >> return entryFromDb
                   , _getUser = \(a) -> tell [show a] >> return userFromDb
                   , _getTask = \(a) -> tell [show a] >> return taskFromDb
