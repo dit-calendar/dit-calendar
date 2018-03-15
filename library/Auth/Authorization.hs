@@ -9,7 +9,7 @@ import Happstack.Server                     ( ServerPartT, Response, unauthorize
                                             , mapServerPartT, toResponse )
 import Happstack.Authenticate.Core          ( AuthenticateURL(..), AuthenticateState
                                             , decodeAndVerifyToken, usernamePolicy
-                                            , AuthenticateConfig(..) )
+                                            , AuthenticateConfig(..), Token(..) )
 import Happstack.Authenticate.Password.Core ( PasswordConfig(..) )
 import Happstack.Server.SimpleHTTPS         ( TLSConf(..), nullTLSConf  )
 import Happstack.Foundation                 ( lift )
@@ -17,10 +17,12 @@ import Happstack.Foundation                 ( lift )
 import Route.PageEnum              ( Sitemap(..) )
 import Controller.AcidHelper       ( CtrlV, App )
 import Route.Routing               ( route )
+import qualified Data.Domain.User       as DomainUser
 
 import qualified Data.ByteString.Char8 as B
 import qualified Data.Text.Encoding as T
 import qualified Data.Text as T
+import qualified Happstack.Authenticate.Core as AuthUser
 
 
 --authenticate or route
@@ -46,7 +48,10 @@ routheIfAuthorized authenticateState url =
                     mToken <- decodeAndVerifyToken authenticateState now (T.decodeUtf8 auth)
                     case mToken of
                         Nothing -> unauthorized $ toResponse "You are not authorized."
-                        (Just _) -> route url
+                        (Just (token,_)) -> route url (getLoggedUser (_tokenUser token))
+
+getLoggedUser :: AuthUser.User -> DomainUser.User
+getLoggedUser authUser = undefined
 
 authenticateConfig :: AuthenticateConfig
 authenticateConfig = AuthenticateConfig

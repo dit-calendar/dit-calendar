@@ -16,6 +16,8 @@ import Controller.AcidHelper       ( CtrlV, App(..) )
 import Controller.ResponseHelper   ( okResponse )
 import Data.Time.Clock             ( UTCTime )
 
+import qualified Data.Domain.User       as DomainUser
+
 import qualified Controller.UserController      as UserController
 import qualified Controller.HomeController      as HomeController
 import qualified Controller.CalendarController  as CalendarController
@@ -26,8 +28,8 @@ myPolicy :: BodyPolicy
 myPolicy = defaultBodyPolicy "/tmp/" 0 1000 1000
 
 -- | the route mapping function
-route :: Sitemap -> CtrlV
-route url =
+route :: Sitemap -> DomainUser.User -> CtrlV
+route url loggedUser =
     do  decodeBody myPolicy
         case url of
             Home                 -> HomeController.homePage
