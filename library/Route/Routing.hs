@@ -1,4 +1,4 @@
-module Route.Routing ( route ) where
+module Route.Routing ( authOrRoute ) where
 
 import Happstack.Server          ( ServerPartT(..), Response, ok, Method(GET, POST, DELETE, PUT), nullDir
                                  , Request(rqMethod), askRq , BodyPolicy(..), unauthorized, getHeaderM
@@ -8,16 +8,16 @@ import Happstack.Authenticate.Core ( AuthenticateURL(..), AuthenticateConfig(..)
 import Data.Acid                   ( AcidState )
 import Control.Monad.IO.Class      ( liftIO )
 import Data.Time                   ( getCurrentTime )
+import Data.Time.Clock             ( UTCTime )
 import Happstack.Foundation        ( lift, runReaderT, ReaderT, UnWebT )
 
 import Data.Domain.Types           ( UserId, EntryId, TaskId )
 import Route.PageEnum              ( Sitemap(..) )
-import Controller.AcidHelper       ( CtrlV, App(..) )
+import Controller.AcidHelper       ( CtrlV, App(..), Acid )
 import Controller.ResponseHelper   ( okResponse )
-import Data.Time.Clock             ( UTCTime )
+import Auth.Authorization          ( routheIfAuthorized )
 
-import qualified Data.Domain.User       as DomainUser
-
+import qualified Data.Domain.User               as DomainUser
 import qualified Controller.UserController      as UserController
 import qualified Controller.HomeController      as HomeController
 import qualified Controller.CalendarController  as CalendarController
@@ -26,6 +26,18 @@ import qualified Controller.TaskController      as TaskController
 
 myPolicy :: BodyPolicy
 myPolicy = defaultBodyPolicy "/tmp/" 0 1000 1000
+
+mapServerPartTIO2App :: (ServerPartT IO) Response -> App Response
+mapServerPartTIO2App = mapServerPartT lift
+
+--authenticate or route
+authOrRoute :: AcidState AuthenticateState
+        -> (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response)
+        -> Sitemap -> CtrlV
+authOrRoute authenticateState routeAuthenticate url =
+    case url of
+        Authenticate authenticateURL -> mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
+        other -> routheIfAuthorized authenticateState route other
 
 -- | the route mapping function
 route :: Sitemap -> DomainUser.User -> CtrlV
@@ -40,10 +52,11 @@ route url loggedUser =
             TaskWithCalendar e u -> routeTaskWithCalendar e u
             TaskWithUser t u     -> routeTaskWithUser t u
 
+getHttpMethod :: RouteT Sitemap App Method
 getHttpMethod = do
-  nullDir
-  g <- rqMethod <$> askRq
-  ok g
+    nullDir
+    g <- rqMethod <$> askRq
+    ok g
 
 routeUser :: UserId -> CtrlV
 routeUser userId = do

@@ -1,4 +1,4 @@
-module Auth.Authorization ( authOrRoute, authenticateConfig, passwordConfig, tlsConf ) where
+module Auth.Authorization ( getLoggedUser, routheIfAuthorized, authenticateConfig, passwordConfig, tlsConf ) where
 
 import Data.Acid              ( AcidState )
 import Control.Monad.IO.Class ( liftIO )
@@ -13,32 +13,20 @@ import Happstack.Authenticate.Core          ( AuthenticateURL(..), AuthenticateS
 import Happstack.Authenticate.Password.Core ( PasswordConfig(..) )
 import Happstack.Server.SimpleHTTPS         ( TLSConf(..), nullTLSConf  )
 import Happstack.Foundation                 ( lift )
+import qualified Happstack.Authenticate.Core as AuthUser
 
 import Route.PageEnum              ( Sitemap(..) )
 import Controller.AcidHelper       ( CtrlV, App )
-import Route.Routing               ( route )
-import qualified Data.Domain.User       as DomainUser
 
+import qualified Data.Domain.User      as DomainUser
 import qualified Data.ByteString.Char8 as B
 import qualified Data.Text.Encoding as T
 import qualified Data.Text as T
-import qualified Happstack.Authenticate.Core as AuthUser
 
 
---authenticate or route
-authOrRoute :: AcidState AuthenticateState
-        -> (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response)
-        -> Sitemap -> CtrlV
-authOrRoute authenticateState routeAuthenticate url =
-    case url of
-        Authenticate authenticateURL -> mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
-        other -> routheIfAuthorized authenticateState other
-
-mapServerPartTIO2App :: (ServerPartT IO) Response -> App Response
-mapServerPartTIO2App = mapServerPartT lift
-
-routheIfAuthorized :: AcidState AuthenticateState -> Sitemap -> CtrlV
-routheIfAuthorized authenticateState url =
+routheIfAuthorized :: AcidState AuthenticateState -> (Sitemap -> DomainUser.User -> CtrlV)
+                    -> Sitemap -> CtrlV
+routheIfAuthorized authenticateState route url =
     do  mAuth <- getHeaderM "Authorization"
         case mAuth of
             Nothing -> unauthorized $ toResponse "You are not authorized."

@@ -17,7 +17,8 @@ import Happstack.Authenticate.Route           ( initAuthentication )
 import Happstack.Authenticate.Password.Route  ( initPassword )
 
 import Controller.AcidHelper        ( withAcid, Acid, App )
-import Auth.Authorization           ( authOrRoute, authenticateConfig, passwordConfig, tlsConf )
+import Auth.Authorization           ( authenticateConfig, passwordConfig, tlsConf )
+import Route.Routing                ( authOrRoute )
 import Route.PageEnum               ( Sitemap(Home), urlSitemapParser )
 
 import qualified Data.Text as T
