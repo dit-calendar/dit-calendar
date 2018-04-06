@@ -35,7 +35,7 @@ routheIfAuthorized authenticateState route url =
                     now <- liftIO getCurrentTime
                     mToken <- decodeAndVerifyToken authenticateState now (T.decodeUtf8 auth)
                     case mToken of
-                        Nothing -> unauthorized $ toResponse "You are not authorized."
+                        Nothing -> unauthorized $ toResponse "You are not authorized!"
                         (Just (token,_)) -> route url (getLoggedUser (_tokenUser token))
 
 getLoggedUser :: AuthUser.User -> DomainUser.User

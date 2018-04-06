@@ -1,15 +1,16 @@
 module Route.Routing ( authOrRoute ) where
 
-import Happstack.Server          ( ServerPartT(..), Response, ok, Method(GET, POST, DELETE, PUT), nullDir
-                                 , Request(rqMethod), askRq , BodyPolicy(..), unauthorized, getHeaderM
-                                 , decodeBody, defaultBodyPolicy, look, mapServerPartT, toResponse )
-import Web.Routes                  ( RouteT(..), nestURL, mapRouteT )
-import Happstack.Authenticate.Core ( AuthenticateURL(..), AuthenticateConfig(..), AuthenticateState, decodeAndVerifyToken )
-import Data.Acid                   ( AcidState )
-import Control.Monad.IO.Class      ( liftIO )
-import Data.Time                   ( getCurrentTime )
-import Data.Time.Clock             ( UTCTime )
+import Data.Text                   ( pack )
+
+import Happstack.Server            ( ServerPartT(..), Response, ok, Method(GET, POST, DELETE, PUT), nullDir
+                                   , Request(rqMethod), askRq , BodyPolicy(..), unauthorized, getHeaderM
+                                   , decodeBody, defaultBodyPolicy, look, mapServerPartT, toResponse )
 import Happstack.Foundation        ( lift, runReaderT, ReaderT, UnWebT )
+import Web.Routes                  ( RouteT(..), nestURL, mapRouteT )
+import Happstack.Authenticate.Core ( AuthenticateURL(..), AuthenticateConfig(..), AuthenticateState, decodeAndVerifyToken
+                                   , Username(..), GetUserByUsername(..) )
+import Data.Acid                   ( AcidState )
+import Data.Acid.Advanced          ( query' )
 
 import Data.Domain.Types           ( UserId, EntryId, TaskId )
 import Route.PageEnum              ( Sitemap(..) )
@@ -36,7 +37,17 @@ authOrRoute :: AcidState AuthenticateState
         -> Sitemap -> CtrlV
 authOrRoute authenticateState routeAuthenticate url =
     case url of
-        Authenticate authenticateURL -> mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
+        Authenticate authenticateURL ->
+            if show authenticateURL == "authenticate/authentication-methods/password/account"
+            then
+                do
+                    response <- mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
+                    userName <- look "naUser.username"
+                    mUser <- query' authenticateState (GetUserByUsername Username{_unUsername = pack userName})
+                    case mUser of
+                        Nothing -> return response
+                        (Just user) -> UserController.createUser userName
+            else mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
         other -> routheIfAuthorized authenticateState route other
 
 -- | the route mapping function
@@ -79,9 +90,6 @@ routeDetailUser = do
   m <- getHttpMethod
   case m of
   -- curl -X POST -d "name=FooBar" http://localhost:8000/user
-    POST -> do
-      name <- look "name"
-      UserController.createUser name
     other -> notImplemented other
 
 routeTask :: TaskId -> CtrlV
