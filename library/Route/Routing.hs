@@ -38,7 +38,7 @@ authOrRoute :: AcidState AuthenticateState
 authOrRoute authenticateState routeAuthenticate url =
     case url of
         Authenticate authenticateURL ->
-            if show authenticateURL == "authenticate/authentication-methods/password/account"
+            if ( show authenticateURL) ==  "AuthenticationMethods (Just (AuthenticationMethod {_unAuthenticationMethod = \"password\"},[\"account\"]))"
             then
                 do
                     response <- mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
