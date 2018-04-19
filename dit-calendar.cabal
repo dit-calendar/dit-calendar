@@ -45,7 +45,7 @@ library
                        Data.Service.Task,
                        AppStart
   build-depends:
-                       base >=4.9 && <4.10,
+                       base >=4.9 && <4.11,
                        mtl == 2.2.*,
                        ixset == 1.0.*,
                        filepath == 1.4.*,
@@ -71,12 +71,12 @@ executable dit-calendar
   hs-source-dirs:      src
   default-language:    Haskell2010
   ghc-options:         -threaded -rtsopts
-  build-depends:       base >=4.9 && <4.10,
+  build-depends:       base >=4.9 && <4.11,
                        dit-calendar
 
 test-suite hspec
   build-depends:
-                       base >=4.9 && <4.10,
+                       base >=4.9 && <4.11,
                        hspec >= 2.2,
                        test-fixture == 0.5.1.*,
                        directory == 1.3.*,
@@ -93,7 +93,7 @@ test-suite hspec
 
 test-suite hlint
   build-depends:
-                       base >=4.9 && <4.10,
+                       base >=4.9 && <4.11,
                        hlint == 2.0.*,
                        dit-calendar
   default-language:    Haskell2010
