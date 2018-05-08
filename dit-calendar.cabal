@@ -43,6 +43,7 @@ library
                        Data.Service.User,
                        Data.Service.CalendarEntry,
                        Data.Service.Task,
+                       Conf,
                        AppStart
   build-depends:
                        base >=4.9 && <4.11,

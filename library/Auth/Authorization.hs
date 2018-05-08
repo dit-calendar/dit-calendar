@@ -1,27 +1,19 @@
-module Auth.Authorization ( getLoggedUser, routheIfAuthorized, authenticateConfig, passwordConfig, tlsConf ) where
+module Auth.Authorization ( getLoggedUser, routheIfAuthorized ) where
 
 import Data.Acid              ( AcidState )
 import Control.Monad.IO.Class ( liftIO )
 import Data.Time              ( getCurrentTime )
 
-import Web.Routes                           ( RouteT(..), nestURL, mapRouteT )
-import Happstack.Server                     ( ServerPartT, Response, unauthorized, getHeaderM
-                                            , mapServerPartT, toResponse )
-import Happstack.Authenticate.Core          ( AuthenticateURL(..), AuthenticateState
-                                            , decodeAndVerifyToken, usernamePolicy
-                                            , AuthenticateConfig(..), Token(..) )
-import Happstack.Authenticate.Password.Core ( PasswordConfig(..) )
-import Happstack.Server.SimpleHTTPS         ( TLSConf(..), nullTLSConf  )
-import Happstack.Foundation                 ( lift )
-import qualified Happstack.Authenticate.Core as AuthUser
+import Happstack.Server                     ( unauthorized, getHeaderM, toResponse )
+import Happstack.Authenticate.Core          ( AuthenticateState, decodeAndVerifyToken, Token(_tokenUser) )
 
 import Route.PageEnum              ( Sitemap(..) )
-import Controller.AcidHelper       ( CtrlV, App )
+import Controller.AcidHelper       ( CtrlV )
 
+import qualified Happstack.Authenticate.Core as AuthUser
 import qualified Data.Domain.User      as DomainUser
 import qualified Data.ByteString.Char8 as B
 import qualified Data.Text.Encoding as T
-import qualified Data.Text as T
 
 
 routheIfAuthorized :: AcidState AuthenticateState -> (Sitemap -> DomainUser.User -> CtrlV)
@@ -40,28 +32,3 @@ routheIfAuthorized authenticateState route url =
 
 getLoggedUser :: AuthUser.User -> DomainUser.User
 getLoggedUser authUser = undefined
-
-authenticateConfig :: AuthenticateConfig
-authenticateConfig = AuthenticateConfig
-             { _isAuthAdmin        = const $ return True
-             , _usernameAcceptable = usernamePolicy
-             , _requireEmail       = True
-             }
-
-passwordConfig :: PasswordConfig
-passwordConfig = PasswordConfig
-             { _resetLink = T.pack "https://localhost:8443/#resetPassword"
-             , _domain    = T.pack "example.org"
-             , _passwordAcceptable = \t ->
-                 if T.length t >= 5
-                 then Nothing
-                 else Just $ T.pack "Must be at least 5 characters."
-             }
-
-tlsConf :: TLSConf
-tlsConf =
-    nullTLSConf { tlsPort = 8443
-                , tlsCert = "library/Auth/ssl/localhost.crt"
-                , tlsKey  = "library/Auth/ssl/localhost.key"
-                }
-
