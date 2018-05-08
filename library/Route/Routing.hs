@@ -15,7 +15,7 @@ import Route.HttpService           ( getBody, readAuthUserFromBodyAsList, getHtt
 import Route.PageEnum              ( Sitemap(..) )
 import Controller.AcidHelper       ( CtrlV, App )
 import Controller.ResponseHelper   ( okResponse )
-import Auth.Authorization          ( routheIfAuthorized )
+import Auth.Authorization          ( callIfAuthorized )
 
 import qualified Data.Domain.User               as DomainUser
 import qualified Controller.UserController      as UserController
@@ -62,26 +62,28 @@ authOrRoute authenticateState routeAuthenticate url =
                             -- if request body is not valid use response of auth library
                             Nothing -> mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
                 else mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
-            other -> routheIfAuthorized authenticateState route other
+            other -> route other authenticateState
+            -- other -> routheIfAuthorized authenticateState route other
 
 -- | the route mapping function
-route :: Sitemap -> DomainUser.User -> CtrlV
-route url loggedUser =
+route :: Sitemap -> AcidState AuthenticateState -> CtrlV
+route url authState =
     do  decodeBody myPolicy
         case url of
             Home                 -> HomeController.homePage
             Userdetail           -> routeDetailUser
-            User i               -> routeUser i
-            CalendarEntry i      -> routeCalendarEntry i
-            Task i               -> routeTask i
-            TaskWithCalendar e u -> routeTaskWithCalendar e u
-            TaskWithUser t u     -> routeTaskWithUser t u
+            User i               -> routeUser i authState
+            CalendarEntry i      -> routeCalendarEntry i authState
+            Task i               -> routeTask i authState
+            TaskWithCalendar e u -> routeTaskWithCalendar e u authState
+            TaskWithUser t u     -> routeTaskWithUser t u authState
 
-routeUser :: UserId -> CtrlV
-routeUser userId = do
+routeUser :: UserId -> AcidState AuthenticateState -> CtrlV
+routeUser userId authState = do
   m <- getHttpMethod
   case m of
     GET ->
+      --callIfAuthorized authState (UserController.userPage userId)
       UserController.userPage userId
     DELETE ->
       UserController.deleteUser userId
@@ -100,8 +102,8 @@ routeDetailUser = do
   -- curl -X POST -d "name=FooBar" http://localhost:8000/user
     other -> notImplemented other
 
-routeTask :: TaskId -> CtrlV
-routeTask taskId = do
+routeTask :: TaskId -> AcidState AuthenticateState -> CtrlV
+routeTask taskId authState = do
   m <- getHttpMethod
   case m of
     GET  ->
@@ -111,16 +113,16 @@ routeTask taskId = do
       TaskController.updateTask taskId description
     other -> notImplemented other
 
-routeTaskWithCalendar :: TaskId -> EntryId -> CtrlV
-routeTaskWithCalendar taskId entryId = do
+routeTaskWithCalendar :: TaskId -> EntryId -> AcidState AuthenticateState -> CtrlV
+routeTaskWithCalendar taskId entryId authState = do
   m <- getHttpMethod
   case m of
     DELETE ->
       TaskController.deleteTask entryId taskId
     other -> notImplemented other
 
-routeTaskWithUser :: TaskId -> UserId -> CtrlV
-routeTaskWithUser taskId userId = do
+routeTaskWithUser :: TaskId -> UserId -> AcidState AuthenticateState -> CtrlV
+routeTaskWithUser taskId userId authState = do
   m <- getHttpMethod
   case m of
     DELETE ->
@@ -129,8 +131,8 @@ routeTaskWithUser taskId userId = do
       TaskController.addUserToTask taskId userId
     other -> notImplemented other
 
-routeCalendarEntry :: EntryId -> CtrlV
-routeCalendarEntry entryId = do
+routeCalendarEntry :: EntryId -> AcidState AuthenticateState -> CtrlV
+routeCalendarEntry entryId authState = do
   m <- getHttpMethod
   case m of
     DELETE ->

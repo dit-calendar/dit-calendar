@@ -1,4 +1,4 @@
-module Auth.Authorization ( getLoggedUser, routheIfAuthorized ) where
+module Auth.Authorization ( getLoggedUser, callIfAuthorized ) where
 
 import Data.Acid              ( AcidState )
 import Control.Monad.IO.Class ( liftIO )
@@ -16,9 +16,8 @@ import qualified Data.ByteString.Char8 as B
 import qualified Data.Text.Encoding as T
 
 
-routheIfAuthorized :: AcidState AuthenticateState -> (Sitemap -> DomainUser.User -> CtrlV)
-                    -> Sitemap -> CtrlV
-routheIfAuthorized authenticateState route url =
+callIfAuthorized :: AcidState AuthenticateState -> CtrlV -> CtrlV
+callIfAuthorized authenticateState route =
     do  mAuth <- getHeaderM "Authorization"
         case mAuth of
             Nothing -> unauthorized $ toResponse "You are not authorized."
@@ -28,7 +27,8 @@ routheIfAuthorized authenticateState route url =
                     mToken <- decodeAndVerifyToken authenticateState now (T.decodeUtf8 auth)
                     case mToken of
                         Nothing -> unauthorized $ toResponse "You are not authorized!"
-                        (Just (token,_)) -> route url (getLoggedUser (_tokenUser token))
+                        (Just (token,_)) -> route
+                        --(Just (token,_)) -> route url (getLoggedUser (_tokenUser token))
 
 getLoggedUser :: AuthUser.User -> DomainUser.User
 getLoggedUser authUser = undefined
