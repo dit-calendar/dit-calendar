@@ -1,22 +1,30 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Route.Routing ( authOrRoute ) where
 
 import Data.Text                   ( pack )
+import Control.Monad.IO.Class      ( liftIO, MonadIO )
+import qualified Data.ByteString.Lazy.Char8 as L
 
-import Happstack.Server            ( ServerPartT(..), Response, ok, Method(GET, POST, DELETE, PUT), nullDir
-                                   , Request(rqMethod), askRq , BodyPolicy(..), unauthorized, getHeaderM
+import Happstack.Server            ( ServerPartT(..), Response(..), ok, Method(GET, POST, DELETE, PUT), nullDir, unBody
+                                   , Request(rqMethod), askRq , BodyPolicy(..), unauthorized, getHeaderM, takeRequestBody
                                    , decodeBody, defaultBodyPolicy, look, mapServerPartT, toResponse )
 import Happstack.Foundation        ( lift, runReaderT, ReaderT, UnWebT )
+import Happstack.Server.Types      ( RqBody, Request(..) )
 import Web.Routes                  ( RouteT(..), nestURL, mapRouteT )
 import Happstack.Authenticate.Core ( AuthenticateURL(..), AuthenticateConfig(..), AuthenticateState, decodeAndVerifyToken
-                                   , Username(..), GetUserByUsername(..) )
+                                   , Username(..), GetUserByUsername(..), User(_username) )
+import Happstack.Authenticate.Password.Core  ( NewAccountData(..) )
 import Data.Acid                   ( AcidState )
 import Data.Acid.Advanced          ( query' )
+import Data.Aeson                  ( Object, decode )
 
 import Data.Domain.Types           ( UserId, EntryId, TaskId )
 import Route.PageEnum              ( Sitemap(..) )
 import Controller.AcidHelper       ( CtrlV, App(..), Acid )
 import Controller.ResponseHelper   ( okResponse )
 import Auth.Authorization          ( routheIfAuthorized )
+import Control.Concurrent.MVar     ( tryReadMVar )
 
 import qualified Data.Domain.User               as DomainUser
 import qualified Controller.UserController      as UserController
@@ -31,24 +39,53 @@ myPolicy = defaultBodyPolicy "/tmp/" 0 1000 1000
 mapServerPartTIO2App :: (ServerPartT IO) Response -> App Response
 mapServerPartTIO2App = mapServerPartT lift
 
+peekRequestBody :: (MonadIO m) => Request -> m (Maybe RqBody)
+peekRequestBody rq = liftIO $ tryReadMVar (rqBody rq)
+
+getBody :: RouteT Sitemap App L.ByteString
+getBody = do
+    req  <- askRq
+    body <- liftIO $ peekRequestBody req
+    case body of
+        Just rqbody -> return . unBody $ rqbody
+        Nothing     -> return (L.pack "")
+
+readBodyAsList :: L.ByteString -> Maybe NewAccountData
+readBodyAsList bString = decode bString :: Maybe NewAccountData
+
 --authenticate or route
 authOrRoute :: AcidState AuthenticateState
         -> (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response)
         -> Sitemap -> CtrlV
 authOrRoute authenticateState routeAuthenticate url =
-    case url of
-        Authenticate authenticateURL ->
-            if ( show authenticateURL) ==  "AuthenticationMethods (Just (AuthenticationMethod {_unAuthenticationMethod = \"password\"},[\"account\"]))"
-            then
-                do
-                    response <- mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
-                    userName <- look "naUser.username"
-                    mUser <- query' authenticateState (GetUserByUsername Username{_unUsername = pack userName})
-                    case mUser of
-                        Nothing -> return response
-                        (Just user) -> UserController.createUser userName
-            else mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
-        other -> routheIfAuthorized authenticateState route other
+    do  decodeBody myPolicy
+        case url of
+            Authenticate authenticateURL ->
+                if show authenticateURL ==  "AuthenticationMethods (Just (AuthenticationMethod {_unAuthenticationMethod = \"password\"},[\"account\"]))"
+                then
+                    do
+                        body <- getBody
+                        let createUserBody = readBodyAsList body
+                        case createUserBody of
+                            Just (NewAccountData naUser naPassword _) ->
+                                do
+                                    let naUsername :: Happstack.Authenticate.Core.Username = _username naUser
+                                    let username = _unUsername naUsername
+                                    UserController.createUser (show username)
+                                    --TODO delete User if creating Auth.User failed
+                                    mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
+                                    --response <- mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
+                                    --if (rsCode response == 200) then
+                                        -- userName <- look "naUser.username"
+                                    --mUser <- query' authenticateState (GetUserByUsername Username{_unUsername = pack (show body)})
+                                    --case mUser of
+                                    --    Nothing -> return response
+                                    --    (Just user) -> UserController.createUser (show body)
+                                    --else response
+                            -- if request body is not valid use response of auth library
+                            Nothing -> mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
+                else mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
+            other -> routheIfAuthorized authenticateState route other
 
 -- | the route mapping function
 route :: Sitemap -> DomainUser.User -> CtrlV
