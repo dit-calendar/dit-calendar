@@ -2,29 +2,20 @@
 
 module Route.Routing ( authOrRoute ) where
 
-import Data.Text                   ( pack )
-import Control.Monad.IO.Class      ( liftIO, MonadIO )
-import qualified Data.ByteString.Lazy.Char8 as L
-
-import Happstack.Server            ( ServerPartT(..), Response(..), ok, Method(GET, POST, DELETE, PUT), nullDir, unBody
-                                   , Request(rqMethod), askRq , BodyPolicy(..), unauthorized, getHeaderM, takeRequestBody
-                                   , decodeBody, defaultBodyPolicy, look, mapServerPartT, toResponse )
-import Happstack.Foundation        ( lift, runReaderT, ReaderT, UnWebT )
-import Happstack.Server.Types      ( RqBody, Request(..) )
-import Web.Routes                  ( RouteT(..), nestURL, mapRouteT )
-import Happstack.Authenticate.Core ( AuthenticateURL(..), AuthenticateConfig(..), AuthenticateState, decodeAndVerifyToken
-                                   , Username(..), GetUserByUsername(..), User(_username) )
+import Happstack.Server            ( ServerPartT, Response, Method(GET, POST, DELETE, PUT)
+                                   , BodyPolicy(..), decodeBody, defaultBodyPolicy, look, mapServerPartT )
+import Happstack.Foundation        ( lift )
+import Web.Routes                  ( RouteT, nestURL, mapRouteT )
+import Happstack.Authenticate.Core ( AuthenticateURL(..), AuthenticateState, Username(..), User(_username) )
 import Happstack.Authenticate.Password.Core  ( NewAccountData(..) )
 import Data.Acid                   ( AcidState )
-import Data.Acid.Advanced          ( query' )
-import Data.Aeson                  ( Object, decode )
 
 import Data.Domain.Types           ( UserId, EntryId, TaskId )
+import Route.HttpService           ( getBody, readAuthUserFromBodyAsList, getHttpMethod )
 import Route.PageEnum              ( Sitemap(..) )
-import Controller.AcidHelper       ( CtrlV, App(..), Acid )
+import Controller.AcidHelper       ( CtrlV, App )
 import Controller.ResponseHelper   ( okResponse )
 import Auth.Authorization          ( routheIfAuthorized )
-import Control.Concurrent.MVar     ( tryReadMVar )
 
 import qualified Data.Domain.User               as DomainUser
 import qualified Controller.UserController      as UserController
@@ -39,20 +30,6 @@ myPolicy = defaultBodyPolicy "/tmp/" 0 1000 1000
 mapServerPartTIO2App :: (ServerPartT IO) Response -> App Response
 mapServerPartTIO2App = mapServerPartT lift
 
-peekRequestBody :: (MonadIO m) => Request -> m (Maybe RqBody)
-peekRequestBody rq = liftIO $ tryReadMVar (rqBody rq)
-
-getBody :: RouteT Sitemap App L.ByteString
-getBody = do
-    req  <- askRq
-    body <- liftIO $ peekRequestBody req
-    case body of
-        Just rqbody -> return . unBody $ rqbody
-        Nothing     -> return (L.pack "")
-
-readBodyAsList :: L.ByteString -> Maybe NewAccountData
-readBodyAsList bString = decode bString :: Maybe NewAccountData
-
 --authenticate or route
 authOrRoute :: AcidState AuthenticateState
         -> (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response)
@@ -65,7 +42,7 @@ authOrRoute authenticateState routeAuthenticate url =
                 then
                     do
                         body <- getBody
-                        let createUserBody = readBodyAsList body
+                        let createUserBody = readAuthUserFromBodyAsList body
                         case createUserBody of
                             Just (NewAccountData naUser naPassword _) ->
                                 do
@@ -99,12 +76,6 @@ route url loggedUser =
             Task i               -> routeTask i
             TaskWithCalendar e u -> routeTaskWithCalendar e u
             TaskWithUser t u     -> routeTaskWithUser t u
-
-getHttpMethod :: RouteT Sitemap App Method
-getHttpMethod = do
-    nullDir
-    g <- rqMethod <$> askRq
-    ok g
 
 routeUser :: UserId -> CtrlV
 routeUser userId = do
