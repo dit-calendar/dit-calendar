@@ -42,14 +42,14 @@ entryById eid = getOne . getEQ eid . entrys <$> ask
 deleteEntry :: (Ord a, Typeable a, Indexable a) => Int -> Update (EntrySet a) ()
 deleteEntry entryToDelete =
     do  b@EntrySet{..} <- get
-        put $ b { entrys =
+        put b { entrys =
             deleteIx entryToDelete entrys
             }
 
 updateEntry :: (Ord a, Typeable a, Indexable a, Entry a) => a -> Update (EntrySet a) ()
 updateEntry updatedEntry =
      do b@EntrySet{..} <- get
-        put $ b { entrys =
+        put b { entrys =
             updateIx (getId updatedEntry) updatedEntry entrys
             }
 
@@ -59,7 +59,7 @@ newEntry entry =
     do  b@EntrySet{..} <- get
         let nEntry = setId entry nextEntryId
         --Because UserId is an instance of Enum we can use succ to increment it.
-        put $ b { nextEntryId = succ nextEntryId
+        put b { nextEntryId = succ nextEntryId
                 , entrys      = insert nEntry entrys
                 }
         return nEntry
