@@ -14,6 +14,11 @@ h4. Programm bauen und ausführen
 * einzelne Datein ausführen: ?
 * bei kaputtem cabal: cabal clean
 
+h5. Stack
+* bauen: stack build
+* starten: stack exec dit-calendar
+* bei kaputtem stack: stack clean
+
 h4. Test ausführen
 * builds tests and runs them: cabal install --enable-tests
 ** oder cabal configure --enable-tests
