@@ -2,7 +2,7 @@
 
 module Route.Routing ( authOrRoute ) where
 
-import Happstack.Server            ( ServerPartT, Response, Method(GET, POST, DELETE, PUT)
+import Happstack.Server            ( ServerPartT, Response, Method(GET, POST, DELETE, PUT), rsCode
                                    , BodyPolicy(..), decodeBody, defaultBodyPolicy, look, mapServerPartT )
 import Happstack.Foundation        ( lift )
 import Web.Routes                  ( RouteT, nestURL, mapRouteT )
@@ -48,17 +48,14 @@ authOrRoute authenticateState routeAuthenticate url =
                                 do
                                     let naUsername :: Happstack.Authenticate.Core.Username = _username naUser
                                     let username = _unUsername naUsername
-                                    UserController.createUser (show username)
-                                    --TODO delete User if creating Auth.User failed
+
                                     mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
-                                    --response <- mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
-                                    --if (rsCode response == 200) then
-                                        -- userName <- look "naUser.username"
-                                    --mUser <- query' authenticateState (GetUserByUsername Username{_unUsername = pack (show body)})
-                                    --case mUser of
-                                    --    Nothing -> return response
-                                    --    (Just user) -> UserController.createUser (show body)
-                                    --else response
+                                    response <- mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
+
+                                    if (rsCode response == 200) then
+                                        UserController.createUser (show username)
+                                    else return response
+
                             -- if request body is not valid use response of auth library
                             Nothing -> mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
                 else mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
