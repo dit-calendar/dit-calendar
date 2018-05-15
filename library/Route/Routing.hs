@@ -34,32 +34,31 @@ mapServerPartTIO2App = mapServerPartT lift
 authOrRoute :: AcidState AuthenticateState
         -> (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response)
         -> Sitemap -> CtrlV
-authOrRoute authenticateState routeAuthenticate url =
-        case url of
-            Authenticate authenticateURL ->
-                if show authenticateURL ==  "AuthenticationMethods (Just (AuthenticationMethod {_unAuthenticationMethod = \"password\"},[\"account\"]))"
-                then
-                    do
-                        body <- getBody
-                        let createUserBody = readAuthUserFromBodyAsList body
-                        case createUserBody of
-                            Just (NewAccountData naUser naPassword _) ->
-                                do
-                                    let naUsername :: Happstack.Authenticate.Core.Username = _username naUser
-                                    let username = _unUsername naUsername
+authOrRoute authenticateState routeAuthenticate url = case url of
+    Authenticate authenticateURL ->
+        if show authenticateURL ==  "AuthenticationMethods (Just (AuthenticationMethod {_unAuthenticationMethod = \"password\"},[\"account\"]))"
+        then createUser authenticateURL routeAuthenticate
+        else mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
+    other -> route other authenticateState
 
-                                    mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
-                                    response <- mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
+createUser  :: AuthenticateURL -> (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response) -> CtrlV
+createUser authenticateURL routeAuthenticate = do
+    body <- getBody
+    let createUserBody = readAuthUserFromBodyAsList body
+    case createUserBody of
+        Just (NewAccountData naUser naPassword _) ->
+            do
+                let naUsername :: Happstack.Authenticate.Core.Username = _username naUser
+                let username = _unUsername naUsername
 
-                                    if (rsCode response == 200) then
-                                        UserController.createUser (show username)
-                                    else return response
+                response <- mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
 
-                            -- if request body is not valid use response of auth library
-                            Nothing -> mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
-                else mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
-            other -> route other authenticateState
-            -- other -> routheIfAuthorized authenticateState route other
+                if (rsCode response == 200) then
+                    UserController.createUser (show username)
+                else return response
+
+        -- if request body is not valid use response of auth library
+        Nothing -> mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
 
 -- | the route mapping function
 route :: Sitemap -> AcidState AuthenticateState -> CtrlV
