@@ -35,7 +35,6 @@ authOrRoute :: AcidState AuthenticateState
         -> (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response)
         -> Sitemap -> CtrlV
 authOrRoute authenticateState routeAuthenticate url =
-    do  decodeBody myPolicy
         case url of
             Authenticate authenticateURL ->
                 if show authenticateURL ==  "AuthenticationMethods (Just (AuthenticationMethod {_unAuthenticationMethod = \"password\"},[\"account\"]))"
