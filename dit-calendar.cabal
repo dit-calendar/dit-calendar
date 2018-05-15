@@ -27,7 +27,7 @@ library
                        Data.Domain.Types,
                        Route.PageEnum,
                        Route.Routing,
-                       Route.HttpService,
+                       Route.HttpServerHelper,
                        Controller.ResponseHelper,
                        Controller.HomeController,
                        Controller.UserController,

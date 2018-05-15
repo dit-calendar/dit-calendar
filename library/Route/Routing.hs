@@ -11,7 +11,7 @@ import Happstack.Authenticate.Password.Core  ( NewAccountData(..) )
 import Data.Acid                   ( AcidState )
 
 import Data.Domain.Types           ( UserId, EntryId, TaskId )
-import Route.HttpService           ( getBody, readAuthUserFromBodyAsList, getHttpMethod )
+import Route.HttpServerHelper      ( getBody, readAuthUserFromBodyAsList, getHttpMethod )
 import Route.PageEnum              ( Sitemap(..) )
 import Controller.AcidHelper       ( CtrlV, App )
 import Controller.ResponseHelper   ( okResponse )

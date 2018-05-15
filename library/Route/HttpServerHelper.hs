@@ -1,4 +1,4 @@
-module Route.HttpService ( getBody, readAuthUserFromBodyAsList, getHttpMethod ) where
+module Route.HttpServerHelper ( getBody, readAuthUserFromBodyAsList, getHttpMethod ) where
 
 import Control.Monad.IO.Class      ( liftIO, MonadIO )
 
