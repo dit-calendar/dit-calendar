@@ -83,17 +83,16 @@ routeUser userId authState = do
   m <- getHttpMethod
   case m of
     GET ->
-      --callIfAuthorized authState (UserController.userPage userId)
       UserController.userPage userId
     DELETE ->
-      UserController.deleteUser userId
+      callIfAuthorized authState (UserController.deleteUser userId)
     POST -> do
       description <- look "description"
       newDate <- look "date"
-      CalendarController.createCalendarEntry userId newDate description
+      callIfAuthorized authState (CalendarController.createCalendarEntry userId newDate description)
     PUT -> do
       name <- look "name"
-      UserController.updateUser userId name
+      callIfAuthorized authState (UserController.updateUser userId name)
 
 routeDetailUser :: CtrlV
 routeDetailUser = do
@@ -110,7 +109,7 @@ routeTask taskId authState = do
       TaskController.taskPage taskId
     PUT -> do
       description <- look "description"
-      TaskController.updateTask taskId description
+      callIfAuthorized authState (TaskController.updateTask taskId description)
     other -> notImplemented other
 
 routeTaskWithCalendar :: TaskId -> EntryId -> AcidState AuthenticateState -> CtrlV
@@ -118,7 +117,7 @@ routeTaskWithCalendar taskId entryId authState = do
   m <- getHttpMethod
   case m of
     DELETE ->
-      TaskController.deleteTask entryId taskId
+      callIfAuthorized authState (TaskController.deleteTask entryId taskId)
     other -> notImplemented other
 
 routeTaskWithUser :: TaskId -> UserId -> AcidState AuthenticateState -> CtrlV
@@ -126,9 +125,9 @@ routeTaskWithUser taskId userId authState = do
   m <- getHttpMethod
   case m of
     DELETE ->
-      TaskController.removeUserFromTask taskId userId
+      callIfAuthorized authState (TaskController.removeUserFromTask taskId userId)
     PUT ->
-      TaskController.addUserToTask taskId userId
+      callIfAuthorized authState (TaskController.addUserToTask taskId userId)
     other -> notImplemented other
 
 routeCalendarEntry :: EntryId -> AcidState AuthenticateState -> CtrlV
@@ -136,7 +135,7 @@ routeCalendarEntry entryId authState = do
   m <- getHttpMethod
   case m of
     DELETE ->
-      CalendarController.deleteCalendarEntry entryId
+      callIfAuthorized authState (CalendarController.deleteCalendarEntry entryId)
     GET ->
       CalendarController.entryPage entryId
     POST -> do
@@ -144,7 +143,7 @@ routeCalendarEntry entryId authState = do
       TaskController.createTask entryId description
     PUT -> do
       description <- look "description"
-      CalendarController.updateCalendarEntry entryId description
+      callIfAuthorized authState (CalendarController.updateCalendarEntry entryId description)
 
 notImplemented :: Method -> CtrlV
 notImplemented httpMethod = okResponse ("HTTP-Method: " ++ show httpMethod ++ " not implemented")
