@@ -52,7 +52,7 @@ createUser authenticateURL routeAuthenticate = do
                 let username = _unUsername naUsername
 
                 response <- mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
-
+                -- TODO: HTTP-Code is always 200, check response body
                 if (rsCode response == 200) then
                     UserController.createUser (show username)
                 else return response
