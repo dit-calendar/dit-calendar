@@ -2,7 +2,8 @@
 
 module Route.Routing ( authOrRoute ) where
 
-import Happstack.Server            ( ServerPartT, Response, Method(GET, POST, DELETE, PUT), rsCode
+import Data.List (isInfixOf)
+import Happstack.Server            ( ServerPartT, Response, Method(GET, POST, DELETE, PUT), rsCode, rsBody
                                    , BodyPolicy(..), decodeBody, defaultBodyPolicy, look, mapServerPartT )
 import Happstack.Foundation        ( lift )
 import Web.Routes                  ( RouteT, nestURL, mapRouteT )
@@ -52,10 +53,11 @@ createUser authenticateURL routeAuthenticate = do
                 let username = _unUsername naUsername
 
                 response <- mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
-                -- TODO: HTTP-Code is always 200, check response body
-                if (rsCode response == 200) then
+                let responseBody = rsBody response
+                if (isInfixOf "NotOk" (show responseBody)) then
+                    return response
+                else
                     UserController.createUser (show username)
-                else return response
 
         -- if request body is not valid use response of auth library
         Nothing -> mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
