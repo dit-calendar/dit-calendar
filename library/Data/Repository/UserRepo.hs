@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleInstances, TypeSynonymInstances, FlexibleContexts, UndecidableInstances #-}
+{-# LANGUAGE FlexibleInstances, TypeSynonymInstances, FlexibleContexts, UndecidableInstances, MonoLocalBinds #-}
 
 module Data.Repository.UserRepo
     ( deleteUserImpl, updateNameImpl, addCalendarEntryToUserImpl, addTaskToUserImpl
@@ -12,11 +12,11 @@ import Data.Maybe                        ( fromJust )
 import qualified Data.List              as List
 import qualified Happstack.Foundation   as Foundation
 
-import Data.Repository.Acid.User        ( MonadDBUser(..) )
 import Controller.AcidHelper            ( CtrlV' )
 import Data.Domain.User                 ( User(..) )
 import Data.Domain.Types                ( EntryId, TaskId, UserId )
 
+import Data.Repository.Acid.User                 ( MonadDBUser(..) )
 import Data.Repository.Acid.CalendarEntry        ( MonadDBCalendar )
 import Data.Repository.Acid.Task                 ( MonadDBTask )
 

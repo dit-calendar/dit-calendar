@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleInstances, TypeSynonymInstances, FlexibleContexts, UndecidableInstances #-}
+{-# LANGUAGE FlexibleInstances, TypeSynonymInstances, FlexibleContexts, UndecidableInstances, MonoLocalBinds #-}
 
 module Data.Repository.CalendarRepo
     ( newCalendarEntryImpl, deleteCalendarEntryImpl, updateDescription,
@@ -9,13 +9,12 @@ import qualified Happstack.Foundation       as Foundation
 
 import Controller.AcidHelper      ( CtrlV' )
 import Data.Domain.Types          ( EntryId, TaskId )
-import Data.Repository.Acid.CalendarEntry ( MonadDBCalendar(..) )
 import Data.Domain.User                      as User
 import Data.Domain.CalendarEntry             as CalendarEntry
-
 import Data.Domain.CalendarEntry  ( CalendarEntry )
 import Data.Domain.User           ( User )
 
+import Data.Repository.Acid.CalendarEntry ( MonadDBCalendar(..) )
 import Data.Repository.Acid.Task                 ( MonadDBTask )
 import Data.Repository.Acid.User                 ( MonadDBUser )
 import Data.Time.Clock            ( UTCTime )

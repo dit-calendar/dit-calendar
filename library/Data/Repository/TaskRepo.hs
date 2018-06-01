@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleInstances, TypeSynonymInstances, FlexibleContexts, UndecidableInstances #-}
+{-# LANGUAGE FlexibleInstances, TypeSynonymInstances, FlexibleContexts, UndecidableInstances, MonoLocalBinds #-}
 
 module Data.Repository.TaskRepo
     ( updateDescription, deleteTaskImpl, createTaskImpl, updateTaskImpl, getTaskImpl, MonadDBTaskRepo(..) ) where
@@ -8,12 +8,12 @@ import Data.Maybe                 ( fromJust )
 
 import qualified Happstack.Foundation          as Foundation
 
-import Data.Repository.Acid.Task      ( MonadDBTask(..) )
 import Data.Domain.CalendarEntry               as CalendarEntry
 import Data.Domain.Task                        as Task
 import Controller.AcidHelper          ( CtrlV' )
 import Data.Domain.Types              ( TaskId )
 
+import Data.Repository.Acid.Task      ( MonadDBTask(..) )
 import Data.Repository.Acid.CalendarEntry        ( MonadDBCalendar )
 import Data.Repository.Acid.User                 ( MonadDBUser )
 
