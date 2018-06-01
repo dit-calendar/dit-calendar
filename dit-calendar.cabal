@@ -46,6 +46,7 @@ library
                        Data.Service.Task,
                        Conf,
                        AppStart
+
   build-depends:
                        base >=4.9 && <4.11,
                        mtl == 2.2.*,
@@ -93,6 +94,16 @@ test-suite hspec
   main-is:             Spec.hs
   type:                exitcode-stdio-1.0
   ghc-options:         -fno-warn-missing-fields
+
+  other-modules:
+                       Data.Repository.Acid.DataBaseHelper,
+                       Data.Repository.Acid.InterfaceAcidSpec,
+                       Data.Repository.CalendarRepoSpec,
+                       Data.Repository.TaskRepoSpec,
+                       Data.Repository.UserRepoSpec,
+                       Data.Service.CalendarEntryServiceSpec,
+                       Data.Service.TaskServiceSpec,
+                       Data.Service.UserServiceSpec
 
 test-suite hlint
   build-depends:
