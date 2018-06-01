@@ -54,7 +54,7 @@ createUser authenticateURL routeAuthenticate = do
 
                 response <- mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
                 let responseBody = rsBody response
-                if (isInfixOf "NotOk" (show responseBody)) then
+                if isInfixOf "NotOk" $ show responseBody then
                     return response
                 else
                     UserController.createUser (show username)
