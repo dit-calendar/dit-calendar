@@ -14,6 +14,7 @@ import qualified Data.Repository.Acid.User                as UserAcid
 import qualified Data.Repository.TaskRepo                 as TaskRepo
 import qualified Data.Repository.CalendarRepo             as CalendarRepo
 import qualified Data.Service.Task                        as TaskService
+import qualified Data.Domain.User                         as DomainUser
 
 
 --handler for taskPage
@@ -29,15 +30,15 @@ createTask calendarId description = do
         t <- TaskService.createTask e description
         ok $ toResponse $ "Task created: " ++ show (Task.taskId t) ++ "to CalendarEntry: " ++ show calendarId) mCalendarEntry
 
-updateTask :: TaskId -> String -> CtrlV
-updateTask id description = do
+updateTask :: TaskId -> String -> DomainUser.User -> CtrlV
+updateTask id description loggedUser = do
     mTask <- query (TaskAcid.TaskById id)
     taskExist id (\t -> do
         TaskRepo.updateDescription t description
         ok $ toResponse $ "Task with id:" ++ show id ++ "updated") mTask
 
-addUserToTask :: UserId -> TaskId -> CtrlV
-addUserToTask userId taskId = do
+addUserToTask :: UserId -> TaskId -> DomainUser.User-> CtrlV
+addUserToTask userId taskId loggedUser = do
     mUser <- query (UserAcid.UserById userId)
     userExist userId (\ _ -> do
         mTask <- query (TaskAcid.TaskById taskId)
@@ -45,8 +46,8 @@ addUserToTask userId taskId = do
             TaskService.addUserToTask t userId
             ok $ toResponse $ "User added to task: " ++ show userId) mTask) mUser
 
-removeUserFromTask :: UserId -> TaskId -> CtrlV
-removeUserFromTask userId taskId = do
+removeUserFromTask :: UserId -> TaskId -> DomainUser.User -> CtrlV
+removeUserFromTask userId taskId loggedUser = do
     mUser <- query (UserAcid.UserById userId)
     userExist userId (\ _ -> do
         mTask <- query (TaskAcid.TaskById taskId)
@@ -54,8 +55,8 @@ removeUserFromTask userId taskId = do
             TaskService.removeUserFromTask t userId
             ok $ toResponse $ "User removed from task" ++ show userId) mTask) mUser
 
-deleteTask :: EntryId -> TaskId -> CtrlV
-deleteTask entryId taskId = do
+deleteTask :: EntryId -> TaskId -> DomainUser.User -> CtrlV
+deleteTask entryId taskId loggedUser = do
     mEntry <- query (CalendarEntryAcid.EntryById entryId)
     entryExist entryId (\e -> do
         mTask <- query (TaskAcid.TaskById taskId)

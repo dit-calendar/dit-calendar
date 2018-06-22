@@ -11,6 +11,7 @@ import qualified Data.Repository.Acid.CalendarEntry       as CalendarEntryAcid
 import qualified Data.Repository.Acid.User                as UserAcid
 import qualified Data.Repository.CalendarRepo             as CalendarRepo
 import qualified Data.Service.CalendarEntry               as CalendarService
+import qualified Data.Domain.User                         as DomainUser
 
 
 --handler for entryPage
@@ -19,22 +20,22 @@ entryPage i = do
     mEntry <- query (CalendarEntryAcid.EntryById i)
     entryExist i (\e -> okResponse $ "peeked at the description and saw: " ++ show e) mEntry
 
-createCalendarEntry :: UserId -> String -> String -> CtrlV
-createCalendarEntry userId newDate description = do
+createCalendarEntry :: UserId -> String -> String -> DomainUser.User -> CtrlV
+createCalendarEntry userId newDate description loggedUser = do
     mUser <- query (UserAcid.UserById userId)
     userExist userId (\u -> do
             entry <- CalendarService.createEntry newDate description u
             okResponse $ "Add Entry: " ++ show (CalendarEntry.entryId entry) ++ "to User: " ++ show userId) mUser
 
-deleteCalendarEntry :: EntryId -> CtrlV
-deleteCalendarEntry i = do
+deleteCalendarEntry :: EntryId -> DomainUser.User -> CtrlV
+deleteCalendarEntry i loggedUser = do
     mEntry <- query (CalendarEntryAcid.EntryById i)
     entryExist i (\e -> do
             CalendarService.removeCalendar e
             okResponse $ "CalendarEntry with id:" ++ show i ++ "deleted") mEntry
 
-updateCalendarEntry :: EntryId -> String -> CtrlV
-updateCalendarEntry id description = do
+updateCalendarEntry :: EntryId -> String -> DomainUser.User -> CtrlV
+updateCalendarEntry id description loggedUser = do
     mEntry <- query (CalendarEntryAcid.EntryById id)
     entryExist id (\e -> do
         CalendarRepo.updateDescription e description

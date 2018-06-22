@@ -11,6 +11,7 @@ import Controller.AcidHelper         ( CtrlV )
 import qualified Data.Repository.Acid.User             as UserAcid
 import qualified Data.Repository.UserRepo              as UserRepo
 import qualified Data.Service.User                     as UserService
+import qualified Data.Domain.User                      as DomainUser
 
 
 --handler for userPage
@@ -36,15 +37,15 @@ createUser name = do
     mUser <- UserRepo.createUser name
     okResponse $ "User created: " ++ show mUser
 
-updateUser :: UserId -> String -> CtrlV
-updateUser id name = do
+updateUser :: UserId -> String -> DomainUser.User -> CtrlV
+updateUser id name loggedUser = do
     mUser <- query (UserAcid.UserById id)
     userExist id (\u -> do
             UserRepo.updateName u name
             okResponse $ "User with id:" ++ show id ++ "updated") mUser
 
-deleteUser :: UserId -> CtrlV
-deleteUser i = do
+deleteUser :: UserId -> DomainUser.User -> CtrlV
+deleteUser i loggedUser = do
     mUser <- query (UserAcid.UserById i)
     userExist i (\u -> do
             UserService.deleteUser u
