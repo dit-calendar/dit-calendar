@@ -4,15 +4,19 @@ module Controller.ResponseHelper
 import Happstack.Server         ( ok, toResponse )
 
 import Controller.AcidHelper         ( CtrlV )
+import Data.Domain.Types             ( UserId, EntryId, TaskId )
+import Data.Domain.User              ( User )
+import Data.Domain.Task              ( Task )
+import Data.Domain.CalendarEntry     ( CalendarEntry )
 
 
-userExist :: Show i => i -> (a -> CtrlV) -> Maybe a -> CtrlV
+userExist :: UserId -> (User -> CtrlV) -> Maybe User -> CtrlV
 userExist i = onNothing $ "Could not find a user with id " ++ show i
 
-entryExist :: Show i => i -> (a -> CtrlV) -> Maybe a -> CtrlV
+entryExist :: EntryId -> (CalendarEntry -> CtrlV) -> Maybe CalendarEntry -> CtrlV
 entryExist i = onNothing $ "Could not find a entry with id " ++ show i
 
-taskExist :: Show i => i -> (a -> CtrlV) -> Maybe a -> CtrlV
+taskExist :: TaskId -> (Task -> CtrlV) -> Maybe Task -> CtrlV
 taskExist i = onNothing $ "Could not find a task with id " ++ show i
 
 onNothing :: String -> (a -> CtrlV) -> Maybe a -> CtrlV
