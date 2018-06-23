@@ -3,7 +3,7 @@
 {-# LANGUAGE TemplateHaskell    #-}
 {-# LANGUAGE TypeOperators      #-}
 
-module Route.PageEnum ( Sitemap(..), urlSitemapParser ) where
+module Presentation.Route.PageEnum ( Sitemap(..), urlSitemapParser ) where
 
 import           Prelude                     hiding ((.))
 

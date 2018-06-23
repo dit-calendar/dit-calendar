@@ -21,10 +21,10 @@ import           Happstack.Server.SimpleHTTPS          (simpleHTTPS)
 
 import           Conf                                  (authenticateConfig,
                                                         passwordConfig, tlsConf)
-import           Controller.AcidHelper                 (Acid, App, withAcid)
-import           Route.PageEnum                        (Sitemap (Home),
+import           Presentation.AcidHelper               (Acid, App, withAcid)
+import           Presentation.Route.PageEnum           (Sitemap (Home),
                                                         urlSitemapParser)
-import           Route.Routing                         (authOrRoute)
+import           Presentation.Route.Routing            (authOrRoute)
 
 import qualified Data.Text                             as T
 
@@ -44,13 +44,9 @@ site authenticateState routeAuthenticate =
 
 --zu HomePage zu erreichen unter https://localhost:8443
 run :: IO ()
-run =
-  do (cleanup, routeAuthenticate, authenticateState) <-
-        initAuthentication Nothing authenticateConfig
-          [ initPassword passwordConfig ]
-     withAcid Nothing
-      (\ acid ->
-         let appWithRoutetSite = implSite "https://localhost:8000" ""
-              (site authenticateState routeAuthenticate)
-            in simpleHTTPS tlsConf $ runApp acid appWithRoutetSite)
-      `finally` cleanup
+run = do
+    (cleanup, routeAuthenticate, authenticateState) <-
+        initAuthentication Nothing authenticateConfig [ initPassword passwordConfig ]
+    let startServer acid = simpleHTTPS tlsConf $ runApp acid appWithRoutetSite
+        appWithRoutetSite = implSite "https://localhost:8000" "" (site authenticateState routeAuthenticate) in
+        withAcid Nothing startServer `finally` cleanup

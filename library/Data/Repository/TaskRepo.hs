@@ -12,10 +12,10 @@ import           Data.Maybe                         (fromJust)
 
 import qualified Happstack.Foundation               as Foundation
 
-import           Controller.AcidHelper              (CtrlV')
 import           Data.Domain.CalendarEntry          as CalendarEntry
 import           Data.Domain.Task                   as Task
 import           Data.Domain.Types                  (TaskId)
+import           Presentation.AcidHelper            (CtrlV')
 
 import           Data.Repository.Acid.CalendarEntry (MonadDBCalendar)
 import           Data.Repository.Acid.Task          (MonadDBTask (..))

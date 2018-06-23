@@ -11,12 +11,12 @@ module Data.Repository.CalendarRepo
 import qualified Data.List                          as List
 import qualified Happstack.Foundation               as Foundation
 
-import           Controller.AcidHelper              (CtrlV')
 import           Data.Domain.CalendarEntry          as CalendarEntry
 import           Data.Domain.CalendarEntry          (CalendarEntry)
 import           Data.Domain.Types                  (EntryId, TaskId)
 import           Data.Domain.User                   as User
 import           Data.Domain.User                   (User)
+import           Presentation.AcidHelper            (CtrlV')
 
 import           Data.Repository.Acid.CalendarEntry (MonadDBCalendar (..))
 import           Data.Repository.Acid.Task          (MonadDBTask)

@@ -1,18 +1,21 @@
-module Route.HttpServerHelper ( getBody, readAuthUserFromBodyAsList, getHttpMethod ) where
+module Presentation.HttpServerHelper ( getBody, readAuthUserFromBodyAsList, getHttpMethod, mapServerPartTIO2App ) where
 
 import           Control.Monad.IO.Class               (MonadIO, liftIO)
 
 import           Control.Concurrent.MVar              (tryReadMVar)
 import           Data.Aeson                           (decode)
 import           Happstack.Authenticate.Password.Core (NewAccountData)
+import           Happstack.Foundation                 (lift)
 import           Happstack.Server                     (Method,
                                                        Request (rqMethod),
-                                                       askRq, nullDir, ok,
-                                                       rqBody, unBody)
+                                                       Response, ServerPartT,
+                                                       askRq, mapServerPartT,
+                                                       nullDir, ok, rqBody,
+                                                       unBody)
 import           Happstack.Server.Types               (Request, RqBody)
 
-import           Controller.AcidHelper                (App)
-import           Route.PageEnum                       (Sitemap)
+import           Presentation.AcidHelper              (App)
+import           Presentation.Route.PageEnum          (Sitemap)
 import           Web.Routes                           (RouteT)
 
 import qualified Data.ByteString.Lazy.Char8           as L
@@ -36,3 +39,6 @@ getHttpMethod = do
     nullDir
     g <- rqMethod <$> askRq
     ok g
+
+mapServerPartTIO2App :: (ServerPartT IO) Response -> App Response
+mapServerPartTIO2App = mapServerPartT lift

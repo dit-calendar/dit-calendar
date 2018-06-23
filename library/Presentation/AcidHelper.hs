@@ -5,7 +5,7 @@
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
 
-module Controller.AcidHelper ( CtrlV, CtrlV', App, withAcid, Acid ) where
+module Presentation.AcidHelper ( CtrlV, CtrlV', App, withAcid, Acid ) where
 
 import           Control.Exception                  (bracket)
 import           Control.Monad.Reader               (ReaderT, ask)
@@ -20,7 +20,7 @@ import           Happstack.Foundation               (HasAcidState (..))
 import           Happstack.Server                   (Response, ServerPartT)
 import           Web.Routes                         (RouteT)
 
-import           Route.PageEnum                     (Sitemap)
+import           Presentation.Route.PageEnum        (Sitemap)
 
 import qualified Data.Repository.Acid.CalendarEntry as CalendarEntryAcid
 import qualified Data.Repository.Acid.Task          as TaskAcid

@@ -1,14 +1,14 @@
-module Controller.CalendarController where
+module Presentation.Controller.CalendarController where
 
-import           Controller.AcidHelper              (CtrlV)
-import           Controller.ResponseHelper          (okResponse, onEntryExist,
-                                                     onUserExist)
-import           Data.Domain.CalendarEntry          as CalendarEntry
-import           Data.Domain.Types                  (EntryId, UserId)
+import           Data.Domain.CalendarEntry    as CalendarEntry
+import           Data.Domain.Types            (EntryId, UserId)
+import           Presentation.AcidHelper      (CtrlV)
+import           Presentation.ResponseHelper  (okResponse, onEntryExist,
+                                               onUserExist)
 
-import qualified Data.Domain.User                   as DomainUser
-import qualified Data.Repository.CalendarRepo       as CalendarRepo
-import qualified Data.Service.CalendarEntry         as CalendarService
+import qualified Data.Domain.User             as DomainUser
+import qualified Data.Repository.CalendarRepo as CalendarRepo
+import qualified Data.Service.CalendarEntry   as CalendarService
 
 
 --handler for entryPage

@@ -12,8 +12,8 @@ import           Happstack.Foundation        (query)
 import           Happstack.Server            (getHeaderM, toResponse,
                                               unauthorized)
 
-import           Controller.AcidHelper       (CtrlV)
-import           Route.PageEnum              (Sitemap (..))
+import           Presentation.AcidHelper     (CtrlV)
+import           Presentation.Route.PageEnum (Sitemap (..))
 
 import qualified Data.ByteString.Char8       as B
 import qualified Data.Domain.User            as DomainUser

@@ -16,9 +16,9 @@ import           Prelude
 import qualified Data.List                          as List
 import qualified Happstack.Foundation               as Foundation
 
-import           Controller.AcidHelper              (CtrlV')
 import           Data.Domain.Types                  (EntryId, TaskId, UserId)
 import           Data.Domain.User                   (User (..))
+import           Presentation.AcidHelper            (CtrlV')
 
 import           Data.Repository.Acid.CalendarEntry (MonadDBCalendar)
 import           Data.Repository.Acid.Task          (MonadDBTask)

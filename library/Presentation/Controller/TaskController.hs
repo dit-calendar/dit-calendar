@@ -1,13 +1,13 @@
-module Controller.TaskController where
+module Presentation.Controller.TaskController where
 
 import           Happstack.Server             (ok, toResponse)
 
-import           Controller.AcidHelper        (CtrlV)
-import           Controller.ResponseHelper    (onEntryExist, onTaskExist,
-                                               onUserExist)
 import           Data.Domain.Task             as Task
 import           Data.Domain.Types            (EntryId, TaskId, UserId)
 import           Data.Domain.User             (User)
+import           Presentation.AcidHelper      (CtrlV)
+import           Presentation.ResponseHelper  (onEntryExist, onTaskExist,
+                                               onUserExist)
 
 import qualified Data.Repository.CalendarRepo as CalendarRepo
 import qualified Data.Repository.TaskRepo     as TaskRepo
