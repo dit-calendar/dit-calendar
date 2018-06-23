@@ -19,19 +19,19 @@ entryPage :: EntryId -> CtrlV
 entryPage i = onEntryExist i (\e -> okResponse $ "peeked at the description and saw: " ++ show e)
 
 createCalendarEntry :: UserId -> String -> String -> DomainUser.User -> CtrlV
-createCalendarEntry userId newDate description loggedUser =
-    onUserExist userId (\u -> do
-            entry <- CalendarService.createEntry newDate description u
-            okResponse $ "Add Entry: " ++ show (CalendarEntry.entryId entry) ++ "to User: " ++ show userId)
+createCalendarEntry userId newDate description loggedUser = onUserExist userId createCalendar
+    where createCalendar user = do
+              entry <- CalendarService.createEntry newDate description user
+              okResponse $ "Add Entry: " ++ show (CalendarEntry.entryId entry) ++ "to User: " ++ show userId
 
 deleteCalendarEntry :: EntryId -> DomainUser.User -> CtrlV
-deleteCalendarEntry i loggedUser =
-    onEntryExist i (\e -> do
-            CalendarService.removeCalendar e
-            okResponse $ "CalendarEntry with id:" ++ show i ++ "deleted")
+deleteCalendarEntry i loggedUser = onEntryExist i deleteCalendar
+    where deleteCalendar cEntry = do
+              CalendarService.removeCalendar cEntry
+              okResponse $ "CalendarEntry with id:" ++ show i ++ "deleted"
 
 updateCalendarEntry :: EntryId -> String -> DomainUser.User -> CtrlV
-updateCalendarEntry id description loggedUser =
-    onEntryExist id (\e -> do
-        CalendarRepo.updateDescription e description
-        okResponse $ "CalendarEntry with id:" ++ show id ++ "updated")
+updateCalendarEntry id description loggedUser = onEntryExist id updateCalendar
+    where updateCalendar cEntry = do
+              CalendarRepo.updateDescription cEntry description
+              okResponse $ "CalendarEntry with id:" ++ show id ++ "updated"

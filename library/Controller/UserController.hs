@@ -36,16 +36,16 @@ createUser name = do
     okResponse $ "User created: " ++ show mUser
 
 updateUser :: UserId -> String -> DomainUser.User -> CtrlV
-updateUser id name loggedUser =
-    onUserExist id (\u -> do
-            UserRepo.updateName u name
-            okResponse $ "User with id:" ++ show id ++ "updated")
+updateUser id name loggedUser = onUserExist id updateUsr
+    where updateUsr user = do
+              UserRepo.updateName user name
+              okResponse $ "User with id:" ++ show id ++ "updated"
 
 deleteUser :: UserId -> DomainUser.User -> CtrlV
-deleteUser i loggedUser =
-    onUserExist i (\u -> do
-        UserService.deleteUser u
-        okResponse $ "User with id:" ++ show i ++ "deleted")
+deleteUser i loggedUser = onUserExist i deleteUsr
+    where deleteUsr user = do
+              UserService.deleteUser user
+              okResponse $ "User with id:" ++ show i ++ "deleted"
 
 printUsersList :: [User] -> String
 printUsersList l = case l of
