@@ -45,11 +45,11 @@ updateUser id name loggedUser = do
             okResponse $ "User with id:" ++ show id ++ "updated") mUser
 
 deleteUser :: UserId -> DomainUser.User -> CtrlV
-deleteUser i loggedUser = do
-    mUser <- query (UserAcid.UserById i)
-    userExist i (\u -> do
-            UserService.deleteUser u
-            okResponse $ "User with id:" ++ show i ++ "deleted") mUser
+deleteUser i loggedUser =
+    query (UserAcid.UserById i) >>=
+        userExist i (\u -> do
+                UserService.deleteUser u
+                okResponse $ "User with id:" ++ show i ++ "deleted")
 
 printUsersList :: [User] -> String
 printUsersList l = case l of
@@ -57,3 +57,5 @@ printUsersList l = case l of
     []     -> ""
     (x:xs) -> ("User: " ++ User.name x ++ "mit Id: "++ show (User.userId x))
         ++ "\n" ++ printUsersList xs
+
+

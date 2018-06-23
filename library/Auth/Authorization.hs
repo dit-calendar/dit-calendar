@@ -31,7 +31,7 @@ callIfAuthorized authenticateState route =
                     mToken <- decodeAndVerifyToken authenticateState now (T.decodeUtf8 auth)
                     case mToken of
                         Nothing -> unauthorized $ toResponse "You are not authorized!"
-                        (Just (token,_)) -> (getLoggedUser (_tokenUser token) route)
+                        (Just (token,_)) -> getLoggedUser (_tokenUser token) route
                         --(Just (token,_)) -> route url (getLoggedUser (_tokenUser token))
 
 getLoggedUser :: AuthUser.User -> (DomainUser.User -> CtrlV) -> CtrlV
