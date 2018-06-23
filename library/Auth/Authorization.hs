@@ -1,22 +1,25 @@
 module Auth.Authorization ( getLoggedUser, callIfAuthorized ) where
 
-import Data.Acid              ( AcidState )
-import Control.Monad.IO.Class ( liftIO )
-import Data.Time              ( getCurrentTime )
-import Data.Maybe             ( fromJust )
+import           Control.Monad.IO.Class      (liftIO)
+import           Data.Acid                   (AcidState)
+import           Data.Maybe                  (fromJust)
+import           Data.Time                   (getCurrentTime)
 
-import Happstack.Server                     ( unauthorized, getHeaderM, toResponse )
-import Happstack.Authenticate.Core          ( AuthenticateState, decodeAndVerifyToken, Token(_tokenUser) )
-import Happstack.Foundation   ( query )
+import           Happstack.Authenticate.Core (AuthenticateState,
+                                              Token (_tokenUser),
+                                              decodeAndVerifyToken)
+import           Happstack.Foundation        (query)
+import           Happstack.Server            (getHeaderM, toResponse,
+                                              unauthorized)
 
-import Route.PageEnum              ( Sitemap(..) )
-import Controller.AcidHelper       ( CtrlV )
+import           Controller.AcidHelper       (CtrlV)
+import           Route.PageEnum              (Sitemap (..))
 
-import qualified Data.Repository.Acid.User             as UserAcid
+import qualified Data.ByteString.Char8       as B
+import qualified Data.Domain.User            as DomainUser
+import qualified Data.Repository.Acid.User   as UserAcid
+import qualified Data.Text.Encoding          as T
 import qualified Happstack.Authenticate.Core as AuthUser
-import qualified Data.Domain.User      as DomainUser
-import qualified Data.ByteString.Char8 as B
-import qualified Data.Text.Encoding as T
 
 
 callIfAuthorized :: AcidState AuthenticateState -> (DomainUser.User -> CtrlV) -> CtrlV

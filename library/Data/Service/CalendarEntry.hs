@@ -1,19 +1,19 @@
 module Data.Service.CalendarEntry ( createEntry, removeCalendar ) where
 
-import Control.Monad.IO.Class
+import           Control.Monad.IO.Class
 
-import Data.Domain.User                      as User
-import Data.Domain.CalendarEntry             as CalendarEntry
-import Data.Repository.Acid.CalendarEntry         ( MonadDBCalendar )
-import Data.Repository.Acid.Task                  ( MonadDBTask )
-import Data.Repository.Acid.User                  ( MonadDBUser )
+import           Data.Domain.CalendarEntry          as CalendarEntry
+import           Data.Domain.User                   as User
+import           Data.Repository.Acid.CalendarEntry (MonadDBCalendar)
+import           Data.Repository.Acid.Task          (MonadDBTask)
+import           Data.Repository.Acid.User          (MonadDBUser)
 
-import qualified Data.Repository.UserRepo            as MonadDBUserRepo
-import Data.Repository.UserRepo                      ( MonadDBUserRepo )
-import qualified Data.Repository.TaskRepo            as MonadDBTaskRepo
-import Data.Repository.TaskRepo                      ( MonadDBTaskRepo )
-import qualified Data.Repository.CalendarRepo        as MonadDBCalendarRepo
-import Data.Repository.CalendarRepo                  ( MonadDBCalendarRepo )
+import           Data.Repository.CalendarRepo       (MonadDBCalendarRepo)
+import qualified Data.Repository.CalendarRepo       as MonadDBCalendarRepo
+import           Data.Repository.TaskRepo           (MonadDBTaskRepo)
+import qualified Data.Repository.TaskRepo           as MonadDBTaskRepo
+import           Data.Repository.UserRepo           (MonadDBUserRepo)
+import qualified Data.Repository.UserRepo           as MonadDBUserRepo
 
 
 createEntry :: (MonadDBUserRepo m, MonadDBCalendarRepo m) =>

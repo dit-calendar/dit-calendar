@@ -1,16 +1,20 @@
-{-# LANGUAGE TemplateHaskell, TypeOperators, DeriveDataTypeable, OverloadedStrings #-}
+{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE OverloadedStrings  #-}
+{-# LANGUAGE TemplateHaskell    #-}
+{-# LANGUAGE TypeOperators      #-}
 
 module Route.PageEnum ( Sitemap(..), urlSitemapParser ) where
 
-import Prelude                 hiding ( (.) )
+import           Prelude                     hiding ((.))
 
-import Control.Category              ( (.) )
-import Web.Routes.Boomerang          ( Router, int, anyText, lit, (:-), (</>), (<>) )
-import Data.Data                     ( Data, Typeable )
-import Text.Boomerang.TH             ( makeBoomerangs )
-import Happstack.Authenticate.Core   ( AuthenticateURL, authenticateURL )
+import           Control.Category            ((.))
+import           Data.Data                   (Data, Typeable)
+import           Happstack.Authenticate.Core (AuthenticateURL, authenticateURL)
+import           Text.Boomerang.TH           (makeBoomerangs)
+import           Web.Routes.Boomerang        ((:-), Router, anyText, int, lit,
+                                              (</>), (<>))
 
-import Data.Domain.Types             ( UserId, EntryId, TaskId )
+import           Data.Domain.Types           (EntryId, TaskId, UserId)
 
 
 --A url type

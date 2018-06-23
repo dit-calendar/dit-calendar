@@ -2,26 +2,31 @@
 
 module AppStart where
 
-import Control.Exception     ( finally )
-import Control.Monad.Reader  ( runReaderT )
-import Data.Acid             ( AcidState )
+import           Control.Exception                     (finally)
+import           Control.Monad.Reader                  (runReaderT)
+import           Data.Acid                             (AcidState)
 
-import Web.Routes.Boomerang  ( boomerangSite )
-import Web.Routes.Happstack  ( implSite )
-import Web.Routes            ( runRouteT, Site, setDefault, RouteT )
+import           Web.Routes                            (RouteT, Site, runRouteT,
+                                                        setDefault)
+import           Web.Routes.Boomerang                  (boomerangSite)
+import           Web.Routes.Happstack                  (implSite)
 
-import Happstack.Server                       ( ServerPartT, mapServerPartT, Response )
-import Happstack.Server.SimpleHTTPS           ( simpleHTTPS )
-import Happstack.Authenticate.Core            ( AuthenticateURL(..), AuthenticateState )
-import Happstack.Authenticate.Route           ( initAuthentication )
-import Happstack.Authenticate.Password.Route  ( initPassword )
+import           Happstack.Authenticate.Core           (AuthenticateState,
+                                                        AuthenticateURL (..))
+import           Happstack.Authenticate.Password.Route (initPassword)
+import           Happstack.Authenticate.Route          (initAuthentication)
+import           Happstack.Server                      (Response, ServerPartT,
+                                                        mapServerPartT)
+import           Happstack.Server.SimpleHTTPS          (simpleHTTPS)
 
-import Controller.AcidHelper        ( withAcid, Acid, App )
-import Conf                         ( authenticateConfig, passwordConfig, tlsConf )
-import Route.Routing                ( authOrRoute )
-import Route.PageEnum               ( Sitemap(Home), urlSitemapParser )
+import           Conf                                  (authenticateConfig,
+                                                        passwordConfig, tlsConf)
+import           Controller.AcidHelper                 (Acid, App, withAcid)
+import           Route.PageEnum                        (Sitemap (Home),
+                                                        urlSitemapParser)
+import           Route.Routing                         (authOrRoute)
 
-import qualified Data.Text as T
+import qualified Data.Text                             as T
 
 
 runApp :: Acid -> App a -> ServerPartT IO a

@@ -1,17 +1,16 @@
 module Controller.UserController where
 
-import Happstack.Server         ( Method(GET), method)
-import Happstack.Foundation     ( query )
+import           Happstack.Foundation      (query)
+import           Happstack.Server          (Method (GET), method)
 
-import Controller.ResponseHelper   ( onUserExist, okResponse )
-import Data.Domain.User                      as User      ( User(..))
-import Data.Domain.Types             ( UserId )
-import Controller.AcidHelper         ( CtrlV )
+import           Controller.AcidHelper     (CtrlV)
+import           Controller.ResponseHelper (okResponse, onUserExist)
+import           Data.Domain.Types         (UserId)
+import           Data.Domain.User          as User (User (..))
 
-import qualified Data.Repository.Acid.User             as UserAcid
-import qualified Data.Repository.UserRepo              as UserRepo
-import qualified Data.Service.User                     as UserService
-import qualified Data.Domain.User                      as DomainUser
+import qualified Data.Repository.Acid.User as UserAcid
+import qualified Data.Repository.UserRepo  as UserRepo
+import qualified Data.Service.User         as UserService
 
 
 --handler for userPage
@@ -35,13 +34,13 @@ createUser name = do
     mUser <- UserRepo.createUser name
     okResponse $ "User created: " ++ show mUser
 
-updateUser :: UserId -> String -> DomainUser.User -> CtrlV
+updateUser :: UserId -> String -> User -> CtrlV
 updateUser id name loggedUser = onUserExist id updateUsr
     where updateUsr user = do
               UserRepo.updateName user name
               okResponse $ "User with id:" ++ show id ++ "updated"
 
-deleteUser :: UserId -> DomainUser.User -> CtrlV
+deleteUser :: UserId -> User -> CtrlV
 deleteUser i loggedUser = onUserExist i deleteUsr
     where deleteUsr user = do
               UserService.deleteUser user

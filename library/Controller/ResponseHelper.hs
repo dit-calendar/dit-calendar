@@ -1,18 +1,18 @@
 module Controller.ResponseHelper
     ( onUserExist, onEntryExist, onTaskExist, okResponse ) where
 
-import Happstack.Server         ( ok, toResponse )
-import Happstack.Foundation     ( query )
+import           Happstack.Foundation               (query)
+import           Happstack.Server                   (ok, toResponse)
 
-import Controller.AcidHelper         ( CtrlV )
-import Data.Domain.Types             ( UserId, EntryId, TaskId )
-import Data.Domain.User              ( User )
-import Data.Domain.Task              ( Task )
-import Data.Domain.CalendarEntry     ( CalendarEntry )
+import           Controller.AcidHelper              (CtrlV)
+import           Data.Domain.CalendarEntry          (CalendarEntry)
+import           Data.Domain.Task                   (Task)
+import           Data.Domain.Types                  (EntryId, TaskId, UserId)
+import           Data.Domain.User                   (User)
 
-import qualified Data.Repository.Acid.User             as UserAcid
-import qualified Data.Repository.Acid.CalendarEntry    as CalendarEntryAcid
-import qualified Data.Repository.Acid.Task             as TaskAcid
+import qualified Data.Repository.Acid.CalendarEntry as CalendarEntryAcid
+import qualified Data.Repository.Acid.Task          as TaskAcid
+import qualified Data.Repository.Acid.User          as UserAcid
 
 
 onUserExist :: UserId -> (User -> CtrlV) -> CtrlV

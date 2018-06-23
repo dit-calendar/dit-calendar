@@ -1,10 +1,11 @@
-{-# LANGUAGE DeriveDataTypeable, TemplateHaskell #-}
+{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE TemplateHaskell    #-}
 
 module Data.Domain.Task where
 
-import Data.Data                ( Data, Typeable )
-import Data.SafeCopy            ( base, deriveSafeCopy )
-import Data.Domain.Types        ( UserId, TaskId, Entry(..) )
+import           Data.Data         (Data, Typeable)
+import           Data.Domain.Types (Entry (..), TaskId, UserId)
+import           Data.SafeCopy     (base, deriveSafeCopy)
 
 data Task = Task {
     description      :: String

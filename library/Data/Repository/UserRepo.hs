@@ -1,26 +1,30 @@
-{-# LANGUAGE FlexibleInstances, TypeSynonymInstances, FlexibleContexts, UndecidableInstances, MonoLocalBinds #-}
+{-# LANGUAGE FlexibleContexts     #-}
+{-# LANGUAGE FlexibleInstances    #-}
+{-# LANGUAGE MonoLocalBinds       #-}
+{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Data.Repository.UserRepo
     ( deleteUserImpl, updateNameImpl, addCalendarEntryToUserImpl, addTaskToUserImpl
     , deleteCalendarEntryFromUserImpl, deleteTaskFromUserImpl, getUserImpl, createUserImpl,
      MonadDBUserRepo(..) ) where
 
-import Prelude
-import Control.Monad.IO.Class
-import Data.Maybe                        ( fromJust )
+import           Control.Monad.IO.Class
+import           Data.Maybe                         (fromJust)
+import           Prelude
 
-import qualified Data.List              as List
-import qualified Happstack.Foundation   as Foundation
+import qualified Data.List                          as List
+import qualified Happstack.Foundation               as Foundation
 
-import Controller.AcidHelper            ( CtrlV' )
-import Data.Domain.User                 ( User(..) )
-import Data.Domain.Types                ( EntryId, TaskId, UserId )
+import           Controller.AcidHelper              (CtrlV')
+import           Data.Domain.Types                  (EntryId, TaskId, UserId)
+import           Data.Domain.User                   (User (..))
 
-import Data.Repository.Acid.User                 ( MonadDBUser(..) )
-import Data.Repository.Acid.CalendarEntry        ( MonadDBCalendar )
-import Data.Repository.Acid.Task                 ( MonadDBTask )
+import           Data.Repository.Acid.CalendarEntry (MonadDBCalendar)
+import           Data.Repository.Acid.Task          (MonadDBTask)
+import           Data.Repository.Acid.User          (MonadDBUser (..))
 
-import qualified Data.Repository.Acid.User       as UserAcid
+import qualified Data.Repository.Acid.User          as UserAcid
 
 
 instance MonadDBUser CtrlV' where

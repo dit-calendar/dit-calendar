@@ -1,19 +1,21 @@
 module Route.HttpServerHelper ( getBody, readAuthUserFromBodyAsList, getHttpMethod ) where
 
-import Control.Monad.IO.Class      ( liftIO, MonadIO )
+import           Control.Monad.IO.Class               (MonadIO, liftIO)
 
-import Happstack.Authenticate.Password.Core  ( NewAccountData )
-import Happstack.Server.Types                ( RqBody, Request )
-import Happstack.Server                      ( ok, Method, nullDir, unBody, rqBody
-                                             , Request(rqMethod), askRq )
-import Control.Concurrent.MVar               ( tryReadMVar )
-import Data.Aeson                            ( decode )
+import           Control.Concurrent.MVar              (tryReadMVar)
+import           Data.Aeson                           (decode)
+import           Happstack.Authenticate.Password.Core (NewAccountData)
+import           Happstack.Server                     (Method,
+                                                       Request (rqMethod),
+                                                       askRq, nullDir, ok,
+                                                       rqBody, unBody)
+import           Happstack.Server.Types               (Request, RqBody)
 
-import Web.Routes                            ( RouteT )
-import Controller.AcidHelper                 ( App )
-import Route.PageEnum                        ( Sitemap )
+import           Controller.AcidHelper                (App)
+import           Route.PageEnum                       (Sitemap)
+import           Web.Routes                           (RouteT)
 
-import qualified Data.ByteString.Lazy.Char8 as L
+import qualified Data.ByteString.Lazy.Char8           as L
 
 peekRequestBody :: (MonadIO m) => Request -> m (Maybe RqBody)
 peekRequestBody rq = liftIO $ tryReadMVar (rqBody rq)

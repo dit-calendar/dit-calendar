@@ -1,17 +1,14 @@
 module Controller.CalendarController where
 
-import Happstack.Foundation     ( query )
+import           Controller.AcidHelper              (CtrlV)
+import           Controller.ResponseHelper          (okResponse, onEntryExist,
+                                                     onUserExist)
+import           Data.Domain.CalendarEntry          as CalendarEntry
+import           Data.Domain.Types                  (EntryId, UserId)
 
-import Data.Domain.CalendarEntry                as CalendarEntry
-import Data.Domain.Types           ( EntryId, UserId )
-import Controller.AcidHelper       ( CtrlV )
-import Controller.ResponseHelper ( onUserExist, onEntryExist, okResponse )
-
-import qualified Data.Repository.Acid.CalendarEntry       as CalendarEntryAcid
-import qualified Data.Repository.Acid.User                as UserAcid
-import qualified Data.Repository.CalendarRepo             as CalendarRepo
-import qualified Data.Service.CalendarEntry               as CalendarService
-import qualified Data.Domain.User                         as DomainUser
+import qualified Data.Domain.User                   as DomainUser
+import qualified Data.Repository.CalendarRepo       as CalendarRepo
+import qualified Data.Service.CalendarEntry         as CalendarService
 
 
 --handler for entryPage

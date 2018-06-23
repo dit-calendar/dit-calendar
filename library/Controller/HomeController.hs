@@ -1,10 +1,11 @@
 module Controller.HomeController where
 
-import Happstack.Server         ( ok, toResponse, Method(GET, POST)
-                                , method, nullDir, Request(rqMethod), askRq )
+import           Happstack.Server          (Method (GET, POST),
+                                            Request (rqMethod), askRq, method,
+                                            nullDir, ok, toResponse)
 
-import Controller.UserController as UserController
-import Controller.AcidHelper    ( CtrlV )
+import           Controller.AcidHelper     (CtrlV)
+import           Controller.UserController as UserController
 
 
 --handler for homePage

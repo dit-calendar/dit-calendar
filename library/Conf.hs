@@ -1,10 +1,12 @@
 module Conf ( authenticateConfig, passwordConfig, tlsConf ) where
 
-import Happstack.Authenticate.Core          ( usernamePolicy, AuthenticateConfig(..) )
-import Happstack.Authenticate.Password.Core ( PasswordConfig(..) )
-import Happstack.Server.SimpleHTTPS         ( TLSConf(..), nullTLSConf  )
+import           Happstack.Authenticate.Core          (AuthenticateConfig (..),
+                                                       usernamePolicy)
+import           Happstack.Authenticate.Password.Core (PasswordConfig (..))
+import           Happstack.Server.SimpleHTTPS         (TLSConf (..),
+                                                       nullTLSConf)
 
-import qualified Data.Text as T
+import qualified Data.Text                            as T
 
 authenticateConfig :: AuthenticateConfig
 authenticateConfig = AuthenticateConfig

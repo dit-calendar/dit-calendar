@@ -1,19 +1,19 @@
 module Data.Service.Task
     ( deleteTask, createTask, addUserToTask, removeUserFromTask ) where
 
-import Data.Domain.Task                      as Task
-import Data.Domain.CalendarEntry             as CalendarEntry
-import Control.Monad.IO.Class
-import Data.List                ( delete )
+import           Control.Monad.IO.Class
+import           Data.Domain.CalendarEntry    as CalendarEntry
+import           Data.Domain.Task             as Task
+import           Data.List                    (delete)
 
-import Data.Domain.Types                  ( UserId )
+import           Data.Domain.Types            (UserId)
 
-import qualified Data.Repository.TaskRepo            as MonadDBTaskRepo
-import Data.Repository.TaskRepo                      ( MonadDBTaskRepo )
-import qualified Data.Repository.UserRepo            as MonadDBUserRepo
-import Data.Repository.UserRepo                      ( MonadDBUserRepo )
-import qualified Data.Repository.CalendarRepo        as MonadDBCalendarRepo
-import Data.Repository.CalendarRepo                  ( MonadDBCalendarRepo )
+import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)
+import qualified Data.Repository.CalendarRepo as MonadDBCalendarRepo
+import           Data.Repository.TaskRepo     (MonadDBTaskRepo)
+import qualified Data.Repository.TaskRepo     as MonadDBTaskRepo
+import           Data.Repository.UserRepo     (MonadDBUserRepo)
+import qualified Data.Repository.UserRepo     as MonadDBUserRepo
 
 
 deleteTask :: (MonadDBTaskRepo m, MonadDBUserRepo m, MonadIO m) =>

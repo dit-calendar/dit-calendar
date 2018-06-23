@@ -1,25 +1,29 @@
-{-# LANGUAGE FlexibleInstances, TypeSynonymInstances, FlexibleContexts, UndecidableInstances, MonoLocalBinds #-}
+{-# LANGUAGE FlexibleContexts     #-}
+{-# LANGUAGE FlexibleInstances    #-}
+{-# LANGUAGE MonoLocalBinds       #-}
+{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Data.Repository.CalendarRepo
     ( newCalendarEntryImpl, deleteCalendarEntryImpl, updateDescription,
     deleteTaskFromCalendarEntryImpl, addTaskToCalendarEntryImpl, MonadDBCalendarRepo(..) ) where
 
-import qualified Data.List                  as List
-import qualified Happstack.Foundation       as Foundation
+import qualified Data.List                          as List
+import qualified Happstack.Foundation               as Foundation
 
-import Controller.AcidHelper      ( CtrlV' )
-import Data.Domain.Types          ( EntryId, TaskId )
-import Data.Domain.User                      as User
-import Data.Domain.CalendarEntry             as CalendarEntry
-import Data.Domain.CalendarEntry  ( CalendarEntry )
-import Data.Domain.User           ( User )
+import           Controller.AcidHelper              (CtrlV')
+import           Data.Domain.CalendarEntry          as CalendarEntry
+import           Data.Domain.CalendarEntry          (CalendarEntry)
+import           Data.Domain.Types                  (EntryId, TaskId)
+import           Data.Domain.User                   as User
+import           Data.Domain.User                   (User)
 
-import Data.Repository.Acid.CalendarEntry ( MonadDBCalendar(..) )
-import Data.Repository.Acid.Task                 ( MonadDBTask )
-import Data.Repository.Acid.User                 ( MonadDBUser )
-import Data.Time.Clock            ( UTCTime )
+import           Data.Repository.Acid.CalendarEntry (MonadDBCalendar (..))
+import           Data.Repository.Acid.Task          (MonadDBTask)
+import           Data.Repository.Acid.User          (MonadDBUser)
+import           Data.Time.Clock                    (UTCTime)
 
-import qualified Data.Repository.Acid.CalendarEntry    as CalendarEntryAcid
+import qualified Data.Repository.Acid.CalendarEntry as CalendarEntryAcid
 
 instance MonadDBCalendar CtrlV' where
     create = Foundation.update

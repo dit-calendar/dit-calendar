@@ -2,27 +2,35 @@
 
 module Route.Routing ( authOrRoute ) where
 
-import Data.List (isInfixOf)
-import Happstack.Server            ( ServerPartT, Response, Method(GET, POST, DELETE, PUT), rsCode, rsBody
-                                   , BodyPolicy(..), decodeBody, defaultBodyPolicy, look, mapServerPartT )
-import Happstack.Foundation        ( lift )
-import Web.Routes                  ( RouteT, nestURL, mapRouteT )
-import Happstack.Authenticate.Core ( AuthenticateURL(..), AuthenticateState, Username(..), User(_username) )
-import Happstack.Authenticate.Password.Core  ( NewAccountData(..) )
-import Data.Acid                   ( AcidState )
+import           Data.Acid                            (AcidState)
+import           Data.List                            (isInfixOf)
+import           Happstack.Authenticate.Core          (AuthenticateState,
+                                                       AuthenticateURL (..),
+                                                       User (_username),
+                                                       Username (..))
+import           Happstack.Authenticate.Password.Core (NewAccountData (..))
+import           Happstack.Foundation                 (lift)
+import           Happstack.Server                     (BodyPolicy (..), Method (DELETE, GET, POST, PUT),
+                                                       Response, ServerPartT,
+                                                       decodeBody,
+                                                       defaultBodyPolicy, look,
+                                                       mapServerPartT, rsBody,
+                                                       rsCode)
+import           Web.Routes                           (RouteT, mapRouteT,
+                                                       nestURL)
 
-import Data.Domain.Types           ( UserId, EntryId, TaskId )
-import Route.HttpServerHelper      ( getBody, readAuthUserFromBodyAsList, getHttpMethod )
-import Route.PageEnum              ( Sitemap(..) )
-import Controller.AcidHelper       ( CtrlV, App )
-import Controller.ResponseHelper   ( okResponse )
-import Auth.Authorization          ( callIfAuthorized )
+import           Auth.Authorization                   (callIfAuthorized)
+import           Controller.AcidHelper                (App, CtrlV)
+import           Controller.ResponseHelper            (okResponse)
+import           Data.Domain.Types                    (EntryId, TaskId, UserId)
+import           Route.HttpServerHelper               (getBody, getHttpMethod, readAuthUserFromBodyAsList)
+import           Route.PageEnum                       (Sitemap (..))
 
-import qualified Data.Domain.User               as DomainUser
-import qualified Controller.UserController      as UserController
-import qualified Controller.HomeController      as HomeController
-import qualified Controller.CalendarController  as CalendarController
-import qualified Controller.TaskController      as TaskController
+import qualified Controller.CalendarController        as CalendarController
+import qualified Controller.HomeController            as HomeController
+import qualified Controller.TaskController            as TaskController
+import qualified Controller.UserController            as UserController
+import qualified Data.Domain.User                     as DomainUser
 
 
 myPolicy :: BodyPolicy

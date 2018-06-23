@@ -1,17 +1,17 @@
 module Data.Service.User ( deleteUser ) where
 
-import Control.Monad.IO.Class
-import Data.Maybe                 ( fromJust )
+import           Control.Monad.IO.Class
+import           Data.Maybe                   (fromJust)
 
-import Data.Domain.User                     as User
+import           Data.Domain.User             as User
 
-import qualified Data.Repository.UserRepo            as MonadDBUserRepo
-import Data.Repository.UserRepo                      ( MonadDBUserRepo )
-import qualified Data.Repository.TaskRepo            as MonadDBTaskRepo
-import Data.Repository.TaskRepo                      ( MonadDBTaskRepo )
-import qualified Data.Repository.CalendarRepo        as MonadDBCalendarRepo
-import Data.Repository.CalendarRepo                  ( MonadDBCalendarRepo )
-import qualified Data.Service.Task                    as TaskService
+import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)
+import qualified Data.Repository.CalendarRepo as MonadDBCalendarRepo
+import           Data.Repository.TaskRepo     (MonadDBTaskRepo)
+import qualified Data.Repository.TaskRepo     as MonadDBTaskRepo
+import           Data.Repository.UserRepo     (MonadDBUserRepo)
+import qualified Data.Repository.UserRepo     as MonadDBUserRepo
+import qualified Data.Service.Task            as TaskService
 
 
 deleteUser :: (MonadDBUserRepo m, MonadDBTaskRepo m, MonadDBCalendarRepo m) =>

@@ -1,33 +1,37 @@
-{-# LANGUAGE FlexibleContexts, MultiParamTypeClasses,
-    OverloadedStrings, ScopedTypeVariables, TypeFamilies,
-    FlexibleInstances #-}
+{-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedStrings     #-}
+{-# LANGUAGE ScopedTypeVariables   #-}
+{-# LANGUAGE TypeFamilies          #-}
 
 module Controller.AcidHelper ( CtrlV, CtrlV', App, withAcid, Acid ) where
 
-import Prelude
-import System.FilePath      ( (</>) )
-import Data.Maybe           ( fromMaybe )
-import Control.Exception    ( bracket )
-import Control.Monad.Reader ( ReaderT, ask )
+import           Control.Exception                  (bracket)
+import           Control.Monad.Reader               (ReaderT, ask)
+import           Data.Maybe                         (fromMaybe)
+import           Prelude
+import           System.FilePath                    ((</>))
 
-import Data.Acid            ( openLocalStateFrom, AcidState(..) )
-import Data.Acid.Local      ( createCheckpointAndClose )
-import Web.Routes           ( RouteT )
-import Happstack.Server     ( Response, ServerPartT )
-import Happstack.Foundation ( HasAcidState(..) )
+import           Data.Acid                          (AcidState (..),
+                                                     openLocalStateFrom)
+import           Data.Acid.Local                    (createCheckpointAndClose)
+import           Happstack.Foundation               (HasAcidState (..))
+import           Happstack.Server                   (Response, ServerPartT)
+import           Web.Routes                         (RouteT)
 
-import Route.PageEnum            ( Sitemap )
+import           Route.PageEnum                     (Sitemap)
 
-import qualified Data.Repository.Acid.User              as UserAcid
-import qualified Data.Repository.Acid.CalendarEntry     as CalendarEntryAcid
-import qualified Data.Repository.Acid.Task              as TaskAcid
+import qualified Data.Repository.Acid.CalendarEntry as CalendarEntryAcid
+import qualified Data.Repository.Acid.Task          as TaskAcid
+import qualified Data.Repository.Acid.User          as UserAcid
 
 
 data Acid = Acid
    {
-     acidUserListState         :: AcidState UserAcid.UserList
-     , acidEntryListState      :: AcidState CalendarEntryAcid.EntryList
-     , acidTaskListState       :: AcidState TaskAcid.TaskList
+     acidUserListState    :: AcidState UserAcid.UserList
+     , acidEntryListState :: AcidState CalendarEntryAcid.EntryList
+     , acidTaskListState  :: AcidState TaskAcid.TaskList
    }
 
 type App = ServerPartT (ReaderT Acid IO)

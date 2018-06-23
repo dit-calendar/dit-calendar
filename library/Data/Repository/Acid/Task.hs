@@ -1,16 +1,19 @@
-{-# LANGUAGE  TemplateHaskell, TypeFamilies, FlexibleInstances #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TemplateHaskell   #-}
+{-# LANGUAGE TypeFamilies      #-}
 
 module Data.Repository.Acid.Task
     ( MonadDBTask(..), initialTaskListState, TaskList, NewTask(..), TaskById(..), AllTasks(..),
     GetTaskList(..), UpdateTask(..), DeleteTask(..) ) where
 
-import Data.Acid                       ( Query, Update, makeAcidic )
-import Data.IxSet                      ( Indexable(..), ixFun, ixSet )
+import           Data.Acid                          (Query, Update, makeAcidic)
+import           Data.IxSet                         (Indexable (..), ixFun,
+                                                     ixSet)
 
-import Data.Domain.Task         ( Task(..) )
-import Data.Domain.Types        ( TaskId )
+import           Data.Domain.Task                   (Task (..))
+import           Data.Domain.Types                  (TaskId)
 
-import qualified Data.Repository.Acid.InterfaceAcid      as   InterfaceAcid
+import qualified Data.Repository.Acid.InterfaceAcid as InterfaceAcid
 
 instance Indexable Task where
   empty = ixSet [ ixFun $ \bp -> [ taskId bp ] ]
@@ -35,7 +38,7 @@ allTasks = InterfaceAcid.allEntrysAsList
 
 updateTask :: Task -> Update TaskList ()
 updateTask = InterfaceAcid.updateEntry
-            
+
 deleteTask :: TaskId -> Update TaskList ()
 deleteTask = InterfaceAcid.deleteEntry
 

@@ -1,16 +1,19 @@
-{-# LANGUAGE  TemplateHaskell, TypeFamilies, FlexibleInstances #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TemplateHaskell   #-}
+{-# LANGUAGE TypeFamilies      #-}
 
-module Data.Repository.Acid.CalendarEntry 
+module Data.Repository.Acid.CalendarEntry
     ( MonadDBCalendar(..), initialEntryListState, EntryList(..), NewEntry(..), EntryById(..), AllEntrys(..),
     GetEntryList(..), UpdateEntry(..), DeleteEntry(..) ) where
 
-import Data.Acid                       ( Query, Update, makeAcidic )
-import Data.IxSet                      ( Indexable(..), ixFun, ixSet )
+import           Data.Acid                          (Query, Update, makeAcidic)
+import           Data.IxSet                         (Indexable (..), ixFun,
+                                                     ixSet)
 
-import Data.Domain.CalendarEntry       ( CalendarEntry(..) )
-import Data.Domain.Types               ( EntryId )
+import           Data.Domain.CalendarEntry          (CalendarEntry (..))
+import           Data.Domain.Types                  (EntryId)
 
-import qualified Data.Repository.Acid.InterfaceAcid      as   InterfaceAcid
+import qualified Data.Repository.Acid.InterfaceAcid as InterfaceAcid
 
 
 instance Indexable CalendarEntry where
@@ -35,7 +38,7 @@ entryById = InterfaceAcid.entryById
 
 updateEntry :: CalendarEntry -> Update EntryList ()
 updateEntry = InterfaceAcid.updateEntry
-            
+
 deleteEntry :: EntryId -> Update EntryList ()
 deleteEntry = InterfaceAcid.deleteEntry
 

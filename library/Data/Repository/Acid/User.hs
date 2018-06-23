@@ -1,16 +1,19 @@
-{-# LANGUAGE  TemplateHaskell, TypeFamilies, FlexibleInstances #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TemplateHaskell   #-}
+{-# LANGUAGE TypeFamilies      #-}
 
 module Data.Repository.Acid.User
     ( MonadDBUser(..), initialUserListState, UserList(..), NewUser(..), UserById(..), AllUsers(..),
     GetUserList(..), UpdateUser(..), DeleteUser(..) ) where
 
-import Data.Acid                       ( Query, Update, makeAcidic )
-import Data.IxSet                      ( Indexable(..), ixFun, ixSet )
+import           Data.Acid                          (Query, Update, makeAcidic)
+import           Data.IxSet                         (Indexable (..), ixFun,
+                                                     ixSet)
 
-import Data.Domain.User         ( User(..) )
-import Data.Domain.Types        ( UserId )
+import           Data.Domain.Types                  (UserId)
+import           Data.Domain.User                   (User (..))
 
-import qualified Data.Repository.Acid.InterfaceAcid      as   InterfaceAcid
+import qualified Data.Repository.Acid.InterfaceAcid as InterfaceAcid
 
 
 instance Indexable User where
@@ -36,7 +39,7 @@ allUsers = InterfaceAcid.allEntrysAsList
 
 updateUser :: User -> Update UserList ()
 updateUser = InterfaceAcid.updateEntry
-            
+
 deleteUser :: UserId -> Update UserList ()
 deleteUser = InterfaceAcid.deleteEntry
 
