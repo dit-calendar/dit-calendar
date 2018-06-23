@@ -3,7 +3,7 @@ module Controller.UserController where
 import Happstack.Server         ( Method(GET), method)
 import Happstack.Foundation     ( query )
 
-import Controller.ResponseHelper   ( userExist, okResponse )
+import Controller.ResponseHelper   ( onUserExist, okResponse )
 import Data.Domain.User                      as User      ( User(..))
 import Data.Domain.Types             ( UserId )
 import Controller.AcidHelper         ( CtrlV )
@@ -16,9 +16,7 @@ import qualified Data.Domain.User                      as DomainUser
 
 --handler for userPage
 userPage :: UserId -> CtrlV
-userPage i = do
-    mUser <- query (UserAcid.UserById i)
-    userExist i (\u -> okResponse $ "peeked at the name and saw: " ++ show u) mUser
+userPage i = onUserExist i (\u -> okResponse $ "peeked at the name and saw: " ++ show u)
 
 --handler for userPage
 usersPage :: CtrlV
@@ -38,18 +36,16 @@ createUser name = do
     okResponse $ "User created: " ++ show mUser
 
 updateUser :: UserId -> String -> DomainUser.User -> CtrlV
-updateUser id name loggedUser = do
-    mUser <- query (UserAcid.UserById id)
-    userExist id (\u -> do
+updateUser id name loggedUser =
+    onUserExist id (\u -> do
             UserRepo.updateName u name
-            okResponse $ "User with id:" ++ show id ++ "updated") mUser
+            okResponse $ "User with id:" ++ show id ++ "updated")
 
 deleteUser :: UserId -> DomainUser.User -> CtrlV
 deleteUser i loggedUser =
-    query (UserAcid.UserById i) >>=
-        userExist i (\u -> do
-                UserService.deleteUser u
-                okResponse $ "User with id:" ++ show i ++ "deleted")
+    onUserExist i (\u -> do
+        UserService.deleteUser u
+        okResponse $ "User with id:" ++ show i ++ "deleted")
 
 printUsersList :: [User] -> String
 printUsersList l = case l of

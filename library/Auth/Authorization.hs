@@ -11,7 +11,6 @@ import Happstack.Foundation   ( query )
 
 import Route.PageEnum              ( Sitemap(..) )
 import Controller.AcidHelper       ( CtrlV )
-import Controller.ResponseHelper   ( userExist )
 
 import qualified Data.Repository.Acid.User             as UserAcid
 import qualified Happstack.Authenticate.Core as AuthUser
