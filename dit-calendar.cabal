@@ -101,6 +101,7 @@ test-suite hspec
   other-modules:
                        Data.Repository.Acid.DataBaseHelper,
                        Data.Repository.Acid.InterfaceAcidSpec,
+                       Data.Repository.Acid.UserSpec,
                        Data.Repository.CalendarRepoSpec,
                        Data.Repository.TaskRepoSpec,
                        Data.Repository.UserRepoSpec,

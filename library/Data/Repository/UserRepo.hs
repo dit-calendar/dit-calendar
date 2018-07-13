@@ -6,7 +6,7 @@
 
 module Data.Repository.UserRepo
     ( deleteUserImpl, updateNameImpl, addCalendarEntryToUserImpl, addTaskToUserImpl
-    , deleteCalendarEntryFromUserImpl, deleteTaskFromUserImpl, getUserImpl, createUserImpl,
+    , deleteCalendarEntryFromUserImpl, deleteTaskFromUserImpl, getUserImpl, createUserImpl, findUserByNameIml,
      MonadDBUserRepo(..) ) where
 
 import           Control.Monad.IO.Class
@@ -32,6 +32,7 @@ instance MonadDBUser CtrlV' where
     update = Foundation.update
     delete = Foundation.update
     query  = Foundation.query
+    queryByName = Foundation.query
 
 createUserImpl :: MonadDBUser m => String -> m User
 createUserImpl name = let user = User { name = name
@@ -72,6 +73,9 @@ getUserImpl userId = do
     mUser <- query $ UserAcid.UserById userId
     return $ fromJust mUser
 
+findUserByNameIml :: (MonadDBUser m, MonadIO m) => String -> m (Maybe User)
+findUserByNameIml name = queryByName $ UserAcid.FindByName name
+
 class MonadDBUserRepo m where
     createUser :: String -> m User
     deleteUser :: User -> m ()
@@ -81,6 +85,7 @@ class MonadDBUserRepo m where
     addTaskToUser :: User -> TaskId -> m ()
     deleteTaskFromUser :: User -> TaskId -> m ()
     getUser :: UserId -> m User
+    findUserByName :: String -> m (Maybe User)
 
 instance (MonadDBUser CtrlV', MonadDBCalendar CtrlV', MonadDBTask CtrlV')
         => MonadDBUserRepo CtrlV' where
@@ -92,3 +97,4 @@ instance (MonadDBUser CtrlV', MonadDBCalendar CtrlV', MonadDBTask CtrlV')
     addTaskToUser = addTaskToUserImpl
     deleteTaskFromUser = deleteTaskFromUserImpl
     getUser = getUserImpl
+    findUserByName = findUserByNameIml

@@ -10,12 +10,13 @@ import Test.Hspec
 import Control.Monad.TestFixture
 import Control.Monad.TestFixture.TH
 
+import Data.Maybe                    (fromJust)
 import Control.Monad.IO.Class
 import Control.Monad.Identity        ( Identity )
 import Control.Monad.Writer.Class    ( tell )
 
 import Data.Repository.Acid.User          ( MonadDBUser )
-import Data.Repository.Acid.User          ( NewUser(..), DeleteUser(..), UpdateUser(..), UserById(..) )
+import Data.Repository.Acid.User          ( NewUser(..), DeleteUser(..), UpdateUser(..), UserById(..), FindByName(..) )
 import Data.Domain.User                     as User
 
 import qualified Data.Repository.UserRepo          as UserRepo
@@ -29,7 +30,8 @@ fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture { _create = \(NewUser a)    -> return a
                   , _delete = \(DeleteUser a) -> tell [show a]
                   , _update = \(UpdateUser a) -> tell [show a]
-                  , _query = \(UserById a)    -> return (Just userFromDb)}
+                  , _query = \(UserById a)    -> return (Just userFromDb)
+                  , _queryByName = \(FindByName a)    -> return (Just userFromDb) }
 
 instance MonadIO Identity where
     liftIO = undefined
@@ -70,6 +72,10 @@ spec = describe "UserRepo" $ do
         let (_, log) = evalTestFixture (UserRepo.deleteTaskFromUserImpl user 2) fixture
         let newUser = user {belongingTasks = [1, 3]}
         log!!0 `shouldBe` show newUser
-    it "getUser" $ do
-        let (result, _) = evalTestFixture (UserRepo.getUserImpl 10) fixture
-        result `shouldBe` userFromDb
+    describe "find" $ do
+        it "byId" $ do
+            let (result, _) = evalTestFixture (UserRepo.getUserImpl 10) fixture
+            result `shouldBe` userFromDb
+        it "byName" $ do
+            let (result, _) = evalTestFixture (UserRepo.findUserByNameIml "Foo") fixture
+            fromJust result `shouldBe` userFromDb
