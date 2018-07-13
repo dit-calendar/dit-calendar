@@ -22,7 +22,7 @@ routeUser userId authState = do
     GET ->
       UserController.userPage userId
     DELETE ->
-      callIfAuthorized authState (UserController.deleteUser userId)
+      callIfAuthorized authState (UserController.deleteUser userId authState)
     POST -> do
       description <- look "description"
       newDate <- look "date"

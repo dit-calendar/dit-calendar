@@ -2,10 +2,14 @@
 
 module Presentation.Controller.UserController (createUser, updateUser, deleteUser, usersPage, userPage) where
 
+import           Data.Acid                            (AcidState)
+import           Data.Acid.Advanced                   (query', update')
 import           Data.List                            (isInfixOf)
-import           Happstack.Authenticate.Core          (AuthenticateURL (..),
-                                                       User (_username),
-                                                       Username (..))
+import           Data.Maybe                           (fromJust)
+import           Data.Text                            (pack)
+
+import           Happstack.Authenticate.Core          (AuthenticateState,
+                                                       AuthenticateURL (..))
 import           Happstack.Authenticate.Password.Core (NewAccountData (..))
 import           Happstack.Foundation                 (query)
 import           Happstack.Server                     (Method (GET), Response,
@@ -26,6 +30,7 @@ import           Presentation.Route.PageEnum          (Sitemap (Authenticate))
 import qualified Data.Repository.Acid.User            as UserAcid
 import qualified Data.Repository.UserRepo             as UserRepo
 import qualified Data.Service.User                    as UserService
+import qualified Happstack.Authenticate.Core          as AuthUser
 
 
 --handler for userPage
@@ -51,8 +56,8 @@ createUser authenticateURL routeAuthenticate = do
     case createUserBody of
         Just (NewAccountData naUser naPassword _) ->
             do
-                let naUsername :: Happstack.Authenticate.Core.Username = _username naUser
-                let username = _unUsername naUsername
+                let naUsername :: AuthUser.Username = AuthUser._username naUser
+                let username = AuthUser._unUsername naUsername
 
                 response <- mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
                 let responseBody = rsBody response
@@ -75,11 +80,22 @@ updateUser id name loggedUser = onUserExist id updateUsr
               UserRepo.updateName user name
               okResponse $ "User with id:" ++ show id ++ "updated"
 
-deleteUser :: UserId -> DomainUser.User -> CtrlV
-deleteUser i loggedUser = onUserExist i deleteUsr
-    where deleteUsr user = do
-              UserService.deleteUser user
-              okResponse $ "User with id:" ++ show i ++ "deleted"
+
+deleteUser :: UserId -> AcidState AuthenticateState -> DomainUser.User -> CtrlV
+deleteUser i authState loggedUser = do
+    onUserExist i deleteUsr
+    deleteAuthUser i authState loggedUser
+        where deleteUsr user = do
+                  UserService.deleteUser user
+                  okResponse $ "User with id:" ++ show i ++ "deleted"
+
+deleteAuthUser :: UserId -> AcidState AuthenticateState -> DomainUser.User -> CtrlV
+deleteAuthUser i authState loggedUser =  do
+    mUser <- query' authState (AuthUser.GetUserByUsername autUserName)
+    update' authState (AuthUser.DeleteUser (AuthUser._userId $ fromJust mUser))
+    okResponse $ "User with id:" ++ show i ++ "deleted"
+        where autUserName = AuthUser.Username {AuthUser._unUsername = pack $ name loggedUser}
+
 
 printUsersList :: [DomainUser.User] -> String
 printUsersList l = case l of
