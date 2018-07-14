@@ -1,7 +1,5 @@
 module Presentation.Route.CalendarRoute (routeCalendarEntry) where
 
-import           Data.Acid                                  (AcidState)
-import           Happstack.Authenticate.Core                (AuthenticateState)
 import           Happstack.Server                           (Method (DELETE, GET, POST, PUT),
                                                              look)
 
@@ -13,12 +11,12 @@ import           Presentation.HttpServerHelper              (getHttpMethod)
 import qualified Presentation.Controller.CalendarController as CalendarController
 import qualified Presentation.Controller.TaskController     as TaskController
 
-routeCalendarEntry :: EntryId -> AcidState AuthenticateState -> CtrlV
-routeCalendarEntry entryId authState = do
+routeCalendarEntry :: EntryId -> CtrlV
+routeCalendarEntry entryId = do
   m <- getHttpMethod
   case m of
     DELETE ->
-      callIfAuthorized authState (CalendarController.deleteCalendarEntry entryId)
+      callIfAuthorized (CalendarController.deleteCalendarEntry entryId)
     GET ->
       CalendarController.entryPage entryId
     POST -> do
@@ -26,4 +24,4 @@ routeCalendarEntry entryId authState = do
       TaskController.createTask entryId description
     PUT -> do
       description <- look "description"
-      callIfAuthorized authState (CalendarController.updateCalendarEntry entryId description)
+      callIfAuthorized (CalendarController.updateCalendarEntry entryId description)

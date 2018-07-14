@@ -4,15 +4,13 @@ module AppStart where
 
 import           Control.Exception                     (finally)
 import           Control.Monad.Reader                  (runReaderT)
-import           Data.Acid                             (AcidState)
 
 import           Web.Routes                            (RouteT, Site, runRouteT,
                                                         setDefault)
 import           Web.Routes.Boomerang                  (boomerangSite)
 import           Web.Routes.Happstack                  (implSite)
 
-import           Happstack.Authenticate.Core           (AuthenticateState,
-                                                        AuthenticateURL (..))
+import           Happstack.Authenticate.Core           (AuthenticateURL (..))
 import           Happstack.Authenticate.Password.Route (initPassword)
 import           Happstack.Authenticate.Route          (initAuthentication)
 import           Happstack.Server                      (Response, ServerPartT,
@@ -32,12 +30,11 @@ import qualified Data.Text                             as T
 runApp :: Acid -> App a -> ServerPartT IO a
 runApp acid = mapServerPartT (`runReaderT` acid)
 
-site :: AcidState AuthenticateState
-       -> (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response)
+site :: (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response)
        -> Site Sitemap (App Response)
-site authenticateState routeAuthenticate =
+site routeAuthenticate =
   --runRouteT removes the RouteT wrapper from our routing function
-  let realRoute = runRouteT (authOrRoute authenticateState routeAuthenticate) in
+  let realRoute = runRouteT (authOrRoute routeAuthenticate) in
   --convert the new function to a Site
   let realSite = boomerangSite realRoute urlSitemapParser in
         setDefault Home realSite
@@ -48,5 +45,5 @@ run = do
     (cleanup, routeAuthenticate, authenticateState) <-
         initAuthentication Nothing authenticateConfig [ initPassword passwordConfig ]
     let startServer acid = simpleHTTPS tlsConf $ runApp acid appWithRoutetSite
-        appWithRoutetSite = implSite "https://localhost:8000" "" (site authenticateState routeAuthenticate) in
-        withAcid Nothing startServer `finally` cleanup
+        appWithRoutetSite = implSite "https://localhost:8000" "" (site routeAuthenticate) in
+        withAcid authenticateState Nothing startServer `finally` cleanup

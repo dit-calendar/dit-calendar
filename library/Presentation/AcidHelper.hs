@@ -16,6 +16,7 @@ import           System.FilePath                    ((</>))
 import           Data.Acid                          (AcidState (..),
                                                      openLocalStateFrom)
 import           Data.Acid.Local                    (createCheckpointAndClose)
+import           Happstack.Authenticate.Core        (AuthenticateState)
 import           Happstack.Foundation               (HasAcidState (..))
 import           Happstack.Server                   (Response, ServerPartT)
 import           Web.Routes                         (RouteT)
@@ -32,6 +33,7 @@ data Acid = Acid
      acidUserListState    :: AcidState UserAcid.UserList
      , acidEntryListState :: AcidState CalendarEntryAcid.EntryList
      , acidTaskListState  :: AcidState TaskAcid.TaskList
+     , acidAuthState      :: AcidState AuthenticateState
    }
 
 type App = ServerPartT (ReaderT Acid IO)
@@ -47,15 +49,18 @@ instance HasAcidState CtrlV' CalendarEntryAcid.EntryList where
 instance HasAcidState CtrlV' TaskAcid.TaskList where
     getAcidState = acidTaskListState <$> ask
 
-withAcid :: Maybe FilePath -- ^ state directory
+instance HasAcidState CtrlV' AuthenticateState where
+    getAcidState = acidAuthState <$> ask
+
+withAcid :: AcidState AuthenticateState -> Maybe FilePath -- ^ state directory
          -> (Acid -> IO a) -- ^ action
          -> IO a
-withAcid mBasePath f =
+withAcid authState mBasePath f =
     let basePath = fromMaybe "state" mBasePath
         userPath = basePath </> "userList"
         calendarEntryPath = basePath </> "entryList"
         taskPath = basePath </> "taskList"
-    in bracket (openLocalStateFrom userPath UserAcid.initialUserListState) createCheckpointAndClose $ \c ->
-       bracket (openLocalStateFrom calendarEntryPath CalendarEntryAcid.initialEntryListState) createCheckpointAndClose $ \g ->
-       bracket (openLocalStateFrom taskPath TaskAcid.initialTaskListState) createCheckpointAndClose $ \t ->
-        f (Acid c g t)
+    in bracket (openLocalStateFrom userPath UserAcid.initialUserListState) createCheckpointAndClose $ \user ->
+       bracket (openLocalStateFrom calendarEntryPath CalendarEntryAcid.initialEntryListState) createCheckpointAndClose $ \calend ->
+       bracket (openLocalStateFrom taskPath TaskAcid.initialTaskListState) createCheckpointAndClose $ \task ->
+        f (Acid user calend task authState)

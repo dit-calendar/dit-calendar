@@ -2,16 +2,14 @@
 
 module Presentation.Controller.UserController (createUser, updateUser, deleteUser, usersPage, userPage) where
 
-import           Data.Acid                            (AcidState)
-import           Data.Acid.Advanced                   (query', update')
 import           Data.List                            (isInfixOf)
 import           Data.Maybe                           (fromJust)
 import           Data.Text                            (pack)
 
-import           Happstack.Authenticate.Core          (AuthenticateState,
-                                                       AuthenticateURL (..))
+import           Happstack.Authenticate.Core          (AuthenticateURL (..))
 import           Happstack.Authenticate.Password.Core (NewAccountData (..))
-import           Happstack.Foundation                 (query)
+import           Happstack.Foundation                 (HasAcidState (getAcidState),
+                                                       query, update)
 import           Happstack.Server                     (Method (GET), Response,
                                                        ServerPartT, method,
                                                        rsBody)
@@ -81,18 +79,18 @@ updateUser id name loggedUser = onUserExist id updateUsr
               okResponse $ "User with id:" ++ show id ++ "updated"
 
 
-deleteUser :: UserId -> AcidState AuthenticateState -> DomainUser.User -> CtrlV
-deleteUser i authState loggedUser = do
+deleteUser :: UserId -> DomainUser.User -> CtrlV
+deleteUser i loggedUser = do
     onUserExist i deleteUsr
-    deleteAuthUser i authState loggedUser
+    deleteAuthUser i loggedUser
         where deleteUsr user = do
                   UserService.deleteUser user
                   okResponse $ "User with id:" ++ show i ++ "deleted"
 
-deleteAuthUser :: UserId -> AcidState AuthenticateState -> DomainUser.User -> CtrlV
-deleteAuthUser i authState loggedUser =  do
-    mUser <- query' authState (AuthUser.GetUserByUsername autUserName)
-    update' authState (AuthUser.DeleteUser (AuthUser._userId $ fromJust mUser))
+deleteAuthUser :: UserId -> DomainUser.User -> CtrlV
+deleteAuthUser i loggedUser =  do
+    mUser <- query (AuthUser.GetUserByUsername autUserName)
+    update $ AuthUser.DeleteUser (AuthUser._userId $ fromJust mUser)
     okResponse $ "User with id:" ++ show i ++ "deleted"
         where autUserName = AuthUser.Username {AuthUser._unUsername = pack $ name loggedUser}
 

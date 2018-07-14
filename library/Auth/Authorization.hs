@@ -1,39 +1,39 @@
-{-# LANGUAGE FlexibleContexts     #-}
+{-# LANGUAGE FlexibleContexts #-}
 module Auth.Authorization ( getLoggedUser, callIfAuthorized ) where
 
-import           Control.Monad.IO.Class      (liftIO)
-import           Data.Acid                   (AcidState)
-import           Data.Maybe                  (fromJust)
-import           Data.Time                   (getCurrentTime)
-import           Data.Text                   (unpack)
+import           Control.Monad.IO.Class             (liftIO)
+import           Data.Maybe                         (fromJust)
+import           Data.Text                          (unpack)
+import           Data.Time                          (getCurrentTime)
 
-import           Happstack.Authenticate.Core (AuthenticateState,
-                                              Token (_tokenUser),
-                                              decodeAndVerifyToken)
-import           Happstack.Foundation        (query)
-import           Happstack.Server            (getHeaderM, toResponse,
-                                              unauthorized)
+import           Happstack.Authenticate.Core        (Token (_tokenUser),
+                                                     decodeAndVerifyToken)
+import           Happstack.Foundation               (HasAcidState (getAcidState),
+                                                     query)
+import           Happstack.Server                   (getHeaderM, toResponse,
+                                                     unauthorized)
 
-import           Presentation.AcidHelper     (CtrlV, CtrlV')
-import           Presentation.Route.PageEnum (Sitemap (..))
 import           Data.Repository.Acid.CalendarEntry (MonadDBCalendar)
 import           Data.Repository.Acid.Task          (MonadDBTask)
+import           Presentation.AcidHelper            (CtrlV, CtrlV')
+import           Presentation.Route.PageEnum        (Sitemap (..))
 
-import qualified Data.ByteString.Char8       as B
-import qualified Data.Domain.User            as DomainUser
-import qualified Data.Repository.UserRepo    as UserRepo
-import qualified Data.Text.Encoding          as T
-import qualified Happstack.Authenticate.Core as AuthUser
+import qualified Data.ByteString.Char8              as B
+import qualified Data.Domain.User                   as DomainUser
+import qualified Data.Repository.UserRepo           as UserRepo
+import qualified Data.Text.Encoding                 as T
+import qualified Happstack.Authenticate.Core        as AuthUser
 
 
-callIfAuthorized ::(MonadDBCalendar CtrlV', MonadDBTask CtrlV') => AcidState AuthenticateState -> (DomainUser.User -> CtrlV) -> CtrlV
-callIfAuthorized authenticateState route =
+callIfAuthorized ::(MonadDBCalendar CtrlV', MonadDBTask CtrlV') => (DomainUser.User -> CtrlV) -> CtrlV
+callIfAuthorized route =
     do  mAuth <- getHeaderM "Authorization"
         case mAuth of
             Nothing -> unauthorized $ toResponse "You are not authorized."
             (Just auth') ->
                 do  let auth = B.drop 7 auth'
                     now <- liftIO getCurrentTime
+                    authenticateState <- getAcidState
                     mToken <- decodeAndVerifyToken authenticateState now (T.decodeUtf8 auth)
                     case mToken of
                         Nothing -> unauthorized $ toResponse "You are not authorized!"

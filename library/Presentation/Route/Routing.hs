@@ -1,8 +1,6 @@
 module Presentation.Route.Routing ( authOrRoute ) where
 
-import           Data.Acid                              (AcidState)
-import           Happstack.Authenticate.Core            (AuthenticateState,
-                                                         AuthenticateURL (..))
+import           Happstack.Authenticate.Core            (AuthenticateURL (..))
 import           Happstack.Server                       (BodyPolicy (..),
                                                          Response, ServerPartT,
                                                          decodeBody,
@@ -28,26 +26,24 @@ myPolicy :: BodyPolicy
 myPolicy = defaultBodyPolicy "/tmp/" 0 1000 1000
 
 --authenticate or route
-authOrRoute :: AcidState AuthenticateState
-        -> (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response)
+authOrRoute :: (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response)
         -> Sitemap -> CtrlV
-authOrRoute authenticateState routeAuthenticate url = case url of
+authOrRoute routeAuthenticate url = case url of
     Authenticate authenticateURL ->
         if show authenticateURL ==  "AuthenticationMethods (Just (AuthenticationMethod {_unAuthenticationMethod = \"password\"},[\"account\"]))"
         then UserController.createUser authenticateURL routeAuthenticate
         else mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
-    other -> route other authenticateState
+    other -> route other
 
 -- | the route mapping function
-route :: Sitemap -> AcidState AuthenticateState -> CtrlV
-route url authState =
+route :: Sitemap -> CtrlV
+route url =
     do  decodeBody myPolicy
         case url of
             Home                 -> HomeController.homePage
             Userdetail           -> routeDetailUser
-            User i               -> routeUser i authState
-            CalendarEntry i      -> routeCalendarEntry i authState
-            Task i               -> routeTask i authState
-            TaskWithCalendar e u -> routeTaskWithCalendar e u authState
-            TaskWithUser t u     -> routeTaskWithUser t u authState
-
+            User i               -> routeUser i
+            CalendarEntry i      -> routeCalendarEntry i
+            Task i               -> routeTask i
+            TaskWithCalendar e u -> routeTaskWithCalendar e u
+            TaskWithUser t u     -> routeTaskWithUser t u
