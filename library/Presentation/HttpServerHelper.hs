@@ -23,7 +23,7 @@ import qualified Data.ByteString.Lazy.Char8           as L
 peekRequestBody :: (MonadIO m) => Request -> m (Maybe RqBody)
 peekRequestBody rq = liftIO $ tryReadMVar (rqBody rq)
 
-getBody :: RouteT Sitemap App L.ByteString
+getBody :: RouteT a App L.ByteString
 getBody = do
     req  <- askRq
     body <- liftIO $ peekRequestBody req
@@ -34,7 +34,7 @@ getBody = do
 readAuthUserFromBodyAsList :: L.ByteString -> Maybe NewAccountData
 readAuthUserFromBodyAsList bString = decode bString :: Maybe NewAccountData
 
-getHttpMethod :: RouteT Sitemap App Method
+getHttpMethod :: RouteT a App Method
 getHttpMethod = do
     nullDir
     g <- rqMethod <$> askRq
