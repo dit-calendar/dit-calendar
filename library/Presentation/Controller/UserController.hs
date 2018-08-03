@@ -4,7 +4,7 @@ module Presentation.Controller.UserController (createUser, updateUser, deleteUse
 
 import           Data.List                            (isInfixOf)
 import           Data.Maybe                           (fromJust)
-import           Data.Text                            (pack)
+import           Data.Text                            (pack, unpack)
 
 import           Happstack.Authenticate.Core          (AuthenticateURL (..))
 import           Happstack.Authenticate.Password.Core (NewAccountData (..))
@@ -62,7 +62,7 @@ createUser authenticateURL routeAuthenticate = do
                 if isInfixOf "NotOk" $ show responseBody then
                     return response
                 else
-                    createDomainUser (show username)
+                    createDomainUser (unpack username)
 
         -- if request body is not valid use response of auth library
         Nothing -> mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
