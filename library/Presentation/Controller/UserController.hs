@@ -79,19 +79,20 @@ updateUser id name loggedUser = onUserExist id updateUsr
               okResponse $ "User with id:" ++ show id ++ "updated"
 
 
-deleteUser :: UserId -> DomainUser.User -> CtrlV
-deleteUser i loggedUser = do
-    onUserExist i deleteUsr
-    deleteAuthUser i loggedUser
+deleteUser :: DomainUser.User -> CtrlV
+deleteUser loggedUser = do
+    deleteUsr loggedUser
+    deleteAuthUser loggedUser
         where deleteUsr user = do
                   UserService.deleteUser user
-                  okResponse $ "User with id:" ++ show i ++ "deleted"
+                  okResponse $ "User with id:" ++ show (DomainUser.userId loggedUser) ++ "deleted"
 
-deleteAuthUser :: UserId -> DomainUser.User -> CtrlV
-deleteAuthUser i loggedUser =  do
+deleteAuthUser ::DomainUser.User -> CtrlV
+deleteAuthUser loggedUser =  do
+    let userId = DomainUser.userId loggedUser
     mUser <- query (AuthUser.GetUserByUsername autUserName)
     update $ AuthUser.DeleteUser (AuthUser._userId $ fromJust mUser)
-    okResponse $ "User with id:" ++ show i ++ "deleted"
+    okResponse $ "User with id:" ++ show userId ++ "deleted"
         where autUserName = AuthUser.Username {AuthUser._unUsername = pack $ name loggedUser}
 
 

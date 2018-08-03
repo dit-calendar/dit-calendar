@@ -6,9 +6,11 @@ h3. User
 
 h4. functionality
 * create User
+** create also Auth.User
 * delete User
 ** delete also all CalenderEntry's with User.Id from
 ** remove also User.Id from Task
+** remove also Auth.User
 * update
 * add CalendarEntry
 ** create new CalendarEntry with CalendarEntry.Id

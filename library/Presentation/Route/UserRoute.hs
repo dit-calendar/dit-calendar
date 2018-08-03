@@ -19,8 +19,6 @@ routeUser userId = do
   case m of
     GET ->
       UserController.userPage userId
-    DELETE ->
-      callIfAuthorized (UserController.deleteUser userId)
     POST -> do
       description <- look "description"
       newDate <- look "date"
@@ -33,5 +31,6 @@ routeDetailUser :: CtrlV
 routeDetailUser = do
   m <- getHttpMethod
   case m of
-  -- curl -X POST -d "name=FooBar" http://localhost:8000/user
+    DELETE -> callIfAuthorized UserController.deleteUser
+    -- curl -X POST -d "name=FooBar" http://localhost:8000/user
     other -> notImplemented other

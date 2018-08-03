@@ -38,7 +38,7 @@ urlSitemapParser =
     <> lit "user" . userMapping
     <> lit "task" . taskMapping
     where
-      userMapping = rUserdetail
+      userMapping = rUserdetail </> lit "me"
             <> rUser </> int
       taskMapping = rTask </> int
             <> rTaskWithUser </> int </> lit "user" </> int
