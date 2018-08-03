@@ -1,17 +1,16 @@
 {-# LANGUAGE FlexibleContexts #-}
-module Auth.Authorization ( getLoggedUser, callIfAuthorized ) where
+module Auth.Authorization ( callIfAuthorized ) where
 
 import           Control.Monad.IO.Class             (liftIO)
-import           Data.Maybe                         (fromJust)
 import           Data.Text                          (unpack)
 import           Data.Time                          (getCurrentTime)
 
 import           Happstack.Authenticate.Core        (Token (_tokenUser),
                                                      decodeAndVerifyToken)
-import           Happstack.Foundation               (HasAcidState (getAcidState),
-                                                     query)
-import           Happstack.Server                   (getHeaderM, toResponse,
-                                                     unauthorized, internalServerError)
+import           Happstack.Foundation               (HasAcidState (getAcidState))
+import           Happstack.Server                   (getHeaderM,
+                                                     internalServerError,
+                                                     toResponse, unauthorized)
 
 import           Data.Repository.Acid.CalendarEntry (MonadDBCalendar)
 import           Data.Repository.Acid.Task          (MonadDBTask)
@@ -26,24 +25,30 @@ import qualified Happstack.Authenticate.Core        as AuthUser
 
 
 callIfAuthorized ::(MonadDBCalendar CtrlV', MonadDBTask CtrlV') => (DomainUser.User -> CtrlV) -> CtrlV
-callIfAuthorized route =
-    do  mAuth <- getHeaderM "Authorization"
-        case mAuth of
-            Nothing -> unauthorized $ toResponse "You are not authorized."
-            (Just auth') ->
-                do  let auth = B.drop 7 auth'
-                    now <- liftIO getCurrentTime
-                    authenticateState <- getAcidState
-                    mToken <- decodeAndVerifyToken authenticateState now (T.decodeUtf8 auth)
-                    case mToken of
-                        Nothing -> unauthorized $ toResponse "You are not authorized!"
-                        (Just (token,_)) -> getLoggedUser (_tokenUser token) route
-                        --(Just (token,_)) -> route url (getLoggedUser (_tokenUser token))
+callIfAuthorized route = do
+    mAuth <- getHeaderM "Authorization"
+    case mAuth of
+        Nothing -> unauthorized $ toResponse "You are not authorized."
+        (Just auth') ->
+            do  mToken <- verifyToken auth'
+                case mToken of
+                    Nothing -> unauthorized $ toResponse "You are not authorized!"
+                    Just (token,_) -> do
+                        let authUser = _tokenUser token
+                        loggedUser <- getDomainUser authUser
+                        case loggedUser of
+                            Nothing -> responseWithError authUser
+                            Just u -> route u
 
-getLoggedUser :: (MonadDBCalendar CtrlV', MonadDBTask CtrlV') => AuthUser.User -> (DomainUser.User -> CtrlV) -> CtrlV
-getLoggedUser (AuthUser.User _ name _) route = do
-                            mUser <- UserRepo.findUserByName $ unpack (AuthUser._unUsername name)
-                            case mUser of
-                                Nothing -> internalServerError $ toResponse ("something went wrong. Domainuser: "
-                                            ++ show (unpack $ AuthUser._unUsername name) ++ " not found")
-                                Just u -> route u
+verifyToken auth' = do
+    let auth = B.drop 7 auth'
+    now <- liftIO getCurrentTime
+    authenticateState <- getAcidState
+    decodeAndVerifyToken authenticateState now (T.decodeUtf8 auth)
+
+getDomainUser :: (MonadDBCalendar CtrlV', MonadDBTask CtrlV') => AuthUser.User -> CtrlV' (Maybe DomainUser.User)
+getDomainUser (AuthUser.User _ name _) = UserRepo.findUserByName $ unpack (AuthUser._unUsername name)
+
+responseWithError :: AuthUser.User -> CtrlV
+responseWithError (AuthUser.User _ name _) = internalServerError $ toResponse ("something went wrong. Domainuser: "
+                                                                   ++ unpack (AuthUser._unUsername name) ++ " not found")
