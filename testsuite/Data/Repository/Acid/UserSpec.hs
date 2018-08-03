@@ -17,9 +17,13 @@ spec :: Spec
 spec =
     around withDatabaseConnection $
         context "User" $
-          describe "find" $
+          describe "find" $ do
               it "by Username" $
                 \c -> do
                   userState   <- query c $ UserAcid.FindByName "Foo"
                   userState `shouldSatisfy` isJust
                   fromJust userState `shouldBe` User{  User.name="Foo", userId=0, calendarEntries=[], belongingTasks=[] }
+              it "by wrong Username" $
+                  \c -> do
+                    userState   <- query c $ UserAcid.FindByName "Foo1"
+                    userState `shouldSatisfy` isNothing
