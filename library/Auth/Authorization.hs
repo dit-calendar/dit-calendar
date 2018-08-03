@@ -11,7 +11,7 @@ import           Happstack.Authenticate.Core        (Token (_tokenUser),
 import           Happstack.Foundation               (HasAcidState (getAcidState),
                                                      query)
 import           Happstack.Server                   (getHeaderM, toResponse,
-                                                     unauthorized)
+                                                     unauthorized, internalServerError)
 
 import           Data.Repository.Acid.CalendarEntry (MonadDBCalendar)
 import           Data.Repository.Acid.Task          (MonadDBTask)
@@ -43,4 +43,7 @@ callIfAuthorized route =
 getLoggedUser :: (MonadDBCalendar CtrlV', MonadDBTask CtrlV') => AuthUser.User -> (DomainUser.User -> CtrlV) -> CtrlV
 getLoggedUser (AuthUser.User _ name _) route = do
                             mUser <- UserRepo.findUserByName $ unpack (AuthUser._unUsername name)
-                            route $ fromJust mUser
+                            case mUser of
+                                Nothing -> internalServerError $ toResponse ("something went wrong. Domainuser: "
+                                            ++ show (unpack $ AuthUser._unUsername name) ++ " not found")
+                                Just u -> route u
