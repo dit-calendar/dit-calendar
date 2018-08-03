@@ -72,11 +72,11 @@ createDomainUser name = do
     mUser <- UserRepo.createUser name
     okResponse $ "User created: " ++ show mUser
 
-updateUser :: UserId -> String -> DomainUser.User -> CtrlV
-updateUser id name loggedUser = onUserExist id updateUsr
+updateUser :: String -> DomainUser.User -> CtrlV
+updateUser name loggedUser = updateUsr loggedUser
     where updateUsr user = do
               UserRepo.updateName user name
-              okResponse $ "User with id:" ++ show id ++ "updated"
+              okResponse $ "User with id:" ++ show (DomainUser.userId loggedUser) ++ "updated"
 
 
 deleteUser :: DomainUser.User -> CtrlV

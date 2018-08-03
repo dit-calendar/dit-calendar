@@ -25,7 +25,7 @@ routeUser userId = do
       callIfAuthorized (CalendarController.createCalendarEntry userId newDate description)
     PUT -> do
       name <- look "name"
-      callIfAuthorized (UserController.updateUser userId name)
+      callIfAuthorized (UserController.updateUser name)
 
 routeDetailUser :: CtrlV
 routeDetailUser = do
