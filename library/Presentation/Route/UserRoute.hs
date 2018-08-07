@@ -23,14 +23,14 @@ routeUser userId = do
       description <- look "description"
       newDate <- look "date"
       callIfAuthorized (CalendarController.createCalendarEntry userId newDate description)
-    PUT -> do
-      name <- look "name"
-      callIfAuthorized (UserController.updateUser name)
 
 routeDetailUser :: CtrlV
 routeDetailUser = do
   m <- getHttpMethod
   case m of
+    PUT -> do
+      name <- look "name"
+      callIfAuthorized (UserController.updateUser name)
     DELETE -> callIfAuthorized UserController.deleteUser
     -- curl -X POST -d "name=FooBar" http://localhost:8000/user
     other -> notImplemented other
