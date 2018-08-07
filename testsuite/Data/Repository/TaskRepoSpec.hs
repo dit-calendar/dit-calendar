@@ -15,14 +15,13 @@ import Control.Monad.Identity        ( Identity )
 import Control.Monad.Writer.Class    ( tell )
 import Control.Monad.Writer          ( execWriter )
 
-import Data.Repository.Acid.Task            ( MonadDBTask )
-import Data.Repository.Acid.Task            ( NewTask(..), DeleteTask(..), UpdateTask(..), TaskById(..) )
+import Data.Repository.Acid.Task            ( TaskDAO, NewTask(..), DeleteTask(..), UpdateTask(..), TaskById(..) )
 import Data.Domain.Task                     as Task
 
 import qualified Data.Repository.TaskRepo          as TaskRepo
 
 
-mkFixture "Fixture" [ts| MonadDBTask |]
+mkFixture "Fixture" [ts| TaskDAO |]
 
 taskFromDb = Task{ description="task1", taskId=1, belongingUsers=[]}
 

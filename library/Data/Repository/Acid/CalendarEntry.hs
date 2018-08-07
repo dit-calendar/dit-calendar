@@ -3,7 +3,7 @@
 {-# LANGUAGE TypeFamilies      #-}
 
 module Data.Repository.Acid.CalendarEntry
-    ( MonadDBCalendar(..), initialEntryListState, EntryList(..), NewEntry(..), EntryById(..), AllEntrys(..),
+    ( CalendarDAO(..), initialEntryListState, EntryList(..), NewEntry(..), EntryById(..), AllEntrys(..),
     GetEntryList(..), UpdateEntry(..), DeleteEntry(..) ) where
 
 import           Data.Acid                          (Query, Update, makeAcidic)
@@ -44,7 +44,7 @@ deleteEntry = InterfaceAcid.deleteEntry
 
 $(makeAcidic ''EntryList ['newEntry, 'entryById, 'allEntrys, 'getEntryList, 'updateEntry, 'deleteEntry])
 
-class Monad m => MonadDBCalendar m where
+class Monad m => CalendarDAO m where
     create :: NewEntry -> m CalendarEntry
     update :: UpdateEntry -> m ()
     delete :: DeleteEntry -> m ()

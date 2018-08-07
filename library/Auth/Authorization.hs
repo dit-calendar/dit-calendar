@@ -12,8 +12,8 @@ import           Happstack.Server                   (getHeaderM,
                                                      internalServerError,
                                                      toResponse, unauthorized)
 
-import           Data.Repository.Acid.CalendarEntry (MonadDBCalendar)
-import           Data.Repository.Acid.Task          (MonadDBTask)
+import           Data.Repository.Acid.CalendarEntry (CalendarDAO)
+import           Data.Repository.Acid.Task          (TaskDAO)
 import           Presentation.AcidHelper            (CtrlV, CtrlV')
 import           Presentation.Route.PageEnum        (Sitemap (..))
 
@@ -24,7 +24,7 @@ import qualified Data.Text.Encoding                 as T
 import qualified Happstack.Authenticate.Core        as AuthUser
 
 
-callIfAuthorized ::(MonadDBCalendar CtrlV', MonadDBTask CtrlV') => (DomainUser.User -> CtrlV) -> CtrlV
+callIfAuthorized ::(CalendarDAO CtrlV', TaskDAO CtrlV') => (DomainUser.User -> CtrlV) -> CtrlV
 callIfAuthorized route = do
     mAuth <- getHeaderM "Authorization"
     case mAuth of
@@ -46,7 +46,7 @@ verifyToken auth' = do
     authenticateState <- getAcidState
     decodeAndVerifyToken authenticateState now (T.decodeUtf8 auth)
 
-getDomainUser :: (MonadDBCalendar CtrlV', MonadDBTask CtrlV') => AuthUser.User -> CtrlV' (Maybe DomainUser.User)
+getDomainUser :: (CalendarDAO CtrlV', TaskDAO CtrlV') => AuthUser.User -> CtrlV' (Maybe DomainUser.User)
 getDomainUser (AuthUser.User _ name _) = UserRepo.findUserByName $ unpack (AuthUser._unUsername name)
 
 responseWithError :: AuthUser.User -> CtrlV

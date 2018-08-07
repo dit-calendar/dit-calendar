@@ -15,14 +15,13 @@ import Control.Monad.IO.Class
 import Control.Monad.Identity        ( Identity )
 import Control.Monad.Writer.Class    ( tell )
 
-import Data.Repository.Acid.User          ( MonadDBUser )
-import Data.Repository.Acid.User          ( NewUser(..), DeleteUser(..), UpdateUser(..), UserById(..), FindByName(..) )
+import Data.Repository.Acid.User          ( UserDAO, NewUser(..), DeleteUser(..), UpdateUser(..), UserById(..), FindByName(..) )
 import Data.Domain.User                     as User
 
 import qualified Data.Repository.UserRepo          as UserRepo
 
 
-mkFixture "Fixture" [ts| MonadDBUser |]
+mkFixture "Fixture" [ts| UserDAO |]
 
 userFromDb = User{ name="Foo", User.userId=10, calendarEntries=[], belongingTasks=[1,2,3] }
 

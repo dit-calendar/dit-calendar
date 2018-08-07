@@ -20,21 +20,21 @@ import           Data.Domain.Types                  (EntryId, TaskId, UserId)
 import           Data.Domain.User                   (User (..))
 import           Presentation.AcidHelper            (CtrlV')
 
-import           Data.Repository.Acid.CalendarEntry (MonadDBCalendar)
-import           Data.Repository.Acid.Task          (MonadDBTask)
-import           Data.Repository.Acid.User          (MonadDBUser (..))
+import           Data.Repository.Acid.CalendarEntry (CalendarDAO)
+import           Data.Repository.Acid.Task          (TaskDAO)
+import           Data.Repository.Acid.User          (UserDAO (..))
 
 import qualified Data.Repository.Acid.User          as UserAcid
 
 
-instance MonadDBUser CtrlV' where
+instance UserDAO CtrlV' where
     create = Foundation.update
     update = Foundation.update
     delete = Foundation.update
     query  = Foundation.query
     queryByName = Foundation.query
 
-createUserImpl :: MonadDBUser m => String -> m User
+createUserImpl :: UserDAO m => String -> m User
 createUserImpl name = let user = User { name = name
                     , userId = 0 --TODO why it can't be undefined if creating user with post interface?
                     , calendarEntries = []
@@ -42,38 +42,38 @@ createUserImpl name = let user = User { name = name
                     } in
         create $ UserAcid.NewUser user
 
-deleteUserImpl :: MonadDBUser m => User -> m ()
+deleteUserImpl :: UserDAO m => User -> m ()
 deleteUserImpl user = delete $ UserAcid.DeleteUser (Data.Domain.User.userId user)
 
-updateUser :: MonadDBUser m => User -> m ()
+updateUser :: UserDAO m => User -> m ()
 updateUser user = update $ UserAcid.UpdateUser user
 
-updateNameImpl :: MonadDBUser m => User -> String -> m ()
+updateNameImpl :: UserDAO m => User -> String -> m ()
 updateNameImpl user newName = updateUser user {name = newName}
 
-addCalendarEntryToUserImpl :: MonadDBUser m => User -> EntryId -> m ()
+addCalendarEntryToUserImpl :: UserDAO m => User -> EntryId -> m ()
 addCalendarEntryToUserImpl user entryId =
     updateUser user {calendarEntries = calendarEntries user ++ [entryId]}
 
-deleteCalendarEntryFromUserImpl :: MonadDBUser m =>
+deleteCalendarEntryFromUserImpl :: UserDAO m =>
                             User -> EntryId -> m ()
 deleteCalendarEntryFromUserImpl user entryId =
     updateUser user {calendarEntries = List.delete entryId (calendarEntries user)}
 
-addTaskToUserImpl :: MonadDBUser m => User -> TaskId -> m ()
+addTaskToUserImpl :: UserDAO m => User -> TaskId -> m ()
 addTaskToUserImpl user taskId =
     updateUser user {belongingTasks = belongingTasks user ++ [taskId]}
 
-deleteTaskFromUserImpl :: MonadDBUser m => User -> TaskId -> m ()
+deleteTaskFromUserImpl :: UserDAO m => User -> TaskId -> m ()
 deleteTaskFromUserImpl user taskId =
     updateUser user {belongingTasks = List.delete taskId (belongingTasks user)}
 
-getUserImpl :: (MonadDBUser m, MonadIO m) => UserId -> m User
+getUserImpl :: (UserDAO m, MonadIO m) => UserId -> m User
 getUserImpl userId = do
     mUser <- query $ UserAcid.UserById userId
     return $ fromJust mUser
 
-findUserByNameIml :: (MonadDBUser m, MonadIO m) => String -> m (Maybe User)
+findUserByNameIml :: (UserDAO m, MonadIO m) => String -> m (Maybe User)
 findUserByNameIml name = queryByName $ UserAcid.FindByName name
 
 class MonadDBUserRepo m where
@@ -87,7 +87,7 @@ class MonadDBUserRepo m where
     getUser :: UserId -> m User
     findUserByName :: String -> m (Maybe User)
 
-instance (MonadDBUser CtrlV', MonadDBCalendar CtrlV', MonadDBTask CtrlV')
+instance (UserDAO CtrlV', CalendarDAO CtrlV', TaskDAO CtrlV')
         => MonadDBUserRepo CtrlV' where
     createUser = createUserImpl
     deleteUser = deleteUserImpl

@@ -4,7 +4,7 @@
 {-# LANGUAGE TypeFamilies      #-}
 
 module Data.Repository.Acid.User
-    ( MonadDBUser(..), initialUserListState, UserList(..), NewUser(..), UserById(..), AllUsers(..),
+    ( UserDAO(..), initialUserListState, UserList(..), NewUser(..), UserById(..), AllUsers(..),
     GetUserList(..), UpdateUser(..), DeleteUser(..), FindByName(..) ) where
 
 import           Data.Acid                          (Query, Update, makeAcidic)
@@ -52,7 +52,7 @@ deleteUser = InterfaceAcid.deleteEntry
 
 $(makeAcidic ''UserList ['newUser, 'userById, 'findByName, 'allUsers, 'getUserList, 'updateUser, 'deleteUser])
 
-class MonadDBUser m where
+class UserDAO m where
     create :: NewUser -> m User
     update :: UpdateUser -> m ()
     delete :: DeleteUser -> m ()

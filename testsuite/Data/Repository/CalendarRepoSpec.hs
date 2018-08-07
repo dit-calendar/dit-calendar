@@ -13,8 +13,7 @@ import Control.Monad.TestFixture.TH
 import Control.Monad.Identity        ( Identity )
 import Control.Monad.Writer.Class    ( tell )
 
-import Data.Repository.Acid.CalendarEntry           ( MonadDBCalendar )
-import Data.Repository.Acid.CalendarEntry           ( NewEntry(..), DeleteEntry(..), UpdateEntry(..) )
+import Data.Repository.Acid.CalendarEntry           ( CalendarDAO, NewEntry(..), DeleteEntry(..), UpdateEntry(..) )
 import Data.Domain.CalendarEntry            as CalendarEntry
 import Data.Domain.User                     as User
 import Data.Time.Clock            ( UTCTime )
@@ -22,7 +21,7 @@ import Data.Time.Clock            ( UTCTime )
 import qualified Data.Repository.CalendarRepo          as CalendarRepo
 
 
-mkFixture "Fixture" [ts| MonadDBCalendar |]
+mkFixture "Fixture" [ts| CalendarDAO |]
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture { _create = \(NewEntry caledarEntry) -> return caledarEntry

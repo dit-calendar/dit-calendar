@@ -3,7 +3,7 @@
 {-# LANGUAGE TypeFamilies      #-}
 
 module Data.Repository.Acid.Task
-    ( MonadDBTask(..), initialTaskListState, TaskList, NewTask(..), TaskById(..), AllTasks(..),
+    ( TaskDAO(..), initialTaskListState, TaskList, NewTask(..), TaskById(..), AllTasks(..),
     GetTaskList(..), UpdateTask(..), DeleteTask(..) ) where
 
 import           Data.Acid                          (Query, Update, makeAcidic)
@@ -45,7 +45,7 @@ deleteTask = InterfaceAcid.deleteEntry
 $(makeAcidic ''TaskList ['newTask, 'taskById, 'allTasks, 'getTaskList, 'updateTask, 'deleteTask])
 
 
-class Monad m => MonadDBTask m where
+class Monad m => TaskDAO m where
     create :: NewTask -> m Task
     update :: UpdateTask -> m ()
     delete :: DeleteTask -> m ()
