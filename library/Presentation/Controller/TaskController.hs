@@ -21,7 +21,7 @@ taskPage i = onTaskExist i (\t -> ok $ toResponse $ "peeked at the task and saw:
 createTask :: EntryId -> String -> CtrlV
 createTask calendarId description =
     onEntryExist calendarId (\e -> do
-        t <- TaskService.createTask e description
+        t <- TaskService.createTaskInCalendar e description
         ok $ toResponse $ "Task created: " ++ show (Task.taskId t) ++ "to CalendarEntry: " ++ show calendarId)
 
 updateTask :: TaskId -> String -> User -> CtrlV
@@ -49,5 +49,5 @@ deleteTask entryId taskId loggedUser =
     onEntryExist entryId (\e ->
         onTaskExist taskId (\t -> do
             CalendarRepo.deleteTaskFromCalendarEntry e taskId
-            TaskService.deleteTask t
+            TaskService.deleteTaskAndCascadeUsersImpl t
             ok $ toResponse $ "Task with id:" ++ show taskId ++ "deleted"))

@@ -52,7 +52,7 @@ instance MonadIO Identity where
 spec = describe "TaskServiceSpec" $ do
     it "deleteTask" $ do
         let task = Task{ Task.description="task1", taskId=1, belongingUsers=[7]}
-        let (_, log) = evalTestFixture (TaskService.deleteTask task) fixture
+        let (_, log) = evalTestFixture (TaskService.deleteTaskAndCascadeUsersImpl task) fixture
         log!!0 `shouldBe` "7"
         log!!1 `shouldBe` (show userFromDb)
         log!!2 `shouldBe` "7"
@@ -60,14 +60,14 @@ spec = describe "TaskServiceSpec" $ do
     it "createTask" $ do
         let newDate = (read "2011-11-19 18:28:52.607875 UTC")::UTCTime
         let calc = CalendarEntry{ CalendarEntry.description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[], date=newDate}
-        let (result, log) = evalTestFixture (TaskService.createTask calc "task1") fixture
+        let (result, log) = evalTestFixture (TaskService.createTaskInCalendarImpl calc "task1") fixture
         result `shouldBe` taskFromDb
         log!!0 `shouldBe` (show calc)
         log!!1 `shouldBe` (show (Task.taskId taskFromDb))
     it "addUserToTask" $ do
         let task = Task{ Task.description="task1", taskId=1, belongingUsers=[2]}
         let expectedTask = Task{ Task.description="task1", taskId=1, belongingUsers=[2,10]}
-        let (_, log) = evalTestFixture (TaskService.addUserToTask task 10) fixture
+        let (_, log) = evalTestFixture (TaskService.addUserToTaskImpl task 10) fixture
         log!!0 `shouldBe` (show (User.userId userFromDb))
         log!!1 `shouldBe` (show userFromDb)
         log!!2 `shouldBe` (show (Task.taskId task))
@@ -75,7 +75,7 @@ spec = describe "TaskServiceSpec" $ do
     it "removeUserFromTask" $ do
         let task = Task{ Task.description="task1", taskId=1, belongingUsers=[2,10]}
         let expectedTask = Task{ Task.description="task1", taskId=1, belongingUsers=[2]}
-        let (_, log) = evalTestFixture (TaskService.removeUserFromTask task 10) fixture
+        let (_, log) = evalTestFixture (TaskService.removeUserFromTaskImpl task 10) fixture
         log!!0 `shouldBe` (show (User.userId userFromDb))
         log!!1 `shouldBe` (show userFromDb)
         log!!2 `shouldBe` (show (Task.taskId task))

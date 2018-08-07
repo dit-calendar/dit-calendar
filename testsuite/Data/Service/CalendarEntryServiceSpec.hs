@@ -52,7 +52,7 @@ instance MonadIO Identity where
 spec = describe "CalendarEntryServiceSpec" $ do
     it "createEntry" $ do
         let user = User{ name="Foo", User.userId=10, calendarEntries=[1,2], belongingTasks=[] }
-        let (result, log) = evalTestFixture (CalendarEntryService.createEntry "DATE" "termin2" user) fixture
+        let (result, log) = evalTestFixture (CalendarEntryService.createEntryImpl "DATE" "termin2" user) fixture
         result `shouldBe` entryFromDb
         log!!0 `shouldBe` "DATE"
         log!!1 `shouldBe` "termin2"
@@ -61,7 +61,7 @@ spec = describe "CalendarEntryServiceSpec" $ do
         log!!4 `shouldBe` (show (CalendarEntry.entryId entryFromDb))
     it "removeCalendar" $ do
         let calc = CalendarEntry{ CalendarEntry.description="termin2", entryId=4, CalendarEntry.userId=2, tasks=[1]}
-        let (_, log) = evalTestFixture (CalendarEntryService.removeCalendar calc) fixture
+        let (_, log) = evalTestFixture (CalendarEntryService.removeCalendarImpl calc) fixture
         log!!0 `shouldBe` (show (CalendarEntry.userId calc))
         log!!1 `shouldBe` (show userFromDb)
         log!!2 `shouldBe` (show (CalendarEntry.entryId calc))

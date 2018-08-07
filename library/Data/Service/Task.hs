@@ -1,5 +1,11 @@
+{-# LANGUAGE FlexibleContexts     #-}
+{-# LANGUAGE FlexibleInstances    #-}
+{-# LANGUAGE MonoLocalBinds       #-}
+{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
+
 module Data.Service.Task
-    ( deleteTask, createTask, addUserToTask, removeUserFromTask ) where
+    ( deleteTaskAndCascadeUsersImpl, createTaskInCalendarImpl, addUserToTaskImpl, removeUserFromTaskImpl, TaskService(..) ) where
 
 import           Control.Monad.IO.Class
 import           Data.Domain.CalendarEntry    as CalendarEntry
@@ -7,6 +13,8 @@ import           Data.Domain.Task             as Task
 import           Data.List                    (delete)
 
 import           Data.Domain.Types            (UserId)
+
+import           Presentation.AcidHelper            (CtrlV')
 
 import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)
 import qualified Data.Repository.CalendarRepo as MonadDBCalendarRepo
@@ -16,15 +24,15 @@ import           Data.Repository.UserRepo     (MonadDBUserRepo)
 import qualified Data.Repository.UserRepo     as MonadDBUserRepo
 
 
-deleteTask :: (MonadDBTaskRepo m, MonadDBUserRepo m, MonadIO m) =>
+deleteTaskAndCascadeUsersImpl :: (MonadDBTaskRepo m, MonadDBUserRepo m, MonadIO m) =>
             Task -> m ()
-deleteTask task = do
+deleteTaskAndCascadeUsersImpl task = do
     deleteTaskFromAllUsers task
     MonadDBTaskRepo.deleteTask task
 
-createTask :: (MonadDBTaskRepo m, MonadDBUserRepo m, MonadDBCalendarRepo m) =>
+createTaskInCalendarImpl :: (MonadDBTaskRepo m, MonadDBUserRepo m, MonadDBCalendarRepo m) =>
             CalendarEntry -> String -> m Task
-createTask calendarEntry description = do
+createTaskInCalendarImpl calendarEntry description = do
     mTask <- MonadDBTaskRepo.createTask description
     MonadDBCalendarRepo.addTaskToCalendarEntry calendarEntry (Task.taskId mTask)
     return mTask
@@ -38,16 +46,29 @@ deleteTaskFromAllUsers task =
         MonadDBUserRepo.deleteTaskFromUser user x ))
     (return ()) $ Task.belongingUsers task
 
-addUserToTask :: (MonadDBUserRepo m, MonadDBTaskRepo m, MonadIO m) =>
+addUserToTaskImpl :: (MonadDBUserRepo m, MonadDBTaskRepo m, MonadIO m) =>
                 Task -> UserId -> m ()
-addUserToTask task userId = do
+addUserToTaskImpl task userId = do
     user <- MonadDBUserRepo.getUser userId
     MonadDBUserRepo.addTaskToUser user (taskId task)
     MonadDBTaskRepo.updateTask task {belongingUsers = belongingUsers task ++ [userId]}
 
-removeUserFromTask :: (MonadDBTaskRepo m, MonadDBUserRepo m) =>
+removeUserFromTaskImpl :: (MonadDBTaskRepo m, MonadDBUserRepo m) =>
                     Task -> UserId -> m ()
-removeUserFromTask task userId = do
+removeUserFromTaskImpl task userId = do
     user <- MonadDBUserRepo.getUser userId
     MonadDBUserRepo.deleteTaskFromUser user (taskId task)
     MonadDBTaskRepo.updateTask task {belongingUsers = delete userId (belongingUsers task)}
+
+class TaskService m where
+    deleteTaskAndCascadeUsers :: Task -> m ()
+    createTaskInCalendar :: CalendarEntry -> String -> m Task
+    addUserToTask :: Task -> UserId -> m ()
+    removeUserFromTask :: Task -> UserId -> m ()
+
+instance (MonadDBTaskRepo CtrlV', MonadDBUserRepo CtrlV', MonadDBCalendarRepo CtrlV')
+            => TaskService CtrlV' where
+    deleteTaskAndCascadeUsers = deleteTaskAndCascadeUsersImpl
+    createTaskInCalendar = createTaskInCalendarImpl
+    addUserToTask = addUserToTaskImpl
+    removeUserFromTask = removeUserFromTaskImpl

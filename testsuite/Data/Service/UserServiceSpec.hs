@@ -22,13 +22,14 @@ import Data.Domain.Types          ( UserId, EntryId, TaskId )
 import Data.Repository.UserRepo          ( MonadDBUserRepo )
 import Data.Repository.TaskRepo              ( MonadDBTaskRepo )
 import Data.Repository.CalendarRepo      ( MonadDBCalendarRepo )
+import Data.Service.Task                 ( TaskService )
 
 import qualified Data.Service.User          as UserService
 import qualified Data.Service.Task          as TaskService
 import qualified Data.Service.CalendarEntry as CalendarEntryService
 
 
-mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBTaskRepo, MonadDBCalendarRepo |]
+mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBTaskRepo, MonadDBCalendarRepo, TaskService |]
 
 userFromDb = User{ name="Foo", User.userId=10, calendarEntries=[1,2], belongingTasks=[4] }
 taskFromDb = Task{ Task.description="task1", taskId=5, belongingUsers=[10]}
@@ -40,6 +41,7 @@ fixture = Fixture { _deleteCalendarEntry = \(a) -> tell [show a]
                   , _deleteTaskFromUser = \x a -> tell [show x] >> tell [show a]
                   , _getUser = \(a) -> tell [show a] >> return userFromDb
                   , _updateTask = \(a) -> tell [show a]
+                  , _removeUserFromTask =  \x a -> tell [show x] >> tell [show a]
                   }
 
 instance MonadIO Identity where
@@ -49,12 +51,10 @@ instance MonadIO Identity where
 spec = describe "UserService" $ do
     it "deleteUser" $ do
         let expectedTask = Task{ Task.description="task1", taskId=5, belongingUsers=[]}
-        let (_, log) = evalTestFixture (UserService.deleteUser userFromDb) fixture
+        let (_, log) = evalTestFixture (UserService.deleteUserImpl userFromDb) fixture
         log!!0 `shouldBe` "1"
         log!!1 `shouldBe` "2"
         log!!2 `shouldBe` "4"
-        log!!3 `shouldBe` (show (User.userId userFromDb))
-        log!!4 `shouldBe` (show userFromDb)
-        log!!5 `shouldBe` (show (Task.taskId taskFromDb))
-        log!!6 `shouldBe` (show expectedTask)
-        log!!7 `shouldBe` (show userFromDb)
+        log!!3 `shouldBe` show taskFromDb
+        log!!4 `shouldBe` (show (User.userId userFromDb))
+        log!!5 `shouldBe` (show userFromDb)
