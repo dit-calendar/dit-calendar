@@ -105,9 +105,9 @@ test-suite hspec
                        Data.Repository.CalendarRepoSpec,
                        Data.Repository.TaskRepoSpec,
                        Data.Repository.UserRepoSpec,
-                       Data.Service.CalendarEntryServiceSpec,
-                       Data.Service.TaskServiceSpec,
-                       Data.Service.UserServiceSpec
+                       Data.Service.CalendarEntrySpec,
+                       Data.Service.TaskSpec,
+                       Data.Service.UserSpec
 
 test-suite hlint
   build-depends:
