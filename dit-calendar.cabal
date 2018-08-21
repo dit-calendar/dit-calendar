@@ -84,6 +84,7 @@ executable dit-calendar
 test-suite hspec
   build-depends:
                        base >=4.9 && <4.11,
+                       HUnit,
                        hspec >= 2.2,
                        test-fixture == 0.5.1.*,
                        directory == 1.3.*,

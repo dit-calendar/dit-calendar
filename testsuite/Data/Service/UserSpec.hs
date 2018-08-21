@@ -10,6 +10,8 @@ module Data.Service.UserSpec (spec) where
 import           Control.Monad.TestFixture
 import           Control.Monad.TestFixture.TH
 import           Test.Hspec
+import           Test.HUnit.Base              (assertEqual)
+
 
 import           Control.Monad.Identity       (Identity)
 import           Control.Monad.IO.Class
@@ -53,9 +55,9 @@ spec = describe "UserService" $
     it "deleteUser" $ do
         let expectedTask = Task{ Task.description="task1", taskId=5, belongingUsers=[]}
         let (_, log) = evalTestFixture (UserService.deleteUserImpl userFromDb) fixture
-        log!!0 `shouldBe` "1"
-        log!!1 `shouldBe` "2"
-        log!!2 `shouldBe` "4"
-        log!!3 `shouldBe` show taskFromDb
-        log!!4 `shouldBe` show (User.userId userFromDb)
-        log!!5 `shouldBe` show userFromDb
+        assertEqual "CalendarEntry 1 nicht durchgegeben" (log!!0) "1"
+        assertEqual "CalendarEntry 2 nicht durchgegeben" (log!!1) "2"
+        assertEqual "Taskeintrag aus calendar nicht gelöscht" (log!!2) "4"
+        assertEqual "Task nicht gelöscht" (log!!3) (show taskFromDb)
+        assertEqual "Falsche userId durchgegeben" (log!!4) (show $User.userId userFromDb)
+        assertEqual "Falscher user gelöscht" (log!!5) (show userFromDb)
