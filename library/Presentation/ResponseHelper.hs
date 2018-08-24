@@ -22,7 +22,9 @@ onEntryExist :: EntryId -> (CalendarEntry -> CtrlV) -> CtrlV
 onEntryExist i daoFunction = query (CalendarEntryAcid.EntryById i) >>= (onNothing $ "Could not find a entry with id " ++ show i) daoFunction
 
 onTaskExist :: TaskId -> (Task -> CtrlV) -> CtrlV
-onTaskExist i daoFunction = query (TaskAcid.TaskById i) >>= (onNothing $ "Could not find a task with id " ++ show i) daoFunction
+onTaskExist i daoFunction = do
+    mTask <- query (TaskAcid.TaskById i)
+    (onNothing $ "Could not find a task with id " ++ show i) daoFunction mTask
 
 onNothing :: String -> (a -> CtrlV) -> Maybe a -> CtrlV
 onNothing message = maybe (okResponse message)
