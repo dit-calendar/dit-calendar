@@ -23,7 +23,7 @@ import qualified Data.ByteString.Lazy.Char8           as L
 peekRequestBody :: (MonadIO m) => Request -> m (Maybe RqBody)
 peekRequestBody rq = liftIO $ tryReadMVar (rqBody rq)
 
-getBody :: RouteT a App L.ByteString
+getBody :: App L.ByteString
 getBody = do
     req  <- askRq
     body <- liftIO $ peekRequestBody req

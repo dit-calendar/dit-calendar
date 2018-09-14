@@ -9,16 +9,16 @@ import           Data.Text                            (pack, unpack)
 import           Happstack.Authenticate.Core          (AuthenticateURL (..))
 import           Happstack.Authenticate.Password.Core (NewAccountData (..))
 import           Happstack.Foundation                 (HasAcidState (getAcidState),
-                                                       query, update, lift)
+                                                       query, update)
 import           Happstack.Server                     (Method (GET), Response,
                                                        ServerPartT, method, ok,
                                                        rsBody, toResponse)
-import           Web.Routes                           (RouteT(..), mapRouteT,
-                                                       nestURL)
+import           Web.Routes                           (RouteT, mapRouteT,
+                                                       nestURL, unRouteT)
 
 import           Data.Domain.Types                    (UserId)
 import           Data.Domain.User                     as DomainUser (User (..))
-import           Presentation.AcidHelper              (App, CtrlV)
+import           Presentation.AcidHelper              (App)
 import           Presentation.HttpServerHelper        (getBody,
                                                        mapServerPartTIO2App,
                                                        readAuthUserFromBodyAsList)
@@ -47,7 +47,7 @@ usersPage =
             (x:xs) ->
                 ok $ toResponse $ temp ++ printUsersList (x:xs)
 
-createUser  :: AuthenticateURL -> (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response) -> CtrlV
+createUser  :: AuthenticateURL -> (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response) -> App Response
 createUser authenticateURL routeAuthenticate = do
     body <- getBody
     let createUserBody = readAuthUserFromBodyAsList body
@@ -57,18 +57,18 @@ createUser authenticateURL routeAuthenticate = do
                 let naUsername :: AuthUser.Username = AuthUser._username naUser
                 let username = AuthUser._unUsername naUsername
 
-                response <- mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
+                response <- leaveRouteT (mapRouteT mapServerPartTIO2App $ routeAuthenticate authenticateURL)
                 let responseBody = rsBody response
                 if isInfixOf "NotOk" $ show responseBody then
                     return response
                 else
-                    lift $ createDomainUser (unpack username)
+                    createDomainUser (unpack username)
 
         -- if request body is not valid use response of auth library
-        Nothing -> mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
+        Nothing -> leaveRouteT (mapRouteT mapServerPartTIO2App $ routeAuthenticate authenticateURL)
 
-down :: RouteT a (ServerPartT b) Response -> (ServerPartT b) Response
-down (RouteT b)= undefined
+leaveRouteT :: RouteT url m a-> m a
+leaveRouteT r = unRouteT r (\ _ _ -> undefined)
 
 
 createDomainUser :: String -> App Response

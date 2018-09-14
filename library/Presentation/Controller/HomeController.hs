@@ -22,8 +22,7 @@ homePage = do
     m <- rqMethod <$> askRq
     case m of
     -- curl http://localhost:8000/home
-      --GET  ->
-       -- UserController.usersPage
+      GET  -> lift UserController.usersPage
     -- curl -d '' http://localhost:8000/home
       POST  ->
         lift $ UserController.userPage 1

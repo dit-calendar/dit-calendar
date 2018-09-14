@@ -32,7 +32,7 @@ authOrRoute :: (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Respo
 authOrRoute routeAuthenticate url = case url of
     Authenticate authenticateURL ->
         if show authenticateURL ==  "AuthenticationMethods (Just (AuthenticationMethod {_unAuthenticationMethod = \"password\"},[\"account\"]))"
-        then UserController.createUser authenticateURL routeAuthenticate
+        then lift $ UserController.createUser authenticateURL routeAuthenticate
         else mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
     other -> route other
 
