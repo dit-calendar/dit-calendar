@@ -8,22 +8,19 @@ module Data.Repository.TaskRepo
     ( updateDescription, deleteTaskImpl, createTaskImpl, updateTaskImpl, getTaskImpl, MonadDBTaskRepo(..) ) where
 
 import           Control.Monad.IO.Class
-import           Data.Maybe                         (fromJust)
+import           Data.Maybe                (fromJust)
 
-import qualified Happstack.Foundation               as Foundation
+import qualified Happstack.Foundation      as Foundation
 
-import           Data.Domain.CalendarEntry          as CalendarEntry
-import           Data.Domain.Task                   as Task
-import           Data.Domain.Types                  (TaskId)
-import           Presentation.AcidHelper            (CtrlV')
+import           Data.Domain.CalendarEntry as CalendarEntry
+import           Data.Domain.Task          as Task
+import           Data.Domain.Types         (TaskId)
+import           Data.Repository.Acid.Task (TaskDAO (..))
+import           Presentation.AcidHelper   (App)
 
-import           Data.Repository.Acid.CalendarEntry (CalendarDAO)
-import           Data.Repository.Acid.Task          (TaskDAO (..))
-import           Data.Repository.Acid.User          (UserDAO)
+import qualified Data.Repository.Acid.Task as TaskAcid
 
-import qualified Data.Repository.Acid.Task          as TaskAcid
-
-instance TaskDAO CtrlV' where
+instance TaskDAO App where
     create = Foundation.update
     update = Foundation.update
     delete = Foundation.update
@@ -52,14 +49,13 @@ getTaskImpl taskId =
 
 
 
-class Monad m => MonadDBTaskRepo m where
+class (Monad m, TaskDAO App) => MonadDBTaskRepo m where
     updateTask        :: Task   -> m ()
     deleteTask        :: Task   -> m ()
     createTask        :: String -> m Task
     getTask           :: TaskId -> m Task
 
-instance (UserDAO CtrlV', TaskDAO CtrlV', CalendarDAO CtrlV')
-        => MonadDBTaskRepo CtrlV' where
+instance MonadDBTaskRepo App where
     updateTask        = updateTaskImpl
     deleteTask        = deleteTaskImpl
     createTask        = createTaskImpl

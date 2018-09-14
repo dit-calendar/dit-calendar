@@ -5,6 +5,7 @@ import           Happstack.Server                           (Method (DELETE, GET
 
 import           Auth.Authorization                         (callIfAuthorized)
 import           Data.Domain.Types                          (EntryId)
+import           Happstack.Foundation                       (lift)
 import           Presentation.AcidHelper                    (CtrlV)
 import           Presentation.HttpServerHelper              (getHttpMethod)
 
@@ -16,12 +17,11 @@ routeCalendarEntry entryId = do
   m <- getHttpMethod
   case m of
     DELETE ->
-      callIfAuthorized (CalendarController.deleteCalendarEntry entryId)
-    GET ->
-      CalendarController.entryPage entryId
+      lift $ callIfAuthorized (CalendarController.deleteCalendarEntry entryId)
+    GET -> lift $ CalendarController.entryPage entryId
     POST -> do
       description <- look "description"
-      TaskController.createTask entryId description
+      lift $ TaskController.createTask entryId description
     PUT -> do
       description <- look "description"
-      callIfAuthorized (CalendarController.updateCalendarEntry entryId description)
+      lift $ callIfAuthorized (CalendarController.updateCalendarEntry entryId description)

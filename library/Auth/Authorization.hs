@@ -8,13 +8,11 @@ import           Data.Time                          (getCurrentTime)
 import           Happstack.Authenticate.Core        (Token (_tokenUser),
                                                      decodeAndVerifyToken)
 import           Happstack.Foundation               (HasAcidState (getAcidState))
-import           Happstack.Server                   (getHeaderM,
+import           Happstack.Server                   (Response, getHeaderM,
                                                      internalServerError,
                                                      toResponse, unauthorized)
 
-import           Data.Repository.Acid.CalendarEntry (CalendarDAO)
-import           Data.Repository.Acid.Task          (TaskDAO)
-import           Presentation.AcidHelper            (CtrlV, CtrlV')
+import           Presentation.AcidHelper            (App)
 import           Presentation.Route.PageEnum        (Sitemap (..))
 
 import qualified Data.ByteString.Char8              as B
@@ -24,7 +22,7 @@ import qualified Data.Text.Encoding                 as T
 import qualified Happstack.Authenticate.Core        as AuthUser
 
 
-callIfAuthorized ::(CalendarDAO CtrlV', TaskDAO CtrlV') => (DomainUser.User -> CtrlV) -> CtrlV
+callIfAuthorized :: (DomainUser.User -> App Response) -> App Response
 callIfAuthorized route = do
     mAuth <- getHeaderM "Authorization"
     case mAuth of
@@ -38,7 +36,7 @@ callIfAuthorized route = do
                         loggedUser <- getDomainUser authUser
                         case loggedUser of
                             Nothing -> responseWithError authUser
-                            Just u -> route u
+                            Just u  -> route u
 
 verifyToken auth' = do
     let auth = B.drop 7 auth'
@@ -46,9 +44,9 @@ verifyToken auth' = do
     authenticateState <- getAcidState
     decodeAndVerifyToken authenticateState now (T.decodeUtf8 auth)
 
-getDomainUser :: (CalendarDAO CtrlV', TaskDAO CtrlV') => AuthUser.User -> CtrlV' (Maybe DomainUser.User)
+getDomainUser :: AuthUser.User -> App (Maybe DomainUser.User)
 getDomainUser (AuthUser.User _ name _) = UserRepo.findUserByName $ unpack (AuthUser._unUsername name)
 
-responseWithError :: AuthUser.User -> CtrlV
+responseWithError :: AuthUser.User -> App Response
 responseWithError (AuthUser.User _ name _) = internalServerError $ toResponse ("something went wrong. Domainuser: "
                                                                    ++ unpack (AuthUser._unUsername name) ++ " not found")

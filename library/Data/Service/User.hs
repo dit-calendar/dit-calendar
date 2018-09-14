@@ -9,9 +9,8 @@ module Data.Service.User ( deleteUserImpl, UserService(..) ) where
 import           Control.Monad.IO.Class
 import           Data.Maybe                   (fromJust)
 
-import           Presentation.AcidHelper      (CtrlV')
-
 import           Data.Domain.User             as User
+import           Presentation.AcidHelper      (App)
 
 import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)
 import qualified Data.Repository.CalendarRepo as MonadDBCalendarRepo
@@ -43,6 +42,6 @@ removeUserFromTasks user = foldr (\ taskId ->
 class UserService m where
     deleteUser :: User -> m ()
 
-instance (MonadDBUserRepo CtrlV', MonadDBTaskRepo CtrlV', MonadDBCalendarRepo CtrlV', TaskService CtrlV')
-            => UserService CtrlV' where
+instance (MonadDBUserRepo App, MonadDBTaskRepo App, MonadDBCalendarRepo App, TaskService App)
+            => UserService App where
     deleteUser = deleteUserImpl

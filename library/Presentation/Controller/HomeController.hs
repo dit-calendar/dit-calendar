@@ -1,11 +1,13 @@
 module Presentation.Controller.HomeController where
 
+import           Happstack.Foundation                   (lift)
 import           Happstack.Server                       (Method (GET, POST),
                                                          Request (rqMethod),
-                                                         askRq, method, nullDir,
-                                                         ok, toResponse)
+                                                         Response, askRq,
+                                                         method, nullDir, ok,
+                                                         toResponse)
 
-import           Presentation.AcidHelper                (CtrlV)
+import           Presentation.AcidHelper                (App, CtrlV)
 import           Presentation.Controller.UserController as UserController
 
 
@@ -20,8 +22,8 @@ homePage = do
     m <- rqMethod <$> askRq
     case m of
     -- curl http://localhost:8000/home
-      GET  ->
-        UserController.usersPage
+      --GET  ->
+       -- UserController.usersPage
     -- curl -d '' http://localhost:8000/home
       POST  ->
-        UserController.userPage 1
+        lift $ UserController.userPage 1

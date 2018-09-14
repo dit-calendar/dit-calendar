@@ -10,24 +10,21 @@ module Data.Repository.UserRepo
      MonadDBUserRepo(..) ) where
 
 import           Control.Monad.IO.Class
-import           Data.Maybe                         (fromJust)
+import           Data.Maybe                (fromJust)
 import           Prelude
 
-import qualified Data.List                          as List
-import qualified Happstack.Foundation               as Foundation
+import qualified Data.List                 as List
+import qualified Happstack.Foundation      as Foundation
 
-import           Data.Domain.Types                  (EntryId, TaskId, UserId)
-import           Data.Domain.User                   (User (..))
-import           Presentation.AcidHelper            (CtrlV')
+import           Data.Domain.Types         (EntryId, TaskId, UserId)
+import           Data.Domain.User          (User (..))
+import           Data.Repository.Acid.User (UserDAO (..))
+import           Presentation.AcidHelper   (App)
 
-import           Data.Repository.Acid.CalendarEntry (CalendarDAO)
-import           Data.Repository.Acid.Task          (TaskDAO)
-import           Data.Repository.Acid.User          (UserDAO (..))
-
-import qualified Data.Repository.Acid.User          as UserAcid
+import qualified Data.Repository.Acid.User as UserAcid
 
 
-instance UserDAO CtrlV' where
+instance UserDAO App where
     create = Foundation.update
     update = Foundation.update
     delete = Foundation.update
@@ -76,7 +73,7 @@ getUserImpl userId = do
 findUserByNameIml :: (UserDAO m, MonadIO m) => String -> m (Maybe User)
 findUserByNameIml name = queryByName $ UserAcid.FindByName name
 
-class MonadDBUserRepo m where
+class (UserDAO App) => MonadDBUserRepo m where
     createUser :: String -> m User
     deleteUser :: User -> m ()
     updateName :: User -> String -> m ()
@@ -87,8 +84,7 @@ class MonadDBUserRepo m where
     getUser :: UserId -> m User
     findUserByName :: String -> m (Maybe User)
 
-instance (UserDAO CtrlV', CalendarDAO CtrlV', TaskDAO CtrlV')
-        => MonadDBUserRepo CtrlV' where
+instance MonadDBUserRepo App where
     createUser = createUserImpl
     deleteUser = deleteUserImpl
     updateName = updateNameImpl

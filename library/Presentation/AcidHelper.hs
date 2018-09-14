@@ -5,7 +5,7 @@
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
 
-module Presentation.AcidHelper ( CtrlV, CtrlV', App, withAcid, Acid ) where
+module Presentation.AcidHelper ( CtrlV, App, withAcid, Acid ) where
 
 import           Control.Exception                  (bracket)
 import           Control.Monad.Reader               (ReaderT, ask)
@@ -40,16 +40,16 @@ type App = ServerPartT (ReaderT Acid IO)
 type CtrlV'   = RouteT Sitemap App
 type CtrlV    = CtrlV' Response
 
-instance HasAcidState CtrlV' UserAcid.UserList where
+instance HasAcidState App UserAcid.UserList where
     getAcidState = acidUserListState <$> ask
 
-instance HasAcidState CtrlV' CalendarEntryAcid.EntryList where
+instance HasAcidState App CalendarEntryAcid.EntryList where
     getAcidState = acidEntryListState <$> ask
 
-instance HasAcidState CtrlV' TaskAcid.TaskList where
+instance HasAcidState App TaskAcid.TaskList where
     getAcidState = acidTaskListState <$> ask
 
-instance HasAcidState CtrlV' AuthenticateState where
+instance HasAcidState App AuthenticateState where
     getAcidState = acidAuthState <$> ask
 
 withAcid :: AcidState AuthenticateState -> Maybe FilePath -- ^ state directory

@@ -1,10 +1,12 @@
 module Presentation.Route.UserRoute (routeUser, routeDetailUser) where
 
 import           Happstack.Server                           (Method (DELETE, GET, POST, PUT),
-                                                             look)
+                                                             look,
+                                                             mapServerPartT)
 
 import           Auth.Authorization                         (callIfAuthorized)
 import           Data.Domain.Types                          (UserId)
+import           Happstack.Foundation                       (lift)
 import           Presentation.AcidHelper                    (CtrlV)
 import           Presentation.HttpServerHelper              (getHttpMethod)
 import           Presentation.ResponseHelper                (notImplemented)
@@ -17,12 +19,11 @@ routeUser :: UserId -> CtrlV
 routeUser userId = do
   m <- getHttpMethod
   case m of
-    GET ->
-      UserController.userPage userId
+    GET -> lift $ UserController.userPage userId
     POST -> do
       description <- look "description"
       newDate <- look "date"
-      callIfAuthorized (CalendarController.createCalendarEntry userId newDate description)
+      lift $ callIfAuthorized (CalendarController.createCalendarEntry userId newDate description)
 
 routeDetailUser :: CtrlV
 routeDetailUser = do
@@ -30,7 +31,8 @@ routeDetailUser = do
   case m of
     PUT -> do
       name <- look "name"
-      callIfAuthorized (UserController.updateUser name)
-    DELETE -> callIfAuthorized UserController.deleteUser
+      lift $ callIfAuthorized (UserController.updateUser name)
+    DELETE -> lift $ callIfAuthorized UserController.deleteUser
     -- curl -X POST -d "name=FooBar" http://localhost:8000/user
-    other -> notImplemented other
+    GET -> lift UserController.usersPage
+    other -> lift $ notImplemented other

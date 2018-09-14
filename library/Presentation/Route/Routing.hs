@@ -1,6 +1,7 @@
 module Presentation.Route.Routing ( authOrRoute ) where
 
 import           Happstack.Authenticate.Core            (AuthenticateURL (..))
+import           Happstack.Foundation                   (lift)
 import           Happstack.Server                       (BodyPolicy (..),
                                                          Response, ServerPartT,
                                                          decodeBody,

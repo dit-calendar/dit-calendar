@@ -13,8 +13,7 @@ import           Data.Domain.User                   as User
 import           Data.Repository.Acid.CalendarEntry (CalendarDAO)
 import           Data.Repository.Acid.Task          (TaskDAO)
 import           Data.Repository.Acid.User          (UserDAO)
-
-import           Presentation.AcidHelper            (CtrlV')
+import           Presentation.AcidHelper            (App)
 
 import           Data.Repository.CalendarRepo       (MonadDBCalendarRepo)
 import qualified Data.Repository.CalendarRepo       as MonadDBCalendarRepo
@@ -53,7 +52,7 @@ class CalendarEntryService m where
     createEntry :: String -> String -> User -> m CalendarEntry
     removeCalendar :: CalendarEntry -> m ()
 
-instance (MonadDBUserRepo CtrlV', MonadDBTaskRepo CtrlV', MonadDBCalendarRepo CtrlV')
-            => CalendarEntryService CtrlV' where
+instance (MonadDBUserRepo App, MonadDBTaskRepo App, MonadDBCalendarRepo App)
+            => CalendarEntryService App where
     createEntry = createEntryImpl
     removeCalendar = removeCalendarImpl

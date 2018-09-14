@@ -6,6 +6,7 @@ import           Happstack.Server                       (Method (DELETE, GET, PO
 import           Auth.Authorization                     (callIfAuthorized)
 import           Data.Domain.Types                      (EntryId, TaskId,
                                                          UserId)
+import           Happstack.Foundation                   (lift)
 import           Presentation.AcidHelper                (CtrlV)
 import           Presentation.HttpServerHelper          (getHttpMethod)
 import           Presentation.ResponseHelper            (notImplemented)
@@ -16,27 +17,26 @@ routeTask :: TaskId -> CtrlV
 routeTask taskId = do
   m <- getHttpMethod
   case m of
-    GET  ->
-      TaskController.taskPage taskId
+    GET  -> lift $ TaskController.taskPage taskId
     PUT -> do
       description <- look "description"
-      callIfAuthorized (TaskController.updateTask taskId description)
-    other -> notImplemented other
+      lift $ callIfAuthorized (TaskController.updateTask taskId description)
+    other -> lift $ notImplemented other
 
 routeTaskWithCalendar :: TaskId -> EntryId -> CtrlV
 routeTaskWithCalendar taskId entryId = do
   m <- getHttpMethod
   case m of
     DELETE ->
-      callIfAuthorized (TaskController.deleteTask entryId taskId)
-    other -> notImplemented other
+      lift $ callIfAuthorized (TaskController.deleteTask entryId taskId)
+    other -> lift $ notImplemented other
 
 routeTaskWithUser :: TaskId -> UserId -> CtrlV
 routeTaskWithUser taskId userId = do
   m <- getHttpMethod
   case m of
     DELETE ->
-      callIfAuthorized (TaskController.removeUserFromTask taskId userId)
+      lift $ callIfAuthorized (TaskController.removeUserFromTask taskId userId)
     PUT ->
-      callIfAuthorized (TaskController.addUserToTask taskId userId)
-    other -> notImplemented other
+      lift $ callIfAuthorized (TaskController.addUserToTask taskId userId)
+    other -> lift $ notImplemented other

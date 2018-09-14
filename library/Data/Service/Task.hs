@@ -8,13 +8,12 @@ module Data.Service.Task
     ( deleteTaskAndCascadeUsersImpl, createTaskInCalendarImpl, addUserToTaskImpl, removeUserFromTaskImpl, TaskService(..) ) where
 
 import           Control.Monad.IO.Class
-import           Data.Domain.CalendarEntry    as CalendarEntry
-import           Data.Domain.Task             as Task
 import           Data.List                    (delete)
 
+import           Data.Domain.CalendarEntry    as CalendarEntry
+import           Data.Domain.Task             as Task
 import           Data.Domain.Types            (UserId)
-
-import           Presentation.AcidHelper            (CtrlV')
+import           Presentation.AcidHelper      (App)
 
 import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)
 import qualified Data.Repository.CalendarRepo as MonadDBCalendarRepo
@@ -66,8 +65,8 @@ class TaskService m where
     addUserToTask :: Task -> UserId -> m ()
     removeUserFromTask :: Task -> UserId -> m ()
 
-instance (MonadDBTaskRepo CtrlV', MonadDBUserRepo CtrlV', MonadDBCalendarRepo CtrlV')
-            => TaskService CtrlV' where
+instance (MonadDBTaskRepo App, MonadDBUserRepo App, MonadDBCalendarRepo App)
+            => TaskService App where
     deleteTaskAndCascadeUsers = deleteTaskAndCascadeUsersImpl
     createTaskInCalendar = createTaskInCalendarImpl
     addUserToTask = addUserToTaskImpl

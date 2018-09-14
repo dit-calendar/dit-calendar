@@ -9,16 +9,16 @@ import           Data.Text                            (pack, unpack)
 import           Happstack.Authenticate.Core          (AuthenticateURL (..))
 import           Happstack.Authenticate.Password.Core (NewAccountData (..))
 import           Happstack.Foundation                 (HasAcidState (getAcidState),
-                                                       query, update)
+                                                       query, update, lift)
 import           Happstack.Server                     (Method (GET), Response,
-                                                       ServerPartT, method,
-                                                       rsBody)
-import           Web.Routes                           (RouteT, mapRouteT,
+                                                       ServerPartT, method, ok,
+                                                       rsBody, toResponse)
+import           Web.Routes                           (RouteT(..), mapRouteT,
                                                        nestURL)
 
 import           Data.Domain.Types                    (UserId)
 import           Data.Domain.User                     as DomainUser (User (..))
-import           Presentation.AcidHelper              (CtrlV)
+import           Presentation.AcidHelper              (App, CtrlV)
 import           Presentation.HttpServerHelper        (getBody,
                                                        mapServerPartTIO2App,
                                                        readAuthUserFromBodyAsList)
@@ -32,20 +32,20 @@ import qualified Happstack.Authenticate.Core          as AuthUser
 
 
 --handler for userPage
-userPage :: UserId -> CtrlV
+userPage :: UserId -> App Response
 userPage i = onUserExist i (\u -> okResponse $ "peeked at the name and saw: " ++ show u)
 
 --handler for userPage
-usersPage :: CtrlV
+usersPage :: App Response
 usersPage =
     let temp = "Anzeige aller User \n" in
     do  method GET
         userList <- query UserAcid.AllUsers
         case userList of
             [] ->
-                okResponse (temp ++ "Liste ist leer")
+                ok $ toResponse (temp ++ "Liste ist leer")
             (x:xs) ->
-                okResponse $ temp ++ printUsersList (x:xs)
+                ok $ toResponse $ temp ++ printUsersList (x:xs)
 
 createUser  :: AuthenticateURL -> (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response) -> CtrlV
 createUser authenticateURL routeAuthenticate = do
@@ -62,24 +62,28 @@ createUser authenticateURL routeAuthenticate = do
                 if isInfixOf "NotOk" $ show responseBody then
                     return response
                 else
-                    createDomainUser (unpack username)
+                    lift $ createDomainUser (unpack username)
 
         -- if request body is not valid use response of auth library
         Nothing -> mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
 
-createDomainUser :: String -> CtrlV
+down :: RouteT a (ServerPartT b) Response -> (ServerPartT b) Response
+down (RouteT b)= undefined
+
+
+createDomainUser :: String -> App Response
 createDomainUser name = do
     mUser <- UserRepo.createUser name
     okResponse $ "User created: " ++ show mUser
 
-updateUser :: String -> DomainUser.User -> CtrlV
+updateUser :: String -> DomainUser.User -> App Response
 updateUser name loggedUser = updateUsr loggedUser
     where updateUsr user = do
               UserRepo.updateName user name
               okResponse $ "User with id:" ++ show (DomainUser.userId loggedUser) ++ "updated"
 
 
-deleteUser :: DomainUser.User -> CtrlV
+deleteUser :: DomainUser.User -> App Response
 deleteUser loggedUser = do
     deleteUsr loggedUser
     deleteAuthUser loggedUser
@@ -87,7 +91,7 @@ deleteUser loggedUser = do
                   UserService.deleteUser user
                   okResponse $ "User with id:" ++ show (DomainUser.userId loggedUser) ++ "deleted"
 
-deleteAuthUser ::DomainUser.User -> CtrlV
+deleteAuthUser ::DomainUser.User -> App Response
 deleteAuthUser loggedUser =  do
     let userId = DomainUser.userId loggedUser
     mUser <- query (AuthUser.GetUserByUsername autUserName)
