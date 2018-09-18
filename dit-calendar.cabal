@@ -46,6 +46,7 @@ library
                        Data.Repository.TaskRepo,
                        Data.Service.User,
                        Data.Service.CalendarEntry,
+                       Data.Service.Authorization,
                        Data.Service.Task,
                        Conf,
                        AppStart

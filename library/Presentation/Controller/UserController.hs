@@ -3,19 +3,19 @@
 module Presentation.Controller.UserController (createUser, updateUser, deleteUser, usersPage, userPage) where
 
 import           Data.List                            (isInfixOf)
-import           Data.Maybe                           (fromJust)
 import           Data.Text                            (pack, unpack)
 
 import           Happstack.Authenticate.Core          (AuthenticateURL (..))
 import           Happstack.Authenticate.Password.Core (NewAccountData (..))
 import           Happstack.Foundation                 (HasAcidState (getAcidState),
-                                                       query, update)
+                                                       query)
 import           Happstack.Server                     (Method (GET), Response,
                                                        ServerPartT, method, ok,
                                                        rsBody, toResponse)
 import           Web.Routes                           (RouteT, mapRouteT,
                                                        nestURL, unRouteT)
 
+import           Data.Service.Authorization           as AuthService (deleteAuthUser)
 import           Data.Domain.Types                    (UserId)
 import           Data.Domain.User                     as DomainUser (User (..))
 import           Presentation.AcidHelper              (App)
@@ -23,7 +23,7 @@ import           Presentation.HttpServerHelper        (getBody,
                                                        mapServerPartTIO2App,
                                                        readAuthUserFromBodyAsList)
 import           Presentation.ResponseHelper          (okResponse, onUserExist)
-import           Presentation.Route.PageEnum          (Sitemap (Authenticate))
+import           Presentation.Route.PageEnum          (Sitemap)
 
 import qualified Data.Repository.Acid.User            as UserAcid
 import qualified Data.Repository.UserRepo             as UserRepo
@@ -85,19 +85,9 @@ updateUser name loggedUser = updateUsr loggedUser
 
 deleteUser :: DomainUser.User -> App Response
 deleteUser loggedUser = do
-    deleteUsr loggedUser
-    deleteAuthUser loggedUser
-        where deleteUsr user = do
-                  UserService.deleteUser user
-                  okResponse $ "User with id:" ++ show (DomainUser.userId loggedUser) ++ "deleted"
-
-deleteAuthUser ::DomainUser.User -> App Response
-deleteAuthUser loggedUser =  do
-    let userId = DomainUser.userId loggedUser
-    mUser <- query (AuthUser.GetUserByUsername autUserName)
-    update $ AuthUser.DeleteUser (AuthUser._userId $ fromJust mUser)
-    okResponse $ "User with id:" ++ show userId ++ "deleted"
-        where autUserName = AuthUser.Username {AuthUser._unUsername = pack $ name loggedUser}
+    UserService.deleteUser loggedUser
+    AuthService.deleteAuthUser loggedUser
+    okResponse $ "User with id:" ++ show (DomainUser.userId loggedUser) ++ "deleted"
 
 
 printUsersList :: [DomainUser.User] -> String
