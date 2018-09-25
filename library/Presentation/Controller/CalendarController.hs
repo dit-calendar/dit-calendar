@@ -17,11 +17,12 @@ import qualified Data.Service.CalendarEntry   as CalendarService
 entryPage :: EntryId -> App Response
 entryPage i = onEntryExist i (\e -> okResponse $ "peeked at the description and saw: " ++ show e)
 
-createCalendarEntry :: UserId -> String -> String -> DomainUser.User -> App Response
-createCalendarEntry userId newDate description loggedUser = onUserExist userId createCalendar
+createCalendarEntry :: String -> String -> DomainUser.User -> App Response
+createCalendarEntry newDate description loggedUser = onUserExist userId createCalendar
     where createCalendar user = do
               entry <- CalendarService.createEntry newDate description user
               okResponse $ "Add Entry: " ++ show (CalendarEntry.entryId entry) ++ "to User: " ++ show userId
+          userId = DomainUser.userId loggedUser
 
 deleteCalendarEntry :: EntryId -> DomainUser.User -> App Response
 deleteCalendarEntry i loggedUser = onEntryExist i deleteCalendar

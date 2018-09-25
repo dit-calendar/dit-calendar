@@ -17,22 +17,22 @@ import qualified Presentation.Controller.UserController     as UserController
 
 routeUser :: UserId -> CtrlV
 routeUser userId = do
-  m <- getHttpMethod
-  case m of
-    GET -> lift $ UserController.userPage userId
-    POST -> do
-      description <- look "description"
-      newDate <- look "date"
-      lift $ callIfAuthorized (CalendarController.createCalendarEntry userId newDate description)
+    m <- getHttpMethod
+    case m of
+        GET -> lift $ UserController.userPage userId
 
 routeDetailUser :: CtrlV
 routeDetailUser = do
-  m <- getHttpMethod
-  case m of
-    PUT -> do
-      name <- look "name"
-      lift $ callIfAuthorized (UserController.updateUser name)
-    DELETE -> lift $ callIfAuthorized UserController.deleteUser
-    -- curl -X POST -d "name=FooBar" http://localhost:8000/user
-    GET -> lift UserController.usersPage
-    other -> lift $ notImplemented other
+    m <- getHttpMethod
+    case m of
+        PUT -> do
+            name <- look "name"
+            lift $ callIfAuthorized (UserController.updateUser name)
+        DELETE -> lift $ callIfAuthorized UserController.deleteUser
+        -- curl -X POST -d "name=FooBar" http://localhost:8000/user
+        GET -> lift UserController.usersPage
+        POST -> do
+            description <- look "description"
+            newDate <- look "date"
+            lift $ callIfAuthorized (CalendarController.createCalendarEntry newDate description)
+        other -> lift $ notImplemented other
