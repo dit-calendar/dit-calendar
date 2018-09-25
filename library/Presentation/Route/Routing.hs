@@ -17,7 +17,7 @@ import           Presentation.Route.TaskRoute           (routeTask,
                                                          routeTaskWithCalendar,
                                                          routeTaskWithUser)
 import           Presentation.Route.UserRoute           (routeDetailUser,
-                                                         routeUser)
+                                                         routeUser, routeUsers)
 
 import qualified Presentation.Controller.HomeController as HomeController
 import qualified Presentation.Controller.UserController as UserController
@@ -44,6 +44,7 @@ route url =
             Home                 -> HomeController.homePage
             Userdetail           -> routeDetailUser
             User i               -> routeUser i
+            Users                -> routeUsers
             CalendarEntry i      -> routeCalendarEntry i
             Task i               -> routeTask i
             TaskWithCalendar e u -> routeTaskWithCalendar e u

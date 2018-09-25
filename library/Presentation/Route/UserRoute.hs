@@ -1,4 +1,4 @@
-module Presentation.Route.UserRoute (routeUser, routeDetailUser) where
+module Presentation.Route.UserRoute (routeUser, routeDetailUser, routeUsers) where
 
 import           Happstack.Server                           (Method (DELETE, GET, POST, PUT),
                                                              look,
@@ -15,6 +15,12 @@ import qualified Presentation.Controller.CalendarController as CalendarControlle
 import qualified Presentation.Controller.UserController     as UserController
 
 
+routeUsers :: CtrlV
+routeUsers = do
+    m <- getHttpMethod
+    case m of
+        GET -> lift UserController.usersPage
+
 routeUser :: UserId -> CtrlV
 routeUser userId = do
     m <- getHttpMethod
@@ -30,7 +36,6 @@ routeDetailUser = do
             lift $ callIfAuthorized (UserController.updateUser name)
         DELETE -> lift $ callIfAuthorized UserController.deleteUser
         -- curl -X POST -d "name=FooBar" http://localhost:8000/user
-        GET -> lift UserController.usersPage
         POST -> do
             description <- look "description"
             newDate <- look "date"

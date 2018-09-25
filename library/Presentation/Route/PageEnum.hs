@@ -23,6 +23,7 @@ data Sitemap
     | Authenticate AuthenticateURL
     | User UserId
     | Userdetail
+    | Users
     | CalendarEntry EntryId
     | Task TaskId
     | TaskWithCalendar TaskId EntryId
@@ -37,6 +38,7 @@ urlSitemapParser =
     <> rAuthenticate . (lit "authenticate" </> authenticateURL)
     <> lit "user" . userMapping
     <> lit "task" . taskMapping
+    <> lit "users" . rUsers
     where
         userMapping = rUserdetail </> lit "me"
             <> rUser </> int
