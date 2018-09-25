@@ -19,15 +19,15 @@ import           Data.Domain.Types           (EntryId, TaskId, UserId)
 
 --A url type
 data Sitemap
-  = Home
-  | Authenticate AuthenticateURL
-  | User UserId
-  | Userdetail
-  | CalendarEntry EntryId
-  | Task TaskId
-  | TaskWithCalendar TaskId EntryId
-  | TaskWithUser TaskId UserId
-  deriving (Eq, Ord, Read, Show, Data, Typeable)
+    = Home
+    | Authenticate AuthenticateURL
+    | User UserId
+    | Userdetail
+    | CalendarEntry EntryId
+    | Task TaskId
+    | TaskWithCalendar TaskId EntryId
+    | TaskWithUser TaskId UserId
+    deriving (Eq, Ord, Read, Show, Data, Typeable)
 $(makeBoomerangs ''Sitemap)
 
 urlSitemapParser :: Router () (Sitemap :- ())
@@ -38,8 +38,8 @@ urlSitemapParser =
     <> lit "user" . userMapping
     <> lit "task" . taskMapping
     where
-      userMapping = rUserdetail </> lit "me"
+        userMapping = rUserdetail </> lit "me"
             <> rUser </> int
-      taskMapping = rTask </> int
+        taskMapping = rTask </> int
             <> rTaskWithUser </> int </> lit "user" </> int
             <> rTaskWithCalendar </> int </> lit "calendarentry" </> int
