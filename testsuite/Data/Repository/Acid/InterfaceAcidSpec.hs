@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Data.Repository.Acid.InterfaceAcidSpec (spec) where
 
 import Test.Hspec

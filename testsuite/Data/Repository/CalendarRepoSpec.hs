@@ -3,6 +3,7 @@
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Data.Repository.CalendarRepoSpec (spec) where
 

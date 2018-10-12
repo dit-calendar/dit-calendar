@@ -12,7 +12,7 @@ import           Data.List                    (delete)
 
 import           Data.Domain.CalendarEntry    as CalendarEntry
 import           Data.Domain.Task             as Task
-import           Data.Domain.Types            (UserId)
+import           Data.Domain.Types            (UserId, Description)
 import           Presentation.AcidHelper      (App)
 
 import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)
@@ -30,7 +30,7 @@ deleteTaskAndCascadeUsersImpl task = do
     MonadDBTaskRepo.deleteTask task
 
 createTaskInCalendarImpl :: (MonadDBTaskRepo m, MonadDBUserRepo m, MonadDBCalendarRepo m) =>
-            CalendarEntry -> String -> m Task
+            CalendarEntry -> Description -> m Task
 createTaskInCalendarImpl calendarEntry description = do
     mTask <- MonadDBTaskRepo.createTask description
     MonadDBCalendarRepo.addTaskToCalendarEntry calendarEntry (Task.taskId mTask)
@@ -61,7 +61,7 @@ removeUserFromTaskImpl task userId = do
 
 class TaskService m where
     deleteTaskAndCascadeUsers :: Task -> m ()
-    createTaskInCalendar :: CalendarEntry -> String -> m Task
+    createTaskInCalendar :: CalendarEntry -> Description -> m Task
     addUserToTask :: Task -> UserId -> m ()
     removeUserFromTask :: Task -> UserId -> m ()
 

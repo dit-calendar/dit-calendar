@@ -3,7 +3,7 @@ module Presentation.Controller.TaskController where
 import           Happstack.Server             (Response, ok, toResponse)
 
 import           Data.Domain.Task             as Task
-import           Data.Domain.Types            (EntryId, TaskId, UserId)
+import           Data.Domain.Types            (EntryId, TaskId, UserId, Description)
 import           Data.Domain.User             (User)
 import           Presentation.AcidHelper      (App)
 import           Presentation.ResponseHelper  (onEntryExist, onTaskExist,
@@ -18,13 +18,13 @@ import qualified Data.Service.Task            as TaskService
 taskPage :: TaskId -> App Response
 taskPage i = onTaskExist i (\t -> ok $ toResponse $ "peeked at the task and saw: " ++ show t)
 
-createTask :: EntryId -> String -> App Response
+createTask :: EntryId -> Description -> App Response
 createTask calendarId description =
     onEntryExist calendarId (\e -> do
         t <- TaskService.createTaskInCalendar e description
         ok $ toResponse $ "Task created: " ++ show (Task.taskId t) ++ "to CalendarEntry: " ++ show calendarId)
 
-updateTask :: TaskId -> String -> User -> App Response
+updateTask :: TaskId -> Description -> User -> App Response
 updateTask id description loggedUser =
     onTaskExist id (\t -> do
         TaskRepo.updateDescription t description

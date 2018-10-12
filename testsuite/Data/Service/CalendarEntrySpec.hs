@@ -2,6 +2,7 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE KindSignatures        #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE QuasiQuotes           #-}
 {-# LANGUAGE TemplateHaskell       #-}
 
@@ -9,6 +10,7 @@ module Data.Service.CalendarEntrySpec (spec) where
 
 import           Control.Monad.TestFixture
 import           Control.Monad.TestFixture.TH
+import           Data.Text                    (unpack)
 import           Test.Hspec
 
 import           Control.Monad.Identity       (Identity)
@@ -38,7 +40,7 @@ dbDate = read "2011-11-19 18:28:52.607875 UTC"::UTCTime
 entryFromDb = CalendarEntry{ CalendarEntry.description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[], date=dbDate}
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
-fixture = Fixture { _newCalendarEntry = \newDate description user -> tell [newDate] >> tell [description] >> tell [show user] >> return entryFromDb
+fixture = Fixture { _newCalendarEntry = \newDate description user -> tell [newDate] >> tell [unpack description] >> tell [show user] >> return entryFromDb
                   , _getUser = \(a) -> tell [show a] >> return userFromDb
                   , _getTask = \(a) -> tell [show a] >> return taskFromDb
                   , _addCalendarEntryToUser = \user entryId -> tell [show user] >> tell [show entryId]

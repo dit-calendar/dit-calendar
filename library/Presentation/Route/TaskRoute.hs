@@ -1,12 +1,14 @@
 module Presentation.Route.TaskRoute (routeTask, routeTaskWithCalendar, routeTaskWithUser) where
 
+import           Data.Text                              (pack)
+
+import           Happstack.Foundation                   (lift)
 import           Happstack.Server                       (Method (DELETE, GET, POST, PUT),
                                                          look)
 
 import           Auth.Authorization                     (callIfAuthorized)
 import           Data.Domain.Types                      (EntryId, TaskId,
                                                          UserId)
-import           Happstack.Foundation                   (lift)
 import           Presentation.AcidHelper                (CtrlV)
 import           Presentation.HttpServerHelper          (getHttpMethod)
 import           Presentation.ResponseHelper            (notImplemented)
@@ -20,7 +22,7 @@ routeTask taskId = do
     GET  -> lift $ TaskController.taskPage taskId
     PUT -> do
       description <- look "description"
-      lift $ callIfAuthorized (TaskController.updateTask taskId description)
+      lift $ callIfAuthorized (TaskController.updateTask taskId $ pack description)
     other -> lift $ notImplemented other
 
 routeTaskWithCalendar :: TaskId -> EntryId -> CtrlV

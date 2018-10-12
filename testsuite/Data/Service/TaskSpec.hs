@@ -4,11 +4,13 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE QuasiQuotes           #-}
 {-# LANGUAGE TemplateHaskell       #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Data.Service.TaskSpec (spec) where
 
 import           Control.Monad.TestFixture
 import           Control.Monad.TestFixture.TH
+import           Data.Text                    (Text)
 import           Test.Hspec
 
 import           Control.Monad.Identity       (Identity)

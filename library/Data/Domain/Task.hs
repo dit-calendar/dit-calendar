@@ -4,11 +4,11 @@
 module Data.Domain.Task where
 
 import           Data.Data         (Data, Typeable)
-import           Data.Domain.Types (Entry (..), TaskId, UserId)
+import           Data.Domain.Types (Entry (..), TaskId, UserId, Description)
 import           Data.SafeCopy     (base, deriveSafeCopy)
 
 data Task = Task {
-    description      :: String
+    description      :: Description
     , taskId         :: TaskId
     , belongingUsers :: [UserId]
     }

@@ -11,6 +11,7 @@ module Data.Repository.UserRepo
 
 import           Control.Monad.IO.Class
 import           Data.Maybe                (fromJust)
+import           Data.Text                 (Text)
 import           Prelude
 
 import qualified Data.List                 as List
@@ -31,7 +32,7 @@ instance UserDAO App where
     query  = Foundation.query
     queryByName = Foundation.query
 
-createUserImpl :: UserDAO m => String -> m User
+createUserImpl :: UserDAO m => Text -> m User
 createUserImpl name = let user = User { name = name
                     , userId = 0 --TODO why it can't be undefined if creating user with post interface?
                     , calendarEntries = []
@@ -45,7 +46,7 @@ deleteUserImpl user = delete $ UserAcid.DeleteUser (Data.Domain.User.userId user
 updateUser :: UserDAO m => User -> m ()
 updateUser user = update $ UserAcid.UpdateUser user
 
-updateNameImpl :: UserDAO m => User -> String -> m ()
+updateNameImpl :: UserDAO m => User -> Text -> m ()
 updateNameImpl user newName = updateUser user {name = newName}
 
 addCalendarEntryToUserImpl :: UserDAO m => User -> EntryId -> m ()
@@ -70,19 +71,19 @@ getUserImpl userId = do
     mUser <- query $ UserAcid.UserById userId
     return $ fromJust mUser
 
-findUserByNameIml :: (UserDAO m, MonadIO m) => String -> m (Maybe User)
+findUserByNameIml :: (UserDAO m, MonadIO m) => Text -> m (Maybe User)
 findUserByNameIml name = queryByName $ UserAcid.FindByName name
 
 class (UserDAO App) => MonadDBUserRepo m where
-    createUser :: String -> m User
+    createUser :: Text -> m User
     deleteUser :: User -> m ()
-    updateName :: User -> String -> m ()
+    updateName :: User -> Text -> m ()
     addCalendarEntryToUser :: User -> EntryId -> m ()
     deleteCalendarEntryFromUser :: User -> EntryId -> m ()
     addTaskToUser :: User -> TaskId -> m ()
     deleteTaskFromUser :: User -> TaskId -> m ()
     getUser :: UserId -> m User
-    findUserByName :: String -> m (Maybe User)
+    findUserByName :: Text -> m (Maybe User)
 
 instance MonadDBUserRepo App where
     createUser = createUserImpl

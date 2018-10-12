@@ -3,7 +3,7 @@ module Presentation.Controller.CalendarController where
 import           Happstack.Server             (Response)
 
 import           Data.Domain.CalendarEntry    as CalendarEntry
-import           Data.Domain.Types            (EntryId, UserId)
+import           Data.Domain.Types            (EntryId, UserId, Description)
 import           Presentation.AcidHelper      (App)
 import           Presentation.ResponseHelper  (okResponse, onEntryExist,
                                                onUserExist)
@@ -17,7 +17,7 @@ import qualified Data.Service.CalendarEntry   as CalendarService
 entryPage :: EntryId -> App Response
 entryPage i = onEntryExist i (\e -> okResponse $ "peeked at the description and saw: " ++ show e)
 
-createCalendarEntry :: String -> String -> DomainUser.User -> App Response
+createCalendarEntry :: String -> Description -> DomainUser.User -> App Response
 createCalendarEntry newDate description loggedUser = onUserExist userId createCalendar
     where createCalendar user = do
               entry <- CalendarService.createEntry newDate description user
@@ -30,7 +30,7 @@ deleteCalendarEntry i loggedUser = onEntryExist i deleteCalendar
               CalendarService.removeCalendar cEntry
               okResponse $ "CalendarEntry with id:" ++ show i ++ "deleted"
 
-updateCalendarEntry :: EntryId -> String -> DomainUser.User -> App Response
+updateCalendarEntry :: EntryId -> Description -> DomainUser.User -> App Response
 updateCalendarEntry id description loggedUser = onEntryExist id updateCalendar
     where updateCalendar cEntry = do
               CalendarRepo.updateDescription cEntry description

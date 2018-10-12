@@ -14,4 +14,4 @@ instance ToJSON User where
     toEncoding = genericToEncoding defaultOptions
 
 transform:: Domain.User -> User
-transform domain = User {name = pack $ Domain.name domain, userId = Domain.userId domain}
+transform domain = User {name = Domain.name domain, userId = Domain.userId domain}

@@ -1,17 +1,20 @@
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE RecordWildCards   #-}
 {-# LANGUAGE TemplateHaskell   #-}
-{-# LANGUAGE RecordWildCards    #-}
 {-# LANGUAGE TypeFamilies      #-}
 
 module Data.Repository.Acid.User
     ( UserDAO(..), initialUserListState, UserList(..), NewUser(..), UserById(..), AllUsers(..),
     GetUserList(..), UpdateUser(..), DeleteUser(..), FindByName(..) ) where
 
-import           Data.Acid                          (Query, Update, makeAcidic)
-import           Data.IxSet                         (Indexable (..), ixFun,  getEQ, getOne,
-                                                     ixSet, (@=), toList)
 import           Control.Applicative                ((<$>))
 import           Control.Monad.Reader               (ask)
+import           Data.Acid                          (Query, Update, makeAcidic)
+import           Data.IxSet                         (Indexable (..), getEQ,
+                                                     getOne, ixFun, ixSet,
+                                                     toList, (@=))
+import           Data.Text                          (Text)
+
 import           Data.Domain.Types                  (UserId)
 import           Data.Domain.User                   (User (..))
 
@@ -37,7 +40,7 @@ newUser = InterfaceAcid.newEntry
 userById :: UserId -> Query UserList (Maybe User)
 userById = InterfaceAcid.entryById
 
-findByName :: String -> Query UserList (Maybe User)
+findByName :: Text -> Query UserList (Maybe User)
 findByName name = do b@InterfaceAcid.EntrySet{..} <- ask
                      return $ getOne $ entrys @= name
 

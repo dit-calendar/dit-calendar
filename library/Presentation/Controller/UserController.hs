@@ -3,7 +3,7 @@
 module Presentation.Controller.UserController (createUser, updateUser, deleteUser, usersPage, userPage) where
 
 import           Data.List                            (isInfixOf)
-import           Data.Text                            (pack, unpack)
+import           Data.Text                            (Text, unpack)
 import           Data.Aeson                           (encode)
 
 import           Happstack.Authenticate.Core          (AuthenticateURL (..))
@@ -16,9 +16,9 @@ import           Happstack.Server                     (Method (GET), Response,
 import           Web.Routes                           (RouteT, mapRouteT,
                                                        nestURL, unRouteT)
 
-import           Data.Service.Authorization           as AuthService (deleteAuthUser)
-import           Data.Domain.Types                    (UserId)
+import           Data.Domain.Types                    (Description, UserId)
 import           Data.Domain.User                     as DomainUser (User (..))
+import           Data.Service.Authorization           as AuthService (deleteAuthUser)
 import           Presentation.AcidHelper              (App)
 import           Presentation.HttpServerHelper        (getBody,
                                                        mapServerPartTIO2App,
@@ -59,7 +59,7 @@ createUser authenticateURL routeAuthenticate = do
                 if isInfixOf "NotOk" $ show responseBody then
                     return response
                 else
-                    createDomainUser (unpack username)
+                    createDomainUser username
 
         -- if request body is not valid use response of auth library
         Nothing -> leaveRouteT (mapRouteT mapServerPartTIO2App $ routeAuthenticate authenticateURL)
@@ -68,12 +68,12 @@ leaveRouteT :: RouteT url m a-> m a
 leaveRouteT r = unRouteT r (\ _ _ -> undefined)
 
 
-createDomainUser :: String -> App Response
+createDomainUser :: Text -> App Response
 createDomainUser name = do
     mUser <- UserRepo.createUser name
     okResponseJson $ encode $ transform mUser
 
-updateUser :: String -> DomainUser.User -> App Response
+updateUser :: Text -> DomainUser.User -> App Response
 updateUser name loggedUser = updateUsr loggedUser
     where updateUsr user = do
               UserRepo.updateName user name
@@ -85,6 +85,3 @@ deleteUser loggedUser = do
     UserService.deleteUser loggedUser
     AuthService.deleteAuthUser loggedUser
     okResponse $ "User with id:" ++ show (DomainUser.userId loggedUser) ++ "deleted"
-
-
-

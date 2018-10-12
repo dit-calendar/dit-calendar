@@ -9,13 +9,12 @@ module Data.Repository.CalendarRepo
     deleteTaskFromCalendarEntryImpl, addTaskToCalendarEntryImpl, MonadDBCalendarRepo(..) ) where
 
 import           Data.Time.Clock                    (UTCTime)
-
 import qualified Data.List                          as List
 import qualified Happstack.Foundation               as Foundation
 
 import           Data.Domain.CalendarEntry          as CalendarEntry
 import           Data.Domain.CalendarEntry          (CalendarEntry)
-import           Data.Domain.Types                  (EntryId, TaskId)
+import           Data.Domain.Types                  (EntryId, TaskId, Description)
 import           Data.Domain.User                   as User
 import           Data.Domain.User                   (User)
 import           Data.Repository.Acid.CalendarEntry (CalendarDAO (..))
@@ -29,7 +28,7 @@ instance CalendarDAO App where
     delete = Foundation.update
     query  = Foundation.query
 
-newCalendarEntryImpl :: CalendarDAO m => String -> String -> User -> m CalendarEntry
+newCalendarEntryImpl :: CalendarDAO m => String -> Description -> User -> m CalendarEntry
 newCalendarEntryImpl newDate description user = let entry = CalendarEntry {
                         description              = description
                         , entryId                = undefined
@@ -45,7 +44,7 @@ deleteCalendarEntryImpl entryId = delete $ CalendarEntryAcid.DeleteEntry entryId
 updateCalendar :: CalendarDAO m => CalendarEntry -> m ()
 updateCalendar calendarEntry = update $ CalendarEntryAcid.UpdateEntry calendarEntry
 
-updateDescription:: CalendarDAO m => CalendarEntry -> String -> m ()
+updateDescription:: CalendarDAO m => CalendarEntry -> Description -> m ()
 updateDescription calendarEntry newDescription =
     updateCalendar calendarEntry {CalendarEntry.description = newDescription}
 
@@ -60,7 +59,7 @@ addTaskToCalendarEntryImpl calendarEntry taskId =
     updateCalendar calendarEntry {tasks = tasks calendarEntry ++ [taskId]}
 
 class (Monad m,  CalendarDAO App) => MonadDBCalendarRepo m where
-    newCalendarEntry            :: String -> String -> User -> m CalendarEntry
+    newCalendarEntry            :: String -> Description -> User -> m CalendarEntry
     deleteCalendarEntry         :: EntryId -> m ()
     deleteTaskFromCalendarEntry :: CalendarEntry -> Int -> m ()
     addTaskToCalendarEntry      :: CalendarEntry -> TaskId -> m ()

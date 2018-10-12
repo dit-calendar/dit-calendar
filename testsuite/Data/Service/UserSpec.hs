@@ -4,12 +4,14 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE QuasiQuotes           #-}
 {-# LANGUAGE TemplateHaskell       #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Data.Service.UserSpec (spec) where
 
 import           Control.Monad.TestFixture
 import           Control.Monad.TestFixture.TH
 import           Test.Hspec
+import           Data.Text                    (Text)
 import           Test.HUnit.Base              (assertEqual)
 
 
