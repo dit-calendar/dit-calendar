@@ -4,6 +4,7 @@ module Presentation.Controller.UserController (createUser, updateUser, deleteUse
 
 import           Data.List                            (isInfixOf)
 import           Data.Text                            (pack, unpack)
+import           Data.Aeson                           (encode)
 
 import           Happstack.Authenticate.Core          (AuthenticateURL (..))
 import           Happstack.Authenticate.Password.Core (NewAccountData (..))
@@ -22,8 +23,9 @@ import           Presentation.AcidHelper              (App)
 import           Presentation.HttpServerHelper        (getBody,
                                                        mapServerPartTIO2App,
                                                        readAuthUserFromBodyAsList)
-import           Presentation.ResponseHelper          (okResponse, onUserExist)
+import           Presentation.ResponseHelper          (okResponse, okResponseJson, onUserExist)
 import           Presentation.Route.PageEnum          (Sitemap)
+import           Presentation.Dto.User                (transform)
 
 import qualified Data.Repository.Acid.User            as UserAcid
 import qualified Data.Repository.UserRepo             as UserRepo
@@ -33,19 +35,14 @@ import qualified Happstack.Authenticate.Core          as AuthUser
 
 --handler for userPage
 userPage :: UserId -> App Response
-userPage i = onUserExist i (\u -> okResponse $ "peeked at the name and saw: " ++ show u)
+userPage i = onUserExist i (okResponseJson . encode . transform)
 
 --handler for userPage
 usersPage :: App Response
 usersPage =
-    let temp = "Anzeige aller User \n" in
     do  method GET
         userList <- query UserAcid.AllUsers
-        case userList of
-            [] ->
-                ok $ toResponse (temp ++ "Liste ist leer")
-            (x:xs) ->
-                ok $ toResponse $ temp ++ printUsersList (x:xs)
+        okResponseJson $ encode $ map transform userList
 
 createUser  :: AuthenticateURL -> (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response) -> App Response
 createUser authenticateURL routeAuthenticate = do
@@ -74,7 +71,7 @@ leaveRouteT r = unRouteT r (\ _ _ -> undefined)
 createDomainUser :: String -> App Response
 createDomainUser name = do
     mUser <- UserRepo.createUser name
-    okResponse $ "User created: " ++ show mUser
+    okResponseJson $ encode $ transform mUser
 
 updateUser :: String -> DomainUser.User -> App Response
 updateUser name loggedUser = updateUsr loggedUser
@@ -89,12 +86,5 @@ deleteUser loggedUser = do
     AuthService.deleteAuthUser loggedUser
     okResponse $ "User with id:" ++ show (DomainUser.userId loggedUser) ++ "deleted"
 
-
-printUsersList :: [DomainUser.User] -> String
-printUsersList l = case l of
-    --schlechte implementierung. es gibt dafür schon fertige funktionen (annonyme funktion uebergeben)
-    []     -> ""
-    (x:xs) -> ("User: " ++ DomainUser.name x ++ "mit Id: "++ show (DomainUser.userId x))
-        ++ "\n" ++ printUsersList xs
 
 

@@ -1,10 +1,12 @@
 {-# LANGUAGE FlexibleContexts #-}
 
 module Presentation.ResponseHelper
-    ( onUserExist, onEntryExist, onTaskExist, okResponse,notImplemented  ) where
+    ( onUserExist, onEntryExist, onTaskExist, okResponse, okResponseJson,notImplemented  ) where
 
 import           Happstack.Server                   (Method, Response, ok,
                                                      toResponse)
+import           Data.Aeson                         (Value)
+import           Data.ByteString.Lazy
 
 import           Data.Domain.CalendarEntry          (CalendarEntry)
 import           Data.Domain.Task                   (Task)
@@ -40,6 +42,9 @@ onNothing message = maybe (okResponse message)
 
 okResponse :: String -> App Response
 okResponse message = ok $ toResponse message
+
+okResponseJson :: ByteString -> App Response
+okResponseJson object = ok $ toResponse object
 
 notImplemented :: Method -> App Response
 notImplemented httpMethod = okResponse ("HTTP-Method: " ++ show httpMethod ++ " not implemented")
