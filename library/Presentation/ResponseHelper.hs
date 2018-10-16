@@ -4,7 +4,7 @@ module Presentation.ResponseHelper
     ( onUserExist, onEntryExist, onTaskExist, okResponse, okResponseJson,notImplemented  ) where
 
 import           Happstack.Server                   (Method, Response, ok,
-                                                     toResponse)
+                                                     toResponse, toResponseBS)
 import           Data.Aeson                         (Value)
 import           Data.ByteString.Lazy
 
@@ -25,6 +25,8 @@ import qualified Data.Repository.Acid.Task          as TaskAcid
 import qualified Data.Repository.Acid.User          as UserDao
 import qualified Data.Repository.Acid.User          as UserAcid
 
+import qualified Data.ByteString.Char8                          as T
+
 
 onUserExist :: UserDAO App => UserId -> (User -> App Response) -> App Response
 onUserExist i daoFunction = UserDao.query (UserAcid.UserById i) >>= (onNothing $ "Could not find a user with id " ++ show i) daoFunction
@@ -44,7 +46,7 @@ okResponse :: String -> App Response
 okResponse message = ok $ toResponse message
 
 okResponseJson :: ByteString -> App Response
-okResponseJson object = ok $ toResponse object
+okResponseJson object = ok $ toResponseBS (T.pack "application/json") object
 
 notImplemented :: Method -> App Response
 notImplemented httpMethod = okResponse ("HTTP-Method: " ++ show httpMethod ++ " not implemented")
