@@ -1,13 +1,15 @@
 module Presentation.Controller.TaskController where
 
-import           Happstack.Server             (Response, ok, toResponse)
+import           Data.Aeson                   (encode)
+import           Happstack.Server             (Response)
 
 import           Data.Domain.Task             as Task
 import           Data.Domain.Types            (EntryId, TaskId, UserId, Description)
 import           Data.Domain.User             (User)
 import           Presentation.AcidHelper      (App)
 import           Presentation.ResponseHelper  (onEntryExist, onTaskExist,
-                                               onUserExist)
+                                               onUserExist, okResponse, okResponseJson)
+import           Presentation.Dto.Task        (transform)
 
 import qualified Data.Repository.CalendarRepo as CalendarRepo
 import qualified Data.Repository.TaskRepo     as TaskRepo
@@ -16,33 +18,33 @@ import qualified Data.Service.Task            as TaskService
 
 --handler for taskPage
 taskPage :: TaskId -> App Response
-taskPage i = onTaskExist i (\t -> ok $ toResponse $ "peeked at the task and saw: " ++ show t)
+taskPage i = onTaskExist i (okResponseJson . encode . transform)
 
 createTask :: EntryId -> Description -> App Response
 createTask calendarId description =
     onEntryExist calendarId (\e -> do
         t <- TaskService.createTaskInCalendar e description
-        ok $ toResponse $ "Task created: " ++ show (Task.taskId t) ++ "to CalendarEntry: " ++ show calendarId)
+        okResponseJson $ encode $ transform t)
 
 updateTask :: TaskId -> Description -> User -> App Response
 updateTask id description loggedUser =
     onTaskExist id (\t -> do
         TaskRepo.updateDescription t description
-        ok $ toResponse $ "Task with id:" ++ show id ++ "updated")
+        okResponse $ "Task with id:" ++ show id ++ "updated")
 
 addUserToTask :: UserId -> TaskId -> User-> App Response
 addUserToTask userId taskId loggedUser =
     onUserExist userId (\ _ ->
         onTaskExist taskId (\t -> do
             TaskService.addUserToTask t userId
-            ok $ toResponse $ "User added to task: " ++ show userId))
+            okResponse $ "User added to task: " ++ show userId))
 
 removeUserFromTask :: UserId -> TaskId -> User -> App Response
 removeUserFromTask userId taskId loggedUser =
     onUserExist userId (\ _ ->
         onTaskExist taskId (\t -> do
             TaskService.removeUserFromTask t userId
-            ok $ toResponse $ "User removed from task" ++ show userId))
+            okResponse $ "User removed from task" ++ show userId))
 
 deleteTask :: EntryId -> TaskId -> User -> App Response
 deleteTask entryId taskId loggedUser =
@@ -50,4 +52,4 @@ deleteTask entryId taskId loggedUser =
         onTaskExist taskId (\t -> do
             CalendarRepo.deleteTaskFromCalendarEntry e taskId
             TaskService.deleteTaskAndCascadeUsersImpl t
-            ok $ toResponse $ "Task with id:" ++ show taskId ++ "deleted"))
+            okResponse $ "Task with id:" ++ show taskId ++ "deleted"))

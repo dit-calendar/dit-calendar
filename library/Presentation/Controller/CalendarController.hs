@@ -1,12 +1,14 @@
 module Presentation.Controller.CalendarController where
 
+import           Data.Aeson                   (encode)
 import           Happstack.Server             (Response)
 
 import           Data.Domain.CalendarEntry    as CalendarEntry
 import           Data.Domain.Types            (EntryId, UserId, Description)
 import           Presentation.AcidHelper      (App)
-import           Presentation.ResponseHelper  (okResponse, onEntryExist,
+import           Presentation.ResponseHelper  (okResponse, okResponseJson, onEntryExist,
                                                onUserExist)
+import           Presentation.Dto.CalendarEntry(transform)
 
 import qualified Data.Domain.User             as DomainUser
 import qualified Data.Repository.CalendarRepo as CalendarRepo
@@ -15,13 +17,13 @@ import qualified Data.Service.CalendarEntry   as CalendarService
 
 --handler for entryPage
 entryPage :: EntryId -> App Response
-entryPage i = onEntryExist i (\e -> okResponse $ "peeked at the description and saw: " ++ show e)
+entryPage i = onEntryExist i (okResponseJson . encode . transform)
 
 createCalendarEntry :: String -> Description -> DomainUser.User -> App Response
 createCalendarEntry newDate description loggedUser = onUserExist userId createCalendar
     where createCalendar user = do
               entry <- CalendarService.createEntry newDate description user
-              okResponse $ "Add Entry: " ++ show (CalendarEntry.entryId entry) ++ "to User: " ++ show userId
+              okResponseJson $ encode $ transform entry
           userId = DomainUser.userId loggedUser
 
 deleteCalendarEntry :: EntryId -> DomainUser.User -> App Response
