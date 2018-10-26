@@ -10,26 +10,26 @@ module Data.Service.CalendarEntrySpec (spec) where
 
 import           Control.Monad.TestFixture
 import           Control.Monad.TestFixture.TH
-import           Data.Text                    (unpack)
+import           Data.Text                      (unpack)
 import           Test.Hspec
 
-import           Control.Monad.Identity       (Identity)
+import           Control.Monad.Identity         (Identity)
 import           Control.Monad.IO.Class
-import           Control.Monad.Writer.Class   (tell)
+import           Control.Monad.Writer.Class     (tell)
 
-import           Data.Domain.CalendarEntry    as CalendarEntry
-import           Data.Domain.Task             as Task
-import           Data.Domain.Types            (EntryId, TaskId, UserId)
-import           Data.Domain.User             as User
+import           Data.Domain.CalendarEntry      as CalendarEntry
+import           Data.Domain.Task               as Task
+import           Data.Domain.Types              (EntryId, TaskId, UserId)
+import           Data.Domain.User               as User
 
-import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)
-import           Data.Repository.TaskRepo     (MonadDBTaskRepo)
-import           Data.Repository.UserRepo     (MonadDBUserRepo)
-import           Data.Time.Clock              (UTCTime)
+import           Data.Repository.CalendarRepo   (MonadDBCalendarRepo)
+import           Data.Repository.TaskRepo       (MonadDBTaskRepo)
+import           Data.Repository.UserRepo       (MonadDBUserRepo)
+import           Data.Time.Clock                (UTCTime)
 
-import qualified Data.Service.CalendarEntry   as CalendarEntryService
-import qualified Data.Service.Task            as TaskService
-import qualified Data.Service.User            as UserService
+import qualified Data.Service.CalendarEntry     as CalendarEntryService
+import qualified Data.Service.Task              as TaskService
+import qualified Data.Service.User              as UserService
 import qualified Presentation.Dto.CalendarEntry as CalendarDto
 
 

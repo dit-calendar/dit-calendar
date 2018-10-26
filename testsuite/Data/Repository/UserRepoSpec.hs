@@ -1,25 +1,28 @@
-{-# LANGUAGE MultiParamTypeClasses  #-}
-{-# LANGUAGE FlexibleInstances, FlexibleContexts #-}
-{-# LANGUAGE KindSignatures #-}
-{-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE KindSignatures        #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedStrings     #-}
+{-# LANGUAGE QuasiQuotes           #-}
+{-# LANGUAGE TemplateHaskell       #-}
 
 module Data.Repository.UserRepoSpec (spec) where
 
-import Test.Hspec
-import Control.Monad.TestFixture
-import Control.Monad.TestFixture.TH
+import           Control.Monad.TestFixture
+import           Control.Monad.TestFixture.TH
+import           Test.Hspec
 
-import Data.Maybe                    (fromJust)
-import Control.Monad.IO.Class
-import Control.Monad.Identity        ( Identity )
-import Control.Monad.Writer.Class    ( tell )
+import           Control.Monad.Identity       (Identity)
+import           Control.Monad.IO.Class
+import           Control.Monad.Writer.Class   (tell)
+import           Data.Maybe                   (fromJust)
 
-import Data.Repository.Acid.User          ( UserDAO, NewUser(..), DeleteUser(..), UpdateUser(..), UserById(..), FindByName(..) )
-import Data.Domain.User                     as User
+import           Data.Domain.User             as User
+import           Data.Repository.Acid.User    (DeleteUser (..), FindByName (..),
+                                               NewUser (..), UpdateUser (..),
+                                               UserById (..), UserDAO)
 
-import qualified Data.Repository.UserRepo          as UserRepo
+import qualified Data.Repository.UserRepo     as UserRepo
 
 
 mkFixture "Fixture" [ts| UserDAO |]

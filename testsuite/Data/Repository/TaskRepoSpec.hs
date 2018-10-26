@@ -1,25 +1,28 @@
-{-# LANGUAGE MultiParamTypeClasses  #-}
-{-# LANGUAGE FlexibleInstances, FlexibleContexts #-}
-{-# LANGUAGE KindSignatures #-}
-{-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE KindSignatures        #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedStrings     #-}
+{-# LANGUAGE QuasiQuotes           #-}
+{-# LANGUAGE TemplateHaskell       #-}
 
 module Data.Repository.TaskRepoSpec (spec) where
 
-import Test.Hspec
-import Control.Monad.TestFixture
-import Control.Monad.TestFixture.TH
+import           Control.Monad.TestFixture
+import           Control.Monad.TestFixture.TH
+import           Test.Hspec
 
-import Control.Monad.IO.Class
-import Control.Monad.Identity        ( Identity )
-import Control.Monad.Writer.Class    ( tell )
-import Control.Monad.Writer          ( execWriter )
+import           Control.Monad.Identity       (Identity)
+import           Control.Monad.IO.Class
+import           Control.Monad.Writer         (execWriter)
+import           Control.Monad.Writer.Class   (tell)
 
-import Data.Repository.Acid.Task            ( TaskDAO, NewTask(..), DeleteTask(..), UpdateTask(..), TaskById(..) )
-import Data.Domain.Task                     as Task
+import           Data.Domain.Task             as Task
+import           Data.Repository.Acid.Task    (DeleteTask (..), NewTask (..),
+                                               TaskById (..), TaskDAO,
+                                               UpdateTask (..))
 
-import qualified Data.Repository.TaskRepo          as TaskRepo
+import qualified Data.Repository.TaskRepo     as TaskRepo
 
 
 mkFixture "Fixture" [ts| TaskDAO |]

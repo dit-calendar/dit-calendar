@@ -2,16 +2,16 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE KindSignatures        #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE QuasiQuotes           #-}
 {-# LANGUAGE TemplateHaskell       #-}
-{-# LANGUAGE OverloadedStrings #-}
 
 module Data.Service.UserSpec (spec) where
 
 import           Control.Monad.TestFixture
 import           Control.Monad.TestFixture.TH
-import           Test.Hspec
 import           Data.Text                    (Text)
+import           Test.Hspec
 import           Test.HUnit.Base              (assertEqual)
 
 
@@ -40,12 +40,12 @@ userFromDb = User{ name="Foo", User.userId=10, calendarEntries=[1,2], belongingT
 taskFromDb = Task{ Task.description="task1", taskId=5, belongingUsers=[10]}
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
-fixture = Fixture { _deleteCalendarEntry = \(a) -> tell [show a]
-                  , _getTask = \(a) -> tell [show a] >> return taskFromDb
-                  , _deleteUser = \(a) -> tell [show a]
+fixture = Fixture { _deleteCalendarEntry = \a -> tell [show a]
+                  , _getTask = \a -> tell [show a] >> return taskFromDb
+                  , _deleteUser = \a -> tell [show a]
                   , _deleteTaskFromUser = \x a -> tell [show x] >> tell [show a]
-                  , _getUser = \(a) -> tell [show a] >> return userFromDb
-                  , _updateTask = \(a) -> tell [show a]
+                  , _getUser = \a -> tell [show a] >> return userFromDb
+                  , _updateTask = \a -> tell [show a]
                   , _removeUserFromTask =  \x a -> tell [show x] >> tell [show a]
                   }
 

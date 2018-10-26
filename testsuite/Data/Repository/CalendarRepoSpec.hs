@@ -1,25 +1,29 @@
-{-# LANGUAGE MultiParamTypeClasses  #-}
-{-# LANGUAGE FlexibleInstances, FlexibleContexts #-}
-{-# LANGUAGE KindSignatures #-}
-{-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE KindSignatures        #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedStrings     #-}
+{-# LANGUAGE QuasiQuotes           #-}
+{-# LANGUAGE TemplateHaskell       #-}
 
 module Data.Repository.CalendarRepoSpec (spec) where
 
-import Test.Hspec
-import Control.Monad.TestFixture
-import Control.Monad.TestFixture.TH
+import           Control.Monad.TestFixture
+import           Control.Monad.TestFixture.TH
+import           Test.Hspec
 
-import Control.Monad.Identity        ( Identity )
-import Control.Monad.Writer.Class    ( tell )
+import           Control.Monad.Identity             (Identity)
+import           Control.Monad.Writer.Class         (tell)
 
-import Data.Repository.Acid.CalendarEntry           ( CalendarDAO, NewEntry(..), DeleteEntry(..), UpdateEntry(..) )
-import Data.Domain.CalendarEntry            as CalendarEntry
-import Data.Domain.User                     as User
-import Data.Time.Clock            ( UTCTime )
+import           Data.Domain.CalendarEntry          as CalendarEntry
+import           Data.Domain.User                   as User
+import           Data.Repository.Acid.CalendarEntry (CalendarDAO,
+                                                     DeleteEntry (..),
+                                                     NewEntry (..),
+                                                     UpdateEntry (..))
+import           Data.Time.Clock                    (UTCTime)
 
-import qualified Data.Repository.CalendarRepo          as CalendarRepo
+import qualified Data.Repository.CalendarRepo       as CalendarRepo
 
 
 oldDate = read "2011-03-20 18:11:42.202854 UTC"::UTCTime
