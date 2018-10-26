@@ -2,6 +2,7 @@
 
 module Presentation.Dto.CalendarEntry
     ( transform
+    , CalendarEntry(..)
     ) where
 
 import           Data.Aeson
@@ -21,6 +22,9 @@ data CalendarEntry = CalendarEntry
 
 instance ToJSON CalendarEntry where
     toEncoding = genericToEncoding defaultOptions
+
+instance FromJSON CalendarEntry where
+    parseJSON = genericParseJSON defaultOptions { omitNothingFields = True }
 
 transform :: Domain.CalendarEntry -> CalendarEntry
 transform domain =

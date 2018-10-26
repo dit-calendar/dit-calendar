@@ -22,6 +22,9 @@ import Data.Time.Clock            ( UTCTime )
 import qualified Data.Repository.CalendarRepo          as CalendarRepo
 
 
+oldDate = read "2011-03-20 18:11:42.202854 UTC"::UTCTime
+newDate = read "2012-11-19 17:51:42.203841 UTC"::UTCTime
+
 mkFixture "Fixture" [ts| CalendarDAO |]
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
@@ -33,30 +36,26 @@ fixture = Fixture { _create = \(NewEntry caledarEntry) -> return caledarEntry
 spec = describe "CalendarRepo" $ do
     it "newCalendarEntry" $ do
         let user = User{ name="Foo", User.userId=10, calendarEntries=[], belongingTasks=[] }
-        let (result, _) = evalTestFixture (CalendarRepo.newCalendarEntryImpl "2011-11-19 18:28:52.607875 UTC" "termin1" user) fixture
+        let (result, _) = evalTestFixture (CalendarRepo.newCalendarEntryImpl oldDate "termin1" user) fixture
         CalendarEntry.description result `shouldBe` "termin1"
         CalendarEntry.userId result `shouldBe` 10
         CalendarEntry.tasks result `shouldBe` []
-        let expectedDate = (read "2011-11-19 18:28:52.607875 UTC")::UTCTime
-        CalendarEntry.date result `shouldBe` expectedDate
+        CalendarEntry.date result `shouldBe` oldDate
     it "deleteCalendarEntry" $ do
         let (_, log) = evalTestFixture (CalendarRepo.deleteCalendarEntryImpl 15) fixture
         log `shouldBe` ["15"::String]
     it "updateDescription" $ do
-        let newDate = (read "2011-11-19 18:28:52.607875 UTC")::UTCTime
-        let calc = CalendarEntry{ description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[], date=newDate}
+        let calc = CalendarEntry{ description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[], date=oldDate}
         let (_, log) = evalTestFixture (CalendarRepo.updateDescription calc "termin3") fixture
         let newCalc = calc {description = "termin3"}
         log!!0 `shouldBe` show newCalc
     it "addTaskToCalendarEntry" $ do
-        let newDate = (read "2011-11-19 18:28:52.607875 UTC")::UTCTime
-        let calc = CalendarEntry{ description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[1], date=newDate}
+        let calc = CalendarEntry{ description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[1], date=oldDate}
         let (_, log) = evalTestFixture (CalendarRepo.addTaskToCalendarEntryImpl calc 2) fixture
         let newCalc = calc {tasks = [1, 2]}
         log!!0 `shouldBe` show newCalc
     it "deleteTaskFromCalendarEntry" $ do
-        let newDate = (read "2011-11-19 18:28:52.607875 UTC")::UTCTime
-        let calc = CalendarEntry{ description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[1,2,3], date=newDate}
+        let calc = CalendarEntry{ description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[1,2,3], date=oldDate}
         let (_, log) = evalTestFixture (CalendarRepo.deleteTaskFromCalendarEntryImpl calc 2) fixture
         let newCalc = calc {tasks = [1, 3]}
         log!!0 `shouldBe` show newCalc

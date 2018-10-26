@@ -6,7 +6,6 @@ module Presentation.Route.UserRoute
 
 import           Data.Aeson                                 (decode)
 import           Data.Text                                  (pack)
-
 import           Happstack.Server                           (Method (DELETE, GET, POST, PUT),
                                                              Response, look,
                                                              mapServerPartT)
@@ -15,11 +14,12 @@ import           Auth.Authorization                         (callIfAuthorized)
 import           Data.Domain.Types                          (UserId)
 import           Presentation.AcidHelper                    (App)
 import           Presentation.HttpServerHelper              (getHttpMethod, getBody)
-import           Presentation.ResponseHelper                (badResponse, notImplemented)
+import           Presentation.ResponseHelper                (badResponse, notImplemented, okResponse)
 import           Presentation.Dto.User                      as UserDto (User (..))
 
 import qualified Presentation.Controller.CalendarController as CalendarController
 import qualified Presentation.Controller.UserController     as UserController
+import qualified Presentation.Dto.CalendarEntry as CalendarDto
 
 routeUsers :: App Response
 routeUsers = do
@@ -44,9 +44,10 @@ routeDetailUser = do
                         callIfAuthorized (UserController.updateUser userDto)
                   Nothing -> badResponse "Could not parse"
         DELETE -> callIfAuthorized UserController.deleteUser
-        -- curl -X POST -d "name=FooBar" http://localhost:8000/user
+        -- curl -X POST -d "name=FooBar" http://localhost:8000/user/me
         POST -> do
-            description <- look "description"
-            newDate <- look "date"
-            callIfAuthorized (CalendarController.createCalendarEntry newDate $ pack description)
+            body <- getBody
+            case decode body :: Maybe CalendarDto.CalendarEntry of
+                Just newCalendar -> callIfAuthorized (CalendarController.createCalendarEntry newCalendar)
+                Nothing -> okResponse "falsch"
         other -> notImplemented other

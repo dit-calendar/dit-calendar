@@ -21,14 +21,18 @@ import qualified Data.Repository.TaskRepo           as MonadDBTaskRepo
 import           Data.Repository.UserRepo           (MonadDBUserRepo)
 import qualified Data.Repository.UserRepo           as MonadDBUserRepo
 import           Presentation.AcidHelper            (App)
+import qualified Presentation.Dto.CalendarEntry     as CalendarDto
 
 
 createEntryImpl :: (MonadDBUserRepo m, MonadDBCalendarRepo m) =>
-            String -> Description -> User -> m CalendarEntry
-createEntryImpl newDate description user = do
-    calendarEntry <- MonadDBCalendarRepo.newCalendarEntry newDate description user
-    MonadDBUserRepo.addCalendarEntryToUser user $ CalendarEntry.entryId calendarEntry
-    return calendarEntry
+            CalendarDto.CalendarEntry -> User -> m CalendarEntry
+createEntryImpl calendarDto user =
+    let newDate = CalendarDto.date calendarDto in
+    let description = CalendarDto.description calendarDto in
+        do
+            calendarEntry <- MonadDBCalendarRepo.newCalendarEntry newDate description user
+            MonadDBUserRepo.addCalendarEntryToUser user $ CalendarEntry.entryId calendarEntry
+            return calendarEntry
 
 removeCalendarImpl :: (MonadDBUserRepo m, MonadDBTaskRepo m, MonadDBCalendarRepo m, MonadIO m) =>
                 CalendarEntry -> m ()
@@ -49,7 +53,7 @@ deleteCalendarsTasks calendar =
     (return ()) $ CalendarEntry.tasks calendar
 
 class CalendarEntryService m where
-    createEntry :: String -> Description -> User -> m CalendarEntry
+    createEntry :: CalendarDto.CalendarEntry -> User -> m CalendarEntry
     removeCalendar :: CalendarEntry -> m ()
 
 instance (MonadDBUserRepo App, MonadDBTaskRepo App, MonadDBCalendarRepo App)
