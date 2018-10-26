@@ -25,7 +25,7 @@ import           Presentation.HttpServerHelper        (getBody,
                                                        readAuthUserFromBodyAsList)
 import           Presentation.ResponseHelper          (okResponse, okResponseJson, onUserExist)
 import           Presentation.Route.PageEnum          (Sitemap)
-import           Presentation.Dto.User                (transform)
+import           Presentation.Dto.User                as UserDto (User (..), transform)
 
 import qualified Data.Repository.Acid.User            as UserAcid
 import qualified Data.Repository.UserRepo             as UserRepo
@@ -73,10 +73,10 @@ createDomainUser name = do
     mUser <- UserRepo.createUser name
     okResponseJson $ encode $ transform mUser
 
-updateUser :: Text -> DomainUser.User -> App Response
-updateUser name loggedUser = updateUsr loggedUser
+updateUser :: UserDto.User -> DomainUser.User -> App Response
+updateUser userDto loggedUser = updateUsr loggedUser
     where updateUsr user = do
-              UserRepo.updateName user name
+              UserRepo.updateName user (UserDto.name userDto)
               okResponse $ "User with id:" ++ show (DomainUser.userId loggedUser) ++ "updated"
 
 

@@ -13,5 +13,8 @@ data User = User { name :: Text, userId :: Int}
 instance ToJSON User where
     toEncoding = genericToEncoding defaultOptions
 
+instance FromJSON User where
+    parseJSON = genericParseJSON defaultOptions { omitNothingFields = True }
+
 transform:: Domain.User -> User
 transform domain = User {name = Domain.name domain, userId = Domain.userId domain}
