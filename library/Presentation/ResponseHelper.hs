@@ -1,9 +1,9 @@
 {-# LANGUAGE FlexibleContexts #-}
 
 module Presentation.ResponseHelper
-    ( onUserExist, onEntryExist, onTaskExist, okResponse, okResponseJson,notImplemented  ) where
+    ( onUserExist, onEntryExist, onTaskExist, okResponse, badResponse, okResponseJson, notImplemented  ) where
 
-import           Happstack.Server                   (Method, Response, ok,
+import           Happstack.Server                   (Method, Response, ok, badRequest,
                                                      toResponse, toResponseBS)
 import           Data.Aeson                         (Value)
 import           Data.ByteString.Lazy
@@ -44,6 +44,9 @@ onNothing message = maybe (okResponse message)
 
 okResponse :: String -> App Response
 okResponse message = ok $ toResponse message
+
+badResponse :: String -> App Response
+badResponse message = badRequest $ toResponse message
 
 okResponseJson :: ByteString -> App Response
 okResponseJson object = ok $ toResponseBS (T.pack "application/json") object
