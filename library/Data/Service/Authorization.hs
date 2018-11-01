@@ -17,4 +17,4 @@ deleteAuthUser loggedUser =  do
     let userId = DomainUser.userId loggedUser
     mUser <- query (AuthUser.GetUserByUsername autUserName)
     update $ AuthUser.DeleteUser (AuthUser._userId $ fromJust mUser)
-        where autUserName = AuthUser.Username {AuthUser._unUsername = name loggedUser}
+        where autUserName = AuthUser.Username {AuthUser._unUsername = loginName loggedUser}

@@ -45,7 +45,7 @@ verifyToken auth' = do
     decodeAndVerifyToken authenticateState now (T.decodeUtf8 auth)
 
 getDomainUser :: AuthUser.User -> App (Maybe DomainUser.User)
-getDomainUser (AuthUser.User _ name _) = UserRepo.findUserByName $ AuthUser._unUsername name
+getDomainUser (AuthUser.User _ name _) = UserRepo.findUserByLoginName $ AuthUser._unUsername name
 
 responseWithError :: AuthUser.User -> App Response
 responseWithError (AuthUser.User _ name _) = internalServerError $ toResponse ("something went wrong. Domainuser: "

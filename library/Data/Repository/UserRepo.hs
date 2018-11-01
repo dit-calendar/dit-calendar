@@ -5,8 +5,8 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Data.Repository.UserRepo
-    ( deleteUserImpl, updateNameImpl, addCalendarEntryToUserImpl, addTaskToUserImpl
-    , deleteCalendarEntryFromUserImpl, deleteTaskFromUserImpl, getUserImpl, createUserImpl, findUserByNameIml,
+    ( deleteUserImpl, updateLoginNameImpl, addCalendarEntryToUserImpl, addTaskToUserImpl
+    , deleteCalendarEntryFromUserImpl, deleteTaskFromUserImpl, getUserImpl, createUserImpl, findUserByLoginNameIml,
      MonadDBUserRepo(..) ) where
 
 import           Control.Monad.IO.Class
@@ -30,10 +30,10 @@ instance UserDAO App where
     update = Foundation.update
     delete = Foundation.update
     query  = Foundation.query
-    queryByName = Foundation.query
+    queryByLoginName = Foundation.query
 
 createUserImpl :: UserDAO m => Text -> m User
-createUserImpl name = let user = User { name = name
+createUserImpl name = let user = User { loginName = name
                     , userId = 0 --TODO why it can't be undefined if creating user with post interface?
                     , calendarEntries = []
                     , belongingTasks = []
@@ -46,8 +46,8 @@ deleteUserImpl user = delete $ UserAcid.DeleteUser (Data.Domain.User.userId user
 updateUser :: UserDAO m => User -> m ()
 updateUser user = update $ UserAcid.UpdateUser user
 
-updateNameImpl :: UserDAO m => User -> Text -> m ()
-updateNameImpl user newName = updateUser user {name = newName}
+updateLoginNameImpl :: UserDAO m => User -> Text -> m ()
+updateLoginNameImpl user newName = updateUser user {loginName = newName}
 
 addCalendarEntryToUserImpl :: UserDAO m => User -> EntryId -> m ()
 addCalendarEntryToUserImpl user entryId =
@@ -71,27 +71,27 @@ getUserImpl userId = do
     mUser <- query $ UserAcid.UserById userId
     return $ fromJust mUser
 
-findUserByNameIml :: (UserDAO m, MonadIO m) => Text -> m (Maybe User)
-findUserByNameIml name = queryByName $ UserAcid.FindByName name
+findUserByLoginNameIml :: (UserDAO m, MonadIO m) => Text -> m (Maybe User)
+findUserByLoginNameIml name = queryByLoginName $ UserAcid.FindByLoginName name
 
 class (UserDAO App) => MonadDBUserRepo m where
     createUser :: Text -> m User
     deleteUser :: User -> m ()
-    updateName :: User -> Text -> m ()
+    updateLoginName :: User -> Text -> m ()
     addCalendarEntryToUser :: User -> EntryId -> m ()
     deleteCalendarEntryFromUser :: User -> EntryId -> m ()
     addTaskToUser :: User -> TaskId -> m ()
     deleteTaskFromUser :: User -> TaskId -> m ()
     getUser :: UserId -> m User
-    findUserByName :: Text -> m (Maybe User)
+    findUserByLoginName :: Text -> m (Maybe User)
 
 instance MonadDBUserRepo App where
     createUser = createUserImpl
     deleteUser = deleteUserImpl
-    updateName = updateNameImpl
+    updateLoginName = updateLoginNameImpl
     addCalendarEntryToUser = addCalendarEntryToUserImpl
     deleteCalendarEntryFromUser = deleteCalendarEntryFromUserImpl
     addTaskToUser = addTaskToUserImpl
     deleteTaskFromUser = deleteTaskFromUserImpl
     getUser = getUserImpl
-    findUserByName = findUserByNameIml
+    findUserByLoginName = findUserByLoginNameIml

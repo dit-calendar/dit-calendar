@@ -12,7 +12,7 @@ import           Data.Text         (Text)
 import           Data.Domain.Types (Entry (..), EntryId, TaskId, UserId)
 
 data User = User
-    { name            :: Text
+    { loginName            :: Text
     , userId          :: UserId
     , calendarEntries :: [EntryId]
     , belongingTasks  :: [TaskId]

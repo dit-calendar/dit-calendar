@@ -39,7 +39,7 @@ fixture = Fixture { _create = \(NewEntry caledarEntry) -> return caledarEntry
 
 spec = describe "CalendarRepo" $ do
     it "newCalendarEntry" $ do
-        let user = User{ name="Foo", User.userId=10, calendarEntries=[], belongingTasks=[] }
+        let user = User{ loginName="Foo", User.userId=10, calendarEntries=[], belongingTasks=[] }
         let (result, _) = evalTestFixture (CalendarRepo.newCalendarEntryImpl oldDate "termin1" user) fixture
         CalendarEntry.description result `shouldBe` "termin1"
         CalendarEntry.userId result `shouldBe` 10

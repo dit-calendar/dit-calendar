@@ -34,7 +34,7 @@ import qualified Data.Service.User            as UserService
 
 mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBTaskRepo, MonadDBCalendarRepo |]
 
-userFromDb = User{ name="Foo", User.userId=10, calendarEntries=[], belongingTasks=[1,2,3] }
+userFromDb = User{ loginName="Foo", User.userId=10, calendarEntries=[], belongingTasks=[1,2,3] }
 taskFromDb = Task{ Task.description="task1", taskId=5, belongingUsers=[]}
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m

@@ -14,7 +14,7 @@ import qualified Data.Repository.Acid.InterfaceAcid  as InterfaceAcid
 import qualified Data.Repository.Acid.User           as UserAcid
 
 withDatabaseConnection :: (AcidState UserAcid.UserList -> IO ()) -> IO ()
-withDatabaseConnection = initDatabase User{ User.name="Foo", userId=0, calendarEntries=[], belongingTasks=[]}
+withDatabaseConnection = initDatabase User{ User.loginName="Foo", userId=0, calendarEntries=[], belongingTasks=[]}
 
 spec :: Spec
 spec =
@@ -23,10 +23,10 @@ spec =
           describe "find" $ do
               it "by Username" $
                 \c -> do
-                  userState   <- query c $ UserAcid.FindByName "Foo"
+                  userState   <- query c $ UserAcid.FindByLoginName "Foo"
                   userState `shouldSatisfy` isJust
-                  fromJust userState `shouldBe` User{  User.name="Foo", userId=0, calendarEntries=[], belongingTasks=[] }
+                  fromJust userState `shouldBe` User{  User.loginName="Foo", userId=0, calendarEntries=[], belongingTasks=[] }
               it "by wrong Username" $
                   \c -> do
-                    userState   <- query c $ UserAcid.FindByName "Foo1"
+                    userState   <- query c $ UserAcid.FindByLoginName "Foo1"
                     userState `shouldSatisfy` isNothing

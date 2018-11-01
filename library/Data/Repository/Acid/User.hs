@@ -5,7 +5,7 @@
 
 module Data.Repository.Acid.User
     ( UserDAO(..), initialUserListState, UserList(..), NewUser(..), UserById(..), AllUsers(..),
-    GetUserList(..), UpdateUser(..), DeleteUser(..), FindByName(..) ) where
+    GetUserList(..), UpdateUser(..), DeleteUser(..), FindByLoginName(..) ) where
 
 import           Control.Applicative                ((<$>))
 import           Control.Monad.Reader               (ask)
@@ -23,7 +23,7 @@ import qualified Data.Repository.Acid.InterfaceAcid as InterfaceAcid
 
 instance Indexable User where
   empty = ixSet [ ixFun $ \bp -> [ userId bp ],
-                  ixFun $ \bp -> [ name bp ] ]
+                  ixFun $ \bp -> [ loginName bp ] ]
 
 type UserList = InterfaceAcid.EntrySet User
 
@@ -40,9 +40,9 @@ newUser = InterfaceAcid.newEntry
 userById :: UserId -> Query UserList (Maybe User)
 userById = InterfaceAcid.entryById
 
-findByName :: Text -> Query UserList (Maybe User)
-findByName name = do b@InterfaceAcid.EntrySet{..} <- ask
-                     return $ getOne $ entrys @= name
+findByLoginName :: Text -> Query UserList (Maybe User)
+findByLoginName loginName = do b@InterfaceAcid.EntrySet{..} <- ask
+                               return $ getOne $ entrys @= loginName
 
 allUsers :: Query UserList [User]
 allUsers = InterfaceAcid.allEntrysAsList
@@ -53,11 +53,11 @@ updateUser = InterfaceAcid.updateEntry
 deleteUser :: UserId -> Update UserList ()
 deleteUser = InterfaceAcid.deleteEntry
 
-$(makeAcidic ''UserList ['newUser, 'userById, 'findByName, 'allUsers, 'getUserList, 'updateUser, 'deleteUser])
+$(makeAcidic ''UserList ['newUser, 'userById, 'findByLoginName, 'allUsers, 'getUserList, 'updateUser, 'deleteUser])
 
 class UserDAO m where
     create :: NewUser -> m User
     update :: UpdateUser -> m ()
     delete :: DeleteUser -> m ()
     query  :: UserById -> m (Maybe User)
-    queryByName :: FindByName -> m (Maybe User)
+    queryByLoginName :: FindByLoginName -> m (Maybe User)

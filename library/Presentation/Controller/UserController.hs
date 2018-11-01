@@ -76,7 +76,7 @@ createDomainUser name = do
 updateUser :: UserDto.User -> DomainUser.User -> App Response
 updateUser userDto loggedUser = updateUsr loggedUser
     where updateUsr user = do
-              UserRepo.updateName user (UserDto.name userDto)
+              UserRepo.updateLoginName user (UserDto.loginName userDto)
               okResponse $ "User with id:" ++ show (DomainUser.userId loggedUser) ++ "updated"
 
 
