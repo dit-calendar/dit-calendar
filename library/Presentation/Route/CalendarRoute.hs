@@ -21,6 +21,7 @@ routeCalendarEntry entryId = do
     m <- getHttpMethod
     case m of
         DELETE -> callIfAuthorized (CalendarController.deleteCalendarEntry entryId)
+        --  https://localhost:8443/calendarentry/1
         GET -> CalendarController.entryPage entryId
         POST -> do
             description <- look "description"

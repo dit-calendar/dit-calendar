@@ -49,5 +49,5 @@ routeDetailUser = do
             body <- getBody
             case decode body :: Maybe CalendarDto.CalendarEntry of
                 Just newCalendar -> callIfAuthorized (CalendarController.createCalendarEntry newCalendar)
-                Nothing -> okResponse "falsch"
+                Nothing -> badResponse "Could not parse"
         other -> notImplemented other

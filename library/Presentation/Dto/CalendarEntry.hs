@@ -14,9 +14,9 @@ import qualified Data.Domain.CalendarEntry as Domain
 
 data CalendarEntry = CalendarEntry
     { description :: Text
-    , entryId     :: Int
+    , entryId     :: Maybe Int
     , userId      :: Int
-    , tasks       :: [Int]
+    , tasks       :: Maybe [Int]
     , date        :: UTCTime
     } deriving (Show, Generic)
 
@@ -30,8 +30,8 @@ transform :: Domain.CalendarEntry -> CalendarEntry
 transform domain =
     CalendarEntry
         { description = Domain.description domain
-        , entryId = Domain.entryId domain
+        , entryId = Just (Domain.entryId domain)
         , userId = Domain.userId domain
-        , tasks = Domain.tasks domain
+        , tasks = Just (Domain.tasks domain)
         , date = Domain.date domain
         }

@@ -7,6 +7,7 @@ h4. Sandbox
 ** alles Dependency und Compelierte Dateinen werden nicht mehr global sondern local(im Projektverzeichnis) installiert
 * Play around with the code in GHCi
 ** cabal repl
+** stack ghci
 
 h4. Programm bauen und ausführen
 * bauen: cabal build 
@@ -47,3 +48,7 @@ h4. send request with token
 
 h4. show all users
 * curl -X GET https://localhost:8443/users --insecure
+
+h4. calendar erstellen
+* curl -H "Authorization: Bearer XXX" -X POST -d '{"description":"testHeute","userId":1,"date":"2011-11-19T18:28:52.607875Z"}' https://localhost:8443/user/me --insecure
+

@@ -39,7 +39,7 @@ newCalendarEntryImpl newDate description user =
     let entry =
             CalendarEntry
                 { description = description
-                , entryId = undefined
+                , entryId = 0 --TODO why it can't be undefined if creating calendar with post interface?
                 , CalendarEntry.userId = User.userId user
                 , tasks = []
                 , date = newDate
