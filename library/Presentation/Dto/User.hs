@@ -7,7 +7,7 @@ import qualified Data.Domain.User as Domain
 import           Data.Text
 import           GHC.Generics
 
-data User = User { loginName :: Text, userId :: Int}
+data User = User { loginName :: Text, userId :: Maybe Int}
     deriving (Show, Generic)
 
 instance ToJSON User where
@@ -17,4 +17,4 @@ instance FromJSON User where
     parseJSON = genericParseJSON defaultOptions { omitNothingFields = True }
 
 transform:: Domain.User -> User
-transform domain = User {loginName = Domain.loginName domain, userId = Domain.userId domain}
+transform domain = User {loginName = Domain.loginName domain, userId = Just $ Domain.userId domain}
