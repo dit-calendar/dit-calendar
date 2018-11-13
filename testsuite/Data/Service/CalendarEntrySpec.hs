@@ -40,7 +40,7 @@ taskFromDb = Task{ Task.description="task1", taskId=1, belongingUsers=[]}
 dbDate = read "2011-11-19 18:28:52.607875 UTC"::UTCTime
 entryFromDb = CalendarEntry{ CalendarEntry.description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[], date=dbDate}
 newDate = read "2012-11-19 17:51:42.203841 UTC"::UTCTime
-calendarDto = CalendarDto.CalendarEntry{CalendarDto.date = newDate, CalendarDto.description ="termin2"}
+calendarDto = CalendarDto.CalendarEntry{CalendarDto.date = newDate, CalendarDto.description =Just "termin2"}
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture { _newCalendarEntry = \newDate description user -> tell [show newDate] >> tell [unpack description]

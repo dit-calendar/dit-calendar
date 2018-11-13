@@ -7,6 +7,7 @@
 module Data.Service.CalendarEntry ( createEntryImpl, removeCalendarImpl, CalendarEntryService(..) ) where
 
 import           Control.Monad.IO.Class
+import           Data.Maybe                         (fromJust)
 
 import           Data.Domain.CalendarEntry          as CalendarEntry
 import           Data.Domain.Types                  (Description)
@@ -28,7 +29,7 @@ createEntryImpl :: (MonadDBUserRepo m, MonadDBCalendarRepo m) =>
             CalendarDto.CalendarEntry -> User -> m CalendarEntry
 createEntryImpl calendarDto user =
     let newDate = CalendarDto.date calendarDto in
-    let description = CalendarDto.description calendarDto in
+    let description = fromJust (CalendarDto.description calendarDto) in
         do
             calendarEntry <- MonadDBCalendarRepo.newCalendarEntry newDate description user
             MonadDBUserRepo.addCalendarEntryToUser user $ CalendarEntry.entryId calendarEntry

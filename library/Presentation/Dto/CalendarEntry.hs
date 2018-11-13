@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 
 module Presentation.Dto.CalendarEntry
-    ( transform
+    ( transformToDto
     , CalendarEntry(..)
     ) where
 
@@ -13,7 +13,7 @@ import           GHC.Generics
 import qualified Data.Domain.CalendarEntry as Domain
 
 data CalendarEntry = CalendarEntry
-    { description :: Text
+    { description :: Maybe Text
     , entryId     :: Maybe Int
     , userId      :: Int
     , tasks       :: Maybe [Int]
@@ -26,10 +26,10 @@ instance ToJSON CalendarEntry where
 instance FromJSON CalendarEntry where
     parseJSON = genericParseJSON defaultOptions { omitNothingFields = True }
 
-transform :: Domain.CalendarEntry -> CalendarEntry
-transform domain =
+transformToDto :: Domain.CalendarEntry -> CalendarEntry
+transformToDto domain =
     CalendarEntry
-        { description = Domain.description domain
+        { description = Just (Domain.description domain)
         , entryId = Just (Domain.entryId domain)
         , userId = Domain.userId domain
         , tasks = Just (Domain.tasks domain)
