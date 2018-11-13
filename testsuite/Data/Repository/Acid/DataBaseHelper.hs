@@ -2,14 +2,17 @@
 
 module Data.Repository.Acid.DataBaseHelper ( initDatabase ) where
 
-import System.Directory     ( removeDirectoryRecursive )
-import Data.Data            ( Typeable )
+import           Data.Data                          (Typeable)
+import           System.Directory                   (removeDirectoryRecursive)
 
-import Data.Acid            ( AcidState, IsAcidic, openLocalStateFrom, closeAcidState )
-import Control.Exception    ( bracket )
-import Data.IxSet           ( Indexable(..), insert, empty )
+import           Control.Exception                  (bracket)
+import           Data.Acid                          (AcidState, IsAcidic,
+                                                     closeAcidState,
+                                                     openLocalStateFrom)
+import           Data.IxSet                         (Indexable (..), empty,
+                                                     insert)
 
-import qualified Data.Repository.Acid.InterfaceAcid      as   InterfaceAcid
+import qualified Data.Repository.Acid.InterfaceAcid as InterfaceAcid
 
 basePath :: String
 basePath = "testsuite/temptestdb"

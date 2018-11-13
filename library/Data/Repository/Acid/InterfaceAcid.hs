@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE RecordWildCards    #-}
 {-# LANGUAGE TemplateHaskell    #-}
+{-# LANGUAGE DatatypeContexts   #-}
 
 module Data.Repository.Acid.InterfaceAcid where
 

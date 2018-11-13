@@ -2,6 +2,7 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE KindSignatures        #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE QuasiQuotes           #-}
 {-# LANGUAGE TemplateHaskell       #-}
 
@@ -9,6 +10,7 @@ module Data.Service.UserSpec (spec) where
 
 import           Control.Monad.TestFixture
 import           Control.Monad.TestFixture.TH
+import           Data.Text                    (Text)
 import           Test.Hspec
 import           Test.HUnit.Base              (assertEqual)
 
@@ -34,16 +36,16 @@ import qualified Data.Service.User            as UserService
 
 mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBTaskRepo, MonadDBCalendarRepo, TaskService |]
 
-userFromDb = User{ name="Foo", User.userId=10, calendarEntries=[1,2], belongingTasks=[4] }
+userFromDb = User{ loginName="Foo", User.userId=10, calendarEntries=[1,2], belongingTasks=[4] }
 taskFromDb = Task{ Task.description="task1", taskId=5, belongingUsers=[10]}
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
-fixture = Fixture { _deleteCalendarEntry = \(a) -> tell [show a]
-                  , _getTask = \(a) -> tell [show a] >> return taskFromDb
-                  , _deleteUser = \(a) -> tell [show a]
+fixture = Fixture { _deleteCalendarEntry = \a -> tell [show a]
+                  , _getTask = \a -> tell [show a] >> return taskFromDb
+                  , _deleteUser = \a -> tell [show a]
                   , _deleteTaskFromUser = \x a -> tell [show x] >> tell [show a]
-                  , _getUser = \(a) -> tell [show a] >> return userFromDb
-                  , _updateTask = \(a) -> tell [show a]
+                  , _getUser = \a -> tell [show a] >> return userFromDb
+                  , _updateTask = \a -> tell [show a]
                   , _removeUserFromTask =  \x a -> tell [show x] >> tell [show a]
                   }
 

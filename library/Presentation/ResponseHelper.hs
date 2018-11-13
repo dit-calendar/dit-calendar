@@ -1,10 +1,12 @@
 {-# LANGUAGE FlexibleContexts #-}
 
 module Presentation.ResponseHelper
-    ( onUserExist, onEntryExist, onTaskExist, okResponse,notImplemented  ) where
+    ( onUserExist, onEntryExist, onTaskExist, okResponse, badRequest, okResponseJson, notImplemented  ) where
 
+import           Data.Aeson                         (Value)
+import           Data.ByteString.Lazy
 import           Happstack.Server                   (Method, Response, ok,
-                                                     toResponse)
+                                                     toResponse, toResponseBS)
 
 import           Data.Domain.CalendarEntry          (CalendarEntry)
 import           Data.Domain.Task                   (Task)
@@ -22,7 +24,10 @@ import qualified Data.Repository.Acid.Task          as TaskDao
 import qualified Data.Repository.Acid.Task          as TaskAcid
 import qualified Data.Repository.Acid.User          as UserDao
 import qualified Data.Repository.Acid.User          as UserAcid
+import qualified Presentation.Dto.CalendarEntry     as CalendarDto
 
+import qualified Data.ByteString.Char8              as T
+import qualified Happstack.Server                   as HServer (badRequest)
 
 onUserExist :: UserDAO App => UserId -> (User -> App Response) -> App Response
 onUserExist i daoFunction = UserDao.query (UserAcid.UserById i) >>= (onNothing $ "Could not find a user with id " ++ show i) daoFunction
@@ -40,6 +45,12 @@ onNothing message = maybe (okResponse message)
 
 okResponse :: String -> App Response
 okResponse message = ok $ toResponse message
+
+badRequest :: String -> App Response
+badRequest message = HServer.badRequest $ toResponse message
+
+okResponseJson :: ByteString -> App Response
+okResponseJson object = ok $ toResponseBS (T.pack "application/json") object
 
 notImplemented :: Method -> App Response
 notImplemented httpMethod = okResponse ("HTTP-Method: " ++ show httpMethod ++ " not implemented")

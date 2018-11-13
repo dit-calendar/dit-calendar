@@ -1,19 +1,23 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Data.Repository.Acid.InterfaceAcidSpec (spec) where
 
-import Test.Hspec
-import Data.Maybe                 ( isJust, fromJust, isNothing)
-import Data.Acid                  ( AcidState, query, update )
+import           Data.Acid                           (AcidState, query, update)
+import           Data.Maybe                          (fromJust, isJust,
+                                                      isNothing)
+import           Test.Hspec
 
-import Data.Repository.Acid.DataBaseHelper   ( initDatabase )
-import Data.Repository.Acid.CalendarEntry    ( NewEntry(..), GetEntryList(..) )
-import Data.Domain.CalendarEntry               as CalendarEntry
-import Data.Time.Clock            ( UTCTime )
+import           Data.Domain.CalendarEntry           as CalendarEntry
+import           Data.Repository.Acid.CalendarEntry  (GetEntryList (..),
+                                                      NewEntry (..))
+import           Data.Repository.Acid.DataBaseHelper (initDatabase)
+import           Data.Time.Clock                     (UTCTime)
 
-import qualified Data.Repository.Acid.CalendarEntry      as   CalendarEntryAcid
-import qualified Data.Repository.Acid.InterfaceAcid      as   InterfaceAcid
+import qualified Data.Repository.Acid.CalendarEntry  as CalendarEntryAcid
+import qualified Data.Repository.Acid.InterfaceAcid  as InterfaceAcid
 
 
-dbDate = (read "2011-11-19 18:28:52.607875 UTC")::UTCTime
+dbDate = read "2011-11-19 18:28:52.607875 UTC"::UTCTime
 withDatabaseConnection :: (AcidState CalendarEntryAcid.EntryList -> IO ()) -> IO ()
 withDatabaseConnection = initDatabase CalendarEntry{ CalendarEntry.description="Foo", CalendarEntry.entryId=0, userId=0, tasks=[], date=dbDate }
 
@@ -39,7 +43,7 @@ spec =
                   _            <- update c (NewEntry calendarEntry)
                   entryList    <- query c GetEntryList
                   InterfaceAcid.nextEntryId entryList `shouldBe` oldId + 1
-                  let newDate2 = (read "2012-11-19 17:51:42.203841 UTC")::UTCTime
+                  let newDate2 = read "2012-11-19 17:51:42.203841 UTC"::UTCTime
                   let calendarEntry = CalendarEntry { CalendarEntry.description="Zahnarzt2", CalendarEntry.entryId=0, userId=1, tasks=[], date=newDate2 }
                   _            <- update c (NewEntry calendarEntry)
                   entryState  <- query c $ CalendarEntryAcid.EntryById (oldId + 1)
@@ -55,7 +59,7 @@ spec =
 
           describe "delete" $
               it "create/delete Entry and check existence" $
-                \ c -> do 
+                \ c -> do
                   entryList <- query c GetEntryList
                   let calendarEntry = CalendarEntry { CalendarEntry.description="Zahnarzt", CalendarEntry.entryId=0, userId=1, tasks=[], date=dbDate }
                   _ <- update c (NewEntry calendarEntry)

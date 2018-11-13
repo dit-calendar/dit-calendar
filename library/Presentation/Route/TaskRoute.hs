@@ -1,42 +1,47 @@
-module Presentation.Route.TaskRoute (routeTask, routeTaskWithCalendar, routeTaskWithUser) where
+module Presentation.Route.TaskRoute
+    ( routeTask
+    , routeTaskWithCalendar
+    , routeTaskWithUser
+    ) where
 
+import           Data.Aeson                             (decode)
 import           Happstack.Server                       (Method (DELETE, GET, POST, PUT),
-                                                         look)
+                                                         Response, look)
 
 import           Auth.Authorization                     (callIfAuthorized)
 import           Data.Domain.Types                      (EntryId, TaskId,
                                                          UserId)
-import           Happstack.Foundation                   (lift)
-import           Presentation.AcidHelper                (CtrlV)
-import           Presentation.HttpServerHelper          (getHttpMethod)
-import           Presentation.ResponseHelper            (notImplemented)
+import           Presentation.AcidHelper                (App)
+import           Presentation.HttpServerHelper          (getHttpMethod, getBody)
+import           Presentation.ResponseHelper            (badRequest, notImplemented)
+import           Presentation.Dto.Task                  as TaskDto (Task (..))
 
 import qualified Presentation.Controller.TaskController as TaskController
 
-routeTask :: TaskId -> CtrlV
+routeTask :: TaskId -> App Response
 routeTask taskId = do
-  m <- getHttpMethod
-  case m of
-    GET  -> lift $ TaskController.taskPage taskId
-    PUT -> do
-      description <- look "description"
-      lift $ callIfAuthorized (TaskController.updateTask taskId description)
-    other -> lift $ notImplemented other
+    m <- getHttpMethod
+    case m of
+        GET -> TaskController.taskPage taskId
+        PUT -> do
+            body <- getBody
+            case decode body :: Maybe TaskDto.Task of
+                  Just taskDto ->
+                       callIfAuthorized (TaskController.updateTask taskId taskDto)
+                  Nothing -> badRequest "Could not parse"
+        other -> notImplemented other
 
-routeTaskWithCalendar :: TaskId -> EntryId -> CtrlV
+routeTaskWithCalendar :: TaskId -> EntryId -> App Response
 routeTaskWithCalendar taskId entryId = do
-  m <- getHttpMethod
-  case m of
-    DELETE ->
-      lift $ callIfAuthorized (TaskController.deleteTask entryId taskId)
-    other -> lift $ notImplemented other
+    m <- getHttpMethod
+    case m of
+        DELETE -> callIfAuthorized (TaskController.deleteTask entryId taskId)
+        other  -> notImplemented other
 
-routeTaskWithUser :: TaskId -> UserId -> CtrlV
+routeTaskWithUser :: TaskId -> UserId -> App Response
 routeTaskWithUser taskId userId = do
-  m <- getHttpMethod
-  case m of
-    DELETE ->
-      lift $ callIfAuthorized (TaskController.removeUserFromTask taskId userId)
-    PUT ->
-      lift $ callIfAuthorized (TaskController.addUserToTask taskId userId)
-    other -> lift $ notImplemented other
+    m <- getHttpMethod
+    case m of
+        DELETE -> callIfAuthorized (TaskController.removeUserFromTask taskId userId)
+        PUT -> callIfAuthorized (TaskController.addUserToTask taskId userId)
+        other -> notImplemented other

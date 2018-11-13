@@ -1,37 +1,45 @@
 module Presentation.Controller.CalendarController where
 
-import           Happstack.Server             (Response)
+import           Data.Aeson                     (encode)
+import           Data.Maybe                     (fromJust)
+import           Happstack.Server               (Response)
 
-import           Data.Domain.CalendarEntry    as CalendarEntry
-import           Data.Domain.Types            (EntryId, UserId)
-import           Presentation.AcidHelper      (App)
-import           Presentation.ResponseHelper  (okResponse, onEntryExist,
-                                               onUserExist)
+import           Data.Domain.CalendarEntry      as CalendarEntry
+import           Data.Domain.Types              (Description, EntryId, UserId)
+import           Presentation.AcidHelper        (App)
+import           Presentation.ResponseHelper    (okResponse, okResponseJson,
+                                                 onEntryExist, onUserExist)
 
-import qualified Data.Domain.User             as DomainUser
-import qualified Data.Repository.CalendarRepo as CalendarRepo
-import qualified Data.Service.CalendarEntry   as CalendarService
-
+import qualified Data.Domain.User               as DomainUser
+import qualified Data.Domain.CalendarEntry      as DomainCalendar
+import qualified Data.Repository.CalendarRepo   as CalendarRepo
+import qualified Data.Service.CalendarEntry     as CalendarService
+import qualified Presentation.Dto.CalendarEntry as CalendarDto
 
 --handler for entryPage
 entryPage :: EntryId -> App Response
-entryPage i = onEntryExist i (\e -> okResponse $ "peeked at the description and saw: " ++ show e)
+entryPage i = onEntryExist i (okResponseJson . encode . CalendarDto.transformToDto)
 
-createCalendarEntry :: String -> String -> DomainUser.User -> App Response
-createCalendarEntry newDate description loggedUser = onUserExist userId createCalendar
-    where createCalendar user = do
-              entry <- CalendarService.createEntry newDate description user
-              okResponse $ "Add Entry: " ++ show (CalendarEntry.entryId entry) ++ "to User: " ++ show userId
-          userId = DomainUser.userId loggedUser
+createCalendarEntry :: CalendarDto.CalendarEntry -> DomainUser.User -> App Response
+createCalendarEntry calendarDto loggedUser = onUserExist userId createCalendar
+    where
+        createCalendar user = do
+            entry <- CalendarService.createEntry calendarDto user
+            okResponseJson $ encode $ CalendarDto.transformToDto entry
+        userId = DomainUser.userId loggedUser
 
 deleteCalendarEntry :: EntryId -> DomainUser.User -> App Response
 deleteCalendarEntry i loggedUser = onEntryExist i deleteCalendar
-    where deleteCalendar cEntry = do
-              CalendarService.removeCalendar cEntry
-              okResponse $ "CalendarEntry with id:" ++ show i ++ "deleted"
+    where
+        deleteCalendar cEntry = do
+            CalendarService.removeCalendar cEntry
+            okResponse $ "CalendarEntry with id:" ++ show i ++ "deleted"
 
-updateCalendarEntry :: EntryId -> String -> DomainUser.User -> App Response
-updateCalendarEntry id description loggedUser = onEntryExist id updateCalendar
-    where updateCalendar cEntry = do
-              CalendarRepo.updateDescription cEntry description
-              okResponse $ "CalendarEntry with id:" ++ show id ++ "updated"
+updateCalendarEntry :: CalendarDto.CalendarEntry -> DomainUser.User -> App Response
+updateCalendarEntry calendarDto loggedUser = onEntryExist entryId updateCalendar
+    where
+        entryId = fromJust $ CalendarDto.entryId calendarDto
+        updateCalendar cEntry = do
+            --TODO überprüfe welche werte gesetzt sind und update nur diese
+            CalendarRepo.updateDescription cEntry (fromJust $ CalendarDto.description calendarDto)
+            okResponse $ "CalendarEntry with id:" ++ show (DomainCalendar.entryId cEntry) ++ "updated"

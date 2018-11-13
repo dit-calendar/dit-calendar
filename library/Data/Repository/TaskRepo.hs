@@ -14,7 +14,7 @@ import qualified Happstack.Foundation      as Foundation
 
 import           Data.Domain.CalendarEntry as CalendarEntry
 import           Data.Domain.Task          as Task
-import           Data.Domain.Types         (TaskId)
+import           Data.Domain.Types         (TaskId, Description)
 import           Data.Repository.Acid.Task (TaskDAO (..))
 import           Presentation.AcidHelper   (App)
 
@@ -29,16 +29,16 @@ instance TaskDAO App where
 updateTaskImpl :: TaskDAO m => Task -> m ()
 updateTaskImpl task = update $ TaskAcid.UpdateTask task
 
-updateDescription :: TaskDAO m => Task -> String -> m ()
+updateDescription :: TaskDAO m => Task -> Description -> m ()
 updateDescription task newDescription = updateTaskImpl task {Task.description = newDescription}
 
 deleteTaskImpl :: TaskDAO m => Task -> m ()
 deleteTaskImpl task = delete $ TaskAcid.DeleteTask $ taskId task
 
-createTaskImpl :: TaskDAO m => String -> m Task
+createTaskImpl :: TaskDAO m => Description -> m Task
 createTaskImpl description =
     let task = Task { Task.description = description
-                    , taskId  = undefined
+                    , taskId  = 0
                     , belongingUsers = []
                     } in
         create $ TaskAcid.NewTask task
@@ -52,7 +52,7 @@ getTaskImpl taskId =
 class (Monad m, TaskDAO App) => MonadDBTaskRepo m where
     updateTask        :: Task   -> m ()
     deleteTask        :: Task   -> m ()
-    createTask        :: String -> m Task
+    createTask        :: Description -> m Task
     getTask           :: TaskId -> m Task
 
 instance MonadDBTaskRepo App where

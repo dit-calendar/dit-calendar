@@ -1,4 +1,9 @@
-module Presentation.HttpServerHelper ( getBody, readAuthUserFromBodyAsList, getHttpMethod, mapServerPartTIO2App ) where
+module Presentation.HttpServerHelper
+    ( getBody
+    , readAuthUserFromBodyAsList
+    , getHttpMethod
+    , mapServerPartTIO2App
+    ) where
 
 import           Control.Monad.IO.Class               (MonadIO, liftIO)
 
@@ -25,7 +30,7 @@ peekRequestBody rq = liftIO $ tryReadMVar (rqBody rq)
 
 getBody :: App L.ByteString
 getBody = do
-    req  <- askRq
+    req <- askRq
     body <- liftIO $ peekRequestBody req
     case body of
         Just rqbody -> return . unBody $ rqbody
@@ -34,7 +39,7 @@ getBody = do
 readAuthUserFromBodyAsList :: L.ByteString -> Maybe NewAccountData
 readAuthUserFromBodyAsList bString = decode bString :: Maybe NewAccountData
 
-getHttpMethod :: RouteT a App Method
+getHttpMethod :: App Method
 getHttpMethod = do
     nullDir
     g <- rqMethod <$> askRq
