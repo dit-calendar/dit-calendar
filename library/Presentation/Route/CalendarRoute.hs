@@ -2,7 +2,7 @@ module Presentation.Route.CalendarRoute
     ( routeCalendarEntry
     ) where
 
-import           Data.Aeson                                 (eitherDecode, decode)
+import           Data.Aeson                                 (eitherDecode)
 import           Data.Either
 
 import           Happstack.Server                           (Method (DELETE, GET, POST, PUT),
@@ -36,7 +36,7 @@ routeCalendarEntry entryId = do
                  Left errorMessage -> badRequest errorMessage
         PUT -> do
             body <- getBody
-            case decode body :: Maybe CalendarDto.CalendarEntry of
-                  Just calendarDto ->
+            case eitherDecode body :: Either String CalendarDto.CalendarEntry of
+                  Right calendarDto ->
                         callIfAuthorized (CalendarController.updateCalendarEntry calendarDto)
-                  Nothing -> badRequest "Could not parse"
+                  Left errorMessage -> badRequest errorMessage

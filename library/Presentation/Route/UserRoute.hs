@@ -4,8 +4,7 @@ module Presentation.Route.UserRoute
     , routeUsers
     ) where
 
-import           Data.Aeson                                 (decode)
-import           Data.Text                                  (pack)
+import           Data.Aeson                                 (eitherDecode)
 import           Happstack.Server                           (Method (DELETE, GET, POST, PUT),
                                                              Response, look,
                                                              mapServerPartT)
@@ -39,15 +38,14 @@ routeDetailUser = do
     case m of
         PUT -> do
               body <- getBody
-              case decode body :: Maybe UserDto.User of
-                  Just userDto ->
-                        callIfAuthorized (UserController.updateUser userDto)
-                  Nothing -> badRequest "Could not parse"
+              case eitherDecode body :: Either String UserDto.User of
+                  Right userDto -> callIfAuthorized (UserController.updateUser userDto)
+                  Left errorMessage -> badRequest errorMessage
         DELETE -> callIfAuthorized UserController.deleteUser
         -- curl -X POST -d "name=FooBar" http://localhost:8000/user/me
         POST -> do
             body <- getBody
-            case decode body :: Maybe CalendarDto.CalendarEntry of
-                Just newCalendar -> callIfAuthorized (CalendarController.createCalendarEntry newCalendar)
-                Nothing -> badRequest "Could not parse"
+            case eitherDecode body :: Either String CalendarDto.CalendarEntry of
+                Right newCalendar -> callIfAuthorized (CalendarController.createCalendarEntry newCalendar)
+                Left errorMessage -> badRequest errorMessage
         other -> notImplemented other
