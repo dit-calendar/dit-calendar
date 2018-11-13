@@ -14,7 +14,7 @@ import           Data.Domain.Types                          (Description (..),
 import           Presentation.AcidHelper                    (App)
 import           Presentation.HttpServerHelper              (getBody,
                                                              getHttpMethod)
-import           Presentation.ResponseHelper                (badResponse)
+import           Presentation.ResponseHelper                (badRequest)
 
 import qualified Presentation.Controller.CalendarController as CalendarController
 import qualified Presentation.Controller.TaskController     as TaskController
@@ -35,4 +35,4 @@ routeCalendarEntry entryId = do
             case decode body :: Maybe CalendarDto.CalendarEntry of
                   Just calendarDto ->
                         callIfAuthorized (CalendarController.updateCalendarEntry calendarDto)
-                  Nothing -> badResponse "Could not parse"
+                  Nothing -> badRequest "Could not parse"

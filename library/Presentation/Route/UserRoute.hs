@@ -14,7 +14,7 @@ import           Auth.Authorization                         (callIfAuthorized)
 import           Data.Domain.Types                          (UserId)
 import           Presentation.AcidHelper                    (App)
 import           Presentation.HttpServerHelper              (getHttpMethod, getBody)
-import           Presentation.ResponseHelper                (badResponse, notImplemented, okResponse)
+import           Presentation.ResponseHelper                (badRequest, notImplemented, okResponse)
 import           Presentation.Dto.User                      as UserDto (User (..))
 
 import qualified Presentation.Controller.CalendarController as CalendarController
@@ -42,12 +42,12 @@ routeDetailUser = do
               case decode body :: Maybe UserDto.User of
                   Just userDto ->
                         callIfAuthorized (UserController.updateUser userDto)
-                  Nothing -> badResponse "Could not parse"
+                  Nothing -> badRequest "Could not parse"
         DELETE -> callIfAuthorized UserController.deleteUser
         -- curl -X POST -d "name=FooBar" http://localhost:8000/user/me
         POST -> do
             body <- getBody
             case decode body :: Maybe CalendarDto.CalendarEntry of
                 Just newCalendar -> callIfAuthorized (CalendarController.createCalendarEntry newCalendar)
-                Nothing -> badResponse "Could not parse"
+                Nothing -> badRequest "Could not parse"
         other -> notImplemented other

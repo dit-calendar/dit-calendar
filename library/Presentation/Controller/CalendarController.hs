@@ -36,7 +36,7 @@ deleteCalendarEntry i loggedUser = onEntryExist i deleteCalendar
             okResponse $ "CalendarEntry with id:" ++ show i ++ "deleted"
 
 updateCalendarEntry :: CalendarDto.CalendarEntry -> DomainUser.User -> App Response
-updateCalendarEntry calendarDto loggedUser = onEntryExist entryId updateCalendar --TODO onEntryExist sollte mit dto arbeiten
+updateCalendarEntry calendarDto loggedUser = onEntryExist entryId updateCalendar
     where
         entryId = fromJust $ CalendarDto.entryId calendarDto
         updateCalendar cEntry = do
