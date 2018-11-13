@@ -38,7 +38,7 @@ deleteTaskImpl task = delete $ TaskAcid.DeleteTask $ taskId task
 createTaskImpl :: TaskDAO m => Description -> m Task
 createTaskImpl description =
     let task = Task { Task.description = description
-                    , taskId  = undefined
+                    , taskId  = 0
                     , belongingUsers = []
                     } in
         create $ TaskAcid.NewTask task

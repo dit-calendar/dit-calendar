@@ -9,7 +9,7 @@ import           Data.Domain.User             (User)
 import           Presentation.AcidHelper      (App)
 import           Presentation.ResponseHelper  (onEntryExist, onTaskExist,
                                                onUserExist, okResponse, okResponseJson)
-import           Presentation.Dto.Task        (transform)
+import           Presentation.Dto.Task        as TaskDto (Task (..), transform)
 
 import qualified Data.Repository.CalendarRepo as CalendarRepo
 import qualified Data.Repository.TaskRepo     as TaskRepo
@@ -20,16 +20,16 @@ import qualified Data.Service.Task            as TaskService
 taskPage :: TaskId -> App Response
 taskPage i = onTaskExist i (okResponseJson . encode . transform)
 
-createTask :: EntryId -> Description -> App Response
-createTask calendarId description =
+createTask :: EntryId -> TaskDto.Task -> App Response
+createTask calendarId taskDto =
     onEntryExist calendarId (\e -> do
-        t <- TaskService.createTaskInCalendar e description
+        t <- TaskService.createTaskInCalendar e (TaskDto.description taskDto)
         okResponseJson $ encode $ transform t)
 
-updateTask :: TaskId -> Description -> User -> App Response
-updateTask id description loggedUser =
+updateTask :: TaskId -> TaskDto.Task -> User -> App Response
+updateTask id taskDto loggedUser =
     onTaskExist id (\t -> do
-        TaskRepo.updateDescription t description
+        TaskRepo.updateDescription t (TaskDto.description taskDto)
         okResponse $ "Task with id:" ++ show id ++ "updated")
 
 addUserToTask :: UserId -> TaskId -> User-> App Response

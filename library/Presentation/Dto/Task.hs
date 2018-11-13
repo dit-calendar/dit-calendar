@@ -1,8 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 
-module Presentation.Dto.Task
-    ( transform
-    ) where
+module Presentation.Dto.Task(Task(..), transform) where
 
 import qualified Data.Domain.Task as Domain
 
@@ -13,17 +11,20 @@ import           GHC.Generics
 
 data Task = Task
     { description    :: Text
-    , taskId         :: Int
+    , taskId         :: Maybe Int
     , belongingUsers :: [Int]
     } deriving (Show, Generic)
 
 instance ToJSON Task where
     toEncoding = genericToEncoding defaultOptions
 
+instance FromJSON Task where
+    parseJSON = genericParseJSON defaultOptions { omitNothingFields = True }
+
 transform :: Domain.Task -> Task
 transform domain =
     Task
         { description = Domain.description domain
-        , taskId = Domain.taskId domain
+        , taskId = Just (Domain.taskId domain)
         , belongingUsers = Domain.belongingUsers domain
         }

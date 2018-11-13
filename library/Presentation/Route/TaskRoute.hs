@@ -4,7 +4,7 @@ module Presentation.Route.TaskRoute
     , routeTaskWithUser
     ) where
 
-import           Data.Text                              (pack)
+import           Data.Aeson                             (decode)
 import           Happstack.Server                       (Method (DELETE, GET, POST, PUT),
                                                          Response, look)
 
@@ -12,8 +12,9 @@ import           Auth.Authorization                     (callIfAuthorized)
 import           Data.Domain.Types                      (EntryId, TaskId,
                                                          UserId)
 import           Presentation.AcidHelper                (App)
-import           Presentation.HttpServerHelper          (getHttpMethod)
-import           Presentation.ResponseHelper            (notImplemented)
+import           Presentation.HttpServerHelper          (getHttpMethod, getBody)
+import           Presentation.ResponseHelper            (badRequest, notImplemented)
+import           Presentation.Dto.Task                  as TaskDto (Task (..))
 
 import qualified Presentation.Controller.TaskController as TaskController
 
@@ -23,8 +24,11 @@ routeTask taskId = do
     case m of
         GET -> TaskController.taskPage taskId
         PUT -> do
-            description <- look "description"
-            callIfAuthorized (TaskController.updateTask taskId $ pack description)
+            body <- getBody
+            case decode body :: Maybe TaskDto.Task of
+                  Just taskDto ->
+                       callIfAuthorized (TaskController.updateTask taskId taskDto)
+                  Nothing -> badRequest "Could not parse"
         other -> notImplemented other
 
 routeTaskWithCalendar :: TaskId -> EntryId -> App Response

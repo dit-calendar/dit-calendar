@@ -2,8 +2,8 @@ module Presentation.Route.CalendarRoute
     ( routeCalendarEntry
     ) where
 
-import           Data.Aeson                                 (decode)
-import           Data.Text                                  (pack)
+import           Data.Aeson                                 (eitherDecode, decode)
+import           Data.Either
 
 import           Happstack.Server                           (Method (DELETE, GET, POST, PUT),
                                                              Response, look)
@@ -19,6 +19,7 @@ import           Presentation.ResponseHelper                (badRequest)
 import qualified Presentation.Controller.CalendarController as CalendarController
 import qualified Presentation.Controller.TaskController     as TaskController
 import qualified Presentation.Dto.CalendarEntry             as CalendarDto
+import qualified Presentation.Dto.Task                      as TaskDto
 
 routeCalendarEntry :: EntryId -> App Response
 routeCalendarEntry entryId = do
@@ -28,8 +29,11 @@ routeCalendarEntry entryId = do
         --  https://localhost:8443/calendarentry/1
         GET -> CalendarController.entryPage entryId
         POST -> do
-            description <- look "description"
-            TaskController.createTask entryId $ pack description
+            body <- getBody
+            case eitherDecode body :: Either String TaskDto.Task of
+                 Right taskDto ->
+                      TaskController.createTask entryId taskDto
+                 Left errorMessage -> badRequest errorMessage
         PUT -> do
             body <- getBody
             case decode body :: Maybe CalendarDto.CalendarEntry of
