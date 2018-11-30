@@ -51,3 +51,24 @@ h4. functionality
 * remove User with Id from Task
 ** remove TaskId from User
 * find Task by Id
+
+
+h2. API
+
+h3. User
+* create /authenticate/authentication-methods/password/account
+* read /users, /users/me, /users/id
+* update /users/me
+* delete /users/me
+
+h3. Calendar
+* create /calendarentries
+* read /calendarentries/id /calendarentries
+* update /calendarentries/id
+* delete /calendarentries/id
+
+h3. Task
+* create /calendarentries/id/tasks
+* read /calendarentries/id/tasks/id /calendarentries/id/tasks
+* update /calendarentries/id/tasks/id
+* delete /calendarentries/id/tasks/id
