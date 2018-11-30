@@ -1,6 +1,6 @@
 module Presentation.Route.TaskRoute
     ( routeTask
-    , routeTaskWithCalendar
+    , routeTaskDetail
     , routeTaskWithUser
     ) where
 
@@ -12,14 +12,29 @@ import           Auth.Authorization                     (callIfAuthorized)
 import           Data.Domain.Types                      (EntryId, TaskId,
                                                          UserId)
 import           Presentation.AcidHelper                (App)
-import           Presentation.HttpServerHelper          (getHttpMethod, getBody)
-import           Presentation.ResponseHelper            (badRequest, notImplemented)
 import           Presentation.Dto.Task                  as TaskDto (Task (..))
+import           Presentation.HttpServerHelper          (getBody, getHttpMethod)
+import           Presentation.ResponseHelper            (badRequest,
+                                                         notImplemented)
 
 import qualified Presentation.Controller.TaskController as TaskController
 
-routeTask :: TaskId -> App Response
-routeTask taskId = do
+
+routeTask :: EntryId -> App Response
+routeTask entryId = do
+    m <- getHttpMethod
+    case m of
+        POST -> do
+            body <- getBody
+            case eitherDecode body :: Either String TaskDto.Task of
+                 Right taskDto ->
+                      TaskController.createTask entryId taskDto
+                 Left errorMessage -> badRequest errorMessage
+        GET ->  notImplemented GET -- findaAll tasks in CalendarEntry
+        other -> notImplemented other
+
+routeTaskDetail :: EntryId ->  TaskId -> App Response
+routeTaskDetail entryId taskId = do
     m <- getHttpMethod
     case m of
         GET -> TaskController.taskPage taskId
@@ -29,17 +44,11 @@ routeTask taskId = do
                   Right taskDto ->
                        callIfAuthorized (TaskController.updateTask taskId taskDto)
                   Left errorMessage -> badRequest errorMessage
-        other -> notImplemented other
-
-routeTaskWithCalendar :: TaskId -> EntryId -> App Response
-routeTaskWithCalendar taskId entryId = do
-    m <- getHttpMethod
-    case m of
         DELETE -> callIfAuthorized (TaskController.deleteTask entryId taskId)
         other  -> notImplemented other
 
-routeTaskWithUser :: TaskId -> UserId -> App Response
-routeTaskWithUser taskId userId = do
+routeTaskWithUser :: EntryId -> TaskId -> UserId -> App Response
+routeTaskWithUser entryId taskId userId = do
     m <- getHttpMethod
     case m of
         DELETE -> callIfAuthorized (TaskController.removeUserFromTask taskId userId)

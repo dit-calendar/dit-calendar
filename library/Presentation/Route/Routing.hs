@@ -13,10 +13,10 @@ import           Web.Routes                             (RouteT, mapRouteT,
 
 import           Presentation.AcidHelper                (App, CtrlV)
 import           Presentation.HttpServerHelper          (mapServerPartTIO2App)
-import           Presentation.Route.CalendarRoute       (routeCalendarEntry)
+import           Presentation.Route.CalendarRoute       (routeCalendarEntry, routeCalendarEntryDetails)
 import           Presentation.Route.PageEnum            (Sitemap (..))
 import           Presentation.Route.TaskRoute           (routeTask,
-                                                         routeTaskWithCalendar,
+                                                         routeTaskDetail,
                                                          routeTaskWithUser)
 import           Presentation.Route.UserRoute           (routeDetailUser,
                                                          routeUser, routeUsers)
@@ -43,11 +43,14 @@ route :: Sitemap -> App Response
 route url = do
     decodeBody myPolicy
     case url of
-        Home                 -> HomeController.homePage
-        Userdetail           -> routeDetailUser
-        User i               -> routeUser i
-        Users                -> routeUsers
-        CalendarEntry i      -> routeCalendarEntry i
-        Task i               -> routeTask i
-        TaskWithCalendar e u -> routeTaskWithCalendar e u
-        TaskWithUser t u     -> routeTaskWithUser t u
+        Home                       -> HomeController.homePage
+        Userdetail                 -> routeDetailUser
+        User i                     -> routeUser i
+        Users                      -> routeUsers
+        -- calendar routing
+        CalendarEntry              -> routeCalendarEntry
+        CalendarEntryDetail eId    -> routeCalendarEntryDetails eId
+        -- task routing
+        CalendarTask eId           -> routeTask eId
+        CalendarTaskDetail eId tId -> routeTaskDetail eId tId
+        TaskWithUser eId tId uId   -> routeTaskWithUser eId tId uId

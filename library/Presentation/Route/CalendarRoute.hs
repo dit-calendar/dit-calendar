@@ -1,5 +1,6 @@
 module Presentation.Route.CalendarRoute
     ( routeCalendarEntry
+    , routeCalendarEntryDetails
     ) where
 
 import           Data.Aeson                                 (eitherDecode)
@@ -14,26 +15,35 @@ import           Data.Domain.Types                          (Description (..),
 import           Presentation.AcidHelper                    (App)
 import           Presentation.HttpServerHelper              (getBody,
                                                              getHttpMethod)
-import           Presentation.ResponseHelper                (badRequest)
+import           Presentation.ResponseHelper                (badRequest,
+                                                             notImplemented)
 
 import qualified Presentation.Controller.CalendarController as CalendarController
 import qualified Presentation.Controller.TaskController     as TaskController
 import qualified Presentation.Dto.CalendarEntry             as CalendarDto
 import qualified Presentation.Dto.Task                      as TaskDto
 
-routeCalendarEntry :: EntryId -> App Response
-routeCalendarEntry entryId = do
+
+routeCalendarEntry :: App Response
+routeCalendarEntry = do
+    m <- getHttpMethod
+    case m of
+        POST -> do
+            body <- getBody
+            case eitherDecode body :: Either String CalendarDto.CalendarEntry of
+                Right newCalendar -> callIfAuthorized (CalendarController.createCalendarEntry newCalendar)
+                Left errorMessage -> badRequest errorMessage
+        GET ->  notImplemented GET --- findAll
+        other -> notImplemented other
+
+
+routeCalendarEntryDetails :: EntryId -> App Response
+routeCalendarEntryDetails entryId = do
     m <- getHttpMethod
     case m of
         DELETE -> callIfAuthorized (CalendarController.deleteCalendarEntry entryId)
-        --  https://localhost:8443/calendarentry/1
+        --  https://localhost:8443/calendarentries/1
         GET -> CalendarController.entryPage entryId
-        POST -> do
-            body <- getBody
-            case eitherDecode body :: Either String TaskDto.Task of
-                 Right taskDto ->
-                      TaskController.createTask entryId taskDto
-                 Left errorMessage -> badRequest errorMessage
         PUT -> do
             body <- getBody
             case eitherDecode body :: Either String CalendarDto.CalendarEntry of

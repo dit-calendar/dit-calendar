@@ -42,10 +42,4 @@ routeDetailUser = do
                   Right userDto -> callIfAuthorized (UserController.updateUser userDto)
                   Left errorMessage -> badRequest errorMessage
         DELETE -> callIfAuthorized UserController.deleteUser
-        -- curl -X POST -d "name=FooBar" http://localhost:8000/user/me
-        POST -> do
-            body <- getBody
-            case eitherDecode body :: Either String CalendarDto.CalendarEntry of
-                Right newCalendar -> callIfAuthorized (CalendarController.createCalendarEntry newCalendar)
-                Left errorMessage -> badRequest errorMessage
         other -> notImplemented other

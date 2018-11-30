@@ -33,7 +33,10 @@ h3. Code Quality
 * http://taylor.fausak.me/2014/03/04/haskeleton-a-haskell-project-skeleton/
 
 
-h3. URL's
+h2. URL's
+
+h3. User
+
 h4. Login
 * curl -H "Content-Type: application/json" -X POST -d '{"user":"alex2","password":"12345"}' https://localhost:8443/authenticate/authentication-methods/password/token --insecure
 
@@ -49,12 +52,16 @@ h4. send request with token
 h4. show all users
 * curl -X GET https://localhost:8443/users --insecure
 
+h3. Calendar
+
 h4. calendar erstellen
-* curl -H "Content-Type: application/json" -H "Authorization: Bearer XXX" -X POST -d '{"description":"testHeute","userId":1,"date":"2011-11-19T18:28:52.607875Z"}' https://localhost:8443/user/me --insecure
+* curl -H "Content-Type: application/json" -H "Authorization: Bearer XXX" -X POST -d '{"description":"testHeute","userId":1,"date":"2011-11-19T18:28:52.607875Z"}' https://localhost:8443/calendarentries --insecure
 
 h4. calendar update
-* curl -H "Content-Type: application/json" -H "Authorization: Bearer XX" -X PUT -d '{"description":"testHeute","userId":1,"date":"2011-11-19T18:28:52.607875Z"}' https://localhost:8443/calendarentry/1 --insecure
+* curl -H "Content-Type: application/json" -H "Authorization: Bearer XX" -X PUT -d '{"description":"testHeute","userId":1,"date":"2011-11-19T18:28:52.607875Z"}' https://localhost:8443/calendarentries/1 --insecure
 ** url ist falsch da das routing noch eine id erwartet
 
+h3. Task
+
 h4. task erstellen
-* curl -H "Content-Type: application/json" -H "Authorization: Bearer xxx" -X POST -d '{"description":"testHeute", "belongingUsers":[1]}' https://localhost:8443/calendarentry/1 --insecure
+* curl -H "Content-Type: application/json" -H "Authorization: Bearer xxx" -X POST -d '{"description":"testHeute", "belongingUsers":[1]}' https://localhost:8443/calendarentries/1/tasks --insecure
