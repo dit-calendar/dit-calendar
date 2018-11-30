@@ -48,5 +48,5 @@ routeCalendarEntryDetails entryId = do
             body <- getBody
             case eitherDecode body :: Either String CalendarDto.CalendarEntry of
                   Right calendarDto ->
-                        callIfAuthorized (CalendarController.updateCalendarEntry calendarDto)
+                        callIfAuthorized (CalendarController.updateCalendarEntry entryId calendarDto)
                   Left errorMessage -> badRequest errorMessage

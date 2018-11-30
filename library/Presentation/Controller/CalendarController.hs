@@ -35,10 +35,9 @@ deleteCalendarEntry i loggedUser = onEntryExist i deleteCalendar
             CalendarService.removeCalendar cEntry
             okResponse $ "CalendarEntry with id:" ++ show i ++ "deleted"
 
-updateCalendarEntry :: CalendarDto.CalendarEntry -> DomainUser.User -> App Response
-updateCalendarEntry calendarDto loggedUser = onEntryExist entryId updateCalendar
+updateCalendarEntry :: EntryId -> CalendarDto.CalendarEntry -> DomainUser.User -> App Response
+updateCalendarEntry entryId calendarDto loggedUser = onEntryExist entryId updateCalendar
     where
-        entryId = fromJust $ CalendarDto.entryId calendarDto
         updateCalendar cEntry = do
             --TODO überprüfe welche werte gesetzt sind und update nur diese
             CalendarRepo.updateDescription cEntry (fromJust $ CalendarDto.description calendarDto)
