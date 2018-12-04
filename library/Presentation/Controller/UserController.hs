@@ -1,6 +1,6 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Presentation.Controller.UserController (createUser, updateUser, deleteUser, usersPage, userPage) where
+module Presentation.Controller.UserController (createUser, updateUser, deleteUser, usersPage, userPage, loggedUserPage) where
 
 import           Data.List                            (isInfixOf)
 import           Data.Text                            (Text, unpack)
@@ -32,6 +32,9 @@ import qualified Data.Repository.UserRepo             as UserRepo
 import qualified Data.Service.User                    as UserService
 import qualified Happstack.Authenticate.Core          as AuthUser
 
+
+loggedUserPage :: DomainUser.User -> App Response
+loggedUserPage loggedUser = userPage (DomainUser.userId loggedUser)
 
 --handler for userPage
 userPage :: UserId -> App Response

@@ -36,6 +36,7 @@ routeDetailUser :: App Response
 routeDetailUser = do
     m <- getHttpMethod
     case m of
+        GET -> callIfAuthorized UserController.loggedUserPage
         PUT -> do
               body <- getBody
               case eitherDecode body :: Either String UserDto.User of
