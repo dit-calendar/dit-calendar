@@ -38,11 +38,11 @@ urlSitemapParser :: Router () (Sitemap :- ())
 urlSitemapParser =
        rHome
     <> rAuthenticate . (lit "authenticate" </> authenticateURL)
-    <> lit "user" . userMapping
-    <> lit "users" . rUsers
+    <> lit "users" . userMapping
     <> lit "calendarentries" . calendarTaskMapping
     where
-        userMapping = rUserdetail </> lit "me"
+        userMapping = rUsers
+            <> rUserdetail </> lit "me"
             <> rUser </> int
         calendarTaskMapping =
             calendarMapping
