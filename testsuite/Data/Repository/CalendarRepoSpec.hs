@@ -40,7 +40,7 @@ fixture = Fixture { _create = \(NewEntry caledarEntry) -> return caledarEntry
 spec = describe "CalendarRepo" $ do
     it "newCalendarEntry" $ do
         let user = User{ loginName="Foo", User.userId=10, calendarEntries=[], belongingTasks=[] }
-        let (result, _) = evalTestFixture (CalendarRepo.newCalendarEntryImpl oldDate "termin1" user) fixture
+        let (result, _) = evalTestFixture (CalendarRepo.createCalendarEntryImpl oldDate "termin1" user) fixture
         CalendarEntry.description result `shouldBe` "termin1"
         CalendarEntry.userId result `shouldBe` 10
         CalendarEntry.tasks result `shouldBe` []
@@ -48,11 +48,10 @@ spec = describe "CalendarRepo" $ do
     it "deleteCalendarEntry" $ do
         let (_, log) = evalTestFixture (CalendarRepo.deleteCalendarEntryImpl 15) fixture
         log `shouldBe` ["15"::String]
-    it "updateDescription" $ do
+    it "updateCalendar" $ do
         let calc = CalendarEntry{ description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[], date=oldDate}
-        let (_, log) = evalTestFixture (CalendarRepo.updateDescription calc "termin3") fixture
-        let newCalc = calc {description = "termin3"}
-        log!!0 `shouldBe` show newCalc
+        let (_, log) = evalTestFixture (CalendarRepo.updateCalendarImpl calc) fixture
+        log!!0 `shouldBe` show calc
     it "addTaskToCalendarEntry" $ do
         let calc = CalendarEntry{ description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[1], date=oldDate}
         let (_, log) = evalTestFixture (CalendarRepo.addTaskToCalendarEntryImpl calc 2) fixture

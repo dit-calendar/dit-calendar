@@ -29,7 +29,8 @@ createTask calendarId taskDto =
 updateTask :: TaskId -> TaskDto.Task -> User -> App Response
 updateTask id taskDto loggedUser =
     onTaskExist id (\t -> do
-        TaskRepo.updateDescription t (TaskDto.description taskDto)
+        -- todo überprüfe werte aus dto, bisher nur desciption aktualisiert
+        TaskRepo.updateTaskImpl t {Task.description = TaskDto.description taskDto}
         okResponse $ "Task with id:" ++ show id ++ "updated")
 
 addUserToTask :: UserId -> TaskId -> User-> App Response

@@ -41,21 +41,21 @@ deleteTaskFromAllUsers :: (MonadDBUserRepo m, MonadIO m) =>
 deleteTaskFromAllUsers task =
     foldr (\ x ->
       (>>) (do
-        user <- MonadDBUserRepo.getUser x
+        user <- MonadDBUserRepo.findUserById x
         MonadDBUserRepo.deleteTaskFromUser user x ))
     (return ()) $ Task.belongingUsers task
 
 addUserToTaskImpl :: (MonadDBUserRepo m, MonadDBTaskRepo m, MonadIO m) =>
                 Task -> UserId -> m ()
 addUserToTaskImpl task userId = do
-    user <- MonadDBUserRepo.getUser userId
+    user <- MonadDBUserRepo.findUserById userId
     MonadDBUserRepo.addTaskToUser user (taskId task)
     MonadDBTaskRepo.updateTask task {belongingUsers = belongingUsers task ++ [userId]}
 
 removeUserFromTaskImpl :: (MonadDBTaskRepo m, MonadDBUserRepo m) =>
                     Task -> UserId -> m ()
 removeUserFromTaskImpl task userId = do
-    user <- MonadDBUserRepo.getUser userId
+    user <- MonadDBUserRepo.findUserById userId
     MonadDBUserRepo.deleteTaskFromUser user (taskId task)
     MonadDBTaskRepo.updateTask task {belongingUsers = delete userId (belongingUsers task)}
 

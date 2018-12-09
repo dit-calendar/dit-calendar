@@ -31,7 +31,7 @@ createEntryImpl calendarDto user =
     let newDate = CalendarDto.date calendarDto in
     let description = fromJust (CalendarDto.description calendarDto) in
         do
-            calendarEntry <- MonadDBCalendarRepo.newCalendarEntry newDate description user
+            calendarEntry <- MonadDBCalendarRepo.createCalendarEntry newDate description user
             MonadDBUserRepo.addCalendarEntryToUser user $ CalendarEntry.entryId calendarEntry
             return calendarEntry
 
@@ -39,7 +39,7 @@ removeCalendarImpl :: (MonadDBUserRepo m, MonadDBTaskRepo m, MonadDBCalendarRepo
                 CalendarEntry -> m ()
 removeCalendarImpl calendarEntry = let cEntryId = entryId calendarEntry in
     do
-       user <- MonadDBUserRepo.getUser (CalendarEntry.userId calendarEntry)
+       user <- MonadDBUserRepo.findUserById (CalendarEntry.userId calendarEntry)
        MonadDBUserRepo.deleteCalendarEntryFromUser user cEntryId
        deleteCalendarsTasks calendarEntry
        MonadDBCalendarRepo.deleteCalendarEntry cEntryId
@@ -49,7 +49,7 @@ deleteCalendarsTasks :: (MonadDBTaskRepo m, MonadDBCalendarRepo m, MonadIO m)
 deleteCalendarsTasks calendar =
     foldr (\ x ->
       (>>) (do
-        task <- MonadDBTaskRepo.getTask x
+        task <- MonadDBTaskRepo.findTaskById x
         MonadDBTaskRepo.deleteTask task ))
     (return ()) $ CalendarEntry.tasks calendar
 

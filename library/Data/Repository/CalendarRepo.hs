@@ -5,15 +5,18 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Data.Repository.CalendarRepo
-    ( newCalendarEntryImpl
+    ( createCalendarEntryImpl
     , deleteCalendarEntryImpl
-    , updateDescription
+    , updateCalendarImpl
     , deleteTaskFromCalendarEntryImpl
     , addTaskToCalendarEntryImpl
+    , findCalendarByIdImpl
     , MonadDBCalendarRepo(..)
     ) where
 
+import           Control.Monad.IO.Class             (MonadIO)
 import qualified Data.List                          as List
+import           Data.Maybe                         (fromJust)
 import           Data.Time.Clock                    (UTCTime)
 import qualified Happstack.Foundation               as Foundation
 
@@ -34,8 +37,8 @@ instance CalendarDAO App where
     delete = Foundation.update
     query = Foundation.query
 
-newCalendarEntryImpl :: CalendarDAO m => UTCTime -> Description -> User -> m CalendarEntry
-newCalendarEntryImpl newDate description user =
+createCalendarEntryImpl :: CalendarDAO m => UTCTime -> Description -> User -> m CalendarEntry
+createCalendarEntryImpl newDate description user =
     let entry =
             CalendarEntry
                 { description = description
@@ -49,30 +52,34 @@ newCalendarEntryImpl newDate description user =
 deleteCalendarEntryImpl :: CalendarDAO m => EntryId -> m ()
 deleteCalendarEntryImpl entryId = delete $ CalendarEntryAcid.DeleteEntry entryId
 
-updateCalendar :: CalendarDAO m => CalendarEntry -> m ()
-updateCalendar calendarEntry = update $ CalendarEntryAcid.UpdateEntry calendarEntry
+updateCalendarImpl :: CalendarDAO m => CalendarEntry -> m ()
+updateCalendarImpl calendarEntry = update $ CalendarEntryAcid.UpdateEntry calendarEntry
 
-updateDescription :: CalendarDAO m => CalendarEntry -> Description -> m ()
-updateDescription calendarEntry newDescription =
-    updateCalendar calendarEntry {CalendarEntry.description = newDescription}
+findCalendarByIdImpl :: (CalendarDAO m, MonadIO m) => EntryId -> m CalendarEntry
+findCalendarByIdImpl entryId =
+    fromJust <$> query (CalendarEntryAcid.EntryById entryId)
 
 deleteTaskFromCalendarEntryImpl :: CalendarDAO m => CalendarEntry -> Int -> m ()
 deleteTaskFromCalendarEntryImpl calendarEntry taskId =
-    updateCalendar calendarEntry {tasks = List.delete taskId (tasks calendarEntry)}
+    updateCalendarImpl calendarEntry {tasks = List.delete taskId (tasks calendarEntry)}
 
 addTaskToCalendarEntryImpl :: CalendarDAO m => CalendarEntry -> TaskId -> m ()
-addTaskToCalendarEntryImpl calendarEntry taskId = updateCalendar calendarEntry {tasks = tasks calendarEntry ++ [taskId]}
+addTaskToCalendarEntryImpl calendarEntry taskId = updateCalendarImpl calendarEntry {tasks = tasks calendarEntry ++ [taskId]}
 
 class (Monad m, CalendarDAO App) =>
       MonadDBCalendarRepo m
     where
-    newCalendarEntry :: UTCTime -> Description -> User -> m CalendarEntry
+    createCalendarEntry :: UTCTime -> Description -> User -> m CalendarEntry
+    findCalendarById :: EntryId -> m CalendarEntry
+    updateCalendar :: CalendarEntry -> m ()
     deleteCalendarEntry :: EntryId -> m ()
     deleteTaskFromCalendarEntry :: CalendarEntry -> Int -> m ()
     addTaskToCalendarEntry :: CalendarEntry -> TaskId -> m ()
 
 instance MonadDBCalendarRepo App where
-    newCalendarEntry = newCalendarEntryImpl
+    createCalendarEntry = createCalendarEntryImpl
+    findCalendarById = findCalendarByIdImpl
+    updateCalendar = updateCalendarImpl
     deleteCalendarEntry = deleteCalendarEntryImpl
     deleteTaskFromCalendarEntry = deleteTaskFromCalendarEntryImpl
     addTaskToCalendarEntry = addTaskToCalendarEntryImpl
