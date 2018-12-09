@@ -39,6 +39,6 @@ updateCalendarEntry :: EntryId -> CalendarDto.CalendarEntry -> DomainUser.User -
 updateCalendarEntry entryId calendarDto loggedUser = onEntryExist entryId updateCalendar
     where
         updateCalendar cEntry = do
-            --TODO überprüfe welche werte gesetzt sind und update nur diese
-            CalendarRepo.updateDescription cEntry (fromJust $ CalendarDto.description calendarDto)
+            --TODO überprüfe welche werte gesetzt sind und update nur diese, momentan wird nur description aktualisiert
+            CalendarRepo.updateCalendar cEntry {CalendarEntry.description = fromJust $ CalendarDto.description calendarDto}
             okResponse $ "CalendarEntry with id:" ++ show (DomainCalendar.entryId cEntry) ++ "updated"

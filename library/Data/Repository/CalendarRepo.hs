@@ -7,7 +7,7 @@
 module Data.Repository.CalendarRepo
     ( newCalendarEntryImpl
     , deleteCalendarEntryImpl
-    , updateDescription
+    , updateCalendarImpl
     , deleteTaskFromCalendarEntryImpl
     , addTaskToCalendarEntryImpl
     , MonadDBCalendarRepo(..)
@@ -49,30 +49,28 @@ newCalendarEntryImpl newDate description user =
 deleteCalendarEntryImpl :: CalendarDAO m => EntryId -> m ()
 deleteCalendarEntryImpl entryId = delete $ CalendarEntryAcid.DeleteEntry entryId
 
-updateCalendar :: CalendarDAO m => CalendarEntry -> m ()
-updateCalendar calendarEntry = update $ CalendarEntryAcid.UpdateEntry calendarEntry
-
-updateDescription :: CalendarDAO m => CalendarEntry -> Description -> m ()
-updateDescription calendarEntry newDescription =
-    updateCalendar calendarEntry {CalendarEntry.description = newDescription}
+updateCalendarImpl :: CalendarDAO m => CalendarEntry -> m ()
+updateCalendarImpl calendarEntry = update $ CalendarEntryAcid.UpdateEntry calendarEntry
 
 deleteTaskFromCalendarEntryImpl :: CalendarDAO m => CalendarEntry -> Int -> m ()
 deleteTaskFromCalendarEntryImpl calendarEntry taskId =
-    updateCalendar calendarEntry {tasks = List.delete taskId (tasks calendarEntry)}
+    updateCalendarImpl calendarEntry {tasks = List.delete taskId (tasks calendarEntry)}
 
 addTaskToCalendarEntryImpl :: CalendarDAO m => CalendarEntry -> TaskId -> m ()
-addTaskToCalendarEntryImpl calendarEntry taskId = updateCalendar calendarEntry {tasks = tasks calendarEntry ++ [taskId]}
+addTaskToCalendarEntryImpl calendarEntry taskId = updateCalendarImpl calendarEntry {tasks = tasks calendarEntry ++ [taskId]}
 
 class (Monad m, CalendarDAO App) =>
       MonadDBCalendarRepo m
     where
     newCalendarEntry :: UTCTime -> Description -> User -> m CalendarEntry
+    updateCalendar :: CalendarEntry -> m ()
     deleteCalendarEntry :: EntryId -> m ()
     deleteTaskFromCalendarEntry :: CalendarEntry -> Int -> m ()
     addTaskToCalendarEntry :: CalendarEntry -> TaskId -> m ()
 
 instance MonadDBCalendarRepo App where
     newCalendarEntry = newCalendarEntryImpl
+    updateCalendar = updateCalendarImpl
     deleteCalendarEntry = deleteCalendarEntryImpl
     deleteTaskFromCalendarEntry = deleteTaskFromCalendarEntryImpl
     addTaskToCalendarEntry = addTaskToCalendarEntryImpl
