@@ -5,7 +5,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Data.Repository.TaskRepo
-    ( updateDescription, deleteTaskImpl, createTaskImpl, updateTaskImpl, getTaskImpl, MonadDBTaskRepo(..) ) where
+    ( deleteTaskImpl, createTaskImpl, updateTaskImpl, getTaskImpl, MonadDBTaskRepo(..) ) where
 
 import           Control.Monad.IO.Class
 import           Data.Maybe                (fromJust)
@@ -29,9 +29,6 @@ instance TaskDAO App where
 updateTaskImpl :: TaskDAO m => Task -> m ()
 updateTaskImpl task = update $ TaskAcid.UpdateTask task
 
-updateDescription :: TaskDAO m => Task -> Description -> m ()
-updateDescription task newDescription = updateTaskImpl task {Task.description = newDescription}
-
 deleteTaskImpl :: TaskDAO m => Task -> m ()
 deleteTaskImpl task = delete $ TaskAcid.DeleteTask $ taskId task
 
@@ -46,7 +43,6 @@ createTaskImpl description =
 getTaskImpl :: (TaskDAO m, MonadIO m) => TaskId -> m Task
 getTaskImpl taskId =
     fromJust <$> query (TaskAcid.TaskById taskId)
-
 
 
 class (Monad m, TaskDAO App) => MonadDBTaskRepo m where

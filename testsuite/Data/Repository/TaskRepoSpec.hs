@@ -47,11 +47,6 @@ spec = describe "CalendarRepo" $ do
         let task = Task{ description="task1", taskId=1, belongingUsers=[]}
         let (_, log) = evalTestFixture (TaskRepo.deleteTaskImpl task) fixture
         log `shouldBe` "1"
-    it "updateDescription" $ do
-        let task = Task{ description="task1", taskId=1, belongingUsers=[]}
-        let (_, log) = evalTestFixture (TaskRepo.updateDescription task "task2") fixture
-        let newTask = task {description = "task2"}
-        log `shouldBe` show newTask
     it "updateTask" $ do
         let task = Task{ description="task1", taskId=1, belongingUsers=[]}
         let (_, log) = evalTestFixture (TaskRepo.updateTaskImpl task) fixture
