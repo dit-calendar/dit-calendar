@@ -46,13 +46,13 @@ findTaskByIdImpl taskId =
 
 
 class (Monad m, TaskDAO App) => MonadDBTaskRepo m where
-    updateTask        :: Task   -> m ()
-    deleteTask        :: Task   -> m ()
     createTask        :: Description -> m Task
     findTaskById      :: TaskId -> m Task
+    updateTask        :: Task   -> m ()
+    deleteTask        :: Task   -> m ()
 
 instance MonadDBTaskRepo App where
-    updateTask        = updateTaskImpl
-    deleteTask        = deleteTaskImpl
     createTask        = createTaskImpl
     findTaskById      = findTaskByIdImpl
+    updateTask        = updateTaskImpl
+    deleteTask        = deleteTaskImpl

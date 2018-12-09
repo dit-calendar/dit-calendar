@@ -76,24 +76,25 @@ findUserByLoginNameIml name = queryByLoginName $ UserAcid.FindByLoginName name
 
 class (UserDAO App) => MonadDBUserRepo m where
     createUser :: Text -> m User
-    deleteUser :: User -> m ()
+    findUserById :: UserId -> m User
     updateUser :: User -> m ()
+    deleteUser :: User -> m ()
     updateLoginName :: User -> Text -> m ()
     addCalendarEntryToUser :: User -> EntryId -> m ()
     deleteCalendarEntryFromUser :: User -> EntryId -> m ()
     addTaskToUser :: User -> TaskId -> m ()
     deleteTaskFromUser :: User -> TaskId -> m ()
-    findUserById :: UserId -> m User
+
     findUserByLoginName :: Text -> m (Maybe User)
 
 instance MonadDBUserRepo App where
     createUser = createUserImpl
-    deleteUser = deleteUserImpl
+    findUserById = findUserById
     updateUser = updateUserImpl
+    deleteUser = deleteUserImpl
     updateLoginName = updateLoginNameImpl
     addCalendarEntryToUser = addCalendarEntryToUserImpl
     deleteCalendarEntryFromUser = deleteCalendarEntryFromUserImpl
     addTaskToUser = addTaskToUserImpl
     deleteTaskFromUser = deleteTaskFromUserImpl
-    findUserById = findUserById
     findUserByLoginName = findUserByLoginNameIml
