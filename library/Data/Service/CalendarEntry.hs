@@ -31,7 +31,7 @@ createEntryImpl calendarDto user =
     let newDate = CalendarDto.date calendarDto in
     let description = fromJust (CalendarDto.description calendarDto) in
         do
-            calendarEntry <- MonadDBCalendarRepo.newCalendarEntry newDate description user
+            calendarEntry <- MonadDBCalendarRepo.createCalendarEntry newDate description user
             MonadDBUserRepo.addCalendarEntryToUser user $ CalendarEntry.entryId calendarEntry
             return calendarEntry
 

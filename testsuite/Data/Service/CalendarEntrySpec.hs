@@ -43,7 +43,7 @@ newDate = read "2012-11-19 17:51:42.203841 UTC"::UTCTime
 calendarDto = CalendarDto.CalendarEntry{CalendarDto.date = newDate, CalendarDto.description =Just "termin2"}
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
-fixture = Fixture { _newCalendarEntry = \newDate description user -> tell [show newDate] >> tell [unpack description]
+fixture = Fixture { _createCalendarEntry = \newDate description user -> tell [show newDate] >> tell [unpack description]
                         >> tell [show user] >> return entryFromDb
                   , _findUserById = \a -> tell [show a] >> return userFromDb
                   , _getTask = \a -> tell [show a] >> return taskFromDb

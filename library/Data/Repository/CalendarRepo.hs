@@ -5,7 +5,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Data.Repository.CalendarRepo
-    ( newCalendarEntryImpl
+    ( createCalendarEntryImpl
     , deleteCalendarEntryImpl
     , updateCalendarImpl
     , deleteTaskFromCalendarEntryImpl
@@ -34,8 +34,8 @@ instance CalendarDAO App where
     delete = Foundation.update
     query = Foundation.query
 
-newCalendarEntryImpl :: CalendarDAO m => UTCTime -> Description -> User -> m CalendarEntry
-newCalendarEntryImpl newDate description user =
+createCalendarEntryImpl :: CalendarDAO m => UTCTime -> Description -> User -> m CalendarEntry
+createCalendarEntryImpl newDate description user =
     let entry =
             CalendarEntry
                 { description = description
@@ -62,14 +62,14 @@ addTaskToCalendarEntryImpl calendarEntry taskId = updateCalendarImpl calendarEnt
 class (Monad m, CalendarDAO App) =>
       MonadDBCalendarRepo m
     where
-    newCalendarEntry :: UTCTime -> Description -> User -> m CalendarEntry
+    createCalendarEntry :: UTCTime -> Description -> User -> m CalendarEntry
     updateCalendar :: CalendarEntry -> m ()
     deleteCalendarEntry :: EntryId -> m ()
     deleteTaskFromCalendarEntry :: CalendarEntry -> Int -> m ()
     addTaskToCalendarEntry :: CalendarEntry -> TaskId -> m ()
 
 instance MonadDBCalendarRepo App where
-    newCalendarEntry = newCalendarEntryImpl
+    createCalendarEntry = createCalendarEntryImpl
     updateCalendar = updateCalendarImpl
     deleteCalendarEntry = deleteCalendarEntryImpl
     deleteTaskFromCalendarEntry = deleteTaskFromCalendarEntryImpl
