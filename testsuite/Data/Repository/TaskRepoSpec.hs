@@ -52,5 +52,5 @@ spec = describe "CalendarRepo" $ do
         let (_, log) = evalTestFixture (TaskRepo.updateTaskImpl task) fixture
         log `shouldBe` show task
     it "getTask" $ do
-        let (result, _) = evalTestFixture (TaskRepo.getTaskImpl 1) fixture
+        let (result, _) = evalTestFixture (TaskRepo.findTaskByIdImpl 1) fixture
         result `shouldBe` taskFromDb

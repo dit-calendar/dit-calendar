@@ -42,7 +42,7 @@ fixture = Fixture { _addTaskToCalendarEntry = \entry taskId -> tell [show entry]
                   , _updateTask = \(a) -> tell [show a]
                   , _deleteTask = \(a) -> tell [show a]
                   , _createTask = \(a) -> return taskFromDb
-                  , _getTask = \(a) -> tell [show a] >> return taskFromDb
+                  , _findTaskById = \(a) -> tell [show a] >> return taskFromDb
                   , _addTaskToUser = \user taskId -> tell [show user] >> tell [show taskId]
                   , _deleteTaskFromUser = \x a -> tell [show x] >> tell [show a]
                   , _findUserById = \(a) -> tell [show a] >> return userFromDb

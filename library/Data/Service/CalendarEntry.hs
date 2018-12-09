@@ -49,7 +49,7 @@ deleteCalendarsTasks :: (MonadDBTaskRepo m, MonadDBCalendarRepo m, MonadIO m)
 deleteCalendarsTasks calendar =
     foldr (\ x ->
       (>>) (do
-        task <- MonadDBTaskRepo.getTask x
+        task <- MonadDBTaskRepo.findTaskById x
         MonadDBTaskRepo.deleteTask task ))
     (return ()) $ CalendarEntry.tasks calendar
 

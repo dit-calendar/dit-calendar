@@ -5,7 +5,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Data.Repository.TaskRepo
-    ( deleteTaskImpl, createTaskImpl, updateTaskImpl, getTaskImpl, MonadDBTaskRepo(..) ) where
+    ( deleteTaskImpl, createTaskImpl, updateTaskImpl, findTaskByIdImpl, MonadDBTaskRepo(..) ) where
 
 import           Control.Monad.IO.Class
 import           Data.Maybe                (fromJust)
@@ -14,7 +14,7 @@ import qualified Happstack.Foundation      as Foundation
 
 import           Data.Domain.CalendarEntry as CalendarEntry
 import           Data.Domain.Task          as Task
-import           Data.Domain.Types         (TaskId, Description)
+import           Data.Domain.Types         (Description, TaskId)
 import           Data.Repository.Acid.Task (TaskDAO (..))
 import           Presentation.AcidHelper   (App)
 
@@ -40,8 +40,8 @@ createTaskImpl description =
                     } in
         create $ TaskAcid.NewTask task
 
-getTaskImpl :: (TaskDAO m, MonadIO m) => TaskId -> m Task
-getTaskImpl taskId =
+findTaskByIdImpl :: (TaskDAO m, MonadIO m) => TaskId -> m Task
+findTaskByIdImpl taskId =
     fromJust <$> query (TaskAcid.TaskById taskId)
 
 
@@ -49,10 +49,10 @@ class (Monad m, TaskDAO App) => MonadDBTaskRepo m where
     updateTask        :: Task   -> m ()
     deleteTask        :: Task   -> m ()
     createTask        :: Description -> m Task
-    getTask           :: TaskId -> m Task
+    findTaskById      :: TaskId -> m Task
 
 instance MonadDBTaskRepo App where
     updateTask        = updateTaskImpl
     deleteTask        = deleteTaskImpl
     createTask        = createTaskImpl
-    getTask           = getTaskImpl
+    findTaskById      = findTaskByIdImpl

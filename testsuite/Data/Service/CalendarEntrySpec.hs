@@ -46,7 +46,7 @@ fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture { _createCalendarEntry = \newDate description user -> tell [show newDate] >> tell [unpack description]
                         >> tell [show user] >> return entryFromDb
                   , _findUserById = \a -> tell [show a] >> return userFromDb
-                  , _getTask = \a -> tell [show a] >> return taskFromDb
+                  , _findTaskById = \a -> tell [show a] >> return taskFromDb
                   , _addCalendarEntryToUser = \user entryId -> tell [show user] >> tell [show entryId]
                   , _deleteCalendarEntryFromUser = \user entryId -> tell [show user] >> tell [show entryId]
                   , _deleteTask = \a -> tell [show a]
