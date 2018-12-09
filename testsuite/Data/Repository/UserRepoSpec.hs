@@ -77,7 +77,7 @@ spec = describe "UserRepo" $ do
         log!!0 `shouldBe` show newUser
     describe "find" $ do
         it "byId" $ do
-            let (result, _) = evalTestFixture (UserRepo.getUserImpl 10) fixture
+            let (result, _) = evalTestFixture (UserRepo.findUserByIdImpl 10) fixture
             result `shouldBe` userFromDb
         it "byName" $ do
             let (result, _) = evalTestFixture (UserRepo.findUserByLoginNameIml "Foo") fixture

@@ -5,8 +5,8 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Data.Repository.UserRepo
-    ( deleteUserImpl, updateLoginNameImpl, addCalendarEntryToUserImpl, addTaskToUserImpl
-    , deleteCalendarEntryFromUserImpl, deleteTaskFromUserImpl, getUserImpl, createUserImpl, findUserByLoginNameIml,
+    ( deleteUserImpl, updateUserImpl, updateLoginNameImpl, addCalendarEntryToUserImpl, addTaskToUserImpl
+    , deleteCalendarEntryFromUserImpl, deleteTaskFromUserImpl, findUserByIdImpl, createUserImpl, findUserByLoginNameIml,
      MonadDBUserRepo(..) ) where
 
 import           Control.Monad.IO.Class
@@ -43,31 +43,31 @@ createUserImpl name = let user = User { loginName = name
 deleteUserImpl :: UserDAO m => User -> m ()
 deleteUserImpl user = delete $ UserAcid.DeleteUser (Data.Domain.User.userId user)
 
-updateUser :: UserDAO m => User -> m ()
-updateUser user = update $ UserAcid.UpdateUser user
+updateUserImpl :: UserDAO m => User -> m ()
+updateUserImpl user = update $ UserAcid.UpdateUser user
 
 updateLoginNameImpl :: UserDAO m => User -> Text -> m ()
-updateLoginNameImpl user newName = updateUser user {loginName = newName}
+updateLoginNameImpl user newName = updateUserImpl user {loginName = newName}
 
 addCalendarEntryToUserImpl :: UserDAO m => User -> EntryId -> m ()
 addCalendarEntryToUserImpl user entryId =
-    updateUser user {calendarEntries = calendarEntries user ++ [entryId]}
+    updateUserImpl user {calendarEntries = calendarEntries user ++ [entryId]}
 
 deleteCalendarEntryFromUserImpl :: UserDAO m =>
                             User -> EntryId -> m ()
 deleteCalendarEntryFromUserImpl user entryId =
-    updateUser user {calendarEntries = List.delete entryId (calendarEntries user)}
+    updateUserImpl user {calendarEntries = List.delete entryId (calendarEntries user)}
 
 addTaskToUserImpl :: UserDAO m => User -> TaskId -> m ()
 addTaskToUserImpl user taskId =
-    updateUser user {belongingTasks = belongingTasks user ++ [taskId]}
+    updateUserImpl user {belongingTasks = belongingTasks user ++ [taskId]}
 
 deleteTaskFromUserImpl :: UserDAO m => User -> TaskId -> m ()
 deleteTaskFromUserImpl user taskId =
-    updateUser user {belongingTasks = List.delete taskId (belongingTasks user)}
+    updateUserImpl user {belongingTasks = List.delete taskId (belongingTasks user)}
 
-getUserImpl :: (UserDAO m, MonadIO m) => UserId -> m User
-getUserImpl userId = do
+findUserByIdImpl :: (UserDAO m, MonadIO m) => UserId -> m User
+findUserByIdImpl userId = do
     mUser <- query $ UserAcid.UserById userId
     return $ fromJust mUser
 
@@ -77,21 +77,23 @@ findUserByLoginNameIml name = queryByLoginName $ UserAcid.FindByLoginName name
 class (UserDAO App) => MonadDBUserRepo m where
     createUser :: Text -> m User
     deleteUser :: User -> m ()
+    updateUser :: User -> m ()
     updateLoginName :: User -> Text -> m ()
     addCalendarEntryToUser :: User -> EntryId -> m ()
     deleteCalendarEntryFromUser :: User -> EntryId -> m ()
     addTaskToUser :: User -> TaskId -> m ()
     deleteTaskFromUser :: User -> TaskId -> m ()
-    getUser :: UserId -> m User
+    findUserById :: UserId -> m User
     findUserByLoginName :: Text -> m (Maybe User)
 
 instance MonadDBUserRepo App where
     createUser = createUserImpl
     deleteUser = deleteUserImpl
+    updateUser = updateUserImpl
     updateLoginName = updateLoginNameImpl
     addCalendarEntryToUser = addCalendarEntryToUserImpl
     deleteCalendarEntryFromUser = deleteCalendarEntryFromUserImpl
     addTaskToUser = addTaskToUserImpl
     deleteTaskFromUser = deleteTaskFromUserImpl
-    getUser = getUserImpl
+    findUserById = findUserById
     findUserByLoginName = findUserByLoginNameIml

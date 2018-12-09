@@ -45,7 +45,7 @@ calendarDto = CalendarDto.CalendarEntry{CalendarDto.date = newDate, CalendarDto.
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture { _newCalendarEntry = \newDate description user -> tell [show newDate] >> tell [unpack description]
                         >> tell [show user] >> return entryFromDb
-                  , _getUser = \a -> tell [show a] >> return userFromDb
+                  , _findUserById = \a -> tell [show a] >> return userFromDb
                   , _getTask = \a -> tell [show a] >> return taskFromDb
                   , _addCalendarEntryToUser = \user entryId -> tell [show user] >> tell [show entryId]
                   , _deleteCalendarEntryFromUser = \user entryId -> tell [show user] >> tell [show entryId]

@@ -39,7 +39,7 @@ removeCalendarImpl :: (MonadDBUserRepo m, MonadDBTaskRepo m, MonadDBCalendarRepo
                 CalendarEntry -> m ()
 removeCalendarImpl calendarEntry = let cEntryId = entryId calendarEntry in
     do
-       user <- MonadDBUserRepo.getUser (CalendarEntry.userId calendarEntry)
+       user <- MonadDBUserRepo.findUserById (CalendarEntry.userId calendarEntry)
        MonadDBUserRepo.deleteCalendarEntryFromUser user cEntryId
        deleteCalendarsTasks calendarEntry
        MonadDBCalendarRepo.deleteCalendarEntry cEntryId
