@@ -37,6 +37,8 @@ createTaskImpl description =
     let task = Task { Task.description = description
                     , taskId  = 0
                     , belongingUsers = []
+                    , startTime=Nothing
+                    , endTime=Nothing
                     } in
         create $ TaskAcid.NewTask task
 

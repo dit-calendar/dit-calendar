@@ -36,7 +36,7 @@ import qualified Presentation.Dto.CalendarEntry as CalendarDto
 mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBTaskRepo, MonadDBCalendarRepo |]
 
 userFromDb = User{ loginName="Foo", User.userId=10, calendarEntries=[], belongingTasks=[1,2,3] }
-taskFromDb = Task{ Task.description="task1", taskId=1, belongingUsers=[]}
+taskFromDb = Task{ Task.description="task1", taskId=1, belongingUsers=[], startTime=Nothing, endTime=Nothing}
 dbDate = read "2011-11-19 18:28:52.607875 UTC"::UTCTime
 entryFromDb = CalendarEntry{ CalendarEntry.description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[], date=dbDate}
 newDate = read "2012-11-19 17:51:42.203841 UTC"::UTCTime

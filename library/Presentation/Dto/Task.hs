@@ -7,12 +7,15 @@ import qualified Data.Domain.Task as Domain
 import           Data.Aeson
 import           Data.Data        (Data, Typeable)
 import           Data.Text
+import           Data.Time.Clock   (UTCTime)
 import           GHC.Generics
 
 data Task = Task
     { description    :: Text
     , taskId         :: Maybe Int
     , belongingUsers :: [Int]
+    , startTime:: Maybe UTCTime
+    , endTime :: Maybe UTCTime
     } deriving (Show, Generic)
 
 instance ToJSON Task where
@@ -27,4 +30,6 @@ transform domain =
         { description = Domain.description domain
         , taskId = Just (Domain.taskId domain)
         , belongingUsers = Domain.belongingUsers domain
+        , startTime = Domain.startTime domain
+        , endTime = Domain.endTime domain
         }

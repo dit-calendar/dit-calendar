@@ -12,7 +12,6 @@ import           Presentation.ResponseHelper  (onEntryExist, onTaskExist,
 import           Presentation.Dto.Task        as TaskDto (Task (..), transform)
 
 import qualified Data.Repository.CalendarRepo as CalendarRepo
-import qualified Data.Repository.TaskRepo     as TaskRepo
 import qualified Data.Service.Task            as TaskService
 
 
@@ -29,8 +28,7 @@ createTask calendarId taskDto =
 updateTask :: TaskId -> TaskDto.Task -> User -> App Response
 updateTask id taskDto loggedUser =
     onTaskExist id (\t -> do
-        -- todo überprüfe werte aus dto, bisher nur desciption aktualisiert
-        TaskRepo.updateTaskImpl t {Task.description = TaskDto.description taskDto}
+        TaskService.updateTaskInCalendar t taskDto
         okResponse $ "Task with id:" ++ show id ++ "updated")
 
 addUserToTask :: UserId -> TaskId -> User-> App Response

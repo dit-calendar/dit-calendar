@@ -27,7 +27,7 @@ import qualified Data.Repository.TaskRepo     as TaskRepo
 
 mkFixture "Fixture" [ts| TaskDAO |]
 
-taskFromDb = Task{ description="task1", taskId=1, belongingUsers=[]}
+taskFromDb = Task{ description="task1", taskId=1, belongingUsers=[], startTime=Nothing, endTime=Nothing}
 
 fixture :: (Monad m, MonadWriter String m) => Fixture m
 fixture = Fixture { _create = \(NewTask task) -> return task
@@ -38,7 +38,7 @@ fixture = Fixture { _create = \(NewTask task) -> return task
 instance MonadIO Identity where
     liftIO = undefined
 
-spec = describe "CalendarRepo" $ do
+spec = describe "TaskRepo" $ do
     it "createTask" $ do
         let (result, _) = evalTestFixture (TaskRepo.createTaskImpl "task1") fixture
         Task.description result `shouldBe` "task1"
@@ -48,7 +48,7 @@ spec = describe "CalendarRepo" $ do
         let (_, log) = evalTestFixture (TaskRepo.deleteTaskImpl task) fixture
         log `shouldBe` "1"
     it "updateTask" $ do
-        let task = Task{ description="task1", taskId=1, belongingUsers=[]}
+        let task = Task{ description="task1", taskId=1, belongingUsers=[], startTime=Nothing, endTime=Nothing}
         let (_, log) = evalTestFixture (TaskRepo.updateTaskImpl task) fixture
         log `shouldBe` show task
     it "getTask" $ do

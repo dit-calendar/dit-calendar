@@ -35,7 +35,7 @@ import qualified Data.Service.User            as UserService
 mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBTaskRepo, MonadDBCalendarRepo |]
 
 userFromDb = User{ loginName="Foo", User.userId=10, calendarEntries=[], belongingTasks=[1,2,3] }
-taskFromDb = Task{ Task.description="task1", taskId=5, belongingUsers=[]}
+taskFromDb = Task{ Task.description="task1", taskId=5, belongingUsers=[], startTime=Nothing, endTime=Nothing}
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture { _addTaskToCalendarEntry = \entry taskId -> tell [show entry] >> tell [show taskId]
@@ -54,7 +54,7 @@ instance MonadIO Identity where
 
 spec = describe "TaskServiceSpec" $ do
     it "deleteTaskAndCascadeUser" $ do
-        let task = Task{ Task.description="task1", taskId=1, belongingUsers=[7]}
+        let task = Task{ Task.description="task1", taskId=1, belongingUsers=[7], startTime=Nothing, endTime=Nothing}
         let (_, log) = evalTestFixture (TaskService.deleteTaskAndCascadeUsersImpl task) fixture
         log!!0 `shouldBe` "7"
         log!!1 `shouldBe` show userFromDb
@@ -68,16 +68,16 @@ spec = describe "TaskServiceSpec" $ do
         log!!0 `shouldBe` show calc
         log!!1 `shouldBe` show (Task.taskId taskFromDb)
     it "addUserToTask" $ do
-        let task = Task{ Task.description="task1", taskId=1, belongingUsers=[2]}
-        let expectedTask = Task{ Task.description="task1", taskId=1, belongingUsers=[2,10]}
+        let task = Task{ Task.description="task1", taskId=1, belongingUsers=[2], startTime=Nothing, endTime=Nothing}
+        let expectedTask = Task{ Task.description="task1", taskId=1, belongingUsers=[2,10], startTime=Nothing, endTime=Nothing}
         let (_, log) = evalTestFixture (TaskService.addUserToTaskImpl task 10) fixture
         log!!0 `shouldBe` show (User.userId userFromDb)
         log!!1 `shouldBe` show userFromDb
         log!!2 `shouldBe` show (Task.taskId task)
         log!!3 `shouldBe` show expectedTask
     it "removeUserFromTask" $ do
-        let task = Task{ Task.description="task1", taskId=1, belongingUsers=[2,10]}
-        let expectedTask = Task{ Task.description="task1", taskId=1, belongingUsers=[2]}
+        let task = Task{ Task.description="task1", taskId=1, belongingUsers=[2,10], startTime=Nothing, endTime=Nothing}
+        let expectedTask = Task{ Task.description="task1", taskId=1, belongingUsers=[2], startTime=Nothing, endTime=Nothing}
         let (_, log) = evalTestFixture (TaskService.removeUserFromTaskImpl task 10) fixture
         log!!0 `shouldBe` show (User.userId userFromDb)
         log!!1 `shouldBe` show userFromDb

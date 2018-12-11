@@ -5,36 +5,46 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Data.Service.Task
-    ( deleteTaskAndCascadeUsersImpl, createTaskInCalendarImpl, addUserToTaskImpl, removeUserFromTaskImpl, TaskService(..) ) where
+    ( deleteTaskAndCascadeUsersImpl, createTaskInCalendarImpl, updateTaskInCalendarImpl, addUserToTaskImpl, removeUserFromTaskImpl, TaskService(..) ) where
 
 import           Control.Monad.IO.Class
 import           Data.List                    (delete)
+import           Data.Maybe                   (fromJust, isJust)
 
 import           Data.Domain.CalendarEntry    as CalendarEntry
 import           Data.Domain.Task             as Task
-import           Data.Domain.Types            (UserId, Description)
+import           Data.Domain.Types            (Description, UserId)
 import           Presentation.AcidHelper      (App)
 
 import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)
 import qualified Data.Repository.CalendarRepo as MonadDBCalendarRepo
 import           Data.Repository.TaskRepo     (MonadDBTaskRepo)
-import qualified Data.Repository.TaskRepo     as MonadDBTaskRepo
+import qualified Data.Repository.TaskRepo     as TaskRepo
 import           Data.Repository.UserRepo     (MonadDBUserRepo)
 import qualified Data.Repository.UserRepo     as MonadDBUserRepo
+import qualified Presentation.Dto.Task        as TaskDto
 
 
 deleteTaskAndCascadeUsersImpl :: (MonadDBTaskRepo m, MonadDBUserRepo m, MonadIO m) =>
             Task -> m ()
 deleteTaskAndCascadeUsersImpl task = do
     deleteTaskFromAllUsers task
-    MonadDBTaskRepo.deleteTask task
+    TaskRepo.deleteTask task
 
 createTaskInCalendarImpl :: (MonadDBTaskRepo m, MonadDBUserRepo m, MonadDBCalendarRepo m) =>
             CalendarEntry -> Description -> m Task
 createTaskInCalendarImpl calendarEntry description = do
-    mTask <- MonadDBTaskRepo.createTask description
+    mTask <- TaskRepo.createTask description
     MonadDBCalendarRepo.addTaskToCalendarEntry calendarEntry (Task.taskId mTask)
     return mTask
+
+updateTaskInCalendarImpl :: (MonadDBTaskRepo m, MonadDBCalendarRepo m) => Task -> TaskDto.Task -> m ()
+updateTaskInCalendarImpl dbTask taskDto = TaskRepo.updateTask dbTask {
+            Task.description = TaskDto.description taskDto
+            --, belongingUsers = belongingUsers dbTask
+            , startTime     = if isJust $ TaskDto.startTime taskDto then TaskDto.startTime taskDto else startTime dbTask
+            , endTime = if isJust $ TaskDto.endTime taskDto then TaskDto.endTime taskDto else endTime dbTask
+        }
 
 deleteTaskFromAllUsers :: (MonadDBUserRepo m, MonadIO m) =>
                         Task -> m ()
@@ -50,18 +60,19 @@ addUserToTaskImpl :: (MonadDBUserRepo m, MonadDBTaskRepo m, MonadIO m) =>
 addUserToTaskImpl task userId = do
     user <- MonadDBUserRepo.findUserById userId
     MonadDBUserRepo.addTaskToUser user (taskId task)
-    MonadDBTaskRepo.updateTask task {belongingUsers = belongingUsers task ++ [userId]}
+    TaskRepo.updateTask task {belongingUsers = belongingUsers task ++ [userId]}
 
 removeUserFromTaskImpl :: (MonadDBTaskRepo m, MonadDBUserRepo m) =>
                     Task -> UserId -> m ()
 removeUserFromTaskImpl task userId = do
     user <- MonadDBUserRepo.findUserById userId
     MonadDBUserRepo.deleteTaskFromUser user (taskId task)
-    MonadDBTaskRepo.updateTask task {belongingUsers = delete userId (belongingUsers task)}
+    TaskRepo.updateTask task {belongingUsers = delete userId (belongingUsers task)}
 
 class TaskService m where
     deleteTaskAndCascadeUsers :: Task -> m ()
     createTaskInCalendar :: CalendarEntry -> Description -> m Task
+    updateTaskInCalendar :: Task -> TaskDto.Task -> m ()
     addUserToTask :: Task -> UserId -> m ()
     removeUserFromTask :: Task -> UserId -> m ()
 
@@ -69,5 +80,6 @@ instance (MonadDBTaskRepo App, MonadDBUserRepo App, MonadDBCalendarRepo App)
             => TaskService App where
     deleteTaskAndCascadeUsers = deleteTaskAndCascadeUsersImpl
     createTaskInCalendar = createTaskInCalendarImpl
+    updateTaskInCalendar = updateTaskInCalendarImpl
     addUserToTask = addUserToTaskImpl
     removeUserFromTask = removeUserFromTaskImpl
