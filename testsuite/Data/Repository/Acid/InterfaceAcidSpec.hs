@@ -28,12 +28,12 @@ spec =
           describe "create" $ do
               it "new and check existence" $
                 \c -> do
-                  entryList   <- query c GetEntryList
-                  let calendarEntry = CalendarEntry { CalendarEntry.description="Zahnarzt", CalendarEntry.entryId=0, userId=0, tasks=[], date=dbDate }
-                  _           <- update c (NewEntry calendarEntry)
-                  entryState  <- query c $ CalendarEntryAcid.EntryById $ InterfaceAcid.nextEntryId entryList
-                  entryState `shouldSatisfy` isJust
-                  fromJust entryState `shouldBe` CalendarEntry{ description="Zahnarzt", entryId=InterfaceAcid.nextEntryId entryList, userId=0, tasks=[], date=dbDate}
+                  let newCalendarEntry = CalendarEntry { CalendarEntry.description="Zahnarzt", CalendarEntry.entryId=0, userId=0, tasks=[], date=dbDate }
+                  newCalendarEntryFromDB <- update c $ NewEntry newCalendarEntry
+                  let newCalendarEntryId = CalendarEntry.entryId newCalendarEntryFromDB
+                  findNewCalendarEntryFromDB  <- query c $ CalendarEntryAcid.EntryById newCalendarEntryId
+                  findNewCalendarEntryFromDB `shouldSatisfy` isJust
+                  fromJust findNewCalendarEntryFromDB `shouldBe` CalendarEntry{ description="Zahnarzt", entryId=newCalendarEntryId, userId=0, tasks=[], date=dbDate}
 
               it "new and check nextEntryId" $
                 \c -> do
@@ -44,8 +44,8 @@ spec =
                   entryList    <- query c GetEntryList
                   InterfaceAcid.nextEntryId entryList `shouldBe` oldId + 1
                   let newDate2 = read "2012-11-19 17:51:42.203841 UTC"::UTCTime
-                  let calendarEntry = CalendarEntry { CalendarEntry.description="Zahnarzt2", CalendarEntry.entryId=0, userId=1, tasks=[], date=newDate2 }
-                  _            <- update c (NewEntry calendarEntry)
+                  let newCalendarEntry = CalendarEntry { CalendarEntry.description="Zahnarzt2", CalendarEntry.entryId=0, userId=1, tasks=[], date=newDate2 }
+                  _            <- update c (NewEntry newCalendarEntry)
                   entryState  <- query c $ CalendarEntryAcid.EntryById (oldId + 1)
                   entryState `shouldSatisfy` isJust
                   fromJust entryState `shouldBe` CalendarEntry{ description="Zahnarzt2", entryId=oldId + 1, userId=1, tasks=[], date=newDate2}
@@ -60,24 +60,25 @@ spec =
           describe "delete" $
               it "create/delete Entry and check existence" $
                 \ c -> do
-                  entryList <- query c GetEntryList
-                  let calendarEntry = CalendarEntry { CalendarEntry.description="Zahnarzt", CalendarEntry.entryId=0, userId=1, tasks=[], date=dbDate }
-                  _ <- update c (NewEntry calendarEntry)
-                  entryState <- update c $ CalendarEntryAcid.DeleteEntry $ InterfaceAcid.nextEntryId entryList
-                  entryList <- query c GetEntryList
-                  entryState <- query c $ CalendarEntryAcid.EntryById $ InterfaceAcid.nextEntryId entryList
+                  let newCalendarEntry = CalendarEntry { CalendarEntry.description="Zahnarzt", CalendarEntry.entryId=0, userId=1, tasks=[], date=dbDate }
+                  newCalendarEntryFromDB <- update c (NewEntry newCalendarEntry)
+                  let newCalendarEntryId = CalendarEntry.entryId newCalendarEntryFromDB
+                  _ <- update c $ CalendarEntryAcid.DeleteEntry newCalendarEntryId
+                  entryState <- query c $ CalendarEntryAcid.EntryById newCalendarEntryId
                   entryState `shouldSatisfy` isNothing
 
           describe "update" $
               it "change attributes and check changes" $
                 \c -> do
-                  entryList   <- query c GetEntryList
-                  let calendarEntry = CalendarEntry { CalendarEntry.description="Termin 1", CalendarEntry.entryId=0, userId=2, tasks=[], date=dbDate }
-                  newCalendarEntry <- update c (NewEntry calendarEntry)
-                  let eId = CalendarEntry.entryId newCalendarEntry
-                  entryState  <- query c $ CalendarEntryAcid.EntryById eId
-                  let updatedEntry = (fromJust entryState) {description = "Termin 2"}
-                  _           <- update c $ CalendarEntryAcid.UpdateEntry updatedEntry
-                  entryState  <- query c $ CalendarEntryAcid.EntryById eId
+                  --erstelle Objekt
+                  let newCalendarEntry = CalendarEntry { CalendarEntry.description="Termin 1", CalendarEntry.entryId=0, userId=2, tasks=[], date=dbDate }
+                  newCalendarEntryFromDB      <- update c (NewEntry newCalendarEntry)
+                  let newCalendarEntryId = CalendarEntry.entryId newCalendarEntryFromDB
+                  -- update Objekt
+                  findNewCalendarEntryFromDB  <- query c $ CalendarEntryAcid.EntryById newCalendarEntryId
+                  let updatedEntry = (fromJust findNewCalendarEntryFromDB) {description = "Termin 2"}
+                  _                           <- update c $ CalendarEntryAcid.UpdateEntry updatedEntry
+                  -- überprüfe welche Werte sich gändert haben
+                  entryState                  <- query c $ CalendarEntryAcid.EntryById newCalendarEntryId
                   entryState `shouldSatisfy` isJust
-                  fromJust entryState `shouldBe` CalendarEntry{ description="Termin 2", entryId=eId, userId=2, tasks=[], date=dbDate}
+                  fromJust entryState `shouldBe` CalendarEntry{ description="Termin 2", entryId=newCalendarEntryId, userId=2, tasks=[], date=dbDate}
