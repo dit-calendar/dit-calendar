@@ -72,9 +72,9 @@ spec =
               it "change attributes and check changes" $
                 \c -> do
                   entryList   <- query c GetEntryList
-                  let eId = InterfaceAcid.nextEntryId entryList
                   let calendarEntry = CalendarEntry { CalendarEntry.description="Termin 1", CalendarEntry.entryId=0, userId=2, tasks=[], date=dbDate }
-                  _           <- update c (NewEntry calendarEntry)
+                  newCalendarEntry <- update c (NewEntry calendarEntry)
+                  let eId = CalendarEntry.entryId newCalendarEntry
                   entryState  <- query c $ CalendarEntryAcid.EntryById eId
                   let updatedEntry = (fromJust entryState) {description = "Termin 2"}
                   _           <- update c $ CalendarEntryAcid.UpdateEntry updatedEntry
