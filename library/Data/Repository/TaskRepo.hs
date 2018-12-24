@@ -8,6 +8,7 @@ module Data.Repository.TaskRepo
     ( deleteTaskImpl, createTaskImpl, updateTaskImpl, findTaskByIdImpl, MonadDBTaskRepo(..) ) where
 
 import           Control.Monad.IO.Class
+import           Data.Default              (def)
 import           Data.Maybe                (fromJust)
 
 import qualified Happstack.Foundation      as Foundation
@@ -34,9 +35,7 @@ deleteTaskImpl task = delete $ TaskAcid.DeleteTask $ taskId task
 
 createTaskImpl :: TaskDAO m => Description -> m Task
 createTaskImpl description =
-    let task = Task { Task.description = description
-                    , taskId  = 0
-                    , belongingUsers = []
+    let task = def { Task.description = description
                     , startTime=Nothing
                     , endTime=Nothing
                     } in

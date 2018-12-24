@@ -15,9 +15,11 @@ module Data.Repository.CalendarRepo
     ) where
 
 import           Control.Monad.IO.Class             (MonadIO)
+import           Data.Default                       (def)
 import qualified Data.List                          as List
 import           Data.Maybe                         (fromJust)
 import           Data.Time.Clock                    (UTCTime)
+
 import qualified Happstack.Foundation               as Foundation
 
 import           Data.Domain.CalendarEntry          as CalendarEntry
@@ -40,11 +42,9 @@ instance CalendarDAO App where
 createCalendarEntryImpl :: CalendarDAO m => UTCTime -> Description -> User -> m CalendarEntry
 createCalendarEntryImpl newDate description user =
     let entry =
-            CalendarEntry
+            def
                 { description = description
-                , entryId = 0 --TODO why it can't be undefined if creating calendar with post interface?
                 , CalendarEntry.userId = User.userId user
-                , tasks = []
                 , date = newDate
                 }
      in create (CalendarEntryAcid.NewEntry entry)

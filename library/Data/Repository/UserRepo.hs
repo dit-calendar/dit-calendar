@@ -10,6 +10,7 @@ module Data.Repository.UserRepo
      MonadDBUserRepo(..) ) where
 
 import           Control.Monad.IO.Class
+import           Data.Default              (def)
 import           Data.Maybe                (fromJust)
 import           Data.Text                 (Text)
 import           Prelude
@@ -33,10 +34,7 @@ instance UserDAO App where
     queryByLoginName = Foundation.query
 
 createUserImpl :: UserDAO m => Text -> m User
-createUserImpl name = let user = User { loginName = name
-                    , userId = 0 --TODO why it can't be undefined if creating user with post interface?
-                    , calendarEntries = []
-                    , belongingTasks = []
+createUserImpl name = let user = def { loginName = name
                     } in
         create $ UserAcid.NewUser user
 

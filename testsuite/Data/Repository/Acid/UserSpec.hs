@@ -3,6 +3,7 @@
 module Data.Repository.Acid.UserSpec (spec) where
 
 import           Data.Acid                           (AcidState, query, update)
+import           Data.Default                        (def)
 import           Data.Maybe                          (fromJust, isJust,
                                                       isNothing)
 import           Test.Hspec
@@ -14,7 +15,7 @@ import qualified Data.Repository.Acid.InterfaceAcid  as InterfaceAcid
 import qualified Data.Repository.Acid.User           as UserAcid
 
 withDatabaseConnection :: (AcidState UserAcid.UserList -> IO ()) -> IO ()
-withDatabaseConnection = initDatabase User{ User.loginName="Foo", userId=0, calendarEntries=[], belongingTasks=[]}
+withDatabaseConnection = initDatabase def{ User.loginName="Foo", userId=0}
 
 spec :: Spec
 spec =
@@ -25,7 +26,7 @@ spec =
                 \c -> do
                   userState   <- query c $ UserAcid.FindByLoginName "Foo"
                   userState `shouldSatisfy` isJust
-                  fromJust userState `shouldBe` User{  User.loginName="Foo", userId=0, calendarEntries=[], belongingTasks=[] }
+                  fromJust userState `shouldBe` def{  User.loginName="Foo", userId=0 }
               it "by wrong Username" $
                   \c -> do
                     userState   <- query c $ UserAcid.FindByLoginName "Foo1"

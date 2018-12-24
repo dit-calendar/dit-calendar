@@ -10,6 +10,7 @@ module Data.Service.UserSpec (spec) where
 
 import           Control.Monad.TestFixture
 import           Control.Monad.TestFixture.TH
+import           Data.Default                 (def)
 import           Data.Text                    (Text)
 import           Test.Hspec
 import           Test.HUnit.Base              (assertEqual)
@@ -36,8 +37,8 @@ import qualified Data.Service.User            as UserService
 
 mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBTaskRepo, MonadDBCalendarRepo, TaskService |]
 
-userFromDb = User{ loginName="Foo", User.userId=10, calendarEntries=[1,2], belongingTasks=[4] }
-taskFromDb = Task{ Task.description="task1", taskId=5, belongingUsers=[10], startTime=Nothing, endTime=Nothing}
+userFromDb = def { loginName="Foo", User.userId=10, calendarEntries=[1,2], belongingTasks=[4] }
+taskFromDb = def { Task.description="task1", taskId=5, belongingUsers=[10], startTime=Nothing, endTime=Nothing}
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture { _deleteCalendarEntry = \a -> tell [show a]
@@ -55,7 +56,7 @@ instance MonadIO Identity where
 
 spec = describe "UserService" $
     it "deleteUser" $ do
-        let expectedTask = Task{ Task.description="task1", taskId=5, belongingUsers=[], startTime=Nothing, endTime=Nothing}
+        let expectedTask = def { Task.description="task1", taskId=5, startTime=Nothing, endTime=Nothing}
         let (_, log) = evalTestFixture (UserService.deleteUserImpl userFromDb) fixture
         assertEqual "CalendarEntry 1 nicht durchgegeben" (log!!0) "1"
         assertEqual "CalendarEntry 2 nicht durchgegeben" (log!!1) "2"

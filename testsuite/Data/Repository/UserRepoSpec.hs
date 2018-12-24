@@ -15,10 +15,12 @@ import           Test.Hspec
 import           Control.Monad.Identity       (Identity)
 import           Control.Monad.IO.Class
 import           Control.Monad.Writer.Class   (tell)
+import           Data.Default                 (def)
 import           Data.Maybe                   (fromJust)
 
 import           Data.Domain.User             as User
-import           Data.Repository.Acid.User    (DeleteUser (..), FindByLoginName (..),
+import           Data.Repository.Acid.User    (DeleteUser (..),
+                                               FindByLoginName (..),
                                                NewUser (..), UpdateUser (..),
                                                UserById (..), UserDAO)
 
@@ -27,7 +29,7 @@ import qualified Data.Repository.UserRepo     as UserRepo
 
 mkFixture "Fixture" [ts| UserDAO |]
 
-userFromDb = User{ loginName="Foo", User.userId=10, calendarEntries=[], belongingTasks=[1,2,3] }
+userFromDb = def { loginName="Foo", User.userId=10, belongingTasks=[1,2,3] }
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture { _create = \(NewUser a)    -> return a
@@ -47,31 +49,31 @@ spec = describe "UserRepo" $ do
         User.calendarEntries result `shouldBe` []
         User.belongingTasks result `shouldBe` []
     it "deleteUser" $ do
-        let user = User{ loginName="Foo", User.userId=10, calendarEntries=[], belongingTasks=[] }
+        let user = def { loginName="Foo", User.userId=10}
         let (_, log) = evalTestFixture (UserRepo.deleteUserImpl user) fixture
         log `shouldBe` ["10"::String]
     it "updateName" $ do
-        let user = User{ loginName="Foo", User.userId=10, calendarEntries=[], belongingTasks=[] }
+        let user = def { loginName="Foo", User.userId=10 }
         let (_, log) = evalTestFixture (UserRepo.updateLoginNameImpl user "Name2") fixture
         let newUser = user { loginName = "Name2" }
         log!!0 `shouldBe` show newUser
     it "addCalendarEntryToUser" $ do
-        let user = User{ loginName="Foo", User.userId=10, calendarEntries=[1], belongingTasks=[] }
+        let user = def { loginName="Foo", User.userId=10, calendarEntries=[1]}
         let (_, log) = evalTestFixture (UserRepo.addCalendarEntryToUserImpl user 2) fixture
         let newUser = user {calendarEntries = [1, 2]}
         log!!0 `shouldBe` show newUser
     it "deleteCalendarEntryFromUser" $ do
-        let user = User{ loginName="Foo", User.userId=10, calendarEntries=[1,2,3], belongingTasks=[] }
+        let user = def{ loginName="Foo", User.userId=10, calendarEntries=[1,2,3]}
         let (_, log) = evalTestFixture (UserRepo.deleteCalendarEntryFromUserImpl user 2) fixture
         let newUser = user {calendarEntries = [1, 3]}
         log!!0 `shouldBe` show newUser
     it "addTaskToUser" $ do
-        let user = User{ loginName="Foo", User.userId=10, calendarEntries=[], belongingTasks=[1] }
+        let user = def{ loginName="Foo", User.userId=10, belongingTasks=[1] }
         let (_, log) = evalTestFixture (UserRepo.addTaskToUserImpl user 2) fixture
         let newUser = user {belongingTasks = [1, 2]}
         log!!0 `shouldBe` show newUser
     it "deleteTaskFromUser" $ do
-        let user = User{ loginName="Foo", User.userId=10, calendarEntries=[], belongingTasks=[1,2,3] }
+        let user = def { loginName="Foo", User.userId=10, belongingTasks=[1,2,3] }
         let (_, log) = evalTestFixture (UserRepo.deleteTaskFromUserImpl user 2) fixture
         let newUser = user {belongingTasks = [1, 3]}
         log!!0 `shouldBe` show newUser
