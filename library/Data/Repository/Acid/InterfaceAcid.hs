@@ -1,7 +1,7 @@
+{-# LANGUAGE DatatypeContexts   #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE RecordWildCards    #-}
 {-# LANGUAGE TemplateHaskell    #-}
-{-# LANGUAGE DatatypeContexts   #-}
 
 module Data.Repository.Acid.InterfaceAcid where
 
@@ -12,9 +12,11 @@ import           Data.Acid            (Query, Update)
 import           Data.Data            (Data, Typeable)
 import           Data.IxSet           (Indexable (..), IxSet (..), deleteIx,
                                        getEQ, getOne, insert, toList, updateIx)
+import           Data.Maybe           (fromJust)
 import           Data.SafeCopy        (base, deriveSafeCopy)
 
-import           Data.Domain.Types    (Entry, getId, setId)
+import           Data.Domain.Types    (Entry, getId, getVersion, incVersion,
+                                       setId)
 
 
 --type that represents the state we wish to store
@@ -50,11 +52,15 @@ deleteEntry entryToDelete =
             }
 
 updateEntry :: (Ord a, Typeable a, Indexable a, Entry a) => a -> Update (EntrySet a) ()
-updateEntry updatedEntry =
-     do b@EntrySet{..} <- get
+updateEntry updatedEntry = do
+    b@EntrySet{..} <- get
+    let dbEntry = fromJust $ getOne (getEQ (getId updatedEntry) entrys)
+    if getVersion dbEntry == getVersion updatedEntry then
+        let incrementEntry = incVersion updatedEntry in
         put b { entrys =
-            updateIx (getId updatedEntry) updatedEntry entrys
+            updateIx (getId incrementEntry) incrementEntry entrys
             }
+        else undefined --error, version is not correct
 
 -- create a new entry and add it to the database
 newEntry :: (Ord a, Typeable a, Indexable a, Entry a) => a -> Update (EntrySet a) a

@@ -68,7 +68,7 @@ spec =
                   entryState <- query c $ CalendarEntryAcid.EntryById newCalendarEntryId
                   entryState `shouldSatisfy` isNothing
 
-          describe "update" $
+          describe "update" $ do
               it "change attributes and check changes" $
                 \c -> do
                   --erstelle Objekt
@@ -82,4 +82,24 @@ spec =
                   -- überprüfe welche Werte sich gändert haben
                   entryState                  <- query c $ CalendarEntryAcid.EntryById newCalendarEntryId
                   entryState `shouldSatisfy` isJust
-                  fromJust entryState `shouldBe` def { description="Termin 2", entryId=newCalendarEntryId, userId=2, date=dbDate}
+                  fromJust entryState `shouldBe` def { description="Termin 2", entryId=newCalendarEntryId, userId=2, date=dbDate, version=1}
+              it "change data and check version" $
+                \ c -> do
+                    findCalendarEntryFromDB  <- query c $ CalendarEntryAcid.EntryById 0
+                    _                           <- update c $ CalendarEntryAcid.UpdateEntry $ fromJust findCalendarEntryFromDB
+                    entryState                  <- query c $ CalendarEntryAcid.EntryById 0
+                    fromJust entryState `shouldBe` def { description="Foo", entryId=0, userId=0, date=dbDate, version=1}
+
+                    let updatedEntry = (fromJust findCalendarEntryFromDB) {version = 1}
+                    _                           <- update c $ CalendarEntryAcid.UpdateEntry updatedEntry
+                    entryState                  <- query c $ CalendarEntryAcid.EntryById 0
+                    fromJust entryState `shouldBe` def { description="Foo", entryId=0, userId=0, date=dbDate, version=2}
+              it "change data with wrong version" $
+                \ c -> do
+                    findCalendarEntryFromDB  <- query c $ CalendarEntryAcid.EntryById 0
+                    _                           <- update c $ CalendarEntryAcid.UpdateEntry $ fromJust findCalendarEntryFromDB
+                    entryState                  <- query c $ CalendarEntryAcid.EntryById 0
+                    fromJust entryState `shouldBe` def { description="Foo", entryId=0, userId=0, date=dbDate, version=1}
+                    _                           <- update c $ CalendarEntryAcid.UpdateEntry $ fromJust findCalendarEntryFromDB
+                    entryState                  <- query c $ CalendarEntryAcid.EntryById 0
+                    fromJust entryState `shouldBe` def { description="Foo", entryId=0, userId=0, date=dbDate, version=1}
