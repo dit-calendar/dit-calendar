@@ -41,7 +41,7 @@ userById :: UserId -> Query UserList (Maybe User)
 userById = InterfaceAcid.entryById
 
 findByLoginName :: Text -> Query UserList (Maybe User)
-findByLoginName loginName = do b@InterfaceAcid.EntrySet{..} <- ask
+findByLoginName loginName = do InterfaceAcid.EntrySet{..} <- ask
                                return $ getOne $ entrys @= loginName
 
 allUsers :: Query UserList [User]
