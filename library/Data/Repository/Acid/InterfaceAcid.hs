@@ -52,15 +52,23 @@ deleteEntry entryToDelete =
             }
 
 updateEntry :: (Ord a, Typeable a, Indexable a, Entry a) => a -> Update (EntrySet a) ()
-updateEntry updatedEntry = do
+updateEntry updatedEntry =
+     do b@EntrySet{..} <- get
+        put b { entrys =
+            updateIx (getId updatedEntry) updatedEntry entrys
+            }
+
+updateEntryAndCheckVersion :: (Ord a, Typeable a, Indexable a, Entry a) => a -> Update (EntrySet a) (Either String ())
+updateEntryAndCheckVersion updatedEntry = do
     b@EntrySet{..} <- get
     let dbEntry = fromJust $ getOne (getEQ (getId updatedEntry) entrys)
     if getVersion dbEntry == getVersion updatedEntry then
         let incrementEntry = incVersion updatedEntry in
-        put b { entrys =
-            updateIx (getId incrementEntry) incrementEntry entrys
+        do  operation <- put b { entrys =
+                updateIx (getId incrementEntry) incrementEntry entrys
             }
-        else undefined --error, version is not correct
+            return $ Right operation
+    else return $ Left "optimistic locking"
 
 -- create a new entry and add it to the database
 newEntry :: (Ord a, Typeable a, Indexable a, Entry a) => a -> Update (EntrySet a) a

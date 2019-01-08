@@ -5,7 +5,7 @@
 
 module Data.Repository.Acid.User
     ( UserDAO(..), initialUserListState, UserList(..), NewUser(..), UserById(..), AllUsers(..),
-    GetUserList(..), UpdateUser(..), DeleteUser(..), FindByLoginName(..) ) where
+    GetUserList(..), UpdateUser(..), DeleteUser(..), FindByLoginName(..), UpdateEntryAndCheckVersion(..) ) where
 
 import           Control.Applicative                ((<$>))
 import           Control.Monad.Reader               (ask)
@@ -50,14 +50,19 @@ allUsers = InterfaceAcid.allEntrysAsList
 updateUser :: User -> Update UserList ()
 updateUser = InterfaceAcid.updateEntry
 
+updateEntryAndCheckVersion :: User -> Update UserList (Either String ())
+updateEntryAndCheckVersion = InterfaceAcid.updateEntryAndCheckVersion
+
 deleteUser :: UserId -> Update UserList ()
 deleteUser = InterfaceAcid.deleteEntry
 
-$(makeAcidic ''UserList ['newUser, 'userById, 'findByLoginName, 'allUsers, 'getUserList, 'updateUser, 'deleteUser])
+$(makeAcidic ''UserList ['newUser, 'userById, 'findByLoginName, 'allUsers, 'getUserList, 'updateUser,
+    'updateEntryAndCheckVersion, 'deleteUser])
 
 class UserDAO m where
     create :: NewUser -> m User
     update :: UpdateUser -> m ()
+    updateAndCheckVersion :: UpdateEntryAndCheckVersion -> m (Either String ())
     delete :: DeleteUser -> m ()
     query  :: UserById -> m (Maybe User)
     queryByLoginName :: FindByLoginName -> m (Maybe User)
