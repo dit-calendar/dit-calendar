@@ -8,10 +8,11 @@ import           Data.Domain.CalendarEntry      as CalendarEntry
 import           Data.Domain.Types              (Description, EntryId, UserId)
 import           Presentation.AcidHelper        (App)
 import           Presentation.ResponseHelper    (okResponse, okResponseJson,
-                                                 onEntryExist, onUserExist)
+                                                 onEntryExist, onUserExist,
+                                                 preconditionFailedResponse)
 
-import qualified Data.Domain.User               as DomainUser
 import qualified Data.Domain.CalendarEntry      as DomainCalendar
+import qualified Data.Domain.User               as DomainUser
 import qualified Data.Repository.CalendarRepo   as CalendarRepo
 import qualified Data.Service.CalendarEntry     as CalendarService
 import qualified Presentation.Dto.CalendarEntry as CalendarDto
@@ -40,5 +41,7 @@ updateCalendarEntry entryId calendarDto loggedUser = onEntryExist entryId update
     where
         updateCalendar cEntry = do
             --TODO überprüfe welche werte gesetzt sind und update nur diese, momentan wird nur description aktualisiert
-            CalendarRepo.updateCalendar cEntry {CalendarEntry.description = fromJust $ CalendarDto.description calendarDto}
-            okResponse $ "CalendarEntry with id:" ++ show (DomainCalendar.entryId cEntry) ++ "updated"
+            result <- CalendarRepo.updateCalendar cEntry {CalendarEntry.description = fromJust $ CalendarDto.description calendarDto}
+            case result of
+                Left errorMessage -> preconditionFailedResponse errorMessage
+                Right updatedEntry -> okResponseJson $ encode $ CalendarDto.transformToDto updatedEntry
