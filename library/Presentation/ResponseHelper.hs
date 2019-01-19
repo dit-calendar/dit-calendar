@@ -13,6 +13,7 @@ module Presentation.ResponseHelper
 
 import           Data.Aeson                         (Value)
 import           Data.ByteString.Lazy
+import           Data.Text                          (Text)
 import           Happstack.Server                   (Method, Response, ok,
                                                      toResponse, toResponseBS)
 
@@ -68,7 +69,7 @@ badRequest message = HServer.badRequest $ toResponse message
 okResponseJson :: ByteString -> App Response
 okResponseJson object = ok $ toResponseBS (T.pack "application/json") object
 
-preconditionFailedResponse :: String -> App Response
+preconditionFailedResponse :: Text -> App Response
 preconditionFailedResponse message = preconditionFailed $ toResponse message
 
 notImplemented :: Method -> App Response

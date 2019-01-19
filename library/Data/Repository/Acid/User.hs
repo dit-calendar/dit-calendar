@@ -17,6 +17,7 @@ import           Data.Text                          (Text)
 
 import           Data.Domain.Types                  (UserId)
 import           Data.Domain.User                   (User (..))
+import           Data.Repository.Acid.Types         (UpdateReturn)
 
 import qualified Data.Repository.Acid.InterfaceAcid as InterfaceAcid
 
@@ -47,7 +48,7 @@ findByLoginName loginName = do InterfaceAcid.EntrySet{..} <- ask
 allUsers :: Query UserList [User]
 allUsers = InterfaceAcid.allEntrysAsList
 
-updateUser :: User -> Update UserList (Either String User)
+updateUser :: User -> Update UserList (UpdateReturn User)
 updateUser = InterfaceAcid.updateEntry
 
 deleteUser :: UserId -> Update UserList ()
@@ -57,7 +58,7 @@ $(makeAcidic ''UserList ['newUser, 'userById, 'findByLoginName, 'allUsers, 'getU
 
 class UserDAO m where
     create :: NewUser -> m User
-    update :: UpdateUser -> m (Either String User)
+    update :: UpdateUser -> m (UpdateReturn User)
     delete :: DeleteUser -> m ()
     query  :: UserById -> m (Maybe User)
     queryByLoginName :: FindByLoginName -> m (Maybe User)

@@ -29,6 +29,7 @@ import           Data.Domain.Types                  (Description, EntryId,
 import           Data.Domain.User                   as User
 import           Data.Domain.User                   (User)
 import           Data.Repository.Acid.CalendarEntry (CalendarDAO (..))
+import           Data.Repository.Acid.Types         (UpdateReturn)
 import           Presentation.AcidHelper            (App)
 
 import qualified Data.Repository.Acid.CalendarEntry as CalendarEntryAcid
@@ -52,18 +53,18 @@ createCalendarEntryImpl newDate description user =
 deleteCalendarEntryImpl :: CalendarDAO m => EntryId -> m ()
 deleteCalendarEntryImpl entryId = delete $ CalendarEntryAcid.DeleteEntry entryId
 
-updateCalendarImpl :: CalendarDAO m => CalendarEntry -> m (Either String CalendarEntry)
+updateCalendarImpl :: CalendarDAO m => CalendarEntry -> m (UpdateReturn CalendarEntry)
 updateCalendarImpl calendarEntry = update $ CalendarEntryAcid.UpdateEntry calendarEntry
 
 findCalendarByIdImpl :: (CalendarDAO m, MonadIO m) => EntryId -> m CalendarEntry
 findCalendarByIdImpl entryId =
     fromJust <$> query (CalendarEntryAcid.EntryById entryId)
 
-deleteTaskFromCalendarEntryImpl :: CalendarDAO m => CalendarEntry -> Int -> m (Either String CalendarEntry)
+deleteTaskFromCalendarEntryImpl :: CalendarDAO m => CalendarEntry -> Int -> m (UpdateReturn CalendarEntry)
 deleteTaskFromCalendarEntryImpl calendarEntry taskId =
     updateCalendarImpl calendarEntry {tasks = List.delete taskId (tasks calendarEntry)}
 
-addTaskToCalendarEntryImpl :: CalendarDAO m => CalendarEntry -> TaskId -> m (Either String CalendarEntry)
+addTaskToCalendarEntryImpl :: CalendarDAO m => CalendarEntry -> TaskId -> m (UpdateReturn CalendarEntry)
 addTaskToCalendarEntryImpl calendarEntry taskId = updateCalendarImpl calendarEntry {tasks = tasks calendarEntry ++ [taskId]}
 
 class (Monad m, CalendarDAO App) =>
@@ -71,10 +72,10 @@ class (Monad m, CalendarDAO App) =>
     where
     createCalendarEntry :: UTCTime -> Description -> User -> m CalendarEntry
     findCalendarById :: EntryId -> m CalendarEntry
-    updateCalendar :: CalendarEntry -> m (Either String CalendarEntry)
+    updateCalendar :: CalendarEntry -> m (UpdateReturn CalendarEntry)
     deleteCalendarEntry :: EntryId -> m ()
-    deleteTaskFromCalendarEntry :: CalendarEntry -> Int -> m (Either String CalendarEntry)
-    addTaskToCalendarEntry :: CalendarEntry -> TaskId -> m (Either String CalendarEntry)
+    deleteTaskFromCalendarEntry :: CalendarEntry -> Int -> m (UpdateReturn CalendarEntry)
+    addTaskToCalendarEntry :: CalendarEntry -> TaskId -> m (UpdateReturn CalendarEntry)
 
 instance MonadDBCalendarRepo App where
     createCalendarEntry = createCalendarEntryImpl

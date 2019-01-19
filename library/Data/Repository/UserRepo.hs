@@ -10,20 +10,21 @@ module Data.Repository.UserRepo
      MonadDBUserRepo(..) ) where
 
 import           Control.Monad.IO.Class
-import           Data.Default              (def)
-import           Data.Maybe                (fromJust)
-import           Data.Text                 (Text)
+import           Data.Default               (def)
+import           Data.Maybe                 (fromJust)
+import           Data.Text                  (Text)
 import           Prelude
 
-import qualified Data.List                 as List
-import qualified Happstack.Foundation      as Foundation
+import qualified Data.List                  as List
+import qualified Happstack.Foundation       as Foundation
 
-import           Data.Domain.Types         (EntryId, TaskId, UserId)
-import           Data.Domain.User          (User (..))
-import           Data.Repository.Acid.User (UserDAO (..))
-import           Presentation.AcidHelper   (App)
+import           Data.Domain.Types          (EntryId, TaskId, UserId)
+import           Data.Domain.User           (User (..))
+import           Data.Repository.Acid.Types (UpdateReturn)
+import           Data.Repository.Acid.User  (UserDAO (..))
+import           Presentation.AcidHelper    (App)
 
-import qualified Data.Repository.Acid.User as UserAcid
+import qualified Data.Repository.Acid.User  as UserAcid
 
 
 instance UserDAO App where
@@ -41,26 +42,26 @@ createUserImpl name = let user = def { loginName = name
 deleteUserImpl :: UserDAO m => User -> m ()
 deleteUserImpl user = delete $ UserAcid.DeleteUser (Data.Domain.User.userId user)
 
-updateUserImpl :: UserDAO m => User -> m (Either String User)
+updateUserImpl :: UserDAO m => User -> m (UpdateReturn User)
 updateUserImpl user = update $ UserAcid.UpdateUser user
 
-updateLoginNameImpl :: UserDAO m => User -> Text -> m (Either String User)
+updateLoginNameImpl :: UserDAO m => User -> Text -> m (UpdateReturn User)
 updateLoginNameImpl user newName = updateUserImpl user {loginName = newName}
 
-addCalendarEntryToUserImpl :: UserDAO m => User -> EntryId -> m (Either String User)
+addCalendarEntryToUserImpl :: UserDAO m => User -> EntryId -> m (UpdateReturn User)
 addCalendarEntryToUserImpl user entryId =
     updateUserImpl user {calendarEntries = calendarEntries user ++ [entryId]}
 
 deleteCalendarEntryFromUserImpl :: UserDAO m =>
-                            User -> EntryId -> m (Either String User)
+                            User -> EntryId -> m (UpdateReturn User)
 deleteCalendarEntryFromUserImpl user entryId =
     updateUserImpl user {calendarEntries = List.delete entryId (calendarEntries user)}
 
-addTaskToUserImpl :: UserDAO m => User -> TaskId -> m (Either String User)
+addTaskToUserImpl :: UserDAO m => User -> TaskId -> m (UpdateReturn User)
 addTaskToUserImpl user taskId =
     updateUserImpl user {belongingTasks = belongingTasks user ++ [taskId]}
 
-deleteTaskFromUserImpl :: UserDAO m => User -> TaskId -> m (Either String User)
+deleteTaskFromUserImpl :: UserDAO m => User -> TaskId -> m (UpdateReturn User)
 deleteTaskFromUserImpl user taskId =
     updateUserImpl user {belongingTasks = List.delete taskId (belongingTasks user)}
 
@@ -75,13 +76,13 @@ findUserByLoginNameIml name = queryByLoginName $ UserAcid.FindByLoginName name
 class (UserDAO App) => MonadDBUserRepo m where
     createUser :: Text -> m User
     findUserById :: UserId -> m User
-    updateUser :: User -> m (Either String User)
+    updateUser :: User -> m (UpdateReturn User)
     deleteUser :: User -> m ()
-    updateLoginName :: User -> Text -> m (Either String User)
-    addCalendarEntryToUser :: User -> EntryId -> m (Either String User)
-    deleteCalendarEntryFromUser :: User -> EntryId -> m (Either String User)
-    addTaskToUser :: User -> TaskId -> m (Either String User)
-    deleteTaskFromUser :: User -> TaskId -> m (Either String User)
+    updateLoginName :: User -> Text -> m (UpdateReturn User)
+    addCalendarEntryToUser :: User -> EntryId -> m (UpdateReturn User)
+    deleteCalendarEntryFromUser :: User -> EntryId -> m (UpdateReturn User)
+    addTaskToUser :: User -> TaskId -> m (UpdateReturn User)
+    deleteTaskFromUser :: User -> TaskId -> m (UpdateReturn User)
 
     findUserByLoginName :: Text -> m (Maybe User)
 

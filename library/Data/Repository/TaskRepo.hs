@@ -8,18 +8,19 @@ module Data.Repository.TaskRepo
     ( deleteTaskImpl, createTaskImpl, updateTaskImpl, findTaskByIdImpl, MonadDBTaskRepo(..) ) where
 
 import           Control.Monad.IO.Class
-import           Data.Default              (def)
-import           Data.Maybe                (fromJust)
+import           Data.Default               (def)
+import           Data.Maybe                 (fromJust)
 
-import qualified Happstack.Foundation      as Foundation
+import qualified Happstack.Foundation       as Foundation
 
-import           Data.Domain.CalendarEntry as CalendarEntry
-import           Data.Domain.Task          as Task
-import           Data.Domain.Types         (Description, TaskId)
-import           Data.Repository.Acid.Task (TaskDAO (..))
-import           Presentation.AcidHelper   (App)
+import           Data.Domain.CalendarEntry  as CalendarEntry
+import           Data.Domain.Task           as Task
+import           Data.Domain.Types          (Description, TaskId)
+import           Data.Repository.Acid.Task  (TaskDAO (..))
+import           Data.Repository.Acid.Types (UpdateReturn)
+import           Presentation.AcidHelper    (App)
 
-import qualified Data.Repository.Acid.Task as TaskAcid
+import qualified Data.Repository.Acid.Task  as TaskAcid
 
 instance TaskDAO App where
     create = Foundation.update
@@ -27,7 +28,7 @@ instance TaskDAO App where
     delete = Foundation.update
     query  = Foundation.query
 
-updateTaskImpl :: TaskDAO m => Task -> m (Either String Task)
+updateTaskImpl :: TaskDAO m => Task -> m (UpdateReturn Task)
 updateTaskImpl task = update $ TaskAcid.UpdateTask task
 
 deleteTaskImpl :: TaskDAO m => Task -> m ()
@@ -49,7 +50,7 @@ findTaskByIdImpl taskId =
 class (Monad m, TaskDAO App) => MonadDBTaskRepo m where
     createTask        :: Description -> m Task
     findTaskById      :: TaskId -> m Task
-    updateTask        :: Task   -> m (Either String Task)
+    updateTask        :: Task   -> m (UpdateReturn Task)
     deleteTask        :: Task   -> m ()
 
 instance MonadDBTaskRepo App where

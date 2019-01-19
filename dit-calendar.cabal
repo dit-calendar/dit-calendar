@@ -44,6 +44,7 @@ library
                        Data.Repository.Acid.CalendarEntry,
                        Data.Repository.Acid.Task,
                        Data.Repository.Acid.InterfaceAcid,
+                       Data.Repository.Acid.Types,
                        Data.Repository.UserRepo,
                        Data.Repository.CalendarRepo,
                        Data.Repository.TaskRepo,
