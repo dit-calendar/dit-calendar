@@ -46,7 +46,7 @@ spec = describe "TaskRepo" $ do
         Task.belongingUsers result `shouldBe` []
     it "deleteTask" $ do
         let task = def { description="task1", taskId=1}
-        let (_, log) = evalTestFixture (TaskRepo.deleteTaskImpl task) fixture
+        let (_, log) = evalTestFixture (TaskRepo.deleteTaskImpl $ Task.taskId task) fixture
         log `shouldBe` "1"
     it "updateTask" $ do
         let task = def { description="task1", taskId=1, startTime=Nothing, endTime=Nothing}

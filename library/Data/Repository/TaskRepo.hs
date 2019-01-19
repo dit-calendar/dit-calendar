@@ -31,8 +31,8 @@ instance TaskDAO App where
 updateTaskImpl :: TaskDAO m => Task -> m (UpdateReturn Task)
 updateTaskImpl task = update $ TaskAcid.UpdateTask task
 
-deleteTaskImpl :: TaskDAO m => Task -> m ()
-deleteTaskImpl task = delete $ TaskAcid.DeleteTask $ taskId task
+deleteTaskImpl :: TaskDAO m => TaskId -> m ()
+deleteTaskImpl taskId = delete $ TaskAcid.DeleteTask taskId
 
 createTaskImpl :: TaskDAO m => Description -> m Task
 createTaskImpl description =
@@ -51,7 +51,7 @@ class (Monad m, TaskDAO App) => MonadDBTaskRepo m where
     createTask        :: Description -> m Task
     findTaskById      :: TaskId -> m Task
     updateTask        :: Task   -> m (UpdateReturn Task)
-    deleteTask        :: Task   -> m ()
+    deleteTask        :: TaskId   -> m ()
 
 instance MonadDBTaskRepo App where
     createTask        = createTaskImpl

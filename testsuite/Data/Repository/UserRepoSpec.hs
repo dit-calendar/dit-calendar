@@ -50,7 +50,7 @@ spec = describe "UserRepo" $ do
         User.belongingTasks result `shouldBe` []
     it "deleteUser" $ do
         let user = def { loginName="Foo", User.userId=10}
-        let (_, log) = evalTestFixture (UserRepo.deleteUserImpl user) fixture
+        let (_, log) = evalTestFixture (UserRepo.deleteUserImpl $ User.userId user) fixture
         log `shouldBe` ["10"::String]
     it "updateName" $ do
         let user = def { loginName="Foo", User.userId=10 }

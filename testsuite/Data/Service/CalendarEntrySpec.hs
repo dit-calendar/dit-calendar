@@ -79,4 +79,4 @@ spec = describe "CalendarEntryServiceSpec" $ do
         log!!2 `shouldBe` show (CalendarEntry.entryId calc)
         log!!3 `shouldBe` show (Task.taskId taskFromDb)
         -- Test CalendarRepo calls
-        log!!4 `shouldBe` show taskFromDb
+        log!!4 `shouldBe` show (Task.taskId taskFromDb)

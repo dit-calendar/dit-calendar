@@ -30,7 +30,7 @@ deleteTaskAndCascadeUsersImpl :: (MonadDBTaskRepo m, MonadDBUserRepo m, MonadIO 
             Task -> m ()
 deleteTaskAndCascadeUsersImpl task = do
     deleteTaskFromAllUsers task
-    TaskRepo.deleteTask task
+    TaskRepo.deleteTask $ Task.taskId task
 
 createTaskInCalendarImpl :: (MonadDBTaskRepo m, MonadDBUserRepo m, MonadDBCalendarRepo m) =>
             CalendarEntry -> Description -> m Task
