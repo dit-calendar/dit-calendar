@@ -10,7 +10,7 @@ import           Control.Monad.IO.Class
 import           Data.Maybe                   (fromJust)
 
 import           Data.Domain.User             as User
-import           Presentation.AcidHelper      (App)
+import           AcidHelper      (App)
 
 import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)
 import qualified Data.Repository.CalendarRepo as MonadDBCalendarRepo

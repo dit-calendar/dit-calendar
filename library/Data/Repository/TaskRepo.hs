@@ -18,7 +18,7 @@ import           Data.Domain.Task           as Task
 import           Data.Domain.Types          (Description, TaskId)
 import           Data.Repository.Acid.Task  (TaskDAO (..))
 import           Data.Repository.Acid.Types (UpdateReturn)
-import           Presentation.AcidHelper    (App)
+import           AcidHelper    (App)
 
 import qualified Data.Repository.Acid.Task  as TaskAcid
 

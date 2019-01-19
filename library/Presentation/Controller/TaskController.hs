@@ -7,7 +7,7 @@ import           Data.Domain.Task             as Task
 import           Data.Domain.Types            (Description, EntryId, TaskId,
                                                UserId)
 import           Data.Domain.User             (User)
-import           Presentation.AcidHelper      (App)
+import           AcidHelper      (App)
 import           Presentation.Dto.Task        as TaskDto (Task (..), transform)
 import           Presentation.ResponseHelper  (okResponse, okResponseJson,
                                                onEntryExist, onTaskExist,

@@ -22,7 +22,7 @@ import           Data.Domain.Types          (EntryId, TaskId, UserId)
 import           Data.Domain.User           (User (..))
 import           Data.Repository.Acid.Types (UpdateReturn)
 import           Data.Repository.Acid.User  (UserDAO (..))
-import           Presentation.AcidHelper    (App)
+import           AcidHelper    (App)
 
 import qualified Data.Repository.Acid.User  as UserAcid
 

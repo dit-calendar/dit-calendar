@@ -15,7 +15,7 @@ import           Data.Domain.CalendarEntry    as CalendarEntry
 import           Data.Domain.Task             as Task
 import           Data.Domain.Types            (Description, UserId)
 import           Data.Repository.Acid.Types   (UpdateReturn)
-import           Presentation.AcidHelper      (App)
+import           AcidHelper      (App)
 
 import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)
 import qualified Data.Repository.CalendarRepo as MonadDBCalendarRepo

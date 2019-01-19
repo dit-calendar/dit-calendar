@@ -37,7 +37,6 @@ library
                        Presentation.Dto.CalendarEntry,
                        Presentation.Dto.User,
                        Presentation.Dto.Task,
-                       Presentation.AcidHelper,
                        Presentation.HttpServerHelper,
                        Presentation.ResponseHelper,
                        Data.Repository.Acid.User,
@@ -52,6 +51,7 @@ library
                        Data.Service.CalendarEntry,
                        Data.Service.Authorization,
                        Data.Service.Task,
+                       AcidHelper,
                        Conf,
                        AppStart
 

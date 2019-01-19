@@ -11,7 +11,7 @@ import           Happstack.Server                       (BodyPolicy (..),
 import           Web.Routes                             (RouteT, mapRouteT,
                                                          nestURL)
 
-import           Presentation.AcidHelper                (App, CtrlV)
+import           AcidHelper                (App, CtrlV)
 import           Presentation.HttpServerHelper          (mapServerPartTIO2App)
 import           Presentation.Route.CalendarRoute       (routeCalendarEntry, routeCalendarEntryDetails)
 import           Presentation.Route.PageEnum            (Sitemap (..))

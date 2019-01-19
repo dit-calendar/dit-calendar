@@ -30,7 +30,7 @@ import           Data.Domain.User                   as User
 import           Data.Domain.User                   (User)
 import           Data.Repository.Acid.CalendarEntry (CalendarDAO (..))
 import           Data.Repository.Acid.Types         (UpdateReturn)
-import           Presentation.AcidHelper            (App)
+import           AcidHelper            (App)
 
 import qualified Data.Repository.Acid.CalendarEntry as CalendarEntryAcid
 

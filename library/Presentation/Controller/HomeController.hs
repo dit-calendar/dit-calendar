@@ -6,7 +6,7 @@ import           Happstack.Server                       (Method (GET, POST),
                                                          nullDir, ok,
                                                          toResponse)
 
-import           Presentation.AcidHelper                (App)
+import           AcidHelper                (App)
 import           Presentation.Controller.UserController as UserController
 
 

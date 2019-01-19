@@ -19,7 +19,7 @@ import           Web.Routes                           (RouteT, mapRouteT,
 import           Data.Domain.Types                    (Description, UserId)
 import           Data.Domain.User                     as DomainUser (User (..))
 import           Data.Service.Authorization           as AuthService (deleteAuthUser)
-import           Presentation.AcidHelper              (App)
+import           AcidHelper              (App)
 import           Presentation.Dto.User                as UserDto (User (..),
                                                                   transform)
 import           Presentation.HttpServerHelper        (getBody,

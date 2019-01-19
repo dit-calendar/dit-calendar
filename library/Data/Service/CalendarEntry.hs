@@ -22,7 +22,7 @@ import           Data.Repository.TaskRepo           (MonadDBTaskRepo)
 import qualified Data.Repository.TaskRepo           as MonadDBTaskRepo
 import           Data.Repository.UserRepo           (MonadDBUserRepo)
 import qualified Data.Repository.UserRepo           as MonadDBUserRepo
-import           Presentation.AcidHelper            (App)
+import           AcidHelper            (App)
 import qualified Presentation.Dto.CalendarEntry     as CalendarDto
 
 

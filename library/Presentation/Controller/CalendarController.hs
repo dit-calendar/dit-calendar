@@ -6,7 +6,7 @@ import           Happstack.Server               (Response)
 
 import           Data.Domain.CalendarEntry      as CalendarEntry
 import           Data.Domain.Types              (Description, EntryId, UserId)
-import           Presentation.AcidHelper        (App)
+import           AcidHelper        (App)
 import           Presentation.ResponseHelper    (okResponse, okResponseJson,
                                                  onEntryExist, onUserExist,
                                                  preconditionFailedResponse)

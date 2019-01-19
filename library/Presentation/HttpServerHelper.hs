@@ -19,7 +19,7 @@ import           Happstack.Server                     (Method,
                                                        unBody)
 import           Happstack.Server.Types               (Request, RqBody)
 
-import           Presentation.AcidHelper              (App)
+import           AcidHelper              (App)
 import           Presentation.Route.PageEnum          (Sitemap)
 import           Web.Routes                           (RouteT)
 

@@ -29,7 +29,7 @@ import           Data.Domain.User                   (User)
 import           Data.Repository.Acid.CalendarEntry (CalendarDAO)
 import           Data.Repository.Acid.Task          (TaskDAO)
 import           Data.Repository.Acid.User          (UserDAO)
-import           Presentation.AcidHelper            (App)
+import           AcidHelper            (App)
 
 import qualified Data.Repository.Acid.CalendarEntry as CalendarDao
 import qualified Data.Repository.Acid.CalendarEntry as CalendarEntryAcid
