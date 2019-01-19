@@ -4,7 +4,7 @@
 
 module Data.Repository.Acid.Task
     ( TaskDAO(..), initialTaskListState, TaskList, NewTask(..), TaskById(..), AllTasks(..),
-    GetTaskList(..), UpdateTask(..), DeleteTask(..), UpdateEntryAndCheckVersion(..) ) where
+    GetTaskList(..), UpdateTask(..), DeleteTask(..) ) where
 
 import           Data.Acid                          (Query, Update, makeAcidic)
 import           Data.IxSet                         (Indexable (..), ixFun,
@@ -39,19 +39,14 @@ allTasks = InterfaceAcid.allEntrysAsList
 updateTask :: Task -> Update TaskList ()
 updateTask = InterfaceAcid.updateEntry
 
-updateEntryAndCheckVersion :: Task -> Update TaskList (Either String ())
-updateEntryAndCheckVersion = InterfaceAcid.updateEntryAndCheckVersion
-
 deleteTask :: TaskId -> Update TaskList ()
 deleteTask = InterfaceAcid.deleteEntry
 
-$(makeAcidic ''TaskList ['newTask, 'taskById, 'allTasks, 'getTaskList, 'updateTask, 'updateEntryAndCheckVersion,
-    'deleteTask])
+$(makeAcidic ''TaskList ['newTask, 'taskById, 'allTasks, 'getTaskList, 'updateTask, 'deleteTask])
 
 
 class Monad m => TaskDAO m where
     create :: NewTask -> m Task
     update :: UpdateTask -> m ()
-    updateAndCheckVersion :: UpdateEntryAndCheckVersion -> m (Either String ())
     delete :: DeleteTask -> m ()
     query  :: TaskById -> m (Maybe Task)

@@ -4,7 +4,7 @@
 
 module Data.Repository.Acid.CalendarEntry
     ( CalendarDAO(..), initialEntryListState, EntryList(..), NewEntry(..), EntryById(..), AllEntrys(..),
-    GetEntryList(..), UpdateEntry(..), DeleteEntry(..), UpdateEntryAndCheckVersion(..) ) where
+    GetEntryList(..), UpdateEntry(..), DeleteEntry(..) ) where
 
 import           Data.Acid                          (Query, Update, makeAcidic)
 import           Data.IxSet                         (Indexable (..), ixFun,
@@ -39,18 +39,13 @@ entryById = InterfaceAcid.entryById
 updateEntry :: CalendarEntry -> Update EntryList ()
 updateEntry = InterfaceAcid.updateEntry
 
-updateEntryAndCheckVersion :: CalendarEntry -> Update EntryList (Either String ())
-updateEntryAndCheckVersion = InterfaceAcid.updateEntryAndCheckVersion
-
 deleteEntry :: EntryId -> Update EntryList ()
 deleteEntry = InterfaceAcid.deleteEntry
 
-$(makeAcidic ''EntryList ['newEntry, 'entryById, 'allEntrys, 'getEntryList, 'updateEntry, 'updateEntryAndCheckVersion,
-    'deleteEntry])
+$(makeAcidic ''EntryList ['newEntry, 'entryById, 'allEntrys, 'getEntryList, 'updateEntry, 'deleteEntry])
 
 class Monad m => CalendarDAO m where
     create :: NewEntry -> m CalendarEntry
     update :: UpdateEntry -> m ()
-    updateAndCheckVersion :: UpdateEntryAndCheckVersion -> m (Either String ())
     delete :: DeleteEntry -> m ()
     query  :: EntryById -> m (Maybe CalendarEntry)
