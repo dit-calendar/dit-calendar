@@ -44,10 +44,10 @@ fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture { _deleteCalendarEntry = \a -> tell [show a]
                   , _findTaskById = \a -> tell [show a] >> return taskFromDb
                   , _deleteUser = \a -> tell [show a]
-                  , _deleteTaskFromUser = \x a -> tell [show x] >> tell [show a]
+                  , _deleteTaskFromUser = \x a -> tell [show x] >> tell [show a] >>= (\_ -> return $ Right x)
                   , _findUserById = \a -> tell [show a] >> return userFromDb
-                  , _updateTask = \a -> tell [show a]
-                  , _removeUserFromTask =  \x a -> tell [show x] >> tell [show a]
+                  , _updateTask = \a -> tell [show a] >>= (\_ -> return $ Right a)
+                  , _removeUserFromTask =  \x a -> tell [show x] >> tell [show a] >>= (\_ -> return $ Right x)
                   }
 
 instance MonadIO Identity where

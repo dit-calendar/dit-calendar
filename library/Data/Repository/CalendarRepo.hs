@@ -52,18 +52,18 @@ createCalendarEntryImpl newDate description user =
 deleteCalendarEntryImpl :: CalendarDAO m => EntryId -> m ()
 deleteCalendarEntryImpl entryId = delete $ CalendarEntryAcid.DeleteEntry entryId
 
-updateCalendarImpl :: CalendarDAO m => CalendarEntry -> m ()
+updateCalendarImpl :: CalendarDAO m => CalendarEntry -> m (Either String CalendarEntry)
 updateCalendarImpl calendarEntry = update $ CalendarEntryAcid.UpdateEntry calendarEntry
 
 findCalendarByIdImpl :: (CalendarDAO m, MonadIO m) => EntryId -> m CalendarEntry
 findCalendarByIdImpl entryId =
     fromJust <$> query (CalendarEntryAcid.EntryById entryId)
 
-deleteTaskFromCalendarEntryImpl :: CalendarDAO m => CalendarEntry -> Int -> m ()
+deleteTaskFromCalendarEntryImpl :: CalendarDAO m => CalendarEntry -> Int -> m (Either String CalendarEntry)
 deleteTaskFromCalendarEntryImpl calendarEntry taskId =
     updateCalendarImpl calendarEntry {tasks = List.delete taskId (tasks calendarEntry)}
 
-addTaskToCalendarEntryImpl :: CalendarDAO m => CalendarEntry -> TaskId -> m ()
+addTaskToCalendarEntryImpl :: CalendarDAO m => CalendarEntry -> TaskId -> m (Either String CalendarEntry)
 addTaskToCalendarEntryImpl calendarEntry taskId = updateCalendarImpl calendarEntry {tasks = tasks calendarEntry ++ [taskId]}
 
 class (Monad m, CalendarDAO App) =>
@@ -71,10 +71,10 @@ class (Monad m, CalendarDAO App) =>
     where
     createCalendarEntry :: UTCTime -> Description -> User -> m CalendarEntry
     findCalendarById :: EntryId -> m CalendarEntry
-    updateCalendar :: CalendarEntry -> m ()
+    updateCalendar :: CalendarEntry -> m (Either String CalendarEntry)
     deleteCalendarEntry :: EntryId -> m ()
-    deleteTaskFromCalendarEntry :: CalendarEntry -> Int -> m ()
-    addTaskToCalendarEntry :: CalendarEntry -> TaskId -> m ()
+    deleteTaskFromCalendarEntry :: CalendarEntry -> Int -> m (Either String CalendarEntry)
+    addTaskToCalendarEntry :: CalendarEntry -> TaskId -> m (Either String CalendarEntry)
 
 instance MonadDBCalendarRepo App where
     createCalendarEntry = createCalendarEntryImpl

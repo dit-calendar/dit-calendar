@@ -47,7 +47,7 @@ findByLoginName loginName = do InterfaceAcid.EntrySet{..} <- ask
 allUsers :: Query UserList [User]
 allUsers = InterfaceAcid.allEntrysAsList
 
-updateUser :: User -> Update UserList ()
+updateUser :: User -> Update UserList (Either String User)
 updateUser = InterfaceAcid.updateEntry
 
 deleteUser :: UserId -> Update UserList ()
@@ -57,7 +57,7 @@ $(makeAcidic ''UserList ['newUser, 'userById, 'findByLoginName, 'allUsers, 'getU
 
 class UserDAO m where
     create :: NewUser -> m User
-    update :: UpdateUser -> m ()
+    update :: UpdateUser -> m (Either String User)
     delete :: DeleteUser -> m ()
     query  :: UserById -> m (Maybe User)
     queryByLoginName :: FindByLoginName -> m (Maybe User)

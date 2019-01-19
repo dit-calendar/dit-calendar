@@ -38,7 +38,7 @@ createTaskInCalendarImpl calendarEntry description = do
     MonadDBCalendarRepo.addTaskToCalendarEntry calendarEntry (Task.taskId mTask)
     return mTask
 
-updateTaskInCalendarImpl :: (MonadDBTaskRepo m, MonadDBCalendarRepo m) => Task -> TaskDto.Task -> m ()
+updateTaskInCalendarImpl :: (MonadDBTaskRepo m, MonadDBCalendarRepo m) => Task -> TaskDto.Task -> m (Either String Task)
 updateTaskInCalendarImpl dbTask taskDto = TaskRepo.updateTask dbTask {
             Task.description = TaskDto.description taskDto
             --, belongingUsers = belongingUsers dbTask
@@ -56,14 +56,14 @@ deleteTaskFromAllUsers task =
     (return ()) $ Task.belongingUsers task
 
 addUserToTaskImpl :: (MonadDBUserRepo m, MonadDBTaskRepo m, MonadIO m) =>
-                Task -> UserId -> m ()
+                Task -> UserId -> m (Either String Task)
 addUserToTaskImpl task userId = do
     user <- MonadDBUserRepo.findUserById userId
     MonadDBUserRepo.addTaskToUser user (taskId task)
     TaskRepo.updateTask task {belongingUsers = belongingUsers task ++ [userId]}
 
 removeUserFromTaskImpl :: (MonadDBTaskRepo m, MonadDBUserRepo m) =>
-                    Task -> UserId -> m ()
+                    Task -> UserId -> m (Either String Task)
 removeUserFromTaskImpl task userId = do
     user <- MonadDBUserRepo.findUserById userId
     MonadDBUserRepo.deleteTaskFromUser user (taskId task)
@@ -72,9 +72,9 @@ removeUserFromTaskImpl task userId = do
 class TaskService m where
     deleteTaskAndCascadeUsers :: Task -> m ()
     createTaskInCalendar :: CalendarEntry -> Description -> m Task
-    updateTaskInCalendar :: Task -> TaskDto.Task -> m ()
-    addUserToTask :: Task -> UserId -> m ()
-    removeUserFromTask :: Task -> UserId -> m ()
+    updateTaskInCalendar :: Task -> TaskDto.Task -> m (Either String Task)
+    addUserToTask :: Task -> UserId -> m (Either String Task)
+    removeUserFromTask :: Task -> UserId -> m (Either String Task)
 
 instance (MonadDBTaskRepo App, MonadDBUserRepo App, MonadDBCalendarRepo App)
             => TaskService App where

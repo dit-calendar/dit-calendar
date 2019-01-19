@@ -34,7 +34,7 @@ userFromDb = def { loginName="Foo", User.userId=10, belongingTasks=[1,2,3] }
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture { _create = \(NewUser a)    -> return a
                   , _delete = \(DeleteUser a) -> tell [show a]
-                  , _update = \(UpdateUser a) -> tell [show a]
+                  , _update = \(UpdateUser a) -> tell [show a] >>= (\_ -> return $ Right a)
                   , _query = \(UserById a)    -> return (Just userFromDb)
                   , _queryByLoginName = \(FindByLoginName a)    -> return (Just userFromDb) }
 

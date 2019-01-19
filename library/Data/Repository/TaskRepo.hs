@@ -27,7 +27,7 @@ instance TaskDAO App where
     delete = Foundation.update
     query  = Foundation.query
 
-updateTaskImpl :: TaskDAO m => Task -> m ()
+updateTaskImpl :: TaskDAO m => Task -> m (Either String Task)
 updateTaskImpl task = update $ TaskAcid.UpdateTask task
 
 deleteTaskImpl :: TaskDAO m => Task -> m ()
@@ -49,7 +49,7 @@ findTaskByIdImpl taskId =
 class (Monad m, TaskDAO App) => MonadDBTaskRepo m where
     createTask        :: Description -> m Task
     findTaskById      :: TaskId -> m Task
-    updateTask        :: Task   -> m ()
+    updateTask        :: Task   -> m (Either String Task)
     deleteTask        :: Task   -> m ()
 
 instance MonadDBTaskRepo App where

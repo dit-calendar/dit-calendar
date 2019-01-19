@@ -33,7 +33,7 @@ taskFromDb = def{ description="task1", taskId=1, startTime=Nothing, endTime=Noth
 fixture :: (Monad m, MonadWriter String m) => Fixture m
 fixture = Fixture { _create = \(NewTask task) -> return task
                   , _delete = \(DeleteTask a) -> tell (show a)
-                  , _update = \(UpdateTask a) -> tell (show a)
+                  , _update = \(UpdateTask a) -> tell (show a) >>= (\_ -> return $ Right a)
                   , _query  = \(TaskById a)   -> return (Just taskFromDb)}
 
 instance MonadIO Identity where

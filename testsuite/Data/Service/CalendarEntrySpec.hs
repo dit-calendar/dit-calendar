@@ -48,8 +48,8 @@ fixture = Fixture { _createCalendarEntry = \newDate description user -> tell [sh
                         >> tell [show user] >> return entryFromDb
                   , _findUserById = \a -> tell [show a] >> return userFromDb
                   , _findTaskById = \a -> tell [show a] >> return taskFromDb
-                  , _addCalendarEntryToUser = \user entryId -> tell [show user] >> tell [show entryId]
-                  , _deleteCalendarEntryFromUser = \user entryId -> tell [show user] >> tell [show entryId]
+                  , _addCalendarEntryToUser = \user entryId -> tell [show user] >> tell [show entryId] >>= (\_ -> return $ Right user)
+                  , _deleteCalendarEntryFromUser = \user entryId -> tell [show user] >> tell [show entryId] >>= (\_ -> return $ Right user)
                   , _deleteTask = \a -> tell [show a]
                   }
 

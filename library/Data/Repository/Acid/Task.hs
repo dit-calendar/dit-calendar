@@ -36,7 +36,7 @@ taskById = InterfaceAcid.entryById
 allTasks :: Query TaskList [Task]
 allTasks = InterfaceAcid.allEntrysAsList
 
-updateTask :: Task -> Update TaskList ()
+updateTask :: Task -> Update TaskList (Either String Task)
 updateTask = InterfaceAcid.updateEntry
 
 deleteTask :: TaskId -> Update TaskList ()
@@ -47,6 +47,6 @@ $(makeAcidic ''TaskList ['newTask, 'taskById, 'allTasks, 'getTaskList, 'updateTa
 
 class Monad m => TaskDAO m where
     create :: NewTask -> m Task
-    update :: UpdateTask -> m ()
+    update :: UpdateTask -> m (Either String Task)
     delete :: DeleteTask -> m ()
     query  :: TaskById -> m (Maybe Task)

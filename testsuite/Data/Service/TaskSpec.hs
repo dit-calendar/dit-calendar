@@ -39,14 +39,14 @@ userFromDb = def{ loginName="Foo", User.userId=10, belongingTasks=[1,2,3] }
 taskFromDb = def{ Task.description="task1", taskId=5, startTime=Nothing, endTime=Nothing}
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
-fixture = Fixture { _addTaskToCalendarEntry = \entry taskId -> tell [show entry] >> tell [show taskId]
-                  , _updateTask = \(a) -> tell [show a]
-                  , _deleteTask = \(a) -> tell [show a]
-                  , _createTask = \(a) -> return taskFromDb
-                  , _findTaskById = \(a) -> tell [show a] >> return taskFromDb
-                  , _addTaskToUser = \user taskId -> tell [show user] >> tell [show taskId]
-                  , _deleteTaskFromUser = \x a -> tell [show x] >> tell [show a]
-                  , _findUserById = \(a) -> tell [show a] >> return userFromDb
+fixture = Fixture { _addTaskToCalendarEntry = \entry taskId -> tell [show entry] >> tell [show taskId] >>= (\_ -> return $ Right entry)
+                  , _updateTask = \a -> tell [show a] >>= (\_ -> return $ Right a)
+                  , _deleteTask = \a -> tell [show a]
+                  , _createTask = \a -> return taskFromDb
+                  , _findTaskById = \a -> tell [show a] >> return taskFromDb
+                  , _addTaskToUser = \user taskId -> tell [show user] >> tell [show taskId] >>= (\_ -> return $ Right user)
+                  , _deleteTaskFromUser = \x a -> tell [show x] >> tell [show a] >>= (\_ -> return $ Right x)
+                  , _findUserById = \a -> tell [show a] >> return userFromDb
                   }
 
 instance MonadIO Identity where

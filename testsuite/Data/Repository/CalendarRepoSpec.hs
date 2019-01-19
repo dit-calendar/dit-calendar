@@ -35,7 +35,7 @@ mkFixture "Fixture" [ts| CalendarDAO |]
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture { _create = \(NewEntry caledarEntry) -> return caledarEntry
                   , _delete = \(DeleteEntry a) -> tell [show a]
-                  , _update = \(UpdateEntry a)-> tell [show a]
+                  , _update = \(UpdateEntry a)-> tell [show a] >>= (\_ -> return $ Right a)
                   ,_query = undefined }
 
 spec = describe "CalendarRepo" $ do
