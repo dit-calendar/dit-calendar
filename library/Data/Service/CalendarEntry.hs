@@ -10,6 +10,7 @@ import           Control.Monad.IO.Class
 import           Data.Maybe                         (fromJust)
 
 import           Data.Domain.CalendarEntry          as CalendarEntry
+import           Data.Domain.Task                   as Task
 import           Data.Domain.Types                  (Description)
 import           Data.Domain.User                   as User
 import           Data.Repository.Acid.CalendarEntry (CalendarDAO)
@@ -21,7 +22,7 @@ import           Data.Repository.TaskRepo           (MonadDBTaskRepo)
 import qualified Data.Repository.TaskRepo           as MonadDBTaskRepo
 import           Data.Repository.UserRepo           (MonadDBUserRepo)
 import qualified Data.Repository.UserRepo           as MonadDBUserRepo
-import           Presentation.AcidHelper            (App)
+import           AcidHelper            (App)
 import qualified Presentation.Dto.CalendarEntry     as CalendarDto
 
 
@@ -50,7 +51,7 @@ deleteCalendarsTasks calendar =
     foldr (\ x ->
       (>>) (do
         task <- MonadDBTaskRepo.findTaskById x
-        MonadDBTaskRepo.deleteTask task ))
+        MonadDBTaskRepo.deleteTask $ Task.taskId task ))
     (return ()) $ CalendarEntry.tasks calendar
 
 class CalendarEntryService m where

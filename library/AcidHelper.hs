@@ -5,7 +5,7 @@
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
 
-module Presentation.AcidHelper ( CtrlV, App, withAcid, Acid ) where
+module AcidHelper ( CtrlV, App, withAcid, Acid ) where
 
 import           Control.Exception                  (bracket)
 import           Control.Monad.Reader               (ReaderT, ask)

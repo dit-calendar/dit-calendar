@@ -12,6 +12,7 @@ import           Data.IxSet                         (Indexable (..), ixFun,
 
 import           Data.Domain.CalendarEntry          (CalendarEntry (..))
 import           Data.Domain.Types                  (EntryId)
+import           Data.Repository.Acid.Types         (UpdateReturn)
 
 import qualified Data.Repository.Acid.InterfaceAcid as InterfaceAcid
 
@@ -36,7 +37,7 @@ newEntry = InterfaceAcid.newEntry
 entryById :: EntryId -> Query EntryList (Maybe CalendarEntry)
 entryById = InterfaceAcid.entryById
 
-updateEntry :: CalendarEntry -> Update EntryList ()
+updateEntry :: CalendarEntry -> Update EntryList (UpdateReturn CalendarEntry)
 updateEntry = InterfaceAcid.updateEntry
 
 deleteEntry :: EntryId -> Update EntryList ()
@@ -46,6 +47,6 @@ $(makeAcidic ''EntryList ['newEntry, 'entryById, 'allEntrys, 'getEntryList, 'upd
 
 class Monad m => CalendarDAO m where
     create :: NewEntry -> m CalendarEntry
-    update :: UpdateEntry -> m ()
+    update :: UpdateEntry -> m (UpdateReturn CalendarEntry)
     delete :: DeleteEntry -> m ()
     query  :: EntryById -> m (Maybe CalendarEntry)

@@ -8,17 +8,19 @@ module Data.Repository.TaskRepo
     ( deleteTaskImpl, createTaskImpl, updateTaskImpl, findTaskByIdImpl, MonadDBTaskRepo(..) ) where
 
 import           Control.Monad.IO.Class
-import           Data.Maybe                (fromJust)
+import           Data.Default               (def)
+import           Data.Maybe                 (fromJust)
 
-import qualified Happstack.Foundation      as Foundation
+import qualified Happstack.Foundation       as Foundation
 
-import           Data.Domain.CalendarEntry as CalendarEntry
-import           Data.Domain.Task          as Task
-import           Data.Domain.Types         (Description, TaskId)
-import           Data.Repository.Acid.Task (TaskDAO (..))
-import           Presentation.AcidHelper   (App)
+import           Data.Domain.CalendarEntry  as CalendarEntry
+import           Data.Domain.Task           as Task
+import           Data.Domain.Types          (Description, TaskId)
+import           Data.Repository.Acid.Task  (TaskDAO (..))
+import           Data.Repository.Acid.Types (UpdateReturn)
+import           AcidHelper    (App)
 
-import qualified Data.Repository.Acid.Task as TaskAcid
+import qualified Data.Repository.Acid.Task  as TaskAcid
 
 instance TaskDAO App where
     create = Foundation.update
@@ -26,17 +28,15 @@ instance TaskDAO App where
     delete = Foundation.update
     query  = Foundation.query
 
-updateTaskImpl :: TaskDAO m => Task -> m ()
+updateTaskImpl :: TaskDAO m => Task -> m (UpdateReturn Task)
 updateTaskImpl task = update $ TaskAcid.UpdateTask task
 
-deleteTaskImpl :: TaskDAO m => Task -> m ()
-deleteTaskImpl task = delete $ TaskAcid.DeleteTask $ taskId task
+deleteTaskImpl :: TaskDAO m => TaskId -> m ()
+deleteTaskImpl taskId = delete $ TaskAcid.DeleteTask taskId
 
 createTaskImpl :: TaskDAO m => Description -> m Task
 createTaskImpl description =
-    let task = Task { Task.description = description
-                    , taskId  = 0
-                    , belongingUsers = []
+    let task = def { Task.description = description
                     , startTime=Nothing
                     , endTime=Nothing
                     } in
@@ -50,8 +50,8 @@ findTaskByIdImpl taskId =
 class (Monad m, TaskDAO App) => MonadDBTaskRepo m where
     createTask        :: Description -> m Task
     findTaskById      :: TaskId -> m Task
-    updateTask        :: Task   -> m ()
-    deleteTask        :: Task   -> m ()
+    updateTask        :: Task   -> m (UpdateReturn Task)
+    deleteTask        :: TaskId   -> m ()
 
 instance MonadDBTaskRepo App where
     createTask        = createTaskImpl

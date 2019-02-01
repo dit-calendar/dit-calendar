@@ -12,7 +12,7 @@ import           Happstack.Server                           (Method (DELETE, GET
 import           Auth.Authorization                         (callIfAuthorized)
 import           Data.Domain.Types                          (Description (..),
                                                              EntryId)
-import           Presentation.AcidHelper                    (App)
+import           AcidHelper                    (App)
 import           Presentation.HttpServerHelper              (getBody,
                                                              getHttpMethod)
 import           Presentation.ResponseHelper                (badRequest,

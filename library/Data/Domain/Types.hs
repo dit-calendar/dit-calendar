@@ -8,6 +8,7 @@ module Data.Domain.Types
 
 import           Data.Text
 
+
 type UserId = Int
 
 type EntryId = Int
@@ -19,3 +20,5 @@ type Description = Text
 class Entry a where
     getId :: a -> Int
     setId :: a -> Int -> a
+    getVersion :: a -> Int
+    incVersion :: a -> a

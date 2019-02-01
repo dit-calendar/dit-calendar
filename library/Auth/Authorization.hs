@@ -12,7 +12,7 @@ import           Happstack.Server                   (Response, getHeaderM,
                                                      internalServerError,
                                                      toResponse, unauthorized)
 
-import           Presentation.AcidHelper            (App)
+import           AcidHelper            (App)
 import           Presentation.Route.PageEnum        (Sitemap (..))
 
 import qualified Data.ByteString.Char8              as B

@@ -2,9 +2,9 @@
 
 module Presentation.Controller.UserController (createUser, updateUser, deleteUser, usersPage, userPage, loggedUserPage) where
 
+import           Data.Aeson                           (encode)
 import           Data.List                            (isInfixOf)
 import           Data.Text                            (Text, unpack)
-import           Data.Aeson                           (encode)
 
 import           Happstack.Authenticate.Core          (AuthenticateURL (..))
 import           Happstack.Authenticate.Password.Core (NewAccountData (..))
@@ -19,13 +19,17 @@ import           Web.Routes                           (RouteT, mapRouteT,
 import           Data.Domain.Types                    (Description, UserId)
 import           Data.Domain.User                     as DomainUser (User (..))
 import           Data.Service.Authorization           as AuthService (deleteAuthUser)
-import           Presentation.AcidHelper              (App)
+import           AcidHelper              (App)
+import           Presentation.Dto.User                as UserDto (User (..),
+                                                                  transform)
 import           Presentation.HttpServerHelper        (getBody,
                                                        mapServerPartTIO2App,
                                                        readAuthUserFromBodyAsList)
-import           Presentation.ResponseHelper          (okResponse, okResponseJson, onUserExist)
+import           Presentation.ResponseHelper          (okResponse,
+                                                       okResponseJson,
+                                                       onUserExist,
+                                                       preconditionFailedResponse)
 import           Presentation.Route.PageEnum          (Sitemap)
-import           Presentation.Dto.User                as UserDto (User (..), transform)
 
 import qualified Data.Repository.Acid.User            as UserAcid
 import qualified Data.Repository.UserRepo             as UserRepo
@@ -77,10 +81,12 @@ createDomainUser name = do
     okResponseJson $ encode $ transform mUser
 
 updateUser :: UserDto.User -> DomainUser.User -> App Response
-updateUser userDto loggedUser = updateUsr loggedUser
-    where updateUsr user = do
-              UserRepo.updateLoginName user (UserDto.loginName userDto)
-              okResponse $ "User with id:" ++ show (DomainUser.userId loggedUser) ++ "updated"
+updateUser userDto = updateUsr
+    where updateUsr loggedUser = do
+              result <- UserRepo.updateLoginName loggedUser (UserDto.loginName userDto)
+              case result of
+                Left errorMessage -> preconditionFailedResponse errorMessage
+                Right updatedUser -> okResponseJson $ encode $ transform updatedUser
 
 
 deleteUser :: DomainUser.User -> App Response

@@ -10,7 +10,7 @@ import           Control.Monad.IO.Class
 import           Data.Maybe                   (fromJust)
 
 import           Data.Domain.User             as User
-import           Presentation.AcidHelper      (App)
+import           AcidHelper      (App)
 
 import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)
 import qualified Data.Repository.CalendarRepo as MonadDBCalendarRepo
@@ -29,7 +29,7 @@ deleteUserImpl user = let calendarToDelete = calendarEntries user in
         foldr ((>>) . MonadDBCalendarRepo.deleteCalendarEntry)
             (return ()) (calendarEntries user)
         removeUserFromTasks user
-        MonadDBUserRepo.deleteUser user
+        MonadDBUserRepo.deleteUser $ User.userId user
 
 removeUserFromTasks ::(MonadDBTaskRepo m, TaskService m) =>
                      User -> m ()

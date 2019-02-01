@@ -1,20 +1,25 @@
+{-# LANGUAGE DatatypeContexts   #-}
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE OverloadedStrings  #-}
 {-# LANGUAGE RecordWildCards    #-}
 {-# LANGUAGE TemplateHaskell    #-}
-{-# LANGUAGE DatatypeContexts   #-}
 
 module Data.Repository.Acid.InterfaceAcid where
 
-import           Control.Applicative  ((<$>))
-import           Control.Monad.Reader (ask)
-import           Control.Monad.State  (get, put)
-import           Data.Acid            (Query, Update)
-import           Data.Data            (Data, Typeable)
-import           Data.IxSet           (Indexable (..), IxSet (..), deleteIx,
-                                       getEQ, getOne, insert, toList, updateIx)
-import           Data.SafeCopy        (base, deriveSafeCopy)
+import           Control.Applicative        ((<$>))
+import           Control.Monad.Reader       (ask)
+import           Control.Monad.State        (get, put)
+import           Data.Acid                  (Query, Update)
+import           Data.Data                  (Data, Typeable)
+import           Data.IxSet                 (Indexable (..), IxSet (..),
+                                             deleteIx, getEQ, getOne, insert,
+                                             toList, updateIx)
+import           Data.Maybe                 (fromJust)
+import           Data.SafeCopy              (base, deriveSafeCopy)
 
-import           Data.Domain.Types    (Entry, getId, setId)
+import           Data.Domain.Types          (Entry, getId, getVersion,
+                                             incVersion, setId)
+import           Data.Repository.Acid.Types (UpdateReturn)
 
 
 --type that represents the state we wish to store
@@ -49,12 +54,17 @@ deleteEntry entryToDelete =
             deleteIx entryToDelete entrys
             }
 
-updateEntry :: (Ord a, Typeable a, Indexable a, Entry a) => a -> Update (EntrySet a) ()
-updateEntry updatedEntry =
-     do b@EntrySet{..} <- get
-        put b { entrys =
-            updateIx (getId updatedEntry) updatedEntry entrys
-            }
+updateEntry :: (Ord a, Typeable a, Indexable a, Entry a) => a -> Update (EntrySet a) (UpdateReturn a)
+updateEntry updatedEntry = do
+    b@EntrySet{..} <- get
+    let dbEntry = fromJust $ getOne (getEQ (getId updatedEntry) entrys)
+    if getVersion dbEntry == getVersion updatedEntry then
+        let incrementEntry = incVersion updatedEntry in
+        do  put b { entrys =
+                    updateIx (getId incrementEntry) incrementEntry entrys
+                }
+            return $ Right incrementEntry
+        else return $ Left "optimistic locking"
 
 -- create a new entry and add it to the database
 newEntry :: (Ord a, Typeable a, Indexable a, Entry a) => a -> Update (EntrySet a) a

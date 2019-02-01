@@ -10,6 +10,7 @@ module Data.Service.UserSpec (spec) where
 
 import           Control.Monad.TestFixture
 import           Control.Monad.TestFixture.TH
+import           Data.Default                 (def)
 import           Data.Text                    (Text)
 import           Test.Hspec
 import           Test.HUnit.Base              (assertEqual)
@@ -36,17 +37,17 @@ import qualified Data.Service.User            as UserService
 
 mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBTaskRepo, MonadDBCalendarRepo, TaskService |]
 
-userFromDb = User{ loginName="Foo", User.userId=10, calendarEntries=[1,2], belongingTasks=[4] }
-taskFromDb = Task{ Task.description="task1", taskId=5, belongingUsers=[10], startTime=Nothing, endTime=Nothing}
+userFromDb = def { loginName="Foo", User.userId=10, calendarEntries=[1,2], belongingTasks=[4] }
+taskFromDb = def { Task.description="task1", taskId=5, belongingUsers=[10], startTime=Nothing, endTime=Nothing}
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture { _deleteCalendarEntry = \a -> tell [show a]
                   , _findTaskById = \a -> tell [show a] >> return taskFromDb
                   , _deleteUser = \a -> tell [show a]
-                  , _deleteTaskFromUser = \x a -> tell [show x] >> tell [show a]
+                  , _deleteTaskFromUser = \x a -> tell [show x] >> tell [show a] >>= (\_ -> return $ Right x)
                   , _findUserById = \a -> tell [show a] >> return userFromDb
-                  , _updateTask = \a -> tell [show a]
-                  , _removeUserFromTask =  \x a -> tell [show x] >> tell [show a]
+                  , _updateTask = \a -> tell [show a] >>= (\_ -> return $ Right a)
+                  , _removeUserFromTask =  \x a -> tell [show x] >> tell [show a] >>= (\_ -> return $ Right x)
                   }
 
 instance MonadIO Identity where
@@ -55,11 +56,11 @@ instance MonadIO Identity where
 
 spec = describe "UserService" $
     it "deleteUser" $ do
-        let expectedTask = Task{ Task.description="task1", taskId=5, belongingUsers=[], startTime=Nothing, endTime=Nothing}
+        let expectedTask = def { Task.description="task1", taskId=5, startTime=Nothing, endTime=Nothing}
         let (_, log) = evalTestFixture (UserService.deleteUserImpl userFromDb) fixture
         assertEqual "CalendarEntry 1 nicht durchgegeben" (log!!0) "1"
         assertEqual "CalendarEntry 2 nicht durchgegeben" (log!!1) "2"
         assertEqual "Taskeintrag aus calendar nicht gelöscht" (log!!2) "4"
         assertEqual "Task nicht gelöscht" (log!!3) (show taskFromDb)
-        assertEqual "Falsche userId durchgegeben" (log!!4) (show $User.userId userFromDb)
-        assertEqual "Falscher user gelöscht" (log!!5) (show userFromDb)
+        assertEqual "Falsche userId durchgegeben" (log!!4) (show $ User.userId userFromDb)
+        assertEqual "Falscher user gelöscht" (log!!5) (show $ User.userId userFromDb)

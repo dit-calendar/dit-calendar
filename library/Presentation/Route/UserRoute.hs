@@ -11,7 +11,7 @@ import           Happstack.Server                           (Method (DELETE, GET
 
 import           Auth.Authorization                         (callIfAuthorized)
 import           Data.Domain.Types                          (UserId)
-import           Presentation.AcidHelper                    (App)
+import           AcidHelper                    (App)
 import           Presentation.HttpServerHelper              (getHttpMethod, getBody)
 import           Presentation.ResponseHelper                (badRequest, notImplemented, okResponse)
 import           Presentation.Dto.User                      as UserDto (User (..))

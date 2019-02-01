@@ -1,5 +1,9 @@
 # Revision history for dit-calendar
 
+## 0.4.0.0 -- 2019-
+
+* add optimistic locking
+
 ## 0.3.0.0 -- 2018-12-26
 
 * change routing
