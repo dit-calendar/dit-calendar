@@ -3,17 +3,19 @@
 
 module Presentation.Dto.Task
     ( Task(..)
-    , transform
+    , transformToDto
+    , transformFromDto
     ) where
-
-import qualified Data.Domain.Task as Domain
 
 import           Data.Aeson
 import           Data.Data        (Data, Typeable)
 import           Data.Default
+import           Data.Maybe       (fromJust)
 import           Data.Text
 import           Data.Time.Clock  (UTCTime)
 import           GHC.Generics
+
+import qualified Data.Domain.Task as Domain
 
 data Task = Task
     { description    :: Text
@@ -33,8 +35,8 @@ instance FromJSON Task where
 instance Default Task where
     def = Task {taskId = Nothing, version = Nothing, belongingUsers = []}
 
-transform :: Domain.Task -> Task
-transform domain =
+transformToDto :: Domain.Task -> Task
+transformToDto domain =
     Task
         { description = Domain.description domain
         , taskId = Just (Domain.taskId domain)
@@ -42,4 +44,15 @@ transform domain =
         , belongingUsers = Domain.belongingUsers domain
         , startTime = Domain.startTime domain
         , endTime = Domain.endTime domain
+        }
+
+transformFromDto :: Task -> Domain.Task
+transformFromDto dto =
+     Domain.Task
+        { description = description dto
+        , taskId = fromJust (taskId dto)
+        , version = fromJust (version dto)
+        , belongingUsers = belongingUsers dto
+        , startTime = startTime dto
+        , endTime = endTime dto
         }

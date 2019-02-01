@@ -61,6 +61,7 @@ library
                        ixset == 1.1,
                        filepath == 1.4.*,
                        data-default == 0.7.1.*,
+                       syb == 0.7,
                        acid-state == 0.14.*,
                        safecopy == 0.9.4.*,
                        happstack-server == 7.5.1.*,

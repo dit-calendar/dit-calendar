@@ -8,14 +8,14 @@ module Data.Service.Task
     ( deleteTaskAndCascadeUsersImpl, createTaskInCalendarImpl, updateTaskInCalendarImpl, addUserToTaskImpl, removeUserFromTaskImpl, TaskService(..) ) where
 
 import           Control.Monad.IO.Class
+import           Data.Generics.Aliases        (orElse)
 import           Data.List                    (delete)
-import           Data.Maybe                   (fromJust, isJust)
 
+import           AcidHelper                   (App)
 import           Data.Domain.CalendarEntry    as CalendarEntry
 import           Data.Domain.Task             as Task
 import           Data.Domain.Types            (Description, UserId)
 import           Data.Repository.Acid.Types   (UpdateReturn)
-import           AcidHelper      (App)
 
 import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)
 import qualified Data.Repository.CalendarRepo as MonadDBCalendarRepo
@@ -23,7 +23,6 @@ import           Data.Repository.TaskRepo     (MonadDBTaskRepo)
 import qualified Data.Repository.TaskRepo     as TaskRepo
 import           Data.Repository.UserRepo     (MonadDBUserRepo)
 import qualified Data.Repository.UserRepo     as MonadDBUserRepo
-import qualified Presentation.Dto.Task        as TaskDto
 
 
 deleteTaskAndCascadeUsersImpl :: (MonadDBTaskRepo m, MonadDBUserRepo m, MonadIO m) =>
@@ -39,12 +38,12 @@ createTaskInCalendarImpl calendarEntry description = do
     MonadDBCalendarRepo.addTaskToCalendarEntry calendarEntry (Task.taskId mTask)
     return mTask
 
-updateTaskInCalendarImpl :: (MonadDBTaskRepo m, MonadDBCalendarRepo m) => Task -> TaskDto.Task -> m (UpdateReturn Task)
-updateTaskInCalendarImpl dbTask taskDto = TaskRepo.updateTask dbTask {
-            Task.description = TaskDto.description taskDto
+updateTaskInCalendarImpl :: (MonadDBTaskRepo m, MonadDBCalendarRepo m) => Task -> Task -> m (UpdateReturn Task)
+updateTaskInCalendarImpl dbTask updateTask = TaskRepo.updateTask dbTask {
+            Task.description = Task.description updateTask
             --, belongingUsers = belongingUsers dbTask
-            , startTime     = if isJust $ TaskDto.startTime taskDto then TaskDto.startTime taskDto else startTime dbTask
-            , endTime = if isJust $ TaskDto.endTime taskDto then TaskDto.endTime taskDto else endTime dbTask
+            , startTime     = startTime updateTask `orElse` startTime dbTask
+            , endTime = endTime updateTask `orElse` endTime dbTask
         }
 
 deleteTaskFromAllUsers :: (MonadDBUserRepo m, MonadIO m) =>
@@ -73,7 +72,7 @@ removeUserFromTaskImpl task userId = do
 class TaskService m where
     deleteTaskAndCascadeUsers :: Task -> m ()
     createTaskInCalendar :: CalendarEntry -> Description -> m Task
-    updateTaskInCalendar :: Task -> TaskDto.Task -> m (UpdateReturn Task)
+    updateTaskInCalendar :: Task -> Task -> m (UpdateReturn Task)
     addUserToTask :: Task -> UserId -> m (UpdateReturn Task)
     removeUserFromTask :: Task -> UserId -> m (UpdateReturn Task)
 

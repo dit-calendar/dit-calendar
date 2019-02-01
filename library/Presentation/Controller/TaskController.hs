@@ -8,7 +8,7 @@ import           Data.Domain.Types            (Description, EntryId, TaskId,
                                                UserId)
 import           Data.Domain.User             (User)
 import           AcidHelper      (App)
-import           Presentation.Dto.Task        as TaskDto (Task (..), transform)
+import           Presentation.Dto.Task        as TaskDto (Task (..), transformToDto, transformFromDto)
 import           Presentation.ResponseHelper  (okResponse, okResponseJson,
                                                onEntryExist, onTaskExist,
                                                onUserExist,
@@ -20,21 +20,21 @@ import qualified Data.Service.Task            as TaskService
 
 --handler for taskPage
 taskPage :: TaskId -> App Response
-taskPage i = onTaskExist i (okResponseJson . encode . transform)
+taskPage i = onTaskExist i (okResponseJson . encode . transformToDto)
 
 createTask :: EntryId -> TaskDto.Task -> App Response
 createTask calendarId taskDto =
     onEntryExist calendarId (\e -> do
         t <- TaskService.createTaskInCalendar e (TaskDto.description taskDto)
-        okResponseJson $ encode $ transform t)
+        okResponseJson $ encode $ transformToDto t)
 
 updateTask :: TaskId -> TaskDto.Task -> User -> App Response
 updateTask id taskDto loggedUser =
     onTaskExist id (\t -> do
-        result <- TaskService.updateTaskInCalendar t taskDto
+        result <- TaskService.updateTaskInCalendar t $ transformFromDto taskDto
         case result of
             Left errorMessage -> preconditionFailedResponse errorMessage
-            Right updatedTask -> okResponseJson $ encode $ transform updatedTask)
+            Right updatedTask -> okResponseJson $ encode $ transformToDto updatedTask)
 
 addUserToTask :: UserId -> TaskId -> User-> App Response
 addUserToTask userId taskId loggedUser =
@@ -43,7 +43,7 @@ addUserToTask userId taskId loggedUser =
             result <- TaskService.addUserToTask t userId
             case result of
                 Left errorMessage -> preconditionFailedResponse errorMessage
-                Right updatedTask -> okResponseJson $ encode $ transform updatedTask))
+                Right updatedTask -> okResponseJson $ encode $ transformToDto updatedTask))
 
 removeUserFromTask :: UserId -> TaskId -> User -> App Response
 removeUserFromTask userId taskId loggedUser =
@@ -52,7 +52,7 @@ removeUserFromTask userId taskId loggedUser =
             result <- TaskService.removeUserFromTask t userId
             case result of
                 Left errorMessage -> preconditionFailedResponse errorMessage
-                Right updatedTask -> okResponseJson $ encode $ transform updatedTask))
+                Right updatedTask -> okResponseJson $ encode $ transformToDto updatedTask))
 
 deleteTask :: EntryId -> TaskId -> User -> App Response
 deleteTask entryId taskId loggedUser =
