@@ -24,8 +24,9 @@ entryPage i = onEntryExist i (okResponseJson . encode . CalendarDto.transformToD
 createCalendarEntry :: CalendarDto.CalendarEntry -> DomainUser.User -> App Response
 createCalendarEntry calendarDto loggedUser = onUserExist userId createCalendar
     where
+        newCalendar = CalendarDto.transformFromDto calendarDto
         createCalendar user = do
-            entry <- CalendarService.createEntry calendarDto user
+            entry <- CalendarService.createEntry newCalendar user
             okResponseJson $ encode $ CalendarDto.transformToDto entry
         userId = DomainUser.userId loggedUser
 

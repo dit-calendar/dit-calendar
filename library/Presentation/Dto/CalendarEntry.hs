@@ -3,14 +3,16 @@
 
 module Presentation.Dto.CalendarEntry
     ( transformToDto
+    , transformFromDto
     , CalendarEntry(..)
     ) where
 
 import           Data.Aeson
+import           Data.Default
+import           Data.Maybe                (fromJust, fromMaybe)
 import           Data.Text
 import           Data.Time.Clock           (UTCTime)
 import           GHC.Generics
-import           Data.Default
 
 import qualified Data.Domain.CalendarEntry as Domain
 
@@ -41,4 +43,15 @@ transformToDto domain =
         , userId = Domain.userId domain
         , tasks = Just (Domain.tasks domain)
         , date = Domain.date domain
+        }
+
+transformFromDto :: CalendarEntry -> Domain.CalendarEntry
+transformFromDto dto =
+    Domain.CalendarEntry
+        { description = fromJust (description dto) -- TODO fehler
+        , entryId = fromMaybe 0 (entryId dto)
+        , version = fromMaybe 0 $ version dto
+        , userId = userId dto
+        , tasks = fromMaybe [] (tasks dto)
+        , date = date dto
         }

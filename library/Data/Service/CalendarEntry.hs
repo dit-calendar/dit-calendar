@@ -9,6 +9,7 @@ module Data.Service.CalendarEntry ( createEntryImpl, removeCalendarImpl, Calenda
 import           Control.Monad.IO.Class
 import           Data.Maybe                         (fromJust)
 
+import           AcidHelper                         (App)
 import           Data.Domain.CalendarEntry          as CalendarEntry
 import           Data.Domain.Task                   as Task
 import           Data.Domain.Types                  (Description)
@@ -22,19 +23,16 @@ import           Data.Repository.TaskRepo           (MonadDBTaskRepo)
 import qualified Data.Repository.TaskRepo           as MonadDBTaskRepo
 import           Data.Repository.UserRepo           (MonadDBUserRepo)
 import qualified Data.Repository.UserRepo           as MonadDBUserRepo
-import           AcidHelper            (App)
-import qualified Presentation.Dto.CalendarEntry     as CalendarDto
 
 
 createEntryImpl :: (MonadDBUserRepo m, MonadDBCalendarRepo m) =>
-            CalendarDto.CalendarEntry -> User -> m CalendarEntry
-createEntryImpl calendarDto user =
-    let newDate = CalendarDto.date calendarDto in
-    let description = fromJust (CalendarDto.description calendarDto) in
-        do
-            calendarEntry <- MonadDBCalendarRepo.createCalendarEntry newDate description user
-            MonadDBUserRepo.addCalendarEntryToUser user $ CalendarEntry.entryId calendarEntry
-            return calendarEntry
+            CalendarEntry -> User -> m CalendarEntry
+createEntryImpl newCalendar user = do
+    calendarEntry <- MonadDBCalendarRepo.createCalendarEntry newCalendarWithUser
+    MonadDBUserRepo.addCalendarEntryToUser user $ CalendarEntry.entryId calendarEntry
+    return calendarEntry
+    where newCalendarWithUser = newCalendar {CalendarEntry.userId = User.userId user }
+
 
 removeCalendarImpl :: (MonadDBUserRepo m, MonadDBTaskRepo m, MonadDBCalendarRepo m, MonadIO m) =>
                 CalendarEntry -> m ()
@@ -55,7 +53,7 @@ deleteCalendarsTasks calendar =
     (return ()) $ CalendarEntry.tasks calendar
 
 class CalendarEntryService m where
-    createEntry :: CalendarDto.CalendarEntry -> User -> m CalendarEntry
+    createEntry :: CalendarEntry -> User -> m CalendarEntry
     removeCalendar :: CalendarEntry -> m ()
 
 instance (MonadDBUserRepo App, MonadDBTaskRepo App, MonadDBCalendarRepo App)

@@ -40,15 +40,8 @@ instance CalendarDAO App where
     delete = Foundation.update
     query = Foundation.query
 
-createCalendarEntryImpl :: CalendarDAO m => UTCTime -> Description -> User -> m CalendarEntry
-createCalendarEntryImpl newDate description user =
-    let entry =
-            def
-                { description = description
-                , CalendarEntry.userId = User.userId user
-                , date = newDate
-                }
-     in create (CalendarEntryAcid.NewEntry entry)
+createCalendarEntryImpl :: CalendarDAO m => CalendarEntry-> m CalendarEntry
+createCalendarEntryImpl entry = create (CalendarEntryAcid.NewEntry entry)
 
 deleteCalendarEntryImpl :: CalendarDAO m => EntryId -> m ()
 deleteCalendarEntryImpl entryId = delete $ CalendarEntryAcid.DeleteEntry entryId
@@ -70,7 +63,7 @@ addTaskToCalendarEntryImpl calendarEntry taskId = updateCalendarImpl calendarEnt
 class (Monad m, CalendarDAO App) =>
       MonadDBCalendarRepo m
     where
-    createCalendarEntry :: UTCTime -> Description -> User -> m CalendarEntry
+    createCalendarEntry :: CalendarEntry -> m CalendarEntry
     findCalendarById :: EntryId -> m CalendarEntry
     updateCalendar :: CalendarEntry -> m (UpdateReturn CalendarEntry)
     deleteCalendarEntry :: EntryId -> m ()
