@@ -64,7 +64,7 @@ spec = describe "TaskServiceSpec" $ do
     it "createTaskInCalendar" $ do
         let newDate = read "2011-11-19 18:28:52.607875 UTC"::UTCTime
         let calc = def{ CalendarEntry.description="termin2", entryId=1, CalendarEntry.userId=2, date=newDate}
-        let (result, log) = evalTestFixture (TaskService.createTaskInCalendarImpl calc "task1") fixture
+        let (result, log) = evalTestFixture (TaskService.createTaskInCalendarImpl calc taskFromDb) fixture
         result `shouldBe` taskFromDb
         log!!0 `shouldBe` show calc
         log!!1 `shouldBe` show (Task.taskId taskFromDb)

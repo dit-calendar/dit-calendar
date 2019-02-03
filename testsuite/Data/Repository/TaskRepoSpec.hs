@@ -41,8 +41,8 @@ instance MonadIO Identity where
 
 spec = describe "TaskRepo" $ do
     it "createTask" $ do
-        let (result, _) = evalTestFixture (TaskRepo.createTaskImpl "task1") fixture
-        Task.description result `shouldBe` "task1"
+        let (result, _) = evalTestFixture (TaskRepo.createTaskImpl taskFromDb) fixture
+        result `shouldBe` taskFromDb
         Task.belongingUsers result `shouldBe` []
     it "deleteTask" $ do
         let task = def { description="task1", taskId=1}

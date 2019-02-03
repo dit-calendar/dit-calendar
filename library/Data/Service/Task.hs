@@ -32,19 +32,14 @@ deleteTaskAndCascadeUsersImpl task = do
     TaskRepo.deleteTask $ Task.taskId task
 
 createTaskInCalendarImpl :: (MonadDBTaskRepo m, MonadDBUserRepo m, MonadDBCalendarRepo m) =>
-            CalendarEntry -> Description -> m Task
-createTaskInCalendarImpl calendarEntry description = do
-    mTask <- TaskRepo.createTask description
+            CalendarEntry -> Task -> m Task
+createTaskInCalendarImpl calendarEntry task = do
+    mTask <- TaskRepo.createTask task
     MonadDBCalendarRepo.addTaskToCalendarEntry calendarEntry (Task.taskId mTask)
     return mTask
 
-updateTaskInCalendarImpl :: (MonadDBTaskRepo m, MonadDBCalendarRepo m) => Task -> Task -> m (UpdateReturn Task)
-updateTaskInCalendarImpl dbTask updateTask = TaskRepo.updateTask dbTask {
-            Task.description = Task.description updateTask
-            --, belongingUsers = belongingUsers dbTask
-            , startTime     = startTime updateTask `orElse` startTime dbTask
-            , endTime = endTime updateTask `orElse` endTime dbTask
-        }
+updateTaskInCalendarImpl :: MonadDBTaskRepo m => Task -> m (UpdateReturn Task)
+updateTaskInCalendarImpl = TaskRepo.updateTask
 
 deleteTaskFromAllUsers :: (MonadDBUserRepo m, MonadIO m) =>
                         Task -> m ()
@@ -71,8 +66,8 @@ removeUserFromTaskImpl task userId = do
 
 class TaskService m where
     deleteTaskAndCascadeUsers :: Task -> m ()
-    createTaskInCalendar :: CalendarEntry -> Description -> m Task
-    updateTaskInCalendar :: Task -> Task -> m (UpdateReturn Task)
+    createTaskInCalendar :: CalendarEntry -> Task -> m Task
+    updateTaskInCalendar :: Task -> m (UpdateReturn Task)
     addUserToTask :: Task -> UserId -> m (UpdateReturn Task)
     removeUserFromTask :: Task -> UserId -> m (UpdateReturn Task)
 

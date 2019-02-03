@@ -34,13 +34,8 @@ updateTaskImpl task = update $ TaskAcid.UpdateTask task
 deleteTaskImpl :: TaskDAO m => TaskId -> m ()
 deleteTaskImpl taskId = delete $ TaskAcid.DeleteTask taskId
 
-createTaskImpl :: TaskDAO m => Description -> m Task
-createTaskImpl description =
-    let task = def { Task.description = description
-                    , startTime=Nothing
-                    , endTime=Nothing
-                    } in
-        create $ TaskAcid.NewTask task
+createTaskImpl :: TaskDAO m => Task -> m Task
+createTaskImpl task = create $ TaskAcid.NewTask task
 
 findTaskByIdImpl :: (TaskDAO m, MonadIO m) => TaskId -> m Task
 findTaskByIdImpl taskId =
@@ -48,7 +43,7 @@ findTaskByIdImpl taskId =
 
 
 class (Monad m, TaskDAO App) => MonadDBTaskRepo m where
-    createTask        :: Description -> m Task
+    createTask        :: Task -> m Task
     findTaskById      :: TaskId -> m Task
     updateTask        :: Task   -> m (UpdateReturn Task)
     deleteTask        :: TaskId   -> m ()

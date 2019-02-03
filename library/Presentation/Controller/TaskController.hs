@@ -25,13 +25,13 @@ taskPage i = onTaskExist i (okResponseJson . encode . transformToDto)
 createTask :: EntryId -> TaskDto.Task -> App Response
 createTask calendarId taskDto =
     onEntryExist calendarId (\e -> do
-        t <- TaskService.createTaskInCalendar e (TaskDto.description taskDto)
+        t <- TaskService.createTaskInCalendar e (transformFromDto taskDto Nothing)
         okResponseJson $ encode $ transformToDto t)
 
 updateTask :: TaskId -> TaskDto.Task -> User -> App Response
 updateTask id taskDto loggedUser =
     onTaskExist id (\t -> do
-        result <- TaskService.updateTaskInCalendar t $ transformFromDto taskDto
+        result <- TaskService.updateTaskInCalendar $ transformFromDto taskDto (Just t)
         case result of
             Left errorMessage -> preconditionFailedResponse errorMessage
             Right updatedTask -> okResponseJson $ encode $ transformToDto updatedTask)
