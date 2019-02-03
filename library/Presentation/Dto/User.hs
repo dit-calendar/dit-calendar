@@ -3,7 +3,7 @@
 
 module Presentation.Dto.User
     ( User(..)
-    , transform
+    , transformToDto
     ) where
 
 import           Data.Aeson
@@ -27,8 +27,8 @@ instance FromJSON User where
 instance Default User where
     def = User {userId = Nothing, version = Nothing}
 
-transform :: Domain.User -> User
-transform domain =
+transformToDto :: Domain.User -> User
+transformToDto domain =
     User
         { loginName = Domain.loginName domain
         , userId = Just $ Domain.userId domain
