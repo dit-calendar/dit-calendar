@@ -26,7 +26,7 @@ $(deriveSafeCopy 0 'base ''User)
 instance Entry User where
     setId user newId = user {userId = newId}
     getId = userId
-    incVersion user = user { version  = version user + 1}
+    setVersion user newVersion = user {version = newVersion}
     getVersion = version
 
 instance Default User where

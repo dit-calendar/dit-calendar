@@ -21,4 +21,4 @@ class Entry a where
     getId :: a -> Int
     setId :: a -> Int -> a
     getVersion :: a -> Int
-    incVersion :: a -> a
+    setVersion :: a -> Int -> a

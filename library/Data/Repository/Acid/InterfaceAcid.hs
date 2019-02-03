@@ -18,7 +18,7 @@ import           Data.Maybe                 (fromJust)
 import           Data.SafeCopy              (base, deriveSafeCopy)
 
 import           Data.Domain.Types          (Entry, getId, getVersion,
-                                             incVersion, setId)
+                                             setVersion, setId)
 import           Data.Repository.Acid.Types (UpdateReturn)
 
 
@@ -28,6 +28,9 @@ data (Typeable a, Ord a, Indexable a) => EntrySet a = EntrySet
     , entrys      :: IxSet a
     }
     deriving (Data, Typeable)
+
+incVersion :: Entry a => a -> a
+incVersion x = setVersion x (getVersion x + 1)
 
 $(deriveSafeCopy 0 'base ''EntrySet)
 
@@ -70,7 +73,7 @@ updateEntry updatedEntry = do
 newEntry :: (Ord a, Typeable a, Indexable a, Entry a) => a -> Update (EntrySet a) a
 newEntry entry =
     do  b@EntrySet{..} <- get
-        let nEntry = setId entry nextEntryId
+        let nEntry = setVersion (setId entry nextEntryId) 0
         --Because UserId is an instance of Enum we can use succ to increment it.
         put b { nextEntryId = succ nextEntryId
                 , entrys      = insert nEntry entrys

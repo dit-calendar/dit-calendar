@@ -28,7 +28,7 @@ $(deriveSafeCopy 0 'base ''CalendarEntry)
 instance Entry CalendarEntry where
     setId calendarEntry newId = calendarEntry {entryId = newId}
     getId = entryId
-    incVersion calendarEntry = calendarEntry {version = version calendarEntry + 1}
+    setVersion calendarEntry newVersion = calendarEntry {version = newVersion}
     getVersion = version
 
 instance Default CalendarEntry where

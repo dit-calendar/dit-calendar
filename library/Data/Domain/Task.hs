@@ -24,8 +24,8 @@ $(deriveSafeCopy 0 'base ''Task)
 instance Entry Task where
     setId task newId = task { taskId = newId }
     getId = taskId
-    incVersion task = task { version = version task + 1}
     getVersion = version
+    setVersion version newVersion = version { version = newVersion}
 
 instance Default Task where
     def = Task {taskId = -1, version = 0, belongingUsers = []}
