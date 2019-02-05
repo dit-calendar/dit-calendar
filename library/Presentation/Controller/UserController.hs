@@ -16,11 +16,11 @@ import           Happstack.Server                     (Method (GET), Response,
 import           Web.Routes                           (RouteT, mapRouteT,
                                                        nestURL, unRouteT)
 
+import           AcidHelper                           (App)
 import           Data.Domain.Types                    (Description, UserId)
 import           Data.Domain.User                     as DomainUser (User (..))
 import           Data.Service.Authorization           as AuthService (deleteAuthUser)
-import           AcidHelper              (App)
-import           Presentation.Dto.User                as UserDto (User (..),
+import           Presentation.Dto.User                as UserDto (User (..), transformFromDto,
                                                                   transformToDto)
 import           Presentation.HttpServerHelper        (getBody,
                                                        mapServerPartTIO2App,
@@ -74,16 +74,17 @@ createUser authenticateURL routeAuthenticate = do
 leaveRouteT :: RouteT url m a-> m a
 leaveRouteT r = unRouteT r (\ _ _ -> undefined)
 
-
+--TODO other creating concept, or change rest interface (and transform UserDto to NewAccoundData)
 createDomainUser :: Text -> App Response
 createDomainUser name = do
     mUser <- UserRepo.createUser name
     okResponseJson $ encode $ transformToDto mUser
 
+--TODO updating AuthenticateUser is missing
 updateUser :: UserDto.User -> DomainUser.User -> App Response
 updateUser userDto = updateUsr
     where updateUsr loggedUser = do
-              result <- UserRepo.updateLoginName loggedUser (UserDto.loginName userDto)
+              result <- UserRepo.updateUser $ transformFromDto userDto (Just loggedUser)
               case result of
                 Left errorMessage -> preconditionFailedResponse errorMessage
                 Right updatedUser -> okResponseJson $ encode $ transformToDto updatedUser
