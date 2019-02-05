@@ -44,8 +44,8 @@ newCalendar = def {CalendarEntry.date = newDate, CalendarEntry.description ="ter
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture { _createCalendarEntry = \a -> tell [show a] >> return entryFromDb
-                  , _findUserById = \a -> tell [show a] >> return userFromDb
-                  , _findTaskById = \a -> tell [show a] >> return taskFromDb
+                  , _findUserById = \a -> tell [show a] >>= (\_ -> return $ Just userFromDb)
+                  , _findTaskById = \a -> tell [show a] >>= (\_ -> return $ Just taskFromDb)
                   , _addCalendarEntryToUser = \user entryId -> tell [show user] >> tell [show entryId] >>= (\_ -> return $ Right user)
                   , _deleteCalendarEntryFromUser = \user entryId -> tell [show user] >> tell [show entryId] >>= (\_ -> return $ Right user)
                   , _deleteTask = \a -> tell [show a]

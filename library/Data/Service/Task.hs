@@ -10,6 +10,7 @@ module Data.Service.Task
 import           Control.Monad.IO.Class
 import           Data.Generics.Aliases        (orElse)
 import           Data.List                    (delete)
+import           Data.Maybe                   (fromJust)
 
 import           AcidHelper                   (App)
 import           Data.Domain.CalendarEntry    as CalendarEntry
@@ -47,21 +48,21 @@ deleteTaskFromAllUsers task =
     foldr (\ x ->
       (>>) (do
         user <- MonadDBUserRepo.findUserById x
-        MonadDBUserRepo.deleteTaskFromUser user x ))
+        MonadDBUserRepo.deleteTaskFromUser (fromJust user) x ))
     (return ()) $ Task.belongingUsers task
 
 addUserToTaskImpl :: (MonadDBUserRepo m, MonadDBTaskRepo m, MonadIO m) =>
                 Task -> UserId -> m (UpdateReturn Task)
 addUserToTaskImpl task userId = do
     user <- MonadDBUserRepo.findUserById userId
-    MonadDBUserRepo.addTaskToUser user (taskId task)
+    MonadDBUserRepo.addTaskToUser (fromJust user) (taskId task)
     TaskRepo.updateTask task {belongingUsers = belongingUsers task ++ [userId]}
 
 removeUserFromTaskImpl :: (MonadDBTaskRepo m, MonadDBUserRepo m) =>
                     Task -> UserId -> m (UpdateReturn Task)
 removeUserFromTaskImpl task userId = do
     user <- MonadDBUserRepo.findUserById userId
-    MonadDBUserRepo.deleteTaskFromUser user (taskId task)
+    MonadDBUserRepo.deleteTaskFromUser (fromJust user) (taskId task)
     TaskRepo.updateTask task {belongingUsers = delete userId (belongingUsers task)}
 
 class TaskService m where

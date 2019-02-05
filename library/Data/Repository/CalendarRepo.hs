@@ -49,9 +49,8 @@ deleteCalendarEntryImpl entryId = delete $ CalendarEntryAcid.DeleteEntry entryId
 updateCalendarImpl :: CalendarDAO m => CalendarEntry -> m (UpdateReturn CalendarEntry)
 updateCalendarImpl calendarEntry = update $ CalendarEntryAcid.UpdateEntry calendarEntry
 
-findCalendarByIdImpl :: (CalendarDAO m, MonadIO m) => EntryId -> m CalendarEntry
-findCalendarByIdImpl entryId =
-    fromJust <$> query (CalendarEntryAcid.EntryById entryId)
+findCalendarByIdImpl :: (CalendarDAO m, MonadIO m) => EntryId -> m (Maybe CalendarEntry)
+findCalendarByIdImpl entryId = query $ CalendarEntryAcid.EntryById entryId
 
 deleteTaskFromCalendarEntryImpl :: CalendarDAO m => CalendarEntry -> Int -> m (UpdateReturn CalendarEntry)
 deleteTaskFromCalendarEntryImpl calendarEntry taskId =
@@ -64,7 +63,7 @@ class (Monad m, CalendarDAO App) =>
       MonadDBCalendarRepo m
     where
     createCalendarEntry :: CalendarEntry -> m CalendarEntry
-    findCalendarById :: EntryId -> m CalendarEntry
+    findCalendarById :: EntryId -> m (Maybe CalendarEntry)
     updateCalendar :: CalendarEntry -> m (UpdateReturn CalendarEntry)
     deleteCalendarEntry :: EntryId -> m ()
     deleteTaskFromCalendarEntry :: CalendarEntry -> Int -> m (UpdateReturn CalendarEntry)

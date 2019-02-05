@@ -9,7 +9,6 @@ module Data.Repository.TaskRepo
 
 import           Control.Monad.IO.Class
 import           Data.Default               (def)
-import           Data.Maybe                 (fromJust)
 
 import qualified Happstack.Foundation       as Foundation
 
@@ -37,14 +36,13 @@ deleteTaskImpl taskId = delete $ TaskAcid.DeleteTask taskId
 createTaskImpl :: TaskDAO m => Task -> m Task
 createTaskImpl task = create $ TaskAcid.NewTask task
 
-findTaskByIdImpl :: (TaskDAO m, MonadIO m) => TaskId -> m Task
-findTaskByIdImpl taskId =
-    fromJust <$> query (TaskAcid.TaskById taskId)
+findTaskByIdImpl :: (TaskDAO m, MonadIO m) => TaskId -> m (Maybe Task)
+findTaskByIdImpl taskId = query (TaskAcid.TaskById taskId)
 
 
 class (Monad m, TaskDAO App) => MonadDBTaskRepo m where
     createTask        :: Task -> m Task
-    findTaskById      :: TaskId -> m Task
+    findTaskById      :: TaskId -> m (Maybe Task)
     updateTask        :: Task   -> m (UpdateReturn Task)
     deleteTask        :: TaskId   -> m ()
 

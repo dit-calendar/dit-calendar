@@ -43,10 +43,10 @@ fixture = Fixture { _addTaskToCalendarEntry = \entry taskId -> tell [show entry]
                   , _updateTask = \a -> tell [show a] >>= (\_ -> return $ Right a)
                   , _deleteTask = \a -> tell [show a]
                   , _createTask = \a -> return taskFromDb
-                  , _findTaskById = \a -> tell [show a] >> return taskFromDb
+                  , _findTaskById = \a -> tell [show a] >>= (\_ -> return $ Just taskFromDb)
                   , _addTaskToUser = \user taskId -> tell [show user] >> tell [show taskId] >>= (\_ -> return $ Right user)
                   , _deleteTaskFromUser = \x a -> tell [show x] >> tell [show a] >>= (\_ -> return $ Right x)
-                  , _findUserById = \a -> tell [show a] >> return userFromDb
+                  , _findUserById = \a -> tell [show a] >>= (\_ -> return $ Just userFromDb)
                   }
 
 instance MonadIO Identity where

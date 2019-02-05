@@ -65,17 +65,15 @@ deleteTaskFromUserImpl :: UserDAO m => User -> TaskId -> m (UpdateReturn User)
 deleteTaskFromUserImpl user taskId =
     updateUserImpl user {belongingTasks = List.delete taskId (belongingTasks user)}
 
-findUserByIdImpl :: (UserDAO m, MonadIO m) => UserId -> m User
-findUserByIdImpl userId = do
-    mUser <- query $ UserAcid.UserById userId
-    return $ fromJust mUser
+findUserByIdImpl :: (UserDAO m, MonadIO m) => UserId -> m (Maybe User)
+findUserByIdImpl userId = query $ UserAcid.UserById userId
 
 findUserByLoginNameIml :: (UserDAO m, MonadIO m) => Text -> m (Maybe User)
 findUserByLoginNameIml name = queryByLoginName $ UserAcid.FindByLoginName name
 
 class (UserDAO App) => MonadDBUserRepo m where
     createUser :: Text -> m User
-    findUserById :: UserId -> m User
+    findUserById :: UserId -> m (Maybe User)
     updateUser :: User -> m (UpdateReturn User)
     deleteUser :: UserId -> m ()
     updateLoginName :: User -> Text -> m (UpdateReturn User)
@@ -88,7 +86,7 @@ class (UserDAO App) => MonadDBUserRepo m where
 
 instance MonadDBUserRepo App where
     createUser = createUserImpl
-    findUserById = findUserById
+    findUserById = findUserByIdImpl
     updateUser = updateUserImpl
     deleteUser = deleteUserImpl
     updateLoginName = updateLoginNameImpl
