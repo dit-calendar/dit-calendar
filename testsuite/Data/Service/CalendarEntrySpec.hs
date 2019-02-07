@@ -31,7 +31,6 @@ import           Data.Time.Clock                (UTCTime)
 import qualified Data.Service.CalendarEntry     as CalendarEntryService
 import qualified Data.Service.Task              as TaskService
 import qualified Data.Service.User              as UserService
-import qualified Presentation.Dto.CalendarEntry as CalendarDto
 
 
 mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBTaskRepo, MonadDBCalendarRepo |]
@@ -39,15 +38,14 @@ mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBTaskRepo, MonadDBCalendarRepo |
 userFromDb = def{ loginName="Foo", User.userId=10, belongingTasks=[1,2,3] }
 taskFromDb = def { Task.description="task1", taskId=1, startTime=Nothing, endTime=Nothing}
 dbDate = read "2011-11-19 18:28:52.607875 UTC"::UTCTime
-entryFromDb = def { CalendarEntry.description="termin2", entryId=1, CalendarEntry.userId=2, date=dbDate}
+entryFromDb = def { CalendarEntry.description="termin2", entryId=1, CalendarEntry.userId=10, date=dbDate}
 newDate = read "2012-11-19 17:51:42.203841 UTC"::UTCTime
-calendarDto = def {CalendarDto.date = newDate, CalendarDto.description =Just "termin2"}
+newCalendar = def {CalendarEntry.date = newDate, CalendarEntry.description ="termin2"}
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
-fixture = Fixture { _createCalendarEntry = \newDate description user -> tell [show newDate] >> tell [unpack description]
-                        >> tell [show user] >> return entryFromDb
-                  , _findUserById = \a -> tell [show a] >> return userFromDb
-                  , _findTaskById = \a -> tell [show a] >> return taskFromDb
+fixture = Fixture { _createCalendarEntry = \a -> tell [show a] >> return entryFromDb
+                  , _findUserById = \a -> tell [show a] >>= (\_ -> return $ Just userFromDb)
+                  , _findTaskById = \a -> tell [show a] >>= (\_ -> return $ Just taskFromDb)
                   , _addCalendarEntryToUser = \user entryId -> tell [show user] >> tell [show entryId] >>= (\_ -> return $ Right user)
                   , _deleteCalendarEntryFromUser = \user entryId -> tell [show user] >> tell [show entryId] >>= (\_ -> return $ Right user)
                   , _deleteTask = \a -> tell [show a]
@@ -60,15 +58,13 @@ instance MonadIO Identity where
 spec = describe "CalendarEntryServiceSpec" $ do
     it "createEntry" $ do
         let user = def{ loginName="Foo", User.userId=10, calendarEntries=[1,2] }
-        let (result, log) = evalTestFixture (CalendarEntryService.createEntryImpl calendarDto user) fixture
+        let (result, log) = evalTestFixture (CalendarEntryService.createEntryImpl newCalendar user) fixture
         result `shouldBe` entryFromDb
         -- Test calendarRepo calls
-        log!!0 `shouldBe` show newDate
-        log!!1 `shouldBe` "termin2"
-        log!!2 `shouldBe` show user
+        log!!0 `shouldBe` show (newCalendar{CalendarEntry.userId=10})
         -- test UserRepo calls
-        log!!3 `shouldBe` show user
-        log!!4 `shouldBe` show (CalendarEntry.entryId entryFromDb)
+        log!!1 `shouldBe` show user
+        log!!2 `shouldBe` show (CalendarEntry.entryId entryFromDb)
     it "removeCalendar" $ do
         let calc = def { CalendarEntry.description="termin2", entryId=4, CalendarEntry.userId=2, tasks=[1]}
         let (_, log) = evalTestFixture (CalendarEntryService.removeCalendarImpl calc) fixture

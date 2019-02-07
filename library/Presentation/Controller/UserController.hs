@@ -16,12 +16,12 @@ import           Happstack.Server                     (Method (GET), Response,
 import           Web.Routes                           (RouteT, mapRouteT,
                                                        nestURL, unRouteT)
 
+import           AcidHelper                           (App)
 import           Data.Domain.Types                    (Description, UserId)
 import           Data.Domain.User                     as DomainUser (User (..))
 import           Data.Service.Authorization           as AuthService (deleteAuthUser)
-import           AcidHelper              (App)
-import           Presentation.Dto.User                as UserDto (User (..),
-                                                                  transform)
+import           Presentation.Dto.User                as UserDto (User (..), transformFromDto,
+                                                                  transformToDto)
 import           Presentation.HttpServerHelper        (getBody,
                                                        mapServerPartTIO2App,
                                                        readAuthUserFromBodyAsList)
@@ -42,14 +42,14 @@ loggedUserPage loggedUser = userPage (DomainUser.userId loggedUser)
 
 --handler for userPage
 userPage :: UserId -> App Response
-userPage i = onUserExist i (okResponseJson . encode . transform)
+userPage i = onUserExist i (okResponseJson . encode . transformToDto)
 
 --handler for userPage
 usersPage :: App Response
 usersPage =
     do  method GET
         userList <- query UserAcid.AllUsers
-        okResponseJson $ encode $ map transform userList
+        okResponseJson $ encode $ map transformToDto userList
 
 createUser  :: AuthenticateURL -> (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response) -> App Response
 createUser authenticateURL routeAuthenticate = do
@@ -74,19 +74,20 @@ createUser authenticateURL routeAuthenticate = do
 leaveRouteT :: RouteT url m a-> m a
 leaveRouteT r = unRouteT r (\ _ _ -> undefined)
 
-
+--TODO other creating concept, or change rest interface (and transform UserDto to NewAccoundData)
 createDomainUser :: Text -> App Response
 createDomainUser name = do
     mUser <- UserRepo.createUser name
-    okResponseJson $ encode $ transform mUser
+    okResponseJson $ encode $ transformToDto mUser
 
+--TODO updating AuthenticateUser is missing
 updateUser :: UserDto.User -> DomainUser.User -> App Response
 updateUser userDto = updateUsr
     where updateUsr loggedUser = do
-              result <- UserRepo.updateLoginName loggedUser (UserDto.loginName userDto)
+              result <- UserRepo.updateUser $ transformFromDto userDto (Just loggedUser)
               case result of
                 Left errorMessage -> preconditionFailedResponse errorMessage
-                Right updatedUser -> okResponseJson $ encode $ transform updatedUser
+                Right updatedUser -> okResponseJson $ encode $ transformToDto updatedUser
 
 
 deleteUser :: DomainUser.User -> App Response

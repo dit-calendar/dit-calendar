@@ -24,8 +24,9 @@ entryPage i = onEntryExist i (okResponseJson . encode . CalendarDto.transformToD
 createCalendarEntry :: CalendarDto.CalendarEntry -> DomainUser.User -> App Response
 createCalendarEntry calendarDto loggedUser = onUserExist userId createCalendar
     where
+        newCalendar = CalendarDto.transformFromDto calendarDto Nothing
         createCalendar user = do
-            entry <- CalendarService.createEntry calendarDto user
+            entry <- CalendarService.createEntry newCalendar user
             okResponseJson $ encode $ CalendarDto.transformToDto entry
         userId = DomainUser.userId loggedUser
 
@@ -40,8 +41,7 @@ updateCalendarEntry :: EntryId -> CalendarDto.CalendarEntry -> DomainUser.User -
 updateCalendarEntry entryId calendarDto loggedUser = onEntryExist entryId updateCalendar
     where
         updateCalendar cEntry = do
-            --TODO überprüfe welche werte gesetzt sind und update nur diese, momentan wird nur description aktualisiert
-            result <- CalendarRepo.updateCalendar cEntry {CalendarEntry.description = fromJust $ CalendarDto.description calendarDto}
+            result <- CalendarRepo.updateCalendar (CalendarDto.transformFromDto calendarDto $ Just cEntry)
             case result of
                 Left errorMessage -> preconditionFailedResponse errorMessage
                 Right updatedEntry -> okResponseJson $ encode $ CalendarDto.transformToDto updatedEntry

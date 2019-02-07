@@ -42,10 +42,10 @@ taskFromDb = def { Task.description="task1", taskId=5, belongingUsers=[10], star
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture { _deleteCalendarEntry = \a -> tell [show a]
-                  , _findTaskById = \a -> tell [show a] >> return taskFromDb
+                  , _findTaskById = \a -> tell [show a] >>= (\_ -> return $ Just taskFromDb)
                   , _deleteUser = \a -> tell [show a]
                   , _deleteTaskFromUser = \x a -> tell [show x] >> tell [show a] >>= (\_ -> return $ Right x)
-                  , _findUserById = \a -> tell [show a] >> return userFromDb
+                  , _findUserById = \a -> tell [show a] >>= (\_ -> return $ Just userFromDb)
                   , _updateTask = \a -> tell [show a] >>= (\_ -> return $ Right a)
                   , _removeUserFromTask =  \x a -> tell [show x] >> tell [show a] >>= (\_ -> return $ Right x)
                   }

@@ -17,6 +17,7 @@ import           Control.Monad.IO.Class
 import           Control.Monad.Writer         (execWriter)
 import           Control.Monad.Writer.Class   (tell)
 import           Data.Default                 (def)
+import           Data.Maybe                   (fromJust)
 
 import           Data.Domain.Task             as Task
 import           Data.Repository.Acid.Task    (DeleteTask (..), NewTask (..),
@@ -41,8 +42,8 @@ instance MonadIO Identity where
 
 spec = describe "TaskRepo" $ do
     it "createTask" $ do
-        let (result, _) = evalTestFixture (TaskRepo.createTaskImpl "task1") fixture
-        Task.description result `shouldBe` "task1"
+        let (result, _) = evalTestFixture (TaskRepo.createTaskImpl taskFromDb) fixture
+        result `shouldBe` taskFromDb
         Task.belongingUsers result `shouldBe` []
     it "deleteTask" $ do
         let task = def { description="task1", taskId=1}
@@ -54,4 +55,4 @@ spec = describe "TaskRepo" $ do
         log `shouldBe` show task
     it "getTask" $ do
         let (result, _) = evalTestFixture (TaskRepo.findTaskByIdImpl 1) fixture
-        result `shouldBe` taskFromDb
+        result `shouldBe` Just taskFromDb

@@ -3,12 +3,14 @@
 
 module Presentation.Dto.User
     ( User(..)
-    , transform
+    , transformToDto
+    , transformFromDto
     ) where
 
 import           Data.Aeson
 import           Data.Default
 import qualified Data.Domain.User as Domain
+import           Data.Maybe       (fromJust)
 import           Data.Text
 import           GHC.Generics
 
@@ -27,10 +29,25 @@ instance FromJSON User where
 instance Default User where
     def = User {userId = Nothing, version = Nothing}
 
-transform :: Domain.User -> User
-transform domain =
+transformToDto :: Domain.User -> User
+transformToDto domain =
     User
         { loginName = Domain.loginName domain
         , userId = Just $ Domain.userId domain
         , version = Just $ Domain.version domain
         }
+
+transformFromDto :: User -> Maybe Domain.User -> Domain.User
+transformFromDto dto mDbCalendar = case mDbCalendar of
+    Nothing ->
+        Domain.User
+           { loginName = loginName dto
+           , userId = 0
+           , version = 0
+           }
+    Just dbCalendar ->
+        Domain.User
+            { loginName = loginName dto
+           , userId = fromJust (userId dto)
+           , version = fromJust (version dto)
+            }

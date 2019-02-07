@@ -43,10 +43,10 @@ fixture = Fixture { _addTaskToCalendarEntry = \entry taskId -> tell [show entry]
                   , _updateTask = \a -> tell [show a] >>= (\_ -> return $ Right a)
                   , _deleteTask = \a -> tell [show a]
                   , _createTask = \a -> return taskFromDb
-                  , _findTaskById = \a -> tell [show a] >> return taskFromDb
+                  , _findTaskById = \a -> tell [show a] >>= (\_ -> return $ Just taskFromDb)
                   , _addTaskToUser = \user taskId -> tell [show user] >> tell [show taskId] >>= (\_ -> return $ Right user)
                   , _deleteTaskFromUser = \x a -> tell [show x] >> tell [show a] >>= (\_ -> return $ Right x)
-                  , _findUserById = \a -> tell [show a] >> return userFromDb
+                  , _findUserById = \a -> tell [show a] >>= (\_ -> return $ Just userFromDb)
                   }
 
 instance MonadIO Identity where
@@ -64,7 +64,7 @@ spec = describe "TaskServiceSpec" $ do
     it "createTaskInCalendar" $ do
         let newDate = read "2011-11-19 18:28:52.607875 UTC"::UTCTime
         let calc = def{ CalendarEntry.description="termin2", entryId=1, CalendarEntry.userId=2, date=newDate}
-        let (result, log) = evalTestFixture (TaskService.createTaskInCalendarImpl calc "task1") fixture
+        let (result, log) = evalTestFixture (TaskService.createTaskInCalendarImpl calc taskFromDb) fixture
         result `shouldBe` taskFromDb
         log!!0 `shouldBe` show calc
         log!!1 `shouldBe` show (Task.taskId taskFromDb)

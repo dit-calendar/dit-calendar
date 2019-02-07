@@ -80,7 +80,7 @@ spec = describe "UserRepo" $ do
     describe "find" $ do
         it "byId" $ do
             let (result, _) = evalTestFixture (UserRepo.findUserByIdImpl 10) fixture
-            result `shouldBe` userFromDb
+            result `shouldBe` Just userFromDb
         it "byName" $ do
             let (result, _) = evalTestFixture (UserRepo.findUserByLoginNameIml "Foo") fixture
             fromJust result `shouldBe` userFromDb
