@@ -71,16 +71,14 @@ spec = describe "TaskServiceSpec" $ do
     it "addUserToTask" $ do
         let task = def { Task.description="task1", taskId=1, belongingUsers=[2], startTime=Nothing, endTime=Nothing}
         let expectedTask = def { Task.description="task1", taskId=1, belongingUsers=[2,10], startTime=Nothing, endTime=Nothing}
-        let (_, log) = evalTestFixture (TaskService.addUserToTaskImpl task 10) fixture
-        log!!0 `shouldBe` show (User.userId userFromDb)
-        log!!1 `shouldBe` show userFromDb
-        log!!2 `shouldBe` show (Task.taskId task)
-        log!!3 `shouldBe` show expectedTask
+        let (_, log) = evalTestFixture (TaskService.addUserToTaskImpl task userFromDb) fixture
+        log!!0 `shouldBe` show userFromDb
+        log!!1 `shouldBe` show (Task.taskId task)
+        log!!2 `shouldBe` show expectedTask
     it "removeUserFromTask" $ do
         let task = def { Task.description="task1", taskId=1, belongingUsers=[2,10], startTime=Nothing, endTime=Nothing}
         let expectedTask = def { Task.description="task1", taskId=1, belongingUsers=[2], startTime=Nothing, endTime=Nothing}
-        let (_, log) = evalTestFixture (TaskService.removeUserFromTaskImpl task 10) fixture
-        log!!0 `shouldBe` show (User.userId userFromDb)
-        log!!1 `shouldBe` show userFromDb
-        log!!2 `shouldBe` show (Task.taskId task)
-        log!!3 `shouldBe` show expectedTask
+        let (_, log) = evalTestFixture (TaskService.removeUserFromTaskImpl task userFromDb) fixture
+        log!!0 `shouldBe` show userFromDb
+        log!!1 `shouldBe` show (Task.taskId task)
+        log!!2 `shouldBe` show expectedTask

@@ -47,10 +47,10 @@ routeTaskDetail entryId taskId = do
         DELETE -> callIfAuthorized (TaskController.deleteTask entryId taskId)
         other  -> notImplemented other
 
-routeTaskWithUser :: EntryId -> TaskId -> UserId -> App Response
-routeTaskWithUser entryId taskId userId = do
+routeTaskWithUser :: EntryId -> TaskId -> App Response
+routeTaskWithUser entryId taskId = do
     m <- getHttpMethod
     case m of
-        DELETE -> callIfAuthorized (TaskController.removeUserFromTask taskId userId)
-        PUT -> callIfAuthorized (TaskController.addUserToTask taskId userId)
+        DELETE -> callIfAuthorized (TaskController.removeUserFromTask taskId)
+        PUT -> callIfAuthorized (TaskController.addUserToTask taskId)
         other -> notImplemented other

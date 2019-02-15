@@ -53,4 +53,4 @@ route url = do
         -- task routing
         CalendarTask eId           -> routeTask eId
         CalendarTaskDetail eId tId -> routeTaskDetail eId tId
-        TaskWithUser eId tId uId   -> routeTaskWithUser eId tId uId
+        TaskWithUser eId tId       -> routeTaskWithUser eId tId

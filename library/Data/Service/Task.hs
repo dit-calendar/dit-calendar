@@ -15,6 +15,7 @@ import           Data.Maybe                   (fromJust)
 import           AcidHelper                   (App)
 import           Data.Domain.CalendarEntry    as CalendarEntry
 import           Data.Domain.Task             as Task
+import           Data.Domain.User             as User
 import           Data.Domain.Types            (Description, UserId)
 import           Data.Repository.Acid.Types   (UpdateReturn)
 
@@ -52,25 +53,23 @@ deleteTaskFromAllUsers task =
     (return ()) $ Task.belongingUsers task
 
 addUserToTaskImpl :: (MonadDBUserRepo m, MonadDBTaskRepo m, MonadIO m) =>
-                Task -> UserId -> m (UpdateReturn Task)
-addUserToTaskImpl task userId = do
-    user <- MonadDBUserRepo.findUserById userId
-    MonadDBUserRepo.addTaskToUser (fromJust user) (taskId task)
-    TaskRepo.updateTask task {belongingUsers = belongingUsers task ++ [userId]}
+                Task -> User -> m (UpdateReturn Task)
+addUserToTaskImpl task user = do
+    MonadDBUserRepo.addTaskToUser user (taskId task)
+    TaskRepo.updateTask task {belongingUsers = belongingUsers task ++ [User.userId user]}
 
 removeUserFromTaskImpl :: (MonadDBTaskRepo m, MonadDBUserRepo m) =>
-                    Task -> UserId -> m (UpdateReturn Task)
-removeUserFromTaskImpl task userId = do
-    user <- MonadDBUserRepo.findUserById userId
-    MonadDBUserRepo.deleteTaskFromUser (fromJust user) (taskId task)
-    TaskRepo.updateTask task {belongingUsers = delete userId (belongingUsers task)}
+                    Task -> User -> m (UpdateReturn Task)
+removeUserFromTaskImpl task user = do
+    MonadDBUserRepo.deleteTaskFromUser user (taskId task)
+    TaskRepo.updateTask task {belongingUsers = delete (User.userId user) (belongingUsers task)}
 
 class TaskService m where
     deleteTaskAndCascadeUsers :: Task -> m ()
     createTaskInCalendar :: CalendarEntry -> Task -> m Task
     updateTaskInCalendar :: Task -> m (UpdateReturn Task)
-    addUserToTask :: Task -> UserId -> m (UpdateReturn Task)
-    removeUserFromTask :: Task -> UserId -> m (UpdateReturn Task)
+    addUserToTask :: Task -> User -> m (UpdateReturn Task)
+    removeUserFromTask :: Task -> User -> m (UpdateReturn Task)
 
 instance (MonadDBTaskRepo App, MonadDBUserRepo App, MonadDBCalendarRepo App)
             => TaskService App where

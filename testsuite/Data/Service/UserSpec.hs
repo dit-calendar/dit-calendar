@@ -62,5 +62,5 @@ spec = describe "UserService" $
         assertEqual "CalendarEntry 2 nicht durchgegeben" (log!!1) "2"
         assertEqual "Taskeintrag aus calendar nicht gelöscht" (log!!2) "4"
         assertEqual "Task nicht gelöscht" (log!!3) (show taskFromDb)
-        assertEqual "Falsche userId durchgegeben" (log!!4) (show $ User.userId userFromDb)
+        assertEqual "Falsche userId durchgegeben" (log!!4) (show $ userFromDb)
         assertEqual "Falscher user gelöscht" (log!!5) (show $ User.userId userFromDb)

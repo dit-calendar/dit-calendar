@@ -30,7 +30,7 @@ data Sitemap
     -- tasks mapping
     | CalendarTask EntryId
     | CalendarTaskDetail EntryId TaskId
-    | TaskWithUser EntryId TaskId UserId
+    | TaskWithUser EntryId TaskId
     deriving (Eq, Ord, Read, Show, Data, Typeable)
 $(makeBoomerangs ''Sitemap)
 
@@ -53,4 +53,4 @@ urlSitemapParser =
         taskMapping =
             rCalendarTask </> int </> lit "tasks" -- create, findAll
             <> rCalendarTaskDetail </> int </> lit "tasks" </> int -- read, update, delete
-            <> rTaskWithUser </> int </> lit "tasks" </> int </> lit "users" </> int -- add/remove user to Task
+            <> rTaskWithUser </> int </> lit "tasks" </> int </> lit "assignment" -- add/remove user to Task

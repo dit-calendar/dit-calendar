@@ -6,7 +6,7 @@ import           Happstack.Server             (Response)
 import           Data.Domain.Task             as Task
 import           Data.Domain.Types            (Description, EntryId, TaskId,
                                                UserId)
-import           Data.Domain.User             (User)
+import           Data.Domain.User             as DomainUser (User (..))
 import           AcidHelper      (App)
 import           Presentation.Dto.Task        as TaskDto (Task (..), transformToDto, transformFromDto)
 import           Presentation.ResponseHelper  (okResponse, okResponseJson,
@@ -28,7 +28,7 @@ createTask calendarId taskDto =
         t <- TaskService.createTaskInCalendar e (transformFromDto taskDto Nothing)
         okResponseJson $ encode $ transformToDto t)
 
-updateTask :: TaskId -> TaskDto.Task -> User -> App Response
+updateTask :: TaskId -> TaskDto.Task -> DomainUser.User -> App Response
 updateTask id taskDto loggedUser =
     onTaskExist id (\t -> do
         result <- TaskService.updateTaskInCalendar $ transformFromDto taskDto (Just t)
@@ -36,25 +36,23 @@ updateTask id taskDto loggedUser =
             Left errorMessage -> preconditionFailedResponse errorMessage
             Right updatedTask -> okResponseJson $ encode $ transformToDto updatedTask)
 
-addUserToTask :: UserId -> TaskId -> User-> App Response
-addUserToTask userId taskId loggedUser =
-    onUserExist userId (\ _ ->
-        onTaskExist taskId (\t -> do
-            result <- TaskService.addUserToTask t userId
-            case result of
-                Left errorMessage -> preconditionFailedResponse errorMessage
-                Right updatedTask -> okResponseJson $ encode $ transformToDto updatedTask))
+addUserToTask :: TaskId -> DomainUser.User-> App Response
+addUserToTask taskId loggedUser =
+    onTaskExist taskId (\t -> do
+        result <- TaskService.addUserToTask t loggedUser
+        case result of
+            Left errorMessage -> preconditionFailedResponse errorMessage
+            Right updatedTask -> okResponseJson $ encode $ transformToDto updatedTask)
 
-removeUserFromTask :: UserId -> TaskId -> User -> App Response
-removeUserFromTask userId taskId loggedUser =
-    onUserExist userId (\ _ ->
-        onTaskExist taskId (\t -> do
-            result <- TaskService.removeUserFromTask t userId
-            case result of
-                Left errorMessage -> preconditionFailedResponse errorMessage
-                Right updatedTask -> okResponseJson $ encode $ transformToDto updatedTask))
+removeUserFromTask :: TaskId -> DomainUser.User -> App Response
+removeUserFromTask taskId loggedUser =
+    onTaskExist taskId (\t -> do
+        result <- TaskService.removeUserFromTask t loggedUser
+        case result of
+            Left errorMessage -> preconditionFailedResponse errorMessage
+            Right updatedTask -> okResponseJson $ encode $ transformToDto updatedTask)
 
-deleteTask :: EntryId -> TaskId -> User -> App Response
+deleteTask :: EntryId -> TaskId -> DomainUser.User -> App Response
 deleteTask entryId taskId loggedUser =
     onEntryExist entryId (\e ->
         onTaskExist taskId (\t -> do
