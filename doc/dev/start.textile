@@ -81,3 +81,6 @@ h4. task erstellen
 
 h4. update task
 * curl -H "Content-Type: application/json" -H "Authorization: Bearer xxx" -X PUT -d '{"description":"testHeute2", "belongingUsers":[1]}' https://localhost:8443/calendarentries/1/tasks/1 --insecure
+
+h4. add user to task
+* curl -H "Content-Type: application/json" -H "Authorization: Bearer xxx" -X PUT https://localhost:8443/calendarentries/1/tasks/1/assignment --insecure
