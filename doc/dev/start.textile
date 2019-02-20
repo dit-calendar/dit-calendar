@@ -19,6 +19,7 @@ h5. Stack
 * bauen: stack build
 * starten: stack exec dit-calendar
 * bei kaputtem stack: stack clean
+* Manche IDE's benötigen das Packet "intero" dies muss beim ersten mal manuell installiert werden stack install intero-0.1.24 --resolver=lts-10.10
 
 h4. Test ausführen
 * builds tests and runs them: cabal install --enable-tests
