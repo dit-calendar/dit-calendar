@@ -41,16 +41,16 @@ instance CalendarDAO App where
     query = Foundation.query
 
 createCalendarEntryImpl :: CalendarDAO m => CalendarEntry-> m CalendarEntry
-createCalendarEntryImpl entry = create (CalendarEntryAcid.NewEntry entry)
+createCalendarEntryImpl = create . CalendarEntryAcid.NewEntry
 
 deleteCalendarEntryImpl :: CalendarDAO m => EntryId -> m ()
-deleteCalendarEntryImpl entryId = delete $ CalendarEntryAcid.DeleteEntry entryId
+deleteCalendarEntryImpl = delete . CalendarEntryAcid.DeleteEntry
 
 updateCalendarImpl :: CalendarDAO m => CalendarEntry -> m (UpdateReturn CalendarEntry)
-updateCalendarImpl calendarEntry = update $ CalendarEntryAcid.UpdateEntry calendarEntry
+updateCalendarImpl = update . CalendarEntryAcid.UpdateEntry
 
 findCalendarByIdImpl :: (CalendarDAO m, MonadIO m) => EntryId -> m (Maybe CalendarEntry)
-findCalendarByIdImpl entryId = query $ CalendarEntryAcid.EntryById entryId
+findCalendarByIdImpl = query . CalendarEntryAcid.EntryById
 
 deleteTaskFromCalendarEntryImpl :: CalendarDAO m => CalendarEntry -> Int -> m (UpdateReturn CalendarEntry)
 deleteTaskFromCalendarEntryImpl calendarEntry taskId =

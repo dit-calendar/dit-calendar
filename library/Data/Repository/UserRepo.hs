@@ -40,10 +40,10 @@ createUserImpl name = let user = def { loginName = name
         create $ UserAcid.NewUser user
 
 deleteUserImpl :: UserDAO m => UserId -> m ()
-deleteUserImpl userId = delete $ UserAcid.DeleteUser userId
+deleteUserImpl = delete . UserAcid.DeleteUser
 
 updateUserImpl :: UserDAO m => User -> m (UpdateReturn User)
-updateUserImpl user = update $ UserAcid.UpdateUser user
+updateUserImpl = update . UserAcid.UpdateUser
 
 updateLoginNameImpl :: UserDAO m => User -> Text -> m (UpdateReturn User)
 updateLoginNameImpl user newName = updateUserImpl user {loginName = newName}
@@ -66,10 +66,10 @@ deleteTaskFromUserImpl user taskId =
     updateUserImpl user {belongingTasks = List.delete taskId (belongingTasks user)}
 
 findUserByIdImpl :: (UserDAO m, MonadIO m) => UserId -> m (Maybe User)
-findUserByIdImpl userId = query $ UserAcid.UserById userId
+findUserByIdImpl = query . UserAcid.UserById
 
 findUserByLoginNameIml :: (UserDAO m, MonadIO m) => Text -> m (Maybe User)
-findUserByLoginNameIml name = queryByLoginName $ UserAcid.FindByLoginName name
+findUserByLoginNameIml = queryByLoginName . UserAcid.FindByLoginName
 
 class (UserDAO App) => MonadDBUserRepo m where
     createUser :: Text -> m User
