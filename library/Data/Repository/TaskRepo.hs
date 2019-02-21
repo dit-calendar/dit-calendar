@@ -28,16 +28,16 @@ instance TaskDAO App where
     query  = Foundation.query
 
 updateTaskImpl :: TaskDAO m => Task -> m (UpdateReturn Task)
-updateTaskImpl task = update $ TaskAcid.UpdateTask task
+updateTaskImpl = update . TaskAcid.UpdateTask
 
 deleteTaskImpl :: TaskDAO m => TaskId -> m ()
-deleteTaskImpl taskId = delete $ TaskAcid.DeleteTask taskId
+deleteTaskImpl = delete . TaskAcid.DeleteTask
 
 createTaskImpl :: TaskDAO m => Task -> m Task
-createTaskImpl task = create $ TaskAcid.NewTask task
+createTaskImpl = create . TaskAcid.NewTask
 
 findTaskByIdImpl :: (TaskDAO m, MonadIO m) => TaskId -> m (Maybe Task)
-findTaskByIdImpl taskId = query (TaskAcid.TaskById taskId)
+findTaskByIdImpl = query . TaskAcid.TaskById
 
 
 class (Monad m, TaskDAO App) => MonadDBTaskRepo m where
