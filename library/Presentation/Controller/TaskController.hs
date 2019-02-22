@@ -8,11 +8,12 @@ import           Data.Domain.Types            (Description, EntryId, TaskId,
                                                UserId)
 import           Data.Domain.User             as DomainUser (User (..))
 import           AcidHelper      (App)
-import           Presentation.Dto.Task        as TaskDto (Task (..), transformToDto, transformFromDto)
+import           Presentation.Dto.Task        as TaskDto (Task (..))
 import           Presentation.ResponseHelper  (okResponse, okResponseJson,
                                                onEntryExist, onTaskExist,
                                                onUserExist,
                                                preconditionFailedResponse)
+import           Presentation.Mapper.TaskMapper (transformToDto, transformFromDto)
 
 import qualified Data.Repository.CalendarRepo as CalendarRepo
 import qualified Data.Service.Task            as TaskService

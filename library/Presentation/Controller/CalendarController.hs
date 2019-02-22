@@ -10,6 +10,7 @@ import           AcidHelper        (App)
 import           Presentation.ResponseHelper    (okResponse, okResponseJson,
                                                  onEntryExist, onUserExist,
                                                  preconditionFailedResponse)
+import Presentation.Mapper.CalendarEntryMapper (transformToDto, transformFromDto)
 
 import qualified Data.Domain.CalendarEntry      as DomainCalendar
 import qualified Data.Domain.User               as DomainUser
@@ -19,15 +20,15 @@ import qualified Presentation.Dto.CalendarEntry as CalendarDto
 
 --handler for entryPage
 entryPage :: EntryId -> App Response
-entryPage i = onEntryExist i (okResponseJson . encode . CalendarDto.transformToDto)
+entryPage i = onEntryExist i (okResponseJson . encode . transformToDto)
 
 createCalendarEntry :: CalendarDto.CalendarEntry -> DomainUser.User -> App Response
 createCalendarEntry calendarDto loggedUser = onUserExist userId createCalendar
     where
-        newCalendar = CalendarDto.transformFromDto calendarDto Nothing
+        newCalendar = transformFromDto calendarDto Nothing
         createCalendar user = do
             entry <- CalendarService.createEntry newCalendar user
-            okResponseJson $ encode $ CalendarDto.transformToDto entry
+            okResponseJson $ encode $ transformToDto entry
         userId = DomainUser.userId loggedUser
 
 deleteCalendarEntry :: EntryId -> DomainUser.User -> App Response
@@ -41,7 +42,7 @@ updateCalendarEntry :: EntryId -> CalendarDto.CalendarEntry -> DomainUser.User -
 updateCalendarEntry entryId calendarDto loggedUser = onEntryExist entryId updateCalendar
     where
         updateCalendar cEntry = do
-            result <- CalendarRepo.updateCalendar (CalendarDto.transformFromDto calendarDto $ Just cEntry)
+            result <- CalendarRepo.updateCalendar (transformFromDto calendarDto $ Just cEntry)
             case result of
                 Left errorMessage -> preconditionFailedResponse errorMessage
-                Right updatedEntry -> okResponseJson $ encode $ CalendarDto.transformToDto updatedEntry
+                Right updatedEntry -> okResponseJson $ encode $ transformToDto updatedEntry

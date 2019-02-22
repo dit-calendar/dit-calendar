@@ -20,8 +20,7 @@ import           AcidHelper                           (App)
 import           Data.Domain.Types                    (Description, UserId)
 import           Data.Domain.User                     as DomainUser (User (..))
 import           Data.Service.Authorization           as AuthService (deleteAuthUser)
-import           Presentation.Dto.User                as UserDto (User (..), transformFromDto,
-                                                                  transformToDto)
+import           Presentation.Dto.User                as UserDto (User (..))
 import           Presentation.HttpServerHelper        (getBody,
                                                        mapServerPartTIO2App,
                                                        readAuthUserFromBodyAsList)
@@ -30,6 +29,7 @@ import           Presentation.ResponseHelper          (okResponse,
                                                        onUserExist,
                                                        preconditionFailedResponse)
 import           Presentation.Route.PageEnum          (Sitemap)
+import           Presentation.Mapper.UserMapper       (transformToDto, transformFromDto)
 
 import qualified Data.Repository.Acid.User            as UserAcid
 import qualified Data.Repository.UserRepo             as UserRepo
