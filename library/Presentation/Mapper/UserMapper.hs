@@ -4,9 +4,9 @@ module Presentation.Mapper.UserMapper
     ) where
 
 import           Data.Maybe            (fromJust)
-import           Presentation.Dto.User
 
 import qualified Data.Domain.User      as Domain
+import           Presentation.Dto.User
 
 transformToDto :: Domain.User -> User
 transformToDto domain =
