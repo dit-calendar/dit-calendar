@@ -41,13 +41,13 @@ transformFromDto :: User -> Maybe Domain.User -> Domain.User
 transformFromDto dto mDbCalendar = case mDbCalendar of
     Nothing ->
         Domain.User
-           { loginName = loginName dto
-           , userId = 0
-           , version = 0
+           { Domain.loginName = loginName dto
+           , Domain.userId = 0
+           , Domain.version = 0
            }
     Just dbCalendar ->
         Domain.User
-            { loginName = loginName dto
-           , userId = fromJust (userId dto)
-           , version = fromJust (version dto)
+            { Domain.loginName = loginName dto
+           , Domain.userId = fromJust (userId dto)
+           , Domain.version = fromJust (version dto)
             }

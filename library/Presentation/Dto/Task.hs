@@ -52,21 +52,21 @@ transformToDto domain =
 transformFromDto :: Task -> Maybe Domain.Task -> Domain.Task
 transformFromDto dto mOld = case mOld of
     Nothing -> Domain.Task
-       { description = description dto
-       , taskId = 0
-       , version = 0
-       , belongingUsers = belongingUsers dto
-       , startTime = startTime dto
-       , endTime = endTime dto
+       { Domain.description = description dto
+       , Domain.taskId = 0
+       , Domain.version = 0
+       , Domain.belongingUsers = belongingUsers dto
+       , Domain.startTime = startTime dto
+       , Domain.endTime = endTime dto
        }
     Just dbTask ->
         Domain.Task
-        { description = description dto
-        , taskId = fromJust (taskId dto)
-        , version = fromJust (version dto)
-        , belongingUsers = case belongingUsers dto of
+        { Domain.description = description dto
+        , Domain.taskId = fromJust (taskId dto)
+        , Domain.version = fromJust (version dto)
+        , Domain.belongingUsers = case belongingUsers dto of
             [] -> Domain.belongingUsers dbTask
             x  -> x
-        , startTime = startTime dto `orElse` Domain.startTime dbTask
-        , endTime = endTime dto `orElse` Domain.endTime dbTask
+        , Domain.startTime = startTime dto `orElse` Domain.startTime dbTask
+        , Domain.endTime = endTime dto `orElse` Domain.endTime dbTask
         }

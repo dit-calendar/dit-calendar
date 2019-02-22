@@ -50,19 +50,19 @@ transformFromDto :: CalendarEntry -> Maybe Domain.CalendarEntry -> Domain.Calend
 transformFromDto dto mDbCalendar = case mDbCalendar of
     Nothing ->
         Domain.CalendarEntry
-           { entryId = 0
-           , version = 0
-           , description = fromJust (description dto)
-           , userId = userId dto
-           , tasks = fromMaybe [] (tasks dto)
-           , date = date dto
+           { Domain.entryId = 0
+           , Domain.version = 0
+           , Domain.description = fromJust (description dto)
+           , Domain.userId = userId dto
+           , Domain.tasks = fromMaybe [] (tasks dto)
+           , Domain.date = date dto
            }
     Just dbCalendar ->
         Domain.CalendarEntry
-            { description = fromMaybe (Domain.description dbCalendar) (description dto)
-            , entryId = fromJust (entryId dto)
-            , version = fromJust $ version dto
-            , userId = userId dto
-            , tasks = fromMaybe (Domain.tasks dbCalendar) (tasks dto)
-            , date = date dto
+            { Domain.description = fromMaybe (Domain.description dbCalendar) (description dto)
+            , Domain.entryId = fromJust (entryId dto)
+            , Domain.version = fromJust $ version dto
+            , Domain.userId = userId dto
+            , Domain.tasks = fromMaybe (Domain.tasks dbCalendar) (tasks dto)
+            , Domain.date = date dto
             }
