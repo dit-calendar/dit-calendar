@@ -56,7 +56,7 @@ spec = describe "CalendarRepo" $ do
     it "addTaskToCalendarEntry" $ do
         let calc = def{ description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[1], date=oldDate}
         let (_, log) = evalTestFixture (CalendarRepo.addTaskToCalendarEntryImpl calc 2) fixture
-        let newCalc = calc {tasks = [1, 2]}
+        let newCalc = calc {tasks = [2, 1]}
         log!!0 `shouldBe` show newCalc
     it "deleteTaskFromCalendarEntry" $ do
         let calc = def{ description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[1,2,3], date=oldDate}

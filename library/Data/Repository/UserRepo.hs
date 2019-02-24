@@ -50,7 +50,7 @@ updateLoginNameImpl user newName = updateUserImpl user {loginName = newName}
 
 addCalendarEntryToUserImpl :: UserDAO m => User -> EntryId -> m (UpdateReturn User)
 addCalendarEntryToUserImpl user entryId =
-    updateUserImpl user {calendarEntries = calendarEntries user ++ [entryId]}
+    updateUserImpl user {calendarEntries = entryId : calendarEntries user}
 
 deleteCalendarEntryFromUserImpl :: UserDAO m =>
                             User -> EntryId -> m (UpdateReturn User)
@@ -59,7 +59,7 @@ deleteCalendarEntryFromUserImpl user entryId =
 
 addTaskToUserImpl :: UserDAO m => User -> TaskId -> m (UpdateReturn User)
 addTaskToUserImpl user taskId =
-    updateUserImpl user {belongingTasks = belongingTasks user ++ [taskId]}
+    updateUserImpl user {belongingTasks = taskId : belongingTasks user}
 
 deleteTaskFromUserImpl :: UserDAO m => User -> TaskId -> m (UpdateReturn User)
 deleteTaskFromUserImpl user taskId =

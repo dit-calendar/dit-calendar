@@ -60,7 +60,7 @@ spec = describe "UserRepo" $ do
     it "addCalendarEntryToUser" $ do
         let user = def { loginName="Foo", User.userId=10, calendarEntries=[1]}
         let (_, log) = evalTestFixture (UserRepo.addCalendarEntryToUserImpl user 2) fixture
-        let newUser = user {calendarEntries = [1, 2]}
+        let newUser = user {calendarEntries = [2, 1]}
         log!!0 `shouldBe` show newUser
     it "deleteCalendarEntryFromUser" $ do
         let user = def{ loginName="Foo", User.userId=10, calendarEntries=[1,2,3]}
@@ -70,7 +70,7 @@ spec = describe "UserRepo" $ do
     it "addTaskToUser" $ do
         let user = def{ loginName="Foo", User.userId=10, belongingTasks=[1] }
         let (_, log) = evalTestFixture (UserRepo.addTaskToUserImpl user 2) fixture
-        let newUser = user {belongingTasks = [1, 2]}
+        let newUser = user {belongingTasks = [2, 1]}
         log!!0 `shouldBe` show newUser
     it "deleteTaskFromUser" $ do
         let user = def { loginName="Foo", User.userId=10, belongingTasks=[1,2,3] }

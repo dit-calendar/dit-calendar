@@ -59,7 +59,7 @@ addUserToTaskImpl task user =
         then return (Right task) -- do nothing and return same task
         else do
             MonadDBUserRepo.addTaskToUser user (taskId task)
-            TaskRepo.updateTask task {belongingUsers = belongingUsers task ++ [User.userId user]}
+            TaskRepo.updateTask task {belongingUsers = User.userId user : belongingUsers task}
 
 removeUserFromTaskImpl :: (MonadDBTaskRepo m, MonadDBUserRepo m) =>
                     Task -> User -> m (UpdateReturn Task)

@@ -57,7 +57,7 @@ deleteTaskFromCalendarEntryImpl calendarEntry taskId =
     updateCalendarImpl calendarEntry {tasks = List.delete taskId (tasks calendarEntry)}
 
 addTaskToCalendarEntryImpl :: CalendarDAO m => CalendarEntry -> TaskId -> m (UpdateReturn CalendarEntry)
-addTaskToCalendarEntryImpl calendarEntry taskId = updateCalendarImpl calendarEntry {tasks = tasks calendarEntry ++ [taskId]}
+addTaskToCalendarEntryImpl calendarEntry taskId = updateCalendarImpl calendarEntry {tasks = taskId : tasks calendarEntry}
 
 class (Monad m, CalendarDAO App) =>
       MonadDBCalendarRepo m

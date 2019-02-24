@@ -70,7 +70,7 @@ spec = describe "TaskServiceSpec" $ do
         log!!1 `shouldBe` show (Task.taskId taskFromDb)
     it "addUserToTask" $ do
         let task = def { Task.description="task1", taskId=1, belongingUsers=[2], startTime=Nothing, endTime=Nothing}
-        let expectedTask = def { Task.description="task1", taskId=1, belongingUsers=[2,10], startTime=Nothing, endTime=Nothing}
+        let expectedTask = def { Task.description="task1", taskId=1, belongingUsers=[10, 2], startTime=Nothing, endTime=Nothing}
         let (_, log) = evalTestFixture (TaskService.addUserToTaskImpl task userFromDb) fixture
         log!!0 `shouldBe` show userFromDb
         log!!1 `shouldBe` show (Task.taskId task)
