@@ -50,6 +50,7 @@ run = do
     case readConfig textConfig of
         Left error -> print $ "error with config file: " ++ error
         Right conf -> do
+            putStrLn $ "Server unter: " ++ hostUri (cfNetwork conf)
             (cleanup, routeAuthenticate, authenticateState) <-
                 initAuthentication Nothing authenticateConfig [ initPassword (passwordConfig conf) ]
             let startServer acid = simpleHTTPS (tlsConf conf) $ runApp acid appWithRoutetSite
