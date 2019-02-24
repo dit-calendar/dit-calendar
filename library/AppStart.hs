@@ -17,7 +17,7 @@ import           Happstack.Server                      (Response, ServerPartT,
                                                         mapServerPartT)
 import           Happstack.Server.SimpleHTTPS          (simpleHTTPS)
 
-import           Conf                                  (authenticateConfig,
+import           AuthConf                                  (authenticateConfig,
                                                         passwordConfig, tlsConf)
 import           AcidHelper               (Acid, App, withAcid)
 import           Presentation.Route.PageEnum           (Sitemap (Home),

@@ -55,7 +55,7 @@ library
                        Data.Service.Authorization,
                        Data.Service.Task,
                        AcidHelper,
-                       Conf,
+                       AuthConf,
                        AppStart
 
   build-depends:
