@@ -53,5 +53,5 @@ run = do
             (cleanup, routeAuthenticate, authenticateState) <-
                 initAuthentication Nothing authenticateConfig [ initPassword (passwordConfig conf) ]
             let startServer acid = simpleHTTPS (tlsConf conf) $ runApp acid appWithRoutetSite
-                appWithRoutetSite = implSite "https://localhost:8000" "" (site routeAuthenticate) in
+                appWithRoutetSite = implSite (T.pack $ hostUri (cfNetwork conf)) "" (site routeAuthenticate) in
                 withAcid authenticateState Nothing startServer `finally` cleanup

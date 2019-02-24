@@ -1,11 +1,11 @@
 module Conf.AuthConf ( authenticateConfig, passwordConfig, tlsConf ) where
 
+import           Conf.Config
 import           Happstack.Authenticate.Core          (AuthenticateConfig (..),
                                                        usernamePolicy)
 import           Happstack.Authenticate.Password.Core (PasswordConfig (..))
 import           Happstack.Server.SimpleHTTPS         (TLSConf (..),
                                                        nullTLSConf)
-import Conf.Config
 
 import qualified Data.Text                            as T
 
@@ -18,7 +18,7 @@ authenticateConfig = AuthenticateConfig
 
 passwordConfig :: Config -> PasswordConfig
 passwordConfig conf =
-    let url = T.pack ("https://" ++ netHost (cfNetwork conf) ++ ":" ++ show (netPort (cfNetwork conf)) ++ "/#resetPassword") in
+    let url = T.pack (hostUri (cfNetwork conf)  ++ "/#resetPassword") in
     PasswordConfig
         { _resetLink = url
         , _domain    = T.pack "example.org"

@@ -18,10 +18,12 @@ data Config = Config
 data NetworkConfig = NetworkConfig
     { netHost :: String
     , netPort :: Int
+    , hostUri :: String
     } deriving (Eq, Show)
 
 data LocalConfig = LocalConfig
-    { localUser :: Text
+    { adminUser     :: Text
+    , adminPassword :: Text
     } deriving (Eq, Show)
 
 configParser :: IniParser Config
@@ -30,8 +32,12 @@ configParser = do
         section "NETWORK" $ do
             host <- fieldOf "host" string
             port <- fieldOf "port" number
-            return NetworkConfig {netHost = host, netPort = port}
-    locCf <- sectionMb "LOCAL" $ LocalConfig <$> field "user"
+            return NetworkConfig {netHost = host, netPort = port, hostUri = "https://" ++ host ++ ":" ++ show port}
+    locCf <-
+        sectionMb "LOCAL" $ do
+            user <- fieldOf "admin.user" string
+            password <- fieldOf "admin.password" string
+            return LocalConfig {adminPassword = password, adminUser = user}
     return Config {cfNetwork = netCf, cfLocal = locCf}
 
 readConfig :: Text -> Either String Config
