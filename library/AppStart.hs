@@ -2,8 +2,11 @@
 
 module AppStart where
 
+import           Prelude                               hiding (readFile)
+
 import           Control.Exception                     (finally)
 import           Control.Monad.Reader                  (runReaderT)
+import           Data.Text.IO                          (readFile)
 
 import           Web.Routes                            (RouteT, Site, runRouteT,
                                                         setDefault)
@@ -17,9 +20,10 @@ import           Happstack.Server                      (Response, ServerPartT,
                                                         mapServerPartT)
 import           Happstack.Server.SimpleHTTPS          (simpleHTTPS)
 
-import           Conf.AuthConf                          (authenticateConfig,
+import           AcidHelper                            (Acid, App, withAcid)
+import           Conf.AuthConf                         (authenticateConfig,
                                                         passwordConfig, tlsConf)
-import           AcidHelper               (Acid, App, withAcid)
+import           Conf.Config
 import           Presentation.Route.PageEnum           (Sitemap (Home),
                                                         urlSitemapParser)
 import           Presentation.Route.Routing            (authOrRoute)
@@ -42,8 +46,12 @@ site routeAuthenticate =
 --zu HomePage zu erreichen unter https://localhost:8443
 run :: IO ()
 run = do
-    (cleanup, routeAuthenticate, authenticateState) <-
-        initAuthentication Nothing authenticateConfig [ initPassword passwordConfig ]
-    let startServer acid = simpleHTTPS tlsConf $ runApp acid appWithRoutetSite
-        appWithRoutetSite = implSite "https://localhost:8000" "" (site routeAuthenticate) in
-        withAcid authenticateState Nothing startServer `finally` cleanup
+    textConfig <- readFile "application.cfg"
+    case readConfig textConfig of
+        Left error -> print $ "error with config file: " ++ error
+        Right conf -> do
+            (cleanup, routeAuthenticate, authenticateState) <-
+                initAuthentication Nothing authenticateConfig [ initPassword (passwordConfig conf) ]
+            let startServer acid = simpleHTTPS (tlsConf conf) $ runApp acid appWithRoutetSite
+                appWithRoutetSite = implSite "https://localhost:8000" "" (site routeAuthenticate) in
+                withAcid authenticateState Nothing startServer `finally` cleanup
