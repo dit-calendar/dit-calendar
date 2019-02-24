@@ -3,6 +3,7 @@ module Presentation.Mapper.TaskMapper
     , transformFromDto
     ) where
 
+import           Data.Default
 import           Data.Generics.Aliases (orElse)
 import           Data.Maybe            (fromJust, fromMaybe)
 
@@ -24,7 +25,7 @@ transformFromDto :: Task -> Maybe Domain.Task -> Domain.Task
 transformFromDto dto mOld =
     case mOld of
         Nothing ->
-            Domain.Task
+            def
                 { Domain.description = description dto
                 , Domain.taskId = 0
                 , Domain.version = 0
@@ -33,7 +34,7 @@ transformFromDto dto mOld =
                 , Domain.endTime = endTime dto
                 }
         Just dbTask ->
-            Domain.Task
+            def
                 { Domain.description = description dto
                 , Domain.taskId = fromJust (taskId dto)
                 , Domain.version = fromJust (version dto)

@@ -3,6 +3,7 @@ module Presentation.Mapper.CalendarEntryMapper
     , transformFromDto
     ) where
 
+import           Data.Default
 import           Data.Generics.Aliases          (orElse)
 import           Data.Maybe                     (fromJust, fromMaybe)
 
@@ -24,7 +25,7 @@ transformFromDto :: CalendarEntry -> Maybe Domain.CalendarEntry -> Domain.Calend
 transformFromDto dto mDbCalendar =
     case mDbCalendar of
         Nothing ->
-            Domain.CalendarEntry
+            def
                 { Domain.entryId = 0
                 , Domain.version = 0
                 , Domain.description = fromJust (description dto)
@@ -33,7 +34,7 @@ transformFromDto dto mDbCalendar =
                 , Domain.date = date dto
                 }
         Just dbCalendar ->
-            Domain.CalendarEntry
+            def
                 { Domain.description = fromMaybe (Domain.description dbCalendar) (description dto)
                 , Domain.entryId = fromJust (entryId dto)
                 , Domain.version = fromJust $ version dto

@@ -3,6 +3,7 @@ module Presentation.Mapper.UserMapper
     , transformFromDto
     ) where
 
+import           Data.Default
 import           Data.Maybe            (fromJust)
 
 import qualified Data.Domain.User      as Domain
@@ -19,9 +20,9 @@ transformToDto domain =
 transformFromDto :: User -> Maybe Domain.User -> Domain.User
 transformFromDto dto mDbCalendar =
     case mDbCalendar of
-        Nothing -> Domain.User {Domain.loginName = loginName dto, Domain.userId = 0, Domain.version = 0}
+        Nothing -> def {Domain.loginName = loginName dto, Domain.userId = 0, Domain.version = 0}
         Just dbCalendar ->
-            Domain.User
+            def
                 { Domain.loginName = loginName dto
                 , Domain.userId = fromJust (userId dto)
                 , Domain.version = fromJust (version dto)
