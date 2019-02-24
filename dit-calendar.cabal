@@ -54,8 +54,8 @@ library
                        Data.Service.CalendarEntry,
                        Data.Service.Authorization,
                        Data.Service.Task,
+                       Conf.AuthConf,
                        AcidHelper,
-                       AuthConf,
                        AppStart
 
   build-depends:

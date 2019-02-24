@@ -1,4 +1,4 @@
-module AuthConf ( authenticateConfig, passwordConfig, tlsConf ) where
+module Conf.AuthConf ( authenticateConfig, passwordConfig, tlsConf ) where
 
 import           Happstack.Authenticate.Core          (AuthenticateConfig (..),
                                                        usernamePolicy)
