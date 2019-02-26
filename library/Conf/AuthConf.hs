@@ -1,5 +1,6 @@
-module Conf ( authenticateConfig, passwordConfig, tlsConf ) where
+module Conf.AuthConf ( authenticateConfig, passwordConfig, tlsConf ) where
 
+import           Conf.Config
 import           Happstack.Authenticate.Core          (AuthenticateConfig (..),
                                                        usernamePolicy)
 import           Happstack.Authenticate.Password.Core (PasswordConfig (..))
@@ -15,19 +16,21 @@ authenticateConfig = AuthenticateConfig
     , _requireEmail       = True
     }
 
-passwordConfig :: PasswordConfig
-passwordConfig = PasswordConfig
-    { _resetLink = T.pack "https://localhost:8443/#resetPassword"
-    , _domain    = T.pack "example.org"
-    , _passwordAcceptable = \t ->
-     if T.length t >= 5
-     then Nothing
-     else Just $ T.pack "Must be at least 5 characters."
-    }
+passwordConfig :: Config -> PasswordConfig
+passwordConfig conf =
+    let url = T.pack (hostUri (cfNetwork conf)  ++ "/#resetPassword") in
+    PasswordConfig
+        { _resetLink = url
+        , _domain    = T.pack "example.org"
+        , _passwordAcceptable = \t ->
+         if T.length t >= 5
+         then Nothing
+         else Just $ T.pack "Must be at least 5 characters."
+        }
 
-tlsConf :: TLSConf
-tlsConf =
-    nullTLSConf { tlsPort = 8443
+tlsConf :: Config -> TLSConf
+tlsConf conf =
+    nullTLSConf { tlsPort = netPort $ cfNetwork conf
                 , tlsCert = "library/Auth/ssl/localhost.crt"
                 , tlsKey  = "library/Auth/ssl/localhost.key"
                 }
