@@ -6,3 +6,5 @@ _state/
 dit-calendar.iml
 .idea/
 ideaHaskellLib
+.directory
+.stack-work
