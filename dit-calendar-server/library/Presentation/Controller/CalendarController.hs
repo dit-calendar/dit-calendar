@@ -10,11 +10,8 @@ import           Data.Domain.Types                       (Description, EntryId,
                                                           UserId)
 import           Presentation.Mapper.CalendarEntryMapper (transformFromDto,
                                                           transformToDto)
-import           Presentation.ResponseHelper             (okResponse,
-                                                          okResponseJson,
-                                                          onEntryExist,
-                                                          onUserExist,
-                                                          preconditionFailedResponse)
+import           Presentation.ResponseHelper             (onEntryExist,
+                                                          onUserExist)
 
 import qualified Data.Domain.User                        as DomainUser
 import qualified Data.Repository.CalendarRepo            as CalendarRepo

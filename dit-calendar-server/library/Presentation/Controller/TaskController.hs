@@ -14,10 +14,8 @@ import           Data.Domain.User               as DomainUser (User (..))
 import           Presentation.Dto.Task          as TaskDto (Task (..))
 import           Presentation.Mapper.TaskMapper (transformFromDto,
                                                  transformToDto)
-import           Presentation.ResponseHelper    (okResponse,
-                                                 okResponseJson, onEntryExist,
-                                                 onTaskExist, onUserExist,
-                                                 preconditionFailedResponse)
+import           Presentation.ResponseHelper    (onEntryExist, onTaskExist,
+                                                 onUserExist)
 
 import qualified Data.Repository.CalendarRepo   as CalendarRepo
 import qualified Data.Repository.TaskRepo       as TaskRepo

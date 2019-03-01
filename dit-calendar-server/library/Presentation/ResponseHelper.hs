@@ -44,7 +44,7 @@ onDBEntryExist find i daoFunction = do
             resp <- daoFunction user
             case resp of
                 Left errorMessage -> preconditionFailedResponse errorMessage
-                Right dto           -> okResponseJson $ encode dto
+                Right dto         -> okResponseJson $ encode dto
 
 onUserExist :: ToJSON dto => UserId -> (User -> App (EitherResponse dto)) -> App Response
 onUserExist = onDBEntryExist UserRepo.findUserById
