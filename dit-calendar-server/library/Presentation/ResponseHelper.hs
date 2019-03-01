@@ -39,7 +39,7 @@ onDBEntryExist :: ToJSON dto => (Int -> App (Maybe entry)) -> Int ->  (entry -> 
 onDBEntryExist find i daoFunction = do
     mUser <- find i
     case mUser of
-        Nothing -> okResponse $ "Could not find a user with id " ++ show i
+        Nothing -> okResponse $ "Could not find a db entry with id " ++ show i
         Just user -> do
             resp <- daoFunction user
             case resp of
