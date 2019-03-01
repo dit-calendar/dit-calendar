@@ -42,7 +42,7 @@ loggedUserPage loggedUser = userPage (DomainUser.userId loggedUser)
 
 --handler for userPage
 userPage :: UserId -> App Response
-userPage i = onUserExist i (okResponseJson . encode . transformToDto)
+userPage i = onUserExist i (return . Left . transformToDto)
 
 --handler for userPage
 usersPage :: App Response

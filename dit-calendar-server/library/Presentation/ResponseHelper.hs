@@ -9,53 +9,54 @@ module Presentation.ResponseHelper
     , okResponseJson
     , notImplemented
     , preconditionFailedResponse
+    , EitherResponse
     ) where
 
-import           Data.Aeson                         (Value)
+import           Data.Aeson                   (ToJSON, Value, encode)
 import           Data.ByteString.Lazy
-import           Data.Text                          (Text)
-import           Happstack.Server                   (Method, Response, ok,
-                                                     toResponse, toResponseBS)
+import           Data.Text                    as C (Text, pack)
+import           Happstack.Server             (Method, Response, ok, toResponse,
+                                               toResponseBS)
 
-import qualified Data.ByteString.Char8              as T
-import qualified Happstack.Server                   as HServer (FilterMonad,
-                                                                badRequest,
-                                                                resp)
+import qualified Data.ByteString.Char8        as T
+import qualified Happstack.Server             as HServer (FilterMonad,
+                                                          badRequest, resp)
 
-import           Data.Domain.CalendarEntry          (CalendarEntry)
-import           Data.Domain.Task                   (Task)
-import           Data.Domain.Types                  (EntryId, TaskId, UserId)
-import           Data.Domain.User                   (User)
-import           Data.Repository.Acid.CalendarEntry (CalendarDAO)
-import           Data.Repository.Acid.Task          (TaskDAO)
-import           Data.Repository.Acid.User          (UserDAO)
-import           AcidHelper            (App)
+import           AcidHelper                   (App)
+import           Data.Domain.CalendarEntry    (CalendarEntry)
+import           Data.Domain.Task             (Task)
+import           Data.Domain.Types            (EntryId, TaskId, UserId)
+import           Data.Domain.User             (User)
 
-import qualified Data.Repository.Acid.CalendarEntry as CalendarDao
-import qualified Data.Repository.Acid.CalendarEntry as CalendarEntryAcid
-import qualified Data.Repository.Acid.Task          as TaskDao
-import qualified Data.Repository.Acid.Task          as TaskAcid
-import qualified Data.Repository.Acid.User          as UserDao
-import qualified Data.Repository.Acid.User          as UserAcid
-import qualified Presentation.Dto.CalendarEntry     as CalendarDto
+import qualified Data.Repository.CalendarRepo as CalendarRepo
+import qualified Data.Repository.TaskRepo     as TaskRepo
+import qualified Data.Repository.UserRepo     as UserRepo
+
+type EitherResponse dto = Either dto Text
 
 
 preconditionFailed :: (HServer.FilterMonad Response m) => a -> m a
 preconditionFailed = HServer.resp 412
 
-onUserExist :: UserDAO App => UserId -> (User -> App Response) -> App Response
-onUserExist i daoFunction =
-    UserDao.query (UserAcid.UserById i) >>= (onNothing $ "Could not find a user with id " ++ show i) daoFunction
+onDBEntryExist :: ToJSON dto => (Int -> App (Maybe entry)) -> Int ->  (entry -> App (EitherResponse dto)) -> App Response
+onDBEntryExist find i daoFunction = do
+    mUser <- find i
+    case mUser of
+        Nothing -> okResponse $ "Could not find a user with id " ++ show i
+        Just user -> do
+            resp <- daoFunction user
+            case resp of
+                Left dto           -> okResponseJson $ encode dto
+                Right errorMessage -> preconditionFailedResponse errorMessage
 
-onEntryExist :: CalendarDAO App => EntryId -> (CalendarEntry -> App Response) -> App Response
-onEntryExist i daoFunction =
-    CalendarDao.query (CalendarEntryAcid.EntryById i) >>=
-    (onNothing $ "Could not find a entry with id " ++ show i) daoFunction
+onUserExist :: ToJSON dto => UserId -> (User -> App (EitherResponse dto)) -> App Response
+onUserExist = onDBEntryExist UserRepo.findUserById
 
-onTaskExist :: TaskDAO App => TaskId -> (Task -> App Response) -> App Response
-onTaskExist i daoFunction = do
-    mTask <- TaskDao.query (TaskAcid.TaskById i)
-    (onNothing $ "Could not find a task with id " ++ show i) daoFunction mTask
+onEntryExist :: ToJSON dto => EntryId -> (CalendarEntry -> App (EitherResponse dto)) -> App Response
+onEntryExist = onDBEntryExist CalendarRepo.findCalendarById
+
+onTaskExist :: ToJSON dto => TaskId -> (Task -> App (EitherResponse dto)) -> App Response
+onTaskExist = onDBEntryExist TaskRepo.findTaskById
 
 onNothing :: String -> (a -> App Response) -> Maybe a -> App Response
 onNothing message = maybe (okResponse message)
