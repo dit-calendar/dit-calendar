@@ -37,6 +37,7 @@ library
                        Presentation.Dto.CalendarEntry,
                        Presentation.Dto.User,
                        Presentation.Dto.Task,
+                       Presentation.Mapper.BaseMapper
                        Presentation.Mapper.CalendarEntryMapper,
                        Presentation.Mapper.UserMapper,
                        Presentation.Mapper.TaskMapper,
