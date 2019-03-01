@@ -8,18 +8,17 @@ module Data.Repository.TaskRepo
     ( deleteTaskImpl, createTaskImpl, updateTaskImpl, findTaskByIdImpl, MonadDBTaskRepo(..) ) where
 
 import           Control.Monad.IO.Class
-import           Data.Default               (def)
+import           Data.Default              (def)
 
-import qualified Happstack.Foundation       as Foundation
+import qualified Happstack.Foundation      as Foundation
 
-import           Data.Domain.CalendarEntry  as CalendarEntry
-import           Data.Domain.Task           as Task
-import           Data.Domain.Types          (Description, TaskId)
-import           Data.Repository.Acid.Task  (TaskDAO (..))
-import           Data.Repository.Acid.Types (UpdateReturn)
-import           AcidHelper    (App)
+import           AcidHelper                (App)
+import           Data.Domain.CalendarEntry as CalendarEntry
+import           Data.Domain.Task          as Task
+import           Data.Domain.Types         (Description, EitherResponse, TaskId)
+import           Data.Repository.Acid.Task (TaskDAO (..))
 
-import qualified Data.Repository.Acid.Task  as TaskAcid
+import qualified Data.Repository.Acid.Task as TaskAcid
 
 instance TaskDAO App where
     create = Foundation.update
@@ -27,7 +26,7 @@ instance TaskDAO App where
     delete = Foundation.update
     query  = Foundation.query
 
-updateTaskImpl :: TaskDAO m => Task -> m (UpdateReturn Task)
+updateTaskImpl :: TaskDAO m => Task -> m (EitherResponse Task)
 updateTaskImpl = update . TaskAcid.UpdateTask
 
 deleteTaskImpl :: TaskDAO m => TaskId -> m ()
@@ -43,7 +42,7 @@ findTaskByIdImpl = query . TaskAcid.TaskById
 class (Monad m, TaskDAO App) => MonadDBTaskRepo m where
     createTask        :: Task -> m Task
     findTaskById      :: TaskId -> m (Maybe Task)
-    updateTask        :: Task   -> m (UpdateReturn Task)
+    updateTask        :: Task   -> m (EitherResponse Task)
     deleteTask        :: TaskId   -> m ()
 
 instance MonadDBTaskRepo App where

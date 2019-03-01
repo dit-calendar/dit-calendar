@@ -23,7 +23,7 @@ import qualified Presentation.Dto.CalendarEntry          as CalendarDto
 
 --handler for entryPage
 entryPage :: EntryId -> App Response
-entryPage i = onEntryExist i (return . Left . transformToDto)
+entryPage i = onEntryExist i (return . Right . transformToDto)
 
 createCalendarEntry :: CalendarDto.CalendarEntry -> DomainUser.User -> App Response
 createCalendarEntry calendarDto loggedUser = onUserExist userId createCalendar
@@ -31,7 +31,7 @@ createCalendarEntry calendarDto loggedUser = onUserExist userId createCalendar
         newCalendar = transformFromDto calendarDto Nothing
         createCalendar user = do
             entry <- CalendarService.createEntry newCalendar user
-            return $ Left $ transformToDto entry
+            return $ Right $ transformToDto entry
         userId = DomainUser.userId loggedUser
 
 deleteCalendarEntry :: EntryId -> DomainUser.User -> App Response
@@ -39,11 +39,11 @@ deleteCalendarEntry i loggedUser = onEntryExist i deleteCalendar
     where
         deleteCalendar cEntry = do
             CalendarService.removeCalendar cEntry
-            return $ Left (""::String)
+            return $ Right (""::String)
 
 updateCalendarEntry :: EntryId -> CalendarDto.CalendarEntry -> DomainUser.User -> App Response
 updateCalendarEntry entryId calendarDto loggedUser = onEntryExist entryId updateCalendar
-    where
-        updateCalendar cEntry = do
-            result <- CalendarRepo.updateCalendar (transformFromDto calendarDto $ Just cEntry)
-            return $ either Right (Left . transformToDto) result
+  where
+    updateCalendar cEntry = do
+        result <- CalendarRepo.updateCalendar (transformFromDto calendarDto $ Just cEntry)
+        return $ fmap transformToDto result

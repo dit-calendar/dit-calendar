@@ -15,9 +15,9 @@ import           Data.Maybe                   (fromJust)
 import           AcidHelper                   (App)
 import           Data.Domain.CalendarEntry    as CalendarEntry
 import           Data.Domain.Task             as Task
+import           Data.Domain.Types            (Description, EitherResponse,
+                                               UserId)
 import           Data.Domain.User             as User
-import           Data.Domain.Types            (Description, UserId)
-import           Data.Repository.Acid.Types   (UpdateReturn)
 
 import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)
 import qualified Data.Repository.CalendarRepo as MonadDBCalendarRepo
@@ -40,7 +40,7 @@ createTaskInCalendarImpl calendarEntry task = do
     MonadDBCalendarRepo.addTaskToCalendarEntry calendarEntry (Task.taskId mTask)
     return mTask
 
-updateTaskInCalendarImpl :: MonadDBTaskRepo m => Task -> m (UpdateReturn Task)
+updateTaskInCalendarImpl :: MonadDBTaskRepo m => Task -> m (EitherResponse Task)
 updateTaskInCalendarImpl = TaskRepo.updateTask
 
 deleteTaskFromAllUsers :: (MonadDBUserRepo m, MonadIO m) =>
@@ -53,7 +53,7 @@ deleteTaskFromAllUsers task =
     (return ()) $ Task.belongingUsers task
 
 addUserToTaskImpl :: (MonadDBUserRepo m, MonadDBTaskRepo m, MonadIO m) =>
-                Task -> User -> m (UpdateReturn Task)
+                Task -> User -> m (EitherResponse Task)
 addUserToTaskImpl task user =
     if taskId task `elem` belongingUsers task
         then return (Right task) -- do nothing and return same task
@@ -62,7 +62,7 @@ addUserToTaskImpl task user =
             TaskRepo.updateTask task {belongingUsers = User.userId user : belongingUsers task}
 
 removeUserFromTaskImpl :: (MonadDBTaskRepo m, MonadDBUserRepo m) =>
-                    Task -> User -> m (UpdateReturn Task)
+                    Task -> User -> m (EitherResponse Task)
 removeUserFromTaskImpl task user = do
     MonadDBUserRepo.deleteTaskFromUser user (taskId task)
     TaskRepo.updateTask task {belongingUsers = delete (User.userId user) (belongingUsers task)}
@@ -70,9 +70,9 @@ removeUserFromTaskImpl task user = do
 class TaskService m where
     deleteTaskAndCascadeUsers :: Task -> m ()
     createTaskInCalendar :: CalendarEntry -> Task -> m Task
-    updateTaskInCalendar :: Task -> m (UpdateReturn Task)
-    addUserToTask :: Task -> User -> m (UpdateReturn Task)
-    removeUserFromTask :: Task -> User -> m (UpdateReturn Task)
+    updateTaskInCalendar :: Task -> m (EitherResponse Task)
+    addUserToTask :: Task -> User -> m (EitherResponse Task)
+    removeUserFromTask :: Task -> User -> m (EitherResponse Task)
 
 instance (MonadDBTaskRepo App, MonadDBUserRepo App, MonadDBCalendarRepo App)
             => TaskService App where

@@ -15,9 +15,8 @@ import           Data.IxSet                         (Indexable (..), getEQ,
                                                      toList, (@=))
 import           Data.Text                          (Text)
 
-import           Data.Domain.Types                  (UserId)
+import           Data.Domain.Types                  (EitherResponse, UserId)
 import           Data.Domain.User                   (User (..))
-import           Data.Repository.Acid.Types         (UpdateReturn)
 
 import qualified Data.Repository.Acid.InterfaceAcid as InterfaceAcid
 
@@ -48,7 +47,7 @@ findByLoginName loginName = do InterfaceAcid.EntrySet{..} <- ask
 allUsers :: Query UserList [User]
 allUsers = InterfaceAcid.allEntrysAsList
 
-updateUser :: User -> Update UserList (UpdateReturn User)
+updateUser :: User -> Update UserList (EitherResponse User)
 updateUser = InterfaceAcid.updateEntry
 
 deleteUser :: UserId -> Update UserList ()
@@ -58,7 +57,7 @@ $(makeAcidic ''UserList ['newUser, 'userById, 'findByLoginName, 'allUsers, 'getU
 
 class UserDAO m where
     create :: NewUser -> m User
-    update :: UpdateUser -> m (UpdateReturn User)
+    update :: UpdateUser -> m (EitherResponse User)
     delete :: DeleteUser -> m ()
     query  :: UserById -> m (Maybe User)
     queryByLoginName :: FindByLoginName -> m (Maybe User)

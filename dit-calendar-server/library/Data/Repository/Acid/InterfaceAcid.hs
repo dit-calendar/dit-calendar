@@ -17,9 +17,8 @@ import           Data.IxSet                 (Indexable (..), IxSet (..),
 import           Data.Maybe                 (fromJust)
 import           Data.SafeCopy              (base, deriveSafeCopy)
 
-import           Data.Domain.Types          (Entry, getId, getVersion,
-                                             setVersion, setId)
-import           Data.Repository.Acid.Types (UpdateReturn)
+import           Data.Domain.Types          (EitherResponse, Entry, getId,
+                                             getVersion, setId, setVersion)
 
 
 --type that represents the state we wish to store
@@ -57,7 +56,7 @@ deleteEntry entryToDelete =
             deleteIx entryToDelete entrys
             }
 
-updateEntry :: (Ord a, Typeable a, Indexable a, Entry a) => a -> Update (EntrySet a) (UpdateReturn a)
+updateEntry :: (Ord a, Typeable a, Indexable a, Entry a) => a -> Update (EntrySet a) (EitherResponse a)
 updateEntry updatedEntry = do
     b@EntrySet{..} <- get
     let dbEntry = fromJust $ getOne (getEQ (getId updatedEntry) entrys)

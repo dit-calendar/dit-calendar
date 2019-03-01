@@ -9,7 +9,6 @@ module Presentation.ResponseHelper
     , okResponseJson
     , notImplemented
     , preconditionFailedResponse
-    , EitherResponse
     ) where
 
 import           Data.Aeson                   (ToJSON, Value, encode)
@@ -25,15 +24,13 @@ import qualified Happstack.Server             as HServer (FilterMonad,
 import           AcidHelper                   (App)
 import           Data.Domain.CalendarEntry    (CalendarEntry)
 import           Data.Domain.Task             (Task)
-import           Data.Domain.Types            (EntryId, TaskId, UserId)
+import           Data.Domain.Types            (EitherResponse, EntryId, TaskId,
+                                               UserId)
 import           Data.Domain.User             (User)
 
 import qualified Data.Repository.CalendarRepo as CalendarRepo
 import qualified Data.Repository.TaskRepo     as TaskRepo
 import qualified Data.Repository.UserRepo     as UserRepo
-
-type EitherResponse dto = Either dto Text
-
 
 preconditionFailed :: (HServer.FilterMonad Response m) => a -> m a
 preconditionFailed = HServer.resp 412
@@ -46,8 +43,8 @@ onDBEntryExist find i daoFunction = do
         Just user -> do
             resp <- daoFunction user
             case resp of
-                Left dto           -> okResponseJson $ encode dto
-                Right errorMessage -> preconditionFailedResponse errorMessage
+                Left errorMessage -> preconditionFailedResponse errorMessage
+                Right dto           -> okResponseJson $ encode dto
 
 onUserExist :: ToJSON dto => UserId -> (User -> App (EitherResponse dto)) -> App Response
 onUserExist = onDBEntryExist UserRepo.findUserById

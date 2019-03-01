@@ -11,8 +11,7 @@ import           Data.IxSet                         (Indexable (..), ixFun,
                                                      ixSet)
 
 import           Data.Domain.Task                   (Task (..))
-import           Data.Domain.Types                  (TaskId)
-import           Data.Repository.Acid.Types         (UpdateReturn)
+import           Data.Domain.Types                  (EitherResponse, TaskId)
 
 import qualified Data.Repository.Acid.InterfaceAcid as InterfaceAcid
 
@@ -37,7 +36,7 @@ taskById = InterfaceAcid.entryById
 allTasks :: Query TaskList [Task]
 allTasks = InterfaceAcid.allEntrysAsList
 
-updateTask :: Task -> Update TaskList (UpdateReturn Task)
+updateTask :: Task -> Update TaskList (EitherResponse Task)
 updateTask = InterfaceAcid.updateEntry
 
 deleteTask :: TaskId -> Update TaskList ()
@@ -48,6 +47,6 @@ $(makeAcidic ''TaskList ['newTask, 'taskById, 'allTasks, 'getTaskList, 'updateTa
 
 class Monad m => TaskDAO m where
     create :: NewTask -> m Task
-    update :: UpdateTask -> m (UpdateReturn Task)
+    update :: UpdateTask -> m (EitherResponse Task)
     delete :: DeleteTask -> m ()
     query  :: TaskById -> m (Maybe Task)

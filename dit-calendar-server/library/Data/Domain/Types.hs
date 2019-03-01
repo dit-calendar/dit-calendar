@@ -4,10 +4,12 @@ module Data.Domain.Types
     , TaskId
     , Description
     , Entry(..)
+    , EitherResponse
     ) where
 
 import           Data.Text
 
+type EitherResponse a = Either Text a
 
 type UserId = Int
 
