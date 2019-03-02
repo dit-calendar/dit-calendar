@@ -4,7 +4,7 @@ module Presentation.Controller.TaskController where
 
 import           Data.Aeson                     (encode)
 import           Data.Text                      as C (pack)
-import           Happstack.Server               (Response)
+import           Happstack.Server               (Response, notFound, toResponse)
 
 import           AcidHelper                     (App)
 import           Data.Domain.Task               as Task
@@ -52,12 +52,10 @@ removeUserFromTask taskId loggedUser =
         return $ fmap transformToDto result)
 
 deleteTask :: EntryId -> TaskId -> DomainUser.User -> App Response
-deleteTask entryId taskId loggedUser =
-    onEntryExist entryId (\e -> do
-        mTask <- TaskRepo.findTaskById taskId
-        case mTask of
-            Nothing -> return $ Left $ pack $ "Could not find a task with id " ++ show taskId
-            Just task -> do
-                CalendarRepo.deleteTaskFromCalendarEntry e taskId
-                TaskService.deleteTaskAndCascadeUsersImpl task
-                return $ Right ())
+deleteTask entryId taskId loggedUser = do
+    mEntry <- CalendarRepo.findCalendarById entryId
+    case mEntry of
+        Nothing ->  notFound $ toResponse $ "Could not find a calendar entry with id " ++ show taskId
+        Just entry -> onTaskExist taskId (\t -> do
+            TaskService.deleteTaskAndCascadeImpl entry t
+            return $ Right ())

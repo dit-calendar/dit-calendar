@@ -35,8 +35,11 @@ import qualified Data.Service.User            as UserService
 
 mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBTaskRepo, MonadDBCalendarRepo |]
 
+dbDate = read "2011-11-19 18:28:52.607875 UTC"::UTCTime
 userFromDb = def{ loginName="Foo", User.userId=10, belongingTasks=[1,2,3] }
 taskFromDb = def{ Task.description="task1", taskId=5, startTime=Nothing, endTime=Nothing}
+entryFromDb = def { CalendarEntry.description="termin2", entryId=1, CalendarEntry.date=dbDate,
+        CalendarEntry.userId=10, CalendarEntry.tasks = [1, 2]}
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture { _addTaskToCalendarEntry = \entry taskId -> tell [show entry] >> tell [show taskId] >>= (\_ -> return $ Right entry)
@@ -47,6 +50,7 @@ fixture = Fixture { _addTaskToCalendarEntry = \entry taskId -> tell [show entry]
                   , _addTaskToUser = \user taskId -> tell [show user] >> tell [show taskId] >>= (\_ -> return $ Right user)
                   , _deleteTaskFromUser = \x a -> tell [show x] >> tell [show a] >>= (\_ -> return $ Right x)
                   , _findUserById = \a -> tell [show a] >>= (\_ -> return $ Just userFromDb)
+                  , _deleteTaskFromCalendarEntry = \c i -> tell [show c] >> tell [show i] >>= (\_ -> return $ Right undefined)
                   }
 
 instance MonadIO Identity where
@@ -54,13 +58,15 @@ instance MonadIO Identity where
 
 
 spec = describe "TaskServiceSpec" $ do
-    it "deleteTaskAndCascadeUser" $ do
+    it "deleteTaskAndCascade" $ do
         let task = def{ Task.description="task1", taskId=1, belongingUsers=[7], startTime=Nothing, endTime=Nothing}
-        let (_, log) = evalTestFixture (TaskService.deleteTaskAndCascadeUsersImpl task) fixture
-        log!!0 `shouldBe` "7"
-        log!!1 `shouldBe` show userFromDb
+        let (_, log) = evalTestFixture (TaskService.deleteTaskAndCascadeImpl entryFromDb task) fixture
+        log!!0 `shouldBe` show entryFromDb
+        log!!1 `shouldBe` show (Task.taskId task)
         log!!2 `shouldBe` "7"
-        log!!3 `shouldBe` show (Task.taskId task)
+        log!!3 `shouldBe` show userFromDb
+        log!!4 `shouldBe` "7"
+        log!!5 `shouldBe` show (Task.taskId task)
     it "createTaskInCalendar" $ do
         let newDate = read "2011-11-19 18:28:52.607875 UTC"::UTCTime
         let calc = def{ CalendarEntry.description="termin2", entryId=1, CalendarEntry.userId=2, date=newDate}

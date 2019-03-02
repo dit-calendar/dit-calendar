@@ -5,7 +5,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Data.Service.Task
-    ( deleteTaskAndCascadeUsersImpl, createTaskInCalendarImpl, updateTaskInCalendarImpl, addUserToTaskImpl, removeUserFromTaskImpl, TaskService(..) ) where
+    ( deleteTaskAndCascadeImpl, createTaskInCalendarImpl, updateTaskInCalendarImpl, addUserToTaskImpl, removeUserFromTaskImpl, TaskService(..) ) where
 
 import           Control.Monad.IO.Class
 import           Data.Generics.Aliases        (orElse)
@@ -27,9 +27,9 @@ import           Data.Repository.UserRepo     (MonadDBUserRepo)
 import qualified Data.Repository.UserRepo     as MonadDBUserRepo
 
 
-deleteTaskAndCascadeUsersImpl :: (MonadDBTaskRepo m, MonadDBUserRepo m, MonadIO m) =>
-            Task -> m ()
-deleteTaskAndCascadeUsersImpl task = do
+deleteTaskAndCascadeImpl :: (MonadDBTaskRepo m, MonadDBUserRepo m, MonadIO m, MonadDBCalendarRepo m) => CalendarEntry -> Task -> m ()
+deleteTaskAndCascadeImpl calendar task = do
+    MonadDBCalendarRepo.deleteTaskFromCalendarEntry calendar (taskId task)
     deleteTaskFromAllUsers task
     TaskRepo.deleteTask $ Task.taskId task
 
@@ -68,7 +68,7 @@ removeUserFromTaskImpl task user = do
     TaskRepo.updateTask task {belongingUsers = delete (User.userId user) (belongingUsers task)}
 
 class TaskService m where
-    deleteTaskAndCascadeUsers :: Task -> m ()
+    deleteTaskAndCascade :: CalendarEntry -> Task -> m ()
     createTaskInCalendar :: CalendarEntry -> Task -> m Task
     updateTaskInCalendar :: Task -> m (EitherResponse Task)
     addUserToTask :: Task -> User -> m (EitherResponse Task)
@@ -76,7 +76,7 @@ class TaskService m where
 
 instance (MonadDBTaskRepo App, MonadDBUserRepo App, MonadDBCalendarRepo App)
             => TaskService App where
-    deleteTaskAndCascadeUsers = deleteTaskAndCascadeUsersImpl
+    deleteTaskAndCascade = deleteTaskAndCascadeImpl
     createTaskInCalendar = createTaskInCalendarImpl
     updateTaskInCalendar = updateTaskInCalendarImpl
     addUserToTask = addUserToTaskImpl
