@@ -71,4 +71,4 @@ preconditionFailedResponse :: Text -> App Response
 preconditionFailedResponse message = preconditionFailed $ toResponse message
 
 notImplemented :: Method -> App Response
-notImplemented httpMethod = okResponse ("HTTP-Method: " ++ show httpMethod ++ " not implemented")
+notImplemented httpMethod = HServer.resp 405 $ toResponse ("HTTP-Method: " ++ show httpMethod ++ " not implemented")

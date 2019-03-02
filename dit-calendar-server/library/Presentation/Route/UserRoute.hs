@@ -25,12 +25,14 @@ routeUsers = do
     m <- getHttpMethod
     case m of
         GET -> UserController.usersPage
+        other -> notImplemented other
 
 routeUser :: UserId -> App Response
 routeUser userId = do
     m <- getHttpMethod
     case m of
         GET -> UserController.userPage userId
+        other -> notImplemented other
 
 routeDetailUser :: App Response
 routeDetailUser = do

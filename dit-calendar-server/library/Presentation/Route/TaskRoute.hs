@@ -30,7 +30,6 @@ routeTask entryId = do
                  Right taskDto ->
                       TaskController.createTask entryId taskDto
                  Left errorMessage -> badRequest errorMessage
-        GET ->  notImplemented GET -- findaAll tasks in CalendarEntry
         other -> notImplemented other
 
 routeTaskDetail :: EntryId ->  TaskId -> App Response
