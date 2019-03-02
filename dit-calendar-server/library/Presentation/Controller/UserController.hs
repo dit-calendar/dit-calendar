@@ -94,4 +94,4 @@ deleteUser :: DomainUser.User -> App Response
 deleteUser loggedUser = do
     UserService.deleteUser loggedUser
     AuthService.deleteAuthUser loggedUser
-    okResponse $ "User with id:" ++ show (DomainUser.userId loggedUser) ++ "deleted"
+    ok $ toResponse ()

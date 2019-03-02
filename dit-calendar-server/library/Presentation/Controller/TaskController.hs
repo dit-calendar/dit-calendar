@@ -60,4 +60,4 @@ deleteTask entryId taskId loggedUser =
             Just task -> do
                 CalendarRepo.deleteTaskFromCalendarEntry e taskId
                 TaskService.deleteTaskAndCascadeUsersImpl task
-                return $ Right (""::String))
+                return $ Right ())

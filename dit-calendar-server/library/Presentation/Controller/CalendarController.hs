@@ -36,7 +36,7 @@ deleteCalendarEntry i loggedUser = onEntryExist i deleteCalendar
     where
         deleteCalendar cEntry = do
             CalendarService.removeCalendar cEntry
-            return $ Right (""::String)
+            return $ Right ()
 
 updateCalendarEntry :: EntryId -> CalendarDto.CalendarEntry -> DomainUser.User -> App Response
 updateCalendarEntry entryId calendarDto loggedUser = onEntryExist entryId updateCalendar
