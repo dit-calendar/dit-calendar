@@ -14,8 +14,8 @@ module Presentation.ResponseHelper
 import           Data.Aeson                   (ToJSON, Value, encode)
 import           Data.ByteString.Lazy
 import           Data.Text                    as C (Text, pack)
-import           Happstack.Server             (Method, Response, ok, toResponse,
-                                               toResponseBS)
+import           Happstack.Server             (Method, Response, notFound, ok,
+                                               toResponse, toResponseBS)
 
 import qualified Data.ByteString.Char8        as T
 import qualified Happstack.Server             as HServer (FilterMonad,
@@ -39,7 +39,7 @@ onDBEntryExist :: ToJSON dto => (Int -> App (Maybe entry)) -> Int ->  (entry -> 
 onDBEntryExist find i daoFunction = do
     mUser <- find i
     case mUser of
-        Nothing -> okResponse $ "Could not find a db entry with id " ++ show i
+        Nothing -> notFound $ toResponse $ "Could not find a db entry with id " ++ show i
         Just user -> do
             resp <- daoFunction user
             case resp of
