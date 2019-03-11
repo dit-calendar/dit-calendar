@@ -8,6 +8,7 @@ import           AcidHelper                              (App)
 import           Data.Domain.CalendarEntry               as CalendarEntry
 import           Data.Domain.Types                       (Description, EntryId,
                                                           UserId)
+import           Presentation.Mapper.BaseMapper          (transformToDtoE)
 import           Presentation.Mapper.CalendarEntryMapper (transformFromDto,
                                                           transformToDto)
 import           Presentation.ResponseHelper             (onEntryExist,
@@ -43,4 +44,4 @@ updateCalendarEntry entryId calendarDto loggedUser = onEntryExist entryId update
   where
     updateCalendar cEntry = do
         result <- CalendarRepo.updateCalendar (transformFromDto calendarDto $ Just cEntry)
-        return $ fmap transformToDto result
+        return $ transformToDtoE result

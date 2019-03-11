@@ -27,6 +27,7 @@ import           Presentation.Dto.User                as UserDto (User (..))
 import           Presentation.HttpServerHelper        (getBody,
                                                        mapServerPartTIO2App,
                                                        readAuthUserFromBodyAsList)
+import           Presentation.Mapper.BaseMapper       (transformToDtoE)
 import           Presentation.Mapper.UserMapper       (transformFromDto,
                                                        transformToDto)
 import           Presentation.ResponseHelper          (handleResponse,
@@ -89,7 +90,7 @@ createDomainUser name = do
 updateUser :: UserDto.User -> DomainUser.User -> App Response
 updateUser userDto loggedUser = do
               updatedUser <- UserRepo.updateUser $ transformFromDto userDto (Just loggedUser)
-              let response = fmap transformToDto updatedUser
+              let response = transformToDtoE updatedUser
               handleResponse response
 
 

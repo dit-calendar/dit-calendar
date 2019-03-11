@@ -12,6 +12,7 @@ import           Data.Domain.Types              (Description, EntryId, TaskId,
                                                  UserId)
 import           Data.Domain.User               as DomainUser (User (..))
 import           Presentation.Dto.Task          as TaskDto (Task (..))
+import           Presentation.Mapper.BaseMapper (transformToDtoE)
 import           Presentation.Mapper.TaskMapper (transformFromDto,
                                                  transformToDto)
 import           Presentation.ResponseHelper    (onEntryExist, onTaskExist,
@@ -37,19 +38,19 @@ updateTask :: TaskId -> TaskDto.Task -> DomainUser.User -> App Response
 updateTask id taskDto loggedUser =
     onTaskExist id (\t -> do
         result <- TaskService.updateTaskInCalendar $ transformFromDto taskDto (Just t)
-        return $ fmap transformToDto result)
+        return $ transformToDtoE result)
 
 addUserToTask :: TaskId -> DomainUser.User-> App Response
 addUserToTask taskId loggedUser =
     onTaskExist taskId (\t -> do
         result <- TaskService.addUserToTask t loggedUser
-        return $ fmap transformToDto result)
+        return $ transformToDtoE result)
 
 removeUserFromTask :: TaskId -> DomainUser.User -> App Response
 removeUserFromTask taskId loggedUser =
     onTaskExist taskId (\t -> do
         result <- TaskService.removeUserFromTask t loggedUser
-        return $ fmap transformToDto result)
+        return $ transformToDtoE result)
 
 deleteTask :: EntryId -> TaskId -> DomainUser.User -> App Response
 deleteTask entryId taskId loggedUser = do
