@@ -31,10 +31,8 @@ import           Presentation.Mapper.BaseMapper       (transformToDtoE)
 import           Presentation.Mapper.UserMapper       (transformFromDto,
                                                        transformToDto)
 import           Presentation.ResponseHelper          (handleResponse,
-                                                       okResponse,
                                                        okResponseJson,
-                                                       onUserExist,
-                                                       preconditionFailedResponse)
+                                                       onUserExist)
 import           Presentation.Route.PageEnum          (Sitemap)
 
 import qualified Data.Repository.Acid.User            as UserAcid

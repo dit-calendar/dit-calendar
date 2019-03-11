@@ -5,11 +5,9 @@ module Presentation.ResponseHelper
     ( onUserExist
     , onEntryExist
     , onTaskExist
-    , okResponse
     , badRequest
     , okResponseJson
     , notImplemented
-    , preconditionFailedResponse
     , handleResponse
     ) where
 

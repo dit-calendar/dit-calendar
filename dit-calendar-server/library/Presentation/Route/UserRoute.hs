@@ -13,7 +13,7 @@ import           Auth.Authorization                         (callIfAuthorized)
 import           Data.Domain.Types                          (UserId)
 import           AcidHelper                    (App)
 import           Presentation.HttpServerHelper              (getHttpMethod, getBody)
-import           Presentation.ResponseHelper                (badRequest, notImplemented, okResponse)
+import           Presentation.ResponseHelper                (badRequest, notImplemented)
 import           Presentation.Dto.User                      as UserDto (User (..))
 
 import qualified Presentation.Controller.CalendarController as CalendarController
