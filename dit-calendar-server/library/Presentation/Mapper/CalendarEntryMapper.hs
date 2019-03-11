@@ -5,7 +5,7 @@ module Presentation.Mapper.CalendarEntryMapper
 
 import           Data.Default
 import           Data.Generics.Aliases          (orElse)
-import           Data.Maybe                     (fromJust, fromMaybe)
+import           Data.Maybe                     (fromMaybe)
 
 import qualified Data.Domain.CalendarEntry      as Domain
 import           Presentation.Dto.CalendarEntry
@@ -17,7 +17,6 @@ instance Mapper Domain.CalendarEntry CalendarEntry where
             { description = Just (Domain.description domain)
             , entryId = Just (Domain.entryId domain)
             , version = Just $ Domain.version domain
-            , userId = Domain.userId domain
             , tasks = Just (Domain.tasks domain)
             , date = Domain.date domain
             }
@@ -28,17 +27,15 @@ instance Mapper Domain.CalendarEntry CalendarEntry where
                 def
                     { Domain.entryId = 0
                     , Domain.version = 0
-                    , Domain.description = fromJust (description dto)
-                    , Domain.userId = userId dto
+                    , Domain.description = fromMaybe (error "description is missing") (description dto)
                     , Domain.tasks = fromMaybe [] (tasks dto)
                     , Domain.date = date dto
                     }
             Just dbCalendar ->
                 def
                     { Domain.description = fromMaybe (Domain.description dbCalendar) (description dto)
-                    , Domain.entryId = fromJust (entryId dto)
-                    , Domain.version = fromJust $ version dto
-                    , Domain.userId = userId dto
+                    , Domain.entryId = Domain.entryId dbCalendar
+                    , Domain.version = fromMaybe (error "version is missing") (version dto)
                     , Domain.tasks = fromMaybe (Domain.tasks dbCalendar) (tasks dto)
                     , Domain.date = date dto
                     }

@@ -5,7 +5,7 @@ module Presentation.Mapper.TaskMapper
 
 import           Data.Default
 import           Data.Generics.Aliases          (orElse)
-import           Data.Maybe                     (fromJust, fromMaybe)
+import           Data.Maybe                     (fromMaybe)
 
 import qualified Data.Domain.Task               as Domain
 import           Presentation.Dto.Task
@@ -36,8 +36,8 @@ instance Mapper Domain.Task Task where
             Just dbTask ->
                 def
                     { Domain.description = description dto
-                    , Domain.taskId = fromJust (taskId dto)
-                    , Domain.version = fromJust (version dto)
+                    , Domain.taskId = Domain.taskId dbTask
+                    , Domain.version = fromMaybe (error "version is missing") (version dto)
                     , Domain.belongingUsers =
                           case belongingUsers dto of
                               [] -> Domain.belongingUsers dbTask

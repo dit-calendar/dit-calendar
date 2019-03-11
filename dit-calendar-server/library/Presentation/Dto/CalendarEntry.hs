@@ -18,7 +18,6 @@ data CalendarEntry = CalendarEntry
     { description :: Maybe Text
     , entryId     :: Maybe Int
     , version     :: Maybe Int
-    , userId      :: Int
     , tasks       :: Maybe [Int]
     , date        :: UTCTime
     } deriving (Show, Generic)

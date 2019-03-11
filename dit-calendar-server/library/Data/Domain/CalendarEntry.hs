@@ -32,4 +32,4 @@ instance Entry CalendarEntry where
     getVersion = version
 
 instance Default CalendarEntry where
-    def = CalendarEntry {entryId = -1, version = 0, tasks = []}
+    def = CalendarEntry {entryId = -1, version = 0, tasks = [], userId = -1}

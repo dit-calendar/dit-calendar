@@ -4,7 +4,7 @@ module Presentation.Mapper.UserMapper
     ) where
 
 import           Data.Default
-import           Data.Maybe                     (fromJust)
+import           Data.Maybe                     (fromMaybe)
 
 import qualified Data.Domain.User               as Domain
 import           Presentation.Dto.User
@@ -24,6 +24,6 @@ instance Mapper Domain.User User where
             Just dbCalendar ->
                 def
                     { Domain.loginName = loginName dto
-                    , Domain.userId = fromJust (userId dto)
-                    , Domain.version = fromJust (version dto)
+                    , Domain.userId = Domain.userId dbCalendar
+                    , Domain.version = fromMaybe (error "version is missing") (version dto)
                     }
