@@ -1,4 +1,5 @@
-{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts  #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Presentation.ResponseHelper
     ( onUserExist
@@ -9,6 +10,7 @@ module Presentation.ResponseHelper
     , okResponseJson
     , notImplemented
     , preconditionFailedResponse
+    , handleResponse
     ) where
 
 import           Data.Aeson                   (ToJSON, Value, encode)
@@ -24,7 +26,8 @@ import qualified Happstack.Server             as HServer (FilterMonad,
 import           AcidHelper                   (App)
 import           Data.Domain.CalendarEntry    (CalendarEntry)
 import           Data.Domain.Task             (Task)
-import           Data.Domain.Types            (EitherResponse, EntryId, TaskId,
+import           Data.Domain.Types            (EitherResponse, EntryId,
+                                               ResponseError (..), TaskId,
                                                UserId)
 import           Data.Domain.User             (User)
 
@@ -35,16 +38,18 @@ import qualified Data.Repository.UserRepo     as UserRepo
 preconditionFailed :: (HServer.FilterMonad Response m) => a -> m a
 preconditionFailed = HServer.resp 412
 
-onDBEntryExist :: ToJSON dto => (Int -> App (Maybe entry)) -> Int ->  (entry -> App (EitherResponse dto)) -> App Response
-onDBEntryExist find i daoFunction = do
-    mUser <- find i
-    case mUser of
+onDBEntryExist :: ToJSON dto => (Int -> App (Maybe entry)) -> Int -> (entry -> App (EitherResponse dto)) -> App Response
+onDBEntryExist find i controllerFunction = do
+    mDbEntry <- find i
+    case mDbEntry of
         Nothing -> notFound $ toResponse $ "Could not find a db entry with id " ++ show i
-        Just user -> do
-            resp <- daoFunction user
-            case resp of
-                Left errorMessage -> preconditionFailedResponse errorMessage
-                Right dto         -> okResponseJson $ encode dto
+        Just dbEntry -> do
+            result <- controllerFunction dbEntry
+            handleResponse result
+
+handleResponse :: ToJSON dto => EitherResponse dto -> App Response
+handleResponse (Left OptimisticLocking) = preconditionFailedResponse "optimistic locking"
+handleResponse (Right dto)     = okResponseJson $ encode dto
 
 onUserExist :: ToJSON dto => UserId -> (User -> App (EitherResponse dto)) -> App Response
 onUserExist = onDBEntryExist UserRepo.findUserById

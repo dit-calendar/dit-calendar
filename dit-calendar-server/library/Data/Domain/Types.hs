@@ -1,3 +1,6 @@
+{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE TemplateHaskell    #-}
+
 module Data.Domain.Types
     ( UserId
     , EntryId
@@ -5,11 +8,18 @@ module Data.Domain.Types
     , Description
     , Entry(..)
     , EitherResponse
+    , ResponseError(..)
     ) where
 
+import           Data.SafeCopy (base, deriveSafeCopy)
 import           Data.Text
 
-type EitherResponse a = Either Text a
+type EitherResponse a = Either ResponseError a
+
+data ResponseError = OptimisticLocking
+
+--why the response of a acid method need do derive from safecopy?
+$(deriveSafeCopy 0 'base ''ResponseError)
 
 type UserId = Int
 

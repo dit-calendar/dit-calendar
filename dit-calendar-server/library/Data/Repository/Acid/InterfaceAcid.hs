@@ -1,24 +1,23 @@
 {-# LANGUAGE DatatypeContexts   #-}
 {-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE OverloadedStrings  #-}
 {-# LANGUAGE RecordWildCards    #-}
 {-# LANGUAGE TemplateHaskell    #-}
 
 module Data.Repository.Acid.InterfaceAcid where
 
-import           Control.Applicative        ((<$>))
-import           Control.Monad.Reader       (ask)
-import           Control.Monad.State        (get, put)
-import           Data.Acid                  (Query, Update)
-import           Data.Data                  (Data, Typeable)
-import           Data.IxSet                 (Indexable (..), IxSet (..),
-                                             deleteIx, getEQ, getOne, insert,
-                                             toList, updateIx)
-import           Data.Maybe                 (fromJust)
-import           Data.SafeCopy              (base, deriveSafeCopy)
+import           Control.Applicative  ((<$>))
+import           Control.Monad.Reader (ask)
+import           Control.Monad.State  (get, put)
+import           Data.Acid            (Query, Update)
+import           Data.Data            (Data, Typeable)
+import           Data.IxSet           (Indexable (..), IxSet (..), deleteIx,
+                                       getEQ, getOne, insert, toList, updateIx)
+import           Data.Maybe           (fromJust)
+import           Data.SafeCopy        (base, deriveSafeCopy)
 
-import           Data.Domain.Types          (EitherResponse, Entry, getId,
-                                             getVersion, setId, setVersion)
+import           Data.Domain.Types    (EitherResponse, Entry,
+                                       ResponseError (..), getId, getVersion,
+                                       setId, setVersion)
 
 
 --type that represents the state we wish to store
@@ -66,7 +65,7 @@ updateEntry updatedEntry = do
                     updateIx (getId incrementEntry) incrementEntry entrys
                 }
             return $ Right incrementEntry
-        else return $ Left "optimistic locking"
+        else return $ Left OptimisticLocking
 
 -- create a new entry and add it to the database
 newEntry :: (Ord a, Typeable a, Indexable a, Entry a) => a -> Update (EntrySet a) a

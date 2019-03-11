@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings   #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Presentation.Controller.UserController (createUser, updateUser, deleteUser, usersPage, userPage, loggedUserPage) where
@@ -17,19 +18,23 @@ import           Web.Routes                           (RouteT, mapRouteT,
                                                        nestURL, unRouteT)
 
 import           AcidHelper                           (App)
-import           Data.Domain.Types                    (Description, UserId)
+import           Data.Domain.Types                    (Description,
+                                                       ResponseError (..),
+                                                       UserId)
 import           Data.Domain.User                     as DomainUser (User (..))
 import           Data.Service.Authorization           as AuthService (deleteAuthUser)
 import           Presentation.Dto.User                as UserDto (User (..))
 import           Presentation.HttpServerHelper        (getBody,
                                                        mapServerPartTIO2App,
                                                        readAuthUserFromBodyAsList)
-import           Presentation.ResponseHelper          (okResponse,
+import           Presentation.Mapper.UserMapper       (transformFromDto,
+                                                       transformToDto)
+import           Presentation.ResponseHelper          (handleResponse,
+                                                       okResponse,
                                                        okResponseJson,
                                                        onUserExist,
                                                        preconditionFailedResponse)
 import           Presentation.Route.PageEnum          (Sitemap)
-import           Presentation.Mapper.UserMapper       (transformToDto, transformFromDto)
 
 import qualified Data.Repository.Acid.User            as UserAcid
 import qualified Data.Repository.UserRepo             as UserRepo
@@ -82,12 +87,10 @@ createDomainUser name = do
 
 --TODO updating AuthenticateUser is missing
 updateUser :: UserDto.User -> DomainUser.User -> App Response
-updateUser userDto = updateUsr
-    where updateUsr loggedUser = do
-              result <- UserRepo.updateUser $ transformFromDto userDto (Just loggedUser)
-              case result of
-                Left errorMessage -> preconditionFailedResponse errorMessage
-                Right updatedUser -> okResponseJson $ encode $ transformToDto updatedUser
+updateUser userDto loggedUser = do
+              updatedUser <- UserRepo.updateUser $ transformFromDto userDto (Just loggedUser)
+              let response = fmap transformToDto updatedUser
+              handleResponse response
 
 
 deleteUser :: DomainUser.User -> App Response
