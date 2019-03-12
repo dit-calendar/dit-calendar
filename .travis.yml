@@ -1,31 +1,39 @@
 env:
- - CABALVER=1.24 GHCVER=8.0.1 HAPPYVER=1.19.5
+ - CABALVER=1.24 GHCVER=8.0.1 HAPPYVER=1.19.5 ELMVER=0.19
 
 # Note: the distinction between `before_install` and `install` is not important.
 before_install:
+ # for haskell
  - travis_retry sudo add-apt-repository -y ppa:hvr/ghc
  - travis_retry sudo apt-get update
  - travis_retry sudo apt-get install cabal-install-$CABALVER ghc-$GHCVER happy-$HAPPYVER
  - export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
  - export PATH=/opt/happy/$HAPPYVER/bin:$PATH
+ # for elm
+ - npm install -g elm@$ELMVER elm-format elm-test
 
 install:
+ # for haskell
  - cabal --version
  - happy --version
  - echo "$(ghc --version) [$(ghc --print-project-git-commit-id 2> /dev/null || echo '?')]"
  - travis_retry cabal update
-
-before_script:
- - cd dit-calendar-server
- - cabal install --only-dependencies --enable-tests --enable-benchmarks
+ # for elm
+ - elm --version
 
 script:
+ # for haskell
+ - cd dit-calendar-server
+ - cabal install --only-dependencies --enable-tests --enable-benchmarks
  - if [ -f configure.ac ]; then autoreconf -i; fi
  - cabal configure --enable-tests --enable-benchmarks -v2  # -v2 provides useful information for debugging
  - cabal build
  - cabal test
  - cabal check
  - cabal sdist
+ # for elm
+ - cd ../dit-calendar-client
+ 
 
 # Check that the resulting source distribution can be built & installed.
 # If there are no other `.tar.gz` files in `dist`, this can be even simpler:
