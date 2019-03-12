@@ -6,10 +6,10 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 
 
-main : Program (Maybe Model) Model Msg
+main : Program () Model Msg
 main =
     Browser.element
-        { init = init
+        { init =  init
         , update = update
         , view = view
         , subscriptions = \_ -> Sub.none
@@ -26,9 +26,9 @@ emptyModel =
     { quote = "" }
 
 
-init : Maybe Model -> ( Model, Cmd Msg )
-init maybeModel =
-    ( Maybe.withDefault emptyModel maybeModel, Cmd.none )
+init :() -> ( Model, Cmd Msg )
+init _  =
+    (emptyModel , Cmd.none )
 
 
 type Msg
