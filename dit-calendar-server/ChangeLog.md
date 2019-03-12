@@ -1,8 +1,13 @@
-# Revision history for dit-calendar
+# Revision history for dit-calendar-server
 
-## 0.4.0.0 -- 2019-
+## 0.5.0.0 -- 2019-
+
+## 0.4.0.0 -- 2019-03-12
 
 * add optimistic locking
+* add better error responses
+* create mapper between dto and dbentity
+* create config file
 
 ## 0.3.0.0 -- 2018-12-26
 
