@@ -9,17 +9,21 @@ module Presentation.ResponseHelper
     , okResponseJson
     , notImplemented
     , handleResponse
+    , corsResponse
+    , addCorsToResponse
     ) where
 
 import           Data.Aeson                   (ToJSON, Value, encode)
 import           Data.ByteString.Lazy
 import           Data.Text                    as C (Text, pack)
 import           Happstack.Server             (Method, Response, notFound, ok,
-                                               toResponse, toResponseBS)
+                                               setHeader, toResponse,
+                                               toResponseBS)
 
 import qualified Data.ByteString.Char8        as T
 import qualified Happstack.Server             as HServer (FilterMonad,
-                                                          badRequest, resp)
+                                                          Happstack, badRequest,
+                                                          resp)
 
 import           AcidHelper                   (App)
 import           Data.Domain.CalendarEntry    (CalendarEntry)
@@ -64,6 +68,18 @@ onNothing message = maybe (okResponse message)
 okResponse :: String -> App Response
 okResponse message = ok $ toResponse message
 
+corsResponse :: App Response
+corsResponse =
+    let res = toResponse ("" :: String)
+     in ok $ addCorsHeaders res
+
+addCorsHeaders :: Response -> Response
+addCorsHeaders response =
+    setHeader "Access-Control-Allow-Methods" "POST, GET, PUT, DELETE" $
+    setHeader "Access-Control-Allow-Headers" "Content-Type" $
+    setHeader "Access-Control-Allow-Origin" "http://localhost:8000" $
+    setHeader "Access-Control-Allow-Credentials" "true" response
+
 badRequest :: String -> App Response
 badRequest message = HServer.badRequest $ toResponse message
 
@@ -75,3 +91,6 @@ preconditionFailedResponse message = preconditionFailed $ toResponse message
 
 notImplemented :: Method -> App Response
 notImplemented httpMethod = HServer.resp 405 $ toResponse ("HTTP-Method: " ++ show httpMethod ++ " not implemented")
+
+addCorsToResponse :: HServer.Happstack m => m Response -> m Response
+addCorsToResponse resM = addCorsHeaders <$> resM

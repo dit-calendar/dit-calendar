@@ -1,5 +1,5 @@
 module Presentation.Route.Routing
-    ( authOrRoute
+    ( routeWithOptions
     ) where
 
 import           Happstack.Authenticate.Core            (AuthenticateURL (..))
@@ -7,12 +7,14 @@ import           Happstack.Foundation                   (lift)
 import           Happstack.Server                       (BodyPolicy (..),
                                                          Response, ServerPartT,
                                                          decodeBody,
-                                                         defaultBodyPolicy)
+                                                         defaultBodyPolicy,
+                                                         Method (OPTIONS))
 import           Web.Routes                             (RouteT, mapRouteT,
                                                          nestURL)
 
 import           AcidHelper                (App, CtrlV)
-import           Presentation.HttpServerHelper          (mapServerPartTIO2App)
+import           Presentation.HttpServerHelper          (mapServerPartTIO2App, getHttpMethod)
+import           Presentation.ResponseHelper            (corsResponse, addCorsToResponse)
 import           Presentation.Route.CalendarRoute       (routeCalendarEntry, routeCalendarEntryDetails)
 import           Presentation.Route.PageEnum            (Sitemap (..))
 import           Presentation.Route.TaskRoute           (routeTask,
@@ -54,3 +56,10 @@ route url = do
         CalendarTask eId           -> routeTask eId
         CalendarTaskDetail eId tId -> routeTaskDetail eId tId
         TaskWithUser eId tId       -> routeTaskWithUser eId tId
+
+routeWithOptions :: (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response) -> Sitemap -> CtrlV
+routeWithOptions routeAuthenticate url = do
+    m <- lift getHttpMethod
+    if m == OPTIONS
+        then lift corsResponse
+        else addCorsToResponse $ authOrRoute routeAuthenticate url
