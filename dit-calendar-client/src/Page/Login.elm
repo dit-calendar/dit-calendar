@@ -1,6 +1,5 @@
-module Login exposing (Model, Msg(..), init, main, update, view, viewInput)
+module Page.Login exposing (Model, Msg(..), init, update, view, viewInput)
 
-import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -9,18 +8,14 @@ import Json.Decode as Decode exposing (Decoder, Value, decodeString, field, stri
 import Json.Encode as Encode
 
 
-main =
-    Browser.element { init = init, update = update, view = view, subscriptions = \_ -> Sub.none }
-
-
 type alias Model =
     { name : String
     , password : String
     }
 
 
-init : () -> ( Model, Cmd Msg )
-init _ =
+init : ( Model, Cmd Msg )
+init =
     ( Model "" "", Cmd.none )
 
 
