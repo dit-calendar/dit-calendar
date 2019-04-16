@@ -14,6 +14,7 @@ import Bootstrap.Grid as Grid
 import Bootstrap.Utilities.Spacing as Spacing
 
 import Page.Login as Login
+import Page.Register as Register
 import Page.Quote as Quote
 
 
@@ -28,6 +29,7 @@ type alias Model =
 
 type Page
     = Login Login.Model
+    | Register Register.Model
     | Quote Quote.Model
     | NotFound
 
@@ -59,6 +61,7 @@ type Msg
     | ClickedLink UrlRequest
     | NavMsg Navbar.State
     | LoginMsg Login.Msg
+    | RegisterMsg Register.Msg
     | QuoteMsg Quote.Msg
 
 subscriptions : Model -> Sub Msg
@@ -88,6 +91,12 @@ update msg model =
                     stepLogin model (Login.update quote login)
                 _ ->
                     ( model, Cmd.none )
+        RegisterMsg regMsg ->
+            case model.page of
+                Register register ->
+                    stepRegister model (Register.update regMsg register)
+                _ ->
+                    ( model, Cmd.none )
 
         QuoteMsg login ->
             case model.page of
@@ -101,6 +110,12 @@ stepLogin : Model -> ( Login.Model, Cmd Login.Msg ) -> ( Model, Cmd Msg )
 stepLogin model ( login, cmds ) =
     ( { model | page = Login login }
     , Cmd.map LoginMsg cmds
+    )
+
+stepRegister : Model -> ( Register.Model, Cmd Register.Msg ) -> ( Model, Cmd Msg )
+stepRegister model ( register, cmds ) =
+    ( { model | page = Register register }
+    , Cmd.map RegisterMsg cmds
     )
 
 
@@ -134,6 +149,7 @@ routeParser =
     UrlParser.oneOf
         [ UrlParser.map (Login { name = "", password = "" }) top
         , UrlParser.map (Login { name = "", password = "" }) (s "login")
+        , UrlParser.map (Register { name = "", password = "", passwordConfirm = "", email = ""}) (s "register")
         , UrlParser.map (Quote { quote = "" }) (s "quotes")
         ]
 
@@ -158,6 +174,7 @@ menuView model =
         |> Navbar.info
         |> Navbar.items
             [ Navbar.itemLink [ href "#login" ] [ text "Login" ]
+            , Navbar.itemLink [ href "#register" ] [ text "Register" ]
             , Navbar.itemLink [ Spacing.ml2Sm,  href "#quotes" ] [ text "Quote" ]
             ]
         |> Navbar.view model.navState
@@ -169,6 +186,9 @@ mainContent model =
         case model.page of
             Login login ->
                 [skeletonView "URL Interceptor" LoginMsg (Login.view login)]
+
+            Register register ->
+                [skeletonView "URL Interceptor" RegisterMsg (Register.view register)]
 
             Quote quote ->
                 [skeletonView "URL Interceptor" QuoteMsg (Quote.view quote)]
