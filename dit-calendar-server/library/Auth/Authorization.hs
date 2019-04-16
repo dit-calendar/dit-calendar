@@ -6,7 +6,7 @@ import           Data.Text                          (unpack)
 import           Data.Time                          (getCurrentTime)
 
 import           Happstack.Authenticate.Core        (Token (_tokenUser),
-                                                     decodeAndVerifyToken)
+                                                     getToken)
 import           Happstack.Foundation               (HasAcidState (getAcidState))
 import           Happstack.Server                   (Response, getHeaderM,
                                                      internalServerError,
@@ -24,25 +24,19 @@ import qualified Happstack.Authenticate.Core        as AuthUser
 
 callIfAuthorized :: (DomainUser.User -> App Response) -> App Response
 callIfAuthorized route = do
-    mAuth <- getHeaderM "Authorization"
+    mAuth <- getUserToken
     case mAuth of
         Nothing -> unauthorized $ toResponse "You are not authorized."
-        (Just auth') ->
-            do  mToken <- verifyToken auth'
-                case mToken of
-                    Nothing -> unauthorized $ toResponse "You are not authorized!"
-                    Just (token,_) -> do
-                        let authUser = _tokenUser token
-                        loggedUser <- getDomainUser authUser
-                        case loggedUser of
-                            Nothing -> responseWithError authUser
-                            Just u  -> route u
+        Just (token, _) -> do
+            let authUser = _tokenUser token
+            loggedUser <- getDomainUser authUser
+            case loggedUser of
+                Nothing -> responseWithError authUser
+                Just u -> route u
 
-verifyToken auth' = do
-    let auth = B.drop 7 auth'
-    now <- liftIO getCurrentTime
+getUserToken = do
     authenticateState <- getAcidState
-    decodeAndVerifyToken authenticateState now (T.decodeUtf8 auth)
+    getToken authenticateState
 
 getDomainUser :: AuthUser.User -> App (Maybe DomainUser.User)
 getDomainUser (AuthUser.User _ name _) = UserRepo.findUserByLoginName $ AuthUser._unUsername name

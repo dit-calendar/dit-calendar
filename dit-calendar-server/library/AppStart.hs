@@ -26,7 +26,7 @@ import           Conf.AuthConf                         (authenticateConfig,
 import           Conf.Config
 import           Presentation.Route.PageEnum           (Sitemap (Home),
                                                         urlSitemapParser)
-import           Presentation.Route.Routing            (authOrRoute)
+import           Presentation.Route.Routing            (routeWithOptions)
 
 import qualified Data.Text                             as T
 
@@ -38,7 +38,7 @@ site :: (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response)
        -> Site Sitemap (App Response)
 site routeAuthenticate =
   --runRouteT removes the RouteT wrapper from our routing function
-  let realRoute = runRouteT (authOrRoute routeAuthenticate) in
+  let realRoute = runRouteT (routeWithOptions routeAuthenticate) in
   --convert the new function to a Site
   let realSite = boomerangSite realRoute urlSitemapParser in
         setDefault Home realSite
