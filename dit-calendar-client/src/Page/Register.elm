@@ -5,6 +5,8 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http exposing (Body, Expect)
+import Http.Detailed as HttpEx
+import Json.Decode as Decode
 import Json.Encode as Encode
 
 
@@ -37,7 +39,13 @@ type Msg
     | Password String
     | PasswordConfirm String
     | Register
-    | HttpRegister (Result Http.Error ())
+    | HttpRegister (Result (HttpEx.Error String) ( Http.Metadata, String ))
+
+
+type alias RegisterResponse =
+    { jrStatus : String
+    , jrData : String
+    }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -59,7 +67,29 @@ update msg model =
             ( model, register model )
 
         HttpRegister result ->
-            ( model, Cmd.none )
+            ( registerResponse result model, Cmd.none )
+
+
+registerResponse : Result (HttpEx.Error String) ( Http.Metadata, String ) -> Model -> Model
+registerResponse response model =
+    case response of
+        Ok value ->
+            model
+
+        Err (HttpEx.BadStatus metadata body) ->
+            let
+                decode =
+                    Decode.decodeString registerDecoder body
+            in
+            case decode of
+                Ok regResponse ->
+                    { model | name = regResponse.jrData }
+
+                Err error ->
+                    model
+
+        _ ->
+            model
 
 
 view : Model -> Html Msg
@@ -86,7 +116,7 @@ register model =
     Http.post
         { url = "https://localhost:8443/authenticate/authentication-methods/password/account"
         , body = Http.jsonBody (registerEncoder model)
-        , expect = Http.expectWhatever HttpRegister
+        , expect = HttpEx.expectString HttpRegister
         }
 
 
@@ -105,3 +135,11 @@ registerEncoder model =
         , ( "naPassword", Encode.string model.password )
         , ( "naPasswordConfirm", Encode.string model.passwordConfirm )
         ]
+
+
+registerDecoder : Decode.Decoder RegisterResponse
+registerDecoder =
+    Decode.map2
+        RegisterResponse
+        (Decode.at [ "jrStatus" ] Decode.string)
+        (Decode.at [ "jrData" ] Decode.string)
