@@ -12,7 +12,7 @@ import           Happstack.Authenticate.Password.Core (NewAccountData (..))
 import           Happstack.Foundation                 (HasAcidState (getAcidState),
                                                        query)
 import           Happstack.Server                     (Method (GET), Response,
-                                                       ServerPartT, method, ok,
+                                                       ServerPartT, method, ok, badRequest,
                                                        rsBody, toResponse)
 import           Web.Routes                           (RouteT, mapRouteT,
                                                        nestURL, unRouteT)
@@ -68,7 +68,7 @@ createUser authenticateURL routeAuthenticate = do
                 response <- leaveRouteT (mapRouteT mapServerPartTIO2App $ routeAuthenticate authenticateURL)
                 let responseBody = rsBody response
                 if isInfixOf "NotOk" $ show responseBody then
-                    return response
+                    badRequest response
                 else
                     createDomainUser username
 
