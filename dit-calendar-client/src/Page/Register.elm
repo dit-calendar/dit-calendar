@@ -88,6 +88,8 @@ registerResponse response model =
                 Err error ->
                     model
 
+        Err (HttpEx.NetworkError) ->
+                    { model | name = "keine Verbindung" } -- TODO
         _ ->
             model
 
