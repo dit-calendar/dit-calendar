@@ -1,5 +1,6 @@
 module Page.Register exposing (Model, Msg(..), init, update, view, viewInput)
 
+import Bootstrap.Alert as Alert
 import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -15,6 +16,7 @@ type alias Model =
     , email : String
     , password : String
     , passwordConfirm : String
+    , problems : List String
     }
 
 
@@ -30,7 +32,7 @@ main =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model "" "" "" "", Cmd.none )
+    ( Model "" "" "" "" [], Cmd.none )
 
 
 type Msg
@@ -83,13 +85,13 @@ registerResponse response model =
             in
             case decode of
                 Ok regResponse ->
-                    { model | name = regResponse.jrData }
+                    { model | problems = List.append model.problems [regResponse.jrData] }
 
                 Err error ->
                     model
 
         Err (HttpEx.NetworkError) ->
-                    { model | name = "keine Verbindung" } -- TODO
+                    { model | problems = List.append model.problems ["keine Verbindung"] } -- TODO
         _ ->
             model
 
@@ -105,8 +107,13 @@ view model =
             [ button [ onClick Register ]
                 [ text "Submit" ]
             ]
+        , div [ class "error-messages" ]
+          (List.map viewProblem model.problems)
         ]
 
+
+viewProblem : String -> Html msg
+viewProblem problem =  Alert.simpleDanger [] [ text problem ]
 
 viewInput : String -> String -> String -> (String -> msg) -> Html msg
 viewInput t p v toMsg =

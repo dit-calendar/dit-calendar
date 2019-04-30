@@ -149,7 +149,7 @@ routeParser =
     UrlParser.oneOf
         [ UrlParser.map (Login { name = "", password = "" }) top
         , UrlParser.map (Login { name = "", password = "" }) (s "login")
-        , UrlParser.map (Register { name = "", password = "", passwordConfirm = "", email = ""}) (s "register")
+        , UrlParser.map (Register { name = "", password = "", passwordConfirm = "", email = "", problems = []}) (s "register")
         , UrlParser.map (Quote { quote = "" }) (s "quotes")
         ]
 
