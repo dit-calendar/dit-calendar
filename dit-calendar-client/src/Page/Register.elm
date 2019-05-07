@@ -2,12 +2,12 @@ module Page.Register exposing (Model, Msg(..), init, update, view, viewInput)
 
 import Bootstrap.Alert as Alert
 import Browser
+import Endpoint.ResponseErrorDecoder exposing (registerErrorDecoder)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http exposing (Body, Expect)
 import Http.Detailed as HttpEx
-import Json.Decode as Decode
 import Json.Encode as Encode
 
 
@@ -78,22 +78,8 @@ registerResponse response model =
         Ok value ->
             model
 
-        Err (HttpEx.BadStatus metadata body) ->
-            let
-                decode =
-                    Decode.decodeString registerDecoder body
-            in
-            case decode of
-                Ok regResponse ->
-                    { model | problems = List.append model.problems [regResponse.jrData] }
-
-                Err error ->
-                    model
-
-        Err (HttpEx.NetworkError) ->
-                    { model | problems = List.append model.problems ["keine Verbindung"] } -- TODO
-        _ ->
-            model
+        Err error ->
+            { model | problems = List.append model.problems (registerErrorDecoder error) }
 
 
 view : Model -> Html Msg
@@ -108,12 +94,14 @@ view model =
                 [ text "Submit" ]
             ]
         , div [ class "error-messages" ]
-          (List.map viewProblem model.problems)
+            (List.map viewProblem model.problems)
         ]
 
 
 viewProblem : String -> Html msg
-viewProblem problem =  Alert.simpleDanger [] [ text problem ]
+viewProblem problem =
+    Alert.simpleDanger [] [ text problem ]
+
 
 viewInput : String -> String -> String -> (String -> msg) -> Html msg
 viewInput t p v toMsg =
@@ -144,11 +132,3 @@ registerEncoder model =
         , ( "naPassword", Encode.string model.password )
         , ( "naPasswordConfirm", Encode.string model.passwordConfirm )
         ]
-
-
-registerDecoder : Decode.Decoder RegisterResponse
-registerDecoder =
-    Decode.map2
-        RegisterResponse
-        (Decode.at [ "jrStatus" ] Decode.string)
-        (Decode.at [ "jrData" ] Decode.string)
