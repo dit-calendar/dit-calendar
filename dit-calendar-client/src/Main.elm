@@ -1,25 +1,23 @@
 module Main exposing (Model, Msg(..), init, main, update, view)
 
-import Browser
-import Browser.Navigation as Nav
+import Bootstrap.Grid as Grid
+import Bootstrap.Navbar as Navbar
+import Bootstrap.Utilities.Spacing as Spacing
+import Browser exposing (UrlRequest)
+import Browser.Navigation as Navigation
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Browser.Navigation as Navigation
-import Browser exposing (UrlRequest)
+import Page.Login as Login
+import Page.Quote as Quote
+import Page.Register as Register exposing (RegisterModel)
 import Url exposing (Url)
 import Url.Parser as UrlParser exposing ((</>), Parser, s, top)
-import Bootstrap.Navbar as Navbar
-import Bootstrap.Grid as Grid
-import Bootstrap.Utilities.Spacing as Spacing
-
-import Page.Login as Login
-import Page.Register as Register
-import Page.Quote as Quote
 
 
 type alias Flags =
     {}
+
 
 type alias Model =
     { navKey : Navigation.Key
@@ -27,11 +25,13 @@ type alias Model =
     , navState : Navbar.State
     }
 
+
 type Page
     = Login Login.Model
     | Register Register.Model
     | Quote Quote.Model
     | NotFound
+
 
 main : Program Flags Model Msg
 main =
@@ -44,6 +44,7 @@ main =
         , onUrlChange = UrlChange
         }
 
+
 init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url key =
     let
@@ -51,9 +52,9 @@ init flags url key =
             Navbar.initialState NavMsg
 
         ( model, urlCmd ) =
-            urlUpdate url { navKey = key, navState = navState, page = Login { name = "", password = "" }}
+            urlUpdate url { navKey = key, navState = navState, page = Login { name = "", password = "" } }
     in
-        ( model, Cmd.batch [ urlCmd, navCmd ] )
+    ( model, Cmd.batch [ urlCmd, navCmd ] )
 
 
 type Msg
@@ -64,20 +65,23 @@ type Msg
     | RegisterMsg Register.Msg
     | QuoteMsg Quote.Msg
 
+
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Navbar.subscriptions model.navState NavMsg
+
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         ClickedLink req ->
-             case req of
-                 Browser.Internal url ->
-                     ( model, Navigation.pushUrl model.navKey <| Url.toString url )
+            case req of
+                Browser.Internal url ->
+                    ( model, Navigation.pushUrl model.navKey <| Url.toString url )
 
-                 Browser.External href ->
-                     ( model, Navigation.load href )
+                Browser.External href ->
+                    ( model, Navigation.load href )
+
         UrlChange url ->
             urlUpdate url model
 
@@ -85,16 +89,20 @@ update msg model =
             ( { model | navState = state }
             , Cmd.none
             )
+
         LoginMsg quote ->
             case model.page of
                 Login login ->
                     stepLogin model (Login.update quote login)
+
                 _ ->
                     ( model, Cmd.none )
+
         RegisterMsg regMsg ->
             case model.page of
                 Register register ->
                     stepRegister model (Register.update regMsg register)
+
                 _ ->
                     ( model, Cmd.none )
 
@@ -102,6 +110,7 @@ update msg model =
             case model.page of
                 Quote quote ->
                     stepQuote model (Quote.update login quote)
+
                 _ ->
                     ( model, Cmd.none )
 
@@ -111,6 +120,7 @@ stepLogin model ( login, cmds ) =
     ( { model | page = Login login }
     , Cmd.map LoginMsg cmds
     )
+
 
 stepRegister : Model -> ( Register.Model, Cmd Register.Msg ) -> ( Model, Cmd Msg )
 stepRegister model ( register, cmds ) =
@@ -126,8 +136,6 @@ stepQuote model ( quote, cmds ) =
     )
 
 
-
-
 urlUpdate : Url -> Model -> ( Model, Cmd Msg )
 urlUpdate url model =
     case decode url of
@@ -141,17 +149,22 @@ urlUpdate url model =
 decode : Url -> Maybe Page
 decode url =
     { url | path = Maybe.withDefault "" url.fragment, fragment = Nothing }
-    |> UrlParser.parse routeParser
+        |> UrlParser.parse routeParser
 
 
 routeParser : Parser (Page -> a) a
 routeParser =
+    let
+        reg =
+            RegisterModel "" "" "" ""
+    in
     UrlParser.oneOf
         [ UrlParser.map (Login { name = "", password = "" }) top
         , UrlParser.map (Login { name = "", password = "" }) (s "login")
-        , UrlParser.map (Register { name = "", password = "", passwordConfirm = "", email = "", problems = []}) (s "register")
+        , UrlParser.map (Register { register = reg, problems = [] }) (s "register")
         , UrlParser.map (Quote { quote = "" }) (s "quotes")
         ]
+
 
 view : Model -> Browser.Document Msg
 view model =
@@ -165,7 +178,6 @@ view model =
     }
 
 
-
 menuView : Model -> Html Msg
 menuView model =
     Navbar.config NavMsg
@@ -175,7 +187,7 @@ menuView model =
         |> Navbar.items
             [ Navbar.itemLink [ href "#login" ] [ text "Login" ]
             , Navbar.itemLink [ href "#register" ] [ text "Register" ]
-            , Navbar.itemLink [ Spacing.ml2Sm,  href "#quotes" ] [ text "Quote" ]
+            , Navbar.itemLink [ Spacing.ml2Sm, href "#quotes" ] [ text "Quote" ]
             ]
         |> Navbar.view model.navState
 
@@ -185,20 +197,22 @@ mainContent model =
     Grid.container [] <|
         case model.page of
             Login login ->
-                [skeletonView "URL Interceptor" LoginMsg (Login.view login)]
+                [ skeletonView "URL Interceptor" LoginMsg (Login.view login) ]
 
             Register register ->
-                [skeletonView "URL Interceptor" RegisterMsg (Register.view register)]
+                [ skeletonView "URL Interceptor" RegisterMsg (Register.view register) ]
 
             Quote quote ->
-                [skeletonView "URL Interceptor" QuoteMsg (Quote.view quote)]
+                [ skeletonView "URL Interceptor" QuoteMsg (Quote.view quote) ]
 
             NotFound ->
                 pageNotFound
 
-skeletonView : String -> (a-> Msg) -> Html a -> Html Msg
+
+skeletonView : String -> (a -> Msg) -> Html a -> Html Msg
 skeletonView t message details =
     Html.map message details
+
 
 pageNotFound : List (Html Msg)
 pageNotFound =
