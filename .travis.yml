@@ -20,6 +20,7 @@ install:
  - travis_retry cabal update
  # for elm
  - elm --version
+ - elm-test --version
 
 script:
  # for haskell
@@ -33,6 +34,8 @@ script:
  - cabal sdist
  # for elm
  - cd ../dit-calendar-client
+ - elm make src/Main.elm --output src/Main.js
+ - elm-test
  
 
 # Check that the resulting source distribution can be built & installed.
