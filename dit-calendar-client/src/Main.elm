@@ -197,21 +197,17 @@ mainContent model =
     Grid.container [] <|
         case model.page of
             Login login ->
-                [ skeletonView "URL Interceptor" LoginMsg (Login.view login) ]
+                [ Html.map LoginMsg (Login.view login) ]
 
             Register register ->
-                [ skeletonView "URL Interceptor" RegisterMsg (Register.view register) ]
+                [ Html.map RegisterMsg (Register.view register) ]
 
             Quote quote ->
-                [ skeletonView "URL Interceptor" QuoteMsg (Quote.view quote) ]
+                [ Html.map QuoteMsg (Quote.view quote) ]
 
             NotFound ->
                 pageNotFound
 
-
-skeletonView : String -> (a -> Msg) -> Html a -> Html Msg
-skeletonView t message details =
-    Html.map message details
 
 
 pageNotFound : List (Html Msg)

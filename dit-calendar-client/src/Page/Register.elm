@@ -41,7 +41,7 @@ init _ =
     ( Model (RegisterModel "" "" "" "") [], Cmd.none )
 
 
-type UserMsg
+type RegisterMsg
     = Name String
     | Email String
     | Password String
@@ -49,7 +49,7 @@ type UserMsg
 
 
 type Msg
-    = RegisterUserMsg UserMsg
+    = RegisterUserMsg RegisterMsg
     | PerformRegister
     | RegisterResult (Result (HttpEx.Error String) ( Http.Metadata, String ))
 
@@ -73,7 +73,7 @@ update msg model =
             ( registerResponse result model, Cmd.none )
 
 
-updateRegister : UserMsg -> RegisterModel -> ( RegisterModel, Cmd Msg )
+updateRegister : RegisterMsg -> RegisterModel -> ( RegisterModel, Cmd Msg )
 updateRegister msg model =
     case msg of
         Name name ->
@@ -102,7 +102,7 @@ registerResponse response model =
 view : Model -> Html Msg
 view model =
     div []
-        [ viewRegister model.register
+        [ Html.map RegisterUserMsg (viewRegister model.register)
         , div []
             [ button [ onClick PerformRegister ]
                 [ text "Submit" ]
@@ -111,13 +111,13 @@ view model =
             (List.map viewProblem model.problems)
         ]
 
-viewRegister : RegisterModel -> Html Msg
+viewRegister : RegisterModel -> Html RegisterMsg
 viewRegister model =
     div [class "register-fields"]
-            [ viewInput "text" "Name" model.name (RegisterUserMsg << Name)
-            , viewInput "text" "Email" model.email (RegisterUserMsg << Email)
-            , viewInput "password" "Password" model.password (RegisterUserMsg << Password)
-            , viewInput "password" "Repeat Password" model.passwordConfirm (RegisterUserMsg << PasswordConfirm)
+            [ viewInput "text" "Name" model.name Name
+            , viewInput "text" "Email" model.email Email
+            , viewInput "password" "Password" model.password Password
+            , viewInput "password" "Repeat Password" model.passwordConfirm PasswordConfirm
             ]
 
 viewProblem : String -> Html msg
