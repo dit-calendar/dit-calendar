@@ -26,7 +26,7 @@ updateTest =
                         [ first >> Expect.equal startModel
                         , second >> Expect.equal Cmd.none
                         ]
-                        (RegisterPage.update registerResult startModel)
+                        (RegisterPage.update "url" registerResult startModel)
             , test "case error" <|
                 \_ ->
                     let
@@ -43,6 +43,6 @@ updateTest =
                         [ first >> Expect.equal expectedModel
                         , second >> Expect.equal Cmd.none
                         ]
-                        (RegisterPage.update registerResult startModel)
+                        (RegisterPage.update "url" registerResult startModel)
             ]
         ]

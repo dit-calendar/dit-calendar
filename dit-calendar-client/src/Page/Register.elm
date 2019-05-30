@@ -31,7 +31,7 @@ main =
     Browser.element
         { init = init
         , view = view
-        , update = update
+        , update = update "https://localhost:8443/authenticate/authentication-methods/password/"
         , subscriptions = \_ -> Sub.none
         }
 
@@ -60,14 +60,14 @@ type alias RegisterResponse =
     }
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update : String -> Msg -> Model -> ( Model, Cmd Msg )
+update authUrl msg model =
     case msg of
         RegisterUserMsg rMsg ->
             mapFirst (\x -> { model | register = x }) (updateRegister rMsg model.register)
 
         PerformRegister ->
-            ( model, register model )
+            ( model, register authUrl model )
 
         RegisterResult result ->
             ( registerResponse result model, Cmd.none )
@@ -132,10 +132,10 @@ viewInput t p v toMsg =
     input [ type_ t, placeholder p, value v, onInput toMsg ] []
 
 
-register : Model -> Cmd Msg
-register model =
+register : String -> Model -> Cmd Msg
+register authUrl model =
     Http.post
-        { url = "https://localhost:8443/authenticate/authentication-methods/password/account"
+        { url = authUrl ++ "account"
         , body = Http.jsonBody (registerEncoder model)
         , expect = HttpEx.expectString RegisterResult
         }

@@ -16,13 +16,15 @@ import Url.Parser as UrlParser exposing ((</>), Parser, s, top)
 
 
 type alias Flags =
-    {}
+    { authUrl : String
+    }
 
 
 type alias Model =
     { navKey : Navigation.Key
     , page : Page
     , navState : Navbar.State
+    , config : Flags
     }
 
 
@@ -52,7 +54,7 @@ init flags url key =
             Navbar.initialState NavMsg
 
         ( model, urlCmd ) =
-            urlUpdate url { navKey = key, navState = navState, page = Login { name = "", password = "" } }
+            urlUpdate url { navKey = key, navState = navState, page = Login { name = "", password = "" }, config = flags }
     in
     ( model, Cmd.batch [ urlCmd, navCmd ] )
 
@@ -93,7 +95,7 @@ update msg model =
         LoginMsg quote ->
             case model.page of
                 Login login ->
-                    stepLogin model (Login.update quote login)
+                    stepLogin model (Login.update  model.config.authUrl quote login)
 
                 _ ->
                     ( model, Cmd.none )
@@ -101,7 +103,7 @@ update msg model =
         RegisterMsg regMsg ->
             case model.page of
                 Register register ->
-                    stepRegister model (Register.update regMsg register)
+                    stepRegister model (Register.update model.config.authUrl regMsg register)
 
                 _ ->
                     ( model, Cmd.none )
