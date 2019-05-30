@@ -1,4 +1,4 @@
-module Page.Register exposing (Model, RegisterModel, Msg(..), init, update, view, viewInput)
+module Page.Register exposing (Model, Msg(..), RegisterModel, init, update, view, viewInput)
 
 import Bootstrap.Alert as Alert
 import Browser
@@ -96,7 +96,7 @@ registerResponse response model =
             model
 
         Err error ->
-            { model | problems = List.append model.problems (registerErrorDecoder error) }
+            { model | problems = registerErrorDecoder error }
 
 
 view : Model -> Html Msg
@@ -111,14 +111,16 @@ view model =
             (List.map viewProblem model.problems)
         ]
 
+
 viewRegister : RegisterModel -> Html RegisterMsg
 viewRegister model =
-    div [class "register-fields"]
-            [ viewInput "text" "Name" model.name Name
-            , viewInput "text" "Email" model.email Email
-            , viewInput "password" "Password" model.password Password
-            , viewInput "password" "Repeat Password" model.passwordConfirm PasswordConfirm
-            ]
+    div [ class "register-fields" ]
+        [ viewInput "text" "Name" model.name Name
+        , viewInput "text" "Email" model.email Email
+        , viewInput "password" "Password" model.password Password
+        , viewInput "password" "Repeat Password" model.passwordConfirm PasswordConfirm
+        ]
+
 
 viewProblem : String -> Html msg
 viewProblem problem =

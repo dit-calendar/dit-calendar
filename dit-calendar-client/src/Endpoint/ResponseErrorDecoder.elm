@@ -31,7 +31,7 @@ errorDecoder responseError responseDecoder =
 
         _ ->
             --TODO
-            [ "irgenein Fehler" ]
+            [ "irgendein Fehler" ]
 
 
 type alias ErrorResponse =
