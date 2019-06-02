@@ -18,6 +18,8 @@ install:
  - happy --version
  - echo "$(ghc --version) [$(ghc --print-project-git-commit-id 2> /dev/null || echo '?')]"
  - travis_retry cabal update
+ # remove after time-compat is fixed
+ - cabal install time-compat-0.1.0.3
  # for elm
  - elm --version
  - elm-test --version
