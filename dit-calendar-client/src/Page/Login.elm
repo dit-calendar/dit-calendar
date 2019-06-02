@@ -26,8 +26,8 @@ type Msg
     | HttpLogin (Result Http.Error ())
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update : String -> Msg -> Model -> ( Model, Cmd Msg )
+update authUrl msg model =
     case msg of
         Name name ->
             ( { model | name = name }, Cmd.none )
@@ -36,7 +36,7 @@ update msg model =
             ( { model | password = password }, Cmd.none )
 
         Login ->
-            (model, login model)
+            (model, login authUrl model)
 
         HttpLogin result ->
                     (model, Cmd.none)
@@ -59,12 +59,12 @@ viewInput t p v toMsg =
 
 
 
-login : Model -> Cmd Msg
-login model =
+login : String -> Model -> Cmd Msg
+login authUrl model =
   Http.riskyRequest
     { method = "POST"
         , headers = []
-        , url = "https://localhost:8443/authenticate/authentication-methods/password/token"
+        , url = authUrl ++ "token"
         , body = Http.jsonBody (loginEncoder model)
         , expect = Http.expectWhatever HttpLogin
         , timeout = Nothing

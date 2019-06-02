@@ -11,8 +11,8 @@
 <body>
 <div id="elm-node"></div>
 </body>
-
+<script src="env/env.js"></script>
 <script>
-        var app = Elm.Main.init({ flags: null, node: document.getElementById("elm-node") });
+        var app = Elm.Main.init({ flags: window.options, node: document.getElementById("elm-node") });
     </script>
 </html>
