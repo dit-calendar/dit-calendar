@@ -12,14 +12,20 @@ import           Presentation.Mapper.BaseMapper          (transformToDtoE)
 import           Presentation.Mapper.CalendarEntryMapper (transformFromDto,
                                                           transformToDto)
 import           Presentation.ResponseHelper             (onEntryExist,
-                                                          onUserExist)
+                                                          onUserExist, okResponseJson)
 
 import qualified Data.Domain.User                        as DomainUser
 import qualified Data.Repository.CalendarRepo            as CalendarRepo
 import qualified Data.Service.CalendarEntry              as CalendarService
 import qualified Presentation.Dto.CalendarEntry          as CalendarDto
 
---handler for entryPage
+calendarEntries :: DomainUser.User -> App Response
+calendarEntries user = do
+    result <- CalendarRepo.findAllCalendarEntries user
+    let dtos = map transformToDto result
+    okResponseJson $ encode dtos
+
+
 entryPage :: EntryId -> App Response
 entryPage i = onEntryExist i (return . Right . transformToDto)
 

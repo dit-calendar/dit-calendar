@@ -11,6 +11,7 @@ module Data.Repository.CalendarRepo
     , deleteTaskFromCalendarEntryImpl
     , addTaskToCalendarEntryImpl
     , findCalendarByIdImpl
+    , findAllCalendarEntriesImpl
     , MonadDBCalendarRepo(..)
     ) where
 
@@ -39,6 +40,10 @@ instance CalendarDAO App where
     update = Foundation.update
     delete = Foundation.update
     query = Foundation.query
+    findList = Foundation.query
+
+findAllCalendarEntriesImpl :: (CalendarDAO m, MonadIO m) => User -> m [CalendarEntry]
+findAllCalendarEntriesImpl = findList . CalendarEntryAcid.AllEntriesForUser
 
 createCalendarEntryImpl :: CalendarDAO m => CalendarEntry-> m CalendarEntry
 createCalendarEntryImpl = create . CalendarEntryAcid.NewEntry
@@ -64,6 +69,7 @@ class (Monad m, CalendarDAO App) =>
     where
     createCalendarEntry :: CalendarEntry -> m CalendarEntry
     findCalendarById :: EntryId -> m (Maybe CalendarEntry)
+    findAllCalendarEntries :: User -> m [CalendarEntry]
     updateCalendar :: CalendarEntry -> m (EitherResponse CalendarEntry)
     deleteCalendarEntry :: EntryId -> m ()
     deleteTaskFromCalendarEntry :: CalendarEntry -> Int -> m (EitherResponse CalendarEntry)
@@ -72,6 +78,7 @@ class (Monad m, CalendarDAO App) =>
 instance MonadDBCalendarRepo App where
     createCalendarEntry = createCalendarEntryImpl
     findCalendarById = findCalendarByIdImpl
+    findAllCalendarEntries = findAllCalendarEntriesImpl
     updateCalendar = updateCalendarImpl
     deleteCalendarEntry = deleteCalendarEntryImpl
     deleteTaskFromCalendarEntry = deleteTaskFromCalendarEntryImpl
