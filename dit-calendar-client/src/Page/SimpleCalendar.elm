@@ -1,7 +1,9 @@
 module Page.SimpleCalendar exposing (CalendarEntry, Model, Msg(..), emptyModel, main, update, view)
 
+import Bootstrap.Alert as Alert
 import Bootstrap.ListGroup as ListGroup
 import Browser
+import Endpoint.ResponseErrorDecoder exposing (calendarErrorDecoder)
 import Html exposing (Html, div, h1, text)
 import Html.Attributes exposing (class)
 import Http
@@ -17,12 +19,13 @@ type alias CalendarEntry =
 
 type alias Model =
     { calendarEntries : List CalendarEntry
+    , problems : List String
     }
 
 
 emptyModel : Model
 emptyModel =
-    { calendarEntries = [] }
+    { calendarEntries = [], problems = [] }
 
 
 type Msg
@@ -49,17 +52,16 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         PerformGetCalendarEntries ->
-            ( model, loadCalendarEntries model )
+            ( model, loadCalendarEntries )
 
         GetCalendarEntriesResult result ->
             ( loadCalendarEntriesResponse result model, Cmd.none )
 
 
-loadCalendarEntries : Model -> Cmd Msg
-loadCalendarEntries model =
-    Http.post
+loadCalendarEntries : Cmd Msg
+loadCalendarEntries =
+    Http.get
         { url = "https://localhost:8443/calendarentries/2"
-        , body = Http.emptyBody
         , expect = HttpEx.expectString GetCalendarEntriesResult
         }
 
@@ -68,14 +70,22 @@ loadCalendarEntriesResponse : Result (HttpEx.Error String) ( Http.Metadata, Stri
 loadCalendarEntriesResponse response model =
     case response of
         Ok value ->
-            { model | calendarEntries = calendarEntriesDecoder value }
+            let
+                resp =
+                    calendarEntriesDecoder value
+            in
+            case resp of
+                Ok calendarEntries ->
+                    { model | calendarEntries = calendarEntries }
+
+                Err error ->
+                    { model | problems = [ error ] }
 
         Err error ->
-            --TODO beim decodieren des Fehlers ist was scheifgelaufen
-            { model | calendarEntries = [ CalendarEntry "fehler beim request" "" ] }
+            { model | problems = calendarErrorDecoder error }
 
 
-calendarEntriesDecoder : ( Http.Metadata, String ) -> List CalendarEntry
+calendarEntriesDecoder : ( Http.Metadata, String ) -> Result String (List CalendarEntry)
 calendarEntriesDecoder ( meta, body ) =
     let
         decode =
@@ -83,11 +93,10 @@ calendarEntriesDecoder ( meta, body ) =
     in
     case decode of
         Ok calendarEntry ->
-            [ calendarEntry ]
+            Ok [ calendarEntry ]
 
         Err error ->
-            --TODO beim decodieren des Fehlers ist was schiefgelaufen
-            [ CalendarEntry "fehler beim decodieren" "" ]
+            Err ("fehler beim decodieren des calendars" ++ Decode.errorToString error)
 
 
 calendarEntryDecoder : Decode.Decoder CalendarEntry
@@ -100,13 +109,22 @@ calendarEntryDecoder =
 
 view : Model -> Html Msg
 view model =
-    div [ class "calendar-entries" ]
-        [ h1 [] [ text "Kalendar Einträge" ]
-        , ListGroup.ul
-            (List.map
-                (\entry ->
-                    ListGroup.li [] [ text ("description: " ++ entry.description ++ ", date:" ++ entry.date) ]
+    div []
+        [ div [ class "calendar-entries" ]
+            [ h1 [] [ text "Kalendar Einträge" ]
+            , ListGroup.ul
+                (List.map
+                    (\entry ->
+                        ListGroup.li [] [ text ("description: " ++ entry.description ++ ", date:" ++ entry.date) ]
+                    )
+                    model.calendarEntries
                 )
-                model.calendarEntries
-            )
+            ]
+        , div [ class "error-messages" ]
+            (List.map viewProblem model.problems)
         ]
+
+
+viewProblem : String -> Html msg
+viewProblem problem =
+    Alert.simpleDanger [] [ text problem ]

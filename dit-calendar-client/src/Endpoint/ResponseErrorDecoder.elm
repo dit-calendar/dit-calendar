@@ -1,7 +1,12 @@
-module Endpoint.ResponseErrorDecoder exposing (registerErrorDecoder)
+module Endpoint.ResponseErrorDecoder exposing (calendarErrorDecoder, registerErrorDecoder)
 
 import Http.Detailed as HttpEx
 import Json.Decode as Decode
+
+
+calendarErrorDecoder : HttpEx.Error String -> List String
+calendarErrorDecoder responseError =
+    errorDecoder responseError calendarDecoder
 
 
 registerErrorDecoder : HttpEx.Error String -> List String
@@ -23,7 +28,14 @@ errorDecoder responseError responseDecoder =
 
                 Err error ->
                     --TODO beim decodieren des Fehlers ist was scheifgelaufen
-                    [ "beim decodieren des Fehlers ist was scheifgelaufen" ]
+                    [ "beim decodieren des Fehlers ist was scheifgelaufen. "
+                        ++ "StatusCode: "
+                        ++ String.fromInt metadata.statusCode
+                        ++ ", StatusCode: "
+                        ++ metadata.statusText
+                        ++ ", error message: "
+                        ++ Decode.errorToString error
+                    ]
 
         HttpEx.NetworkError ->
             -- TODO
@@ -44,3 +56,8 @@ registerDecoder =
     Decode.map
         ErrorResponse
         (Decode.at [ "jrData" ] Decode.string)
+
+
+calendarDecoder : Decode.Decoder ErrorResponse
+calendarDecoder =
+    Decode.map ErrorResponse Decode.string
