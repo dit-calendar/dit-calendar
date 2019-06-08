@@ -118,10 +118,10 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
-        CalendarMsg _ ->
+        CalendarMsg calendarMsg ->
             case model.page of
-                SimpleCalendar _ ->
-                    stepCalendar model (Calendar.update Calendar.PerformGetCalendarEntries Calendar.emptyModel)
+                SimpleCalendar calendar ->
+                    stepCalendar model (Calendar.update calendarMsg calendar)
 
                 _ ->
                     ( model, Cmd.none )
@@ -162,7 +162,12 @@ urlUpdate url model =
             ( { model | page = NotFound }, Cmd.none )
 
         Just route ->
-            ( { model | page = route }, Cmd.none )
+            case route of
+                SimpleCalendar _ ->
+                    stepCalendar model (Calendar.update Calendar.PerformGetCalendarEntries Calendar.emptyModel)
+
+                _ ->
+                    ( { model | page = route }, Cmd.none )
 
 
 decode : Url -> Maybe Page
