@@ -2,13 +2,11 @@ module Main exposing (Model, Msg(..), init, main, update, view)
 
 import Bootstrap.Grid as Grid
 import Bootstrap.Navbar as Navbar
-import Bootstrap.Utilities.Spacing as Spacing
 import Browser exposing (UrlRequest)
 import Browser.Navigation as Navigation
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Page.Login as Login
-import Page.Quote as Quote
 import Page.Register as Register exposing (RegisterModel)
 import Page.SimpleCalendar as Calendar
 import Url exposing (Url)
@@ -31,7 +29,6 @@ type alias Model =
 type Page
     = Login Login.Model
     | Register Register.Model
-    | Quote Quote.Model
     | SimpleCalendar Calendar.Model
     | NotFound
 
@@ -67,7 +64,6 @@ type Msg
     | LoginMsg Login.Msg
     | RegisterMsg Register.Msg
     | CalendarMsg Calendar.Msg
-    | QuoteMsg Quote.Msg
 
 
 subscriptions : Model -> Sub Msg
@@ -94,10 +90,10 @@ update msg model =
             , Cmd.none
             )
 
-        LoginMsg quote ->
+        LoginMsg loginMsg ->
             case model.page of
                 Login login ->
-                    stepLogin model (Login.update model.config.authUrl quote login)
+                    stepLogin model (Login.update model.config.authUrl loginMsg login)
 
                 _ ->
                     ( model, Cmd.none )
@@ -106,14 +102,6 @@ update msg model =
             case model.page of
                 Register register ->
                     stepRegister model (Register.update model.config.authUrl regMsg register)
-
-                _ ->
-                    ( model, Cmd.none )
-
-        QuoteMsg login ->
-            case model.page of
-                Quote quote ->
-                    stepQuote model (Quote.update login quote)
 
                 _ ->
                     ( model, Cmd.none )
@@ -138,13 +126,6 @@ stepRegister : Model -> ( Register.Model, Cmd Register.Msg ) -> ( Model, Cmd Msg
 stepRegister model ( register, cmds ) =
     ( { model | page = Register register }
     , Cmd.map RegisterMsg cmds
-    )
-
-
-stepQuote : Model -> ( Quote.Model, Cmd Quote.Msg ) -> ( Model, Cmd Msg )
-stepQuote model ( quote, cmds ) =
-    ( { model | page = Quote quote }
-    , Cmd.map QuoteMsg cmds
     )
 
 
@@ -187,7 +168,6 @@ routeParser =
         , UrlParser.map (Login { name = "", password = "" }) (s "login")
         , UrlParser.map (Register { register = reg, problems = [] }) (s "register")
         , UrlParser.map (SimpleCalendar Calendar.emptyModel) (s "calendar")
-        , UrlParser.map (Quote { quote = "" }) (s "quotes")
         ]
 
 
@@ -213,7 +193,6 @@ menuView model =
             [ Navbar.itemLink [ href "#login" ] [ text "Login" ]
             , Navbar.itemLink [ href "#register" ] [ text "Register" ]
             , Navbar.itemLink [ href "#calendar" ] [ text "Calendar" ]
-            , Navbar.itemLink [ Spacing.ml2Sm, href "#quotes" ] [ text "Quote" ]
             ]
         |> Navbar.view model.navState
 
@@ -227,9 +206,6 @@ mainContent model =
 
             Register register ->
                 [ Html.map RegisterMsg (Register.view register) ]
-
-            Quote quote ->
-                [ Html.map QuoteMsg (Quote.view quote) ]
 
             NotFound ->
                 pageNotFound
