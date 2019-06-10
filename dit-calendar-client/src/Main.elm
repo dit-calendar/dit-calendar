@@ -7,10 +7,10 @@ import Browser exposing (UrlRequest)
 import Browser.Navigation as Navigation
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
 import Page.Login as Login
 import Page.Quote as Quote
 import Page.Register as Register exposing (RegisterModel)
+import Page.SimpleCalendar as Calendar
 import Url exposing (Url)
 import Url.Parser as UrlParser exposing ((</>), Parser, s, top)
 
@@ -32,6 +32,7 @@ type Page
     = Login Login.Model
     | Register Register.Model
     | Quote Quote.Model
+    | SimpleCalendar Calendar.Model
     | NotFound
 
 
@@ -65,6 +66,7 @@ type Msg
     | NavMsg Navbar.State
     | LoginMsg Login.Msg
     | RegisterMsg Register.Msg
+    | CalendarMsg Calendar.Msg
     | QuoteMsg Quote.Msg
 
 
@@ -95,7 +97,7 @@ update msg model =
         LoginMsg quote ->
             case model.page of
                 Login login ->
-                    stepLogin model (Login.update  model.config.authUrl quote login)
+                    stepLogin model (Login.update model.config.authUrl quote login)
 
                 _ ->
                     ( model, Cmd.none )
@@ -112,6 +114,14 @@ update msg model =
             case model.page of
                 Quote quote ->
                     stepQuote model (Quote.update login quote)
+
+                _ ->
+                    ( model, Cmd.none )
+
+        CalendarMsg calendarMsg ->
+            case model.page of
+                SimpleCalendar calendar ->
+                    stepCalendar model (Calendar.update calendarMsg calendar)
 
                 _ ->
                     ( model, Cmd.none )
@@ -138,6 +148,13 @@ stepQuote model ( quote, cmds ) =
     )
 
 
+stepCalendar : Model -> ( Calendar.Model, Cmd Calendar.Msg ) -> ( Model, Cmd Msg )
+stepCalendar model ( calendar, cmds ) =
+    ( { model | page = SimpleCalendar calendar }
+    , Cmd.map CalendarMsg cmds
+    )
+
+
 urlUpdate : Url -> Model -> ( Model, Cmd Msg )
 urlUpdate url model =
     case decode url of
@@ -145,7 +162,12 @@ urlUpdate url model =
             ( { model | page = NotFound }, Cmd.none )
 
         Just route ->
-            ( { model | page = route }, Cmd.none )
+            case route of
+                SimpleCalendar _ ->
+                    stepCalendar model (Calendar.update Calendar.PerformGetCalendarEntries Calendar.emptyModel)
+
+                _ ->
+                    ( { model | page = route }, Cmd.none )
 
 
 decode : Url -> Maybe Page
@@ -164,6 +186,7 @@ routeParser =
         [ UrlParser.map (Login { name = "", password = "" }) top
         , UrlParser.map (Login { name = "", password = "" }) (s "login")
         , UrlParser.map (Register { register = reg, problems = [] }) (s "register")
+        , UrlParser.map (SimpleCalendar Calendar.emptyModel) (s "calendar")
         , UrlParser.map (Quote { quote = "" }) (s "quotes")
         ]
 
@@ -189,6 +212,7 @@ menuView model =
         |> Navbar.items
             [ Navbar.itemLink [ href "#login" ] [ text "Login" ]
             , Navbar.itemLink [ href "#register" ] [ text "Register" ]
+            , Navbar.itemLink [ href "#calendar" ] [ text "Calendar" ]
             , Navbar.itemLink [ Spacing.ml2Sm, href "#quotes" ] [ text "Quote" ]
             ]
         |> Navbar.view model.navState
@@ -210,6 +234,8 @@ mainContent model =
             NotFound ->
                 pageNotFound
 
+            SimpleCalendar calendars ->
+                [ Html.map CalendarMsg (Calendar.view calendars) ]
 
 
 pageNotFound : List (Html Msg)

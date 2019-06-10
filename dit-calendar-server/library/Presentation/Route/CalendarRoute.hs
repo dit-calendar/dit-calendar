@@ -33,6 +33,7 @@ routeCalendarEntry = do
             case eitherDecode body :: Either String CalendarDto.CalendarEntry of
                 Right newCalendar -> callIfAuthorized (CalendarController.createCalendarEntry newCalendar)
                 Left errorMessage -> badRequest errorMessage
+        GET -> callIfAuthorized CalendarController.calendarEntries
         other -> notImplemented other
 
 
