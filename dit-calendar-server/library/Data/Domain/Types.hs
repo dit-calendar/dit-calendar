@@ -9,8 +9,10 @@ module Data.Domain.Types
     , Entry(..)
     , EitherResponse
     , ResponseError(..)
+    , UserIdIndex(..)
     ) where
 
+import           Data.Data     (Data, Typeable)
 import           Data.SafeCopy (base, deriveSafeCopy)
 import           Data.Text
 
@@ -28,6 +30,10 @@ type EntryId = Int
 type TaskId = Int
 
 type Description = Text
+
+newtype UserIdIndex = UserIdIndex UserId
+    deriving (Eq, Ord, Read, Show, Data, Typeable)
+$(deriveSafeCopy 0 'base ''UserIdIndex)
 
 class Entry a where
     getId :: a -> Int
