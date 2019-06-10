@@ -60,9 +60,14 @@ update msg model =
 
 loadCalendarEntries : Cmd Msg
 loadCalendarEntries =
-    Http.get
-        { url = "https://localhost:8443/calendarentries/2"
+    Http.riskyRequest
+        { method = "GET"
+        , headers = []
+        , url = "https://localhost:8443/calendarentries/"
+        , body = Http.emptyBody
         , expect = HttpEx.expectString GetCalendarEntriesResult
+        , timeout = Nothing
+        , tracker = Nothing
         }
 
 
