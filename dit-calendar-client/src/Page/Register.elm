@@ -2,7 +2,7 @@ module Page.Register exposing (Model, Msg(..), RegisterModel, init, update, view
 
 import Bootstrap.Alert as Alert
 import Browser
-import Endpoint.ResponseErrorDecoder exposing (registerErrorDecoder)
+import Endpoint.ResponseErrorDecoder exposing (authErrorDecoder)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -96,7 +96,7 @@ registerResponse response model =
             model
 
         Err error ->
-            { model | problems = registerErrorDecoder error }
+            { model | problems = authErrorDecoder error }
 
 
 view : Model -> Html Msg

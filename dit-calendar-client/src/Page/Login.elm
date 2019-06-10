@@ -1,9 +1,12 @@
 module Page.Login exposing (Model, Msg(..), init, update, view, viewInput)
 
+import Bootstrap.Alert as Alert
+import Endpoint.ResponseErrorDecoder exposing (authErrorDecoder)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http exposing (Body, Expect, riskyRequest)
+import Http.Detailed as HttpEx
 import Json.Decode as Decode exposing (Decoder, Value, decodeString, field, string)
 import Json.Encode as Encode
 
@@ -11,19 +14,20 @@ import Json.Encode as Encode
 type alias Model =
     { name : String
     , password : String
+    , problems : List String
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model "" "", Cmd.none )
+    ( Model "" "" [], Cmd.none )
 
 
 type Msg
     = Name String
     | Password String
     | Login
-    | HttpLogin (Result Http.Error ())
+    | HttpLogin (Result (HttpEx.Error String) ( Http.Metadata, String ))
 
 
 update : String -> Msg -> Model -> ( Model, Cmd Msg )
@@ -36,10 +40,11 @@ update authUrl msg model =
             ( { model | password = password }, Cmd.none )
 
         Login ->
-            (model, login authUrl model)
+            ( model, login authUrl model )
 
         HttpLogin result ->
-                    (model, Cmd.none)
+            ( loginResponse result model, Cmd.none )
+
 
 view : Model -> Html Msg
 view model =
@@ -50,7 +55,14 @@ view model =
             [ button [ onClick Login ]
                 [ text "Submit" ]
             ]
+        , div [ class "error-messages" ]
+            (List.map viewProblem model.problems)
         ]
+
+
+viewProblem : String -> Html msg
+viewProblem problem =
+    Alert.simpleDanger [] [ text problem ]
 
 
 viewInput : String -> String -> String -> (String -> msg) -> Html msg
@@ -58,18 +70,27 @@ viewInput t p v toMsg =
     input [ type_ t, placeholder p, value v, onInput toMsg ] []
 
 
-
 login : String -> Model -> Cmd Msg
 login authUrl model =
-  Http.riskyRequest
-    { method = "POST"
+    Http.riskyRequest
+        { method = "POST"
         , headers = []
         , url = authUrl ++ "token"
         , body = Http.jsonBody (loginEncoder model)
-        , expect = Http.expectWhatever HttpLogin
+        , expect = HttpEx.expectString HttpLogin
         , timeout = Nothing
         , tracker = Nothing
         }
+
+
+loginResponse : Result (HttpEx.Error String) ( Http.Metadata, String ) -> Model -> Model
+loginResponse response model =
+    case response of
+        Ok value ->
+            model
+
+        Err error ->
+            { model | problems = authErrorDecoder error }
 
 
 loginEncoder : Model -> Encode.Value

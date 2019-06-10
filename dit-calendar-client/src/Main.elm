@@ -52,7 +52,7 @@ init flags url key =
             Navbar.initialState NavMsg
 
         ( model, urlCmd ) =
-            urlUpdate url { navKey = key, navState = navState, page = Login { name = "", password = "" }, config = flags }
+            urlUpdate url { navKey = key, navState = navState, page = Login { name = "", password = "", problems = [] }, config = flags }
     in
     ( model, Cmd.batch [ urlCmd, navCmd ] )
 
@@ -164,8 +164,8 @@ routeParser =
             RegisterModel "" "" "" ""
     in
     UrlParser.oneOf
-        [ UrlParser.map (Login { name = "", password = "" }) top
-        , UrlParser.map (Login { name = "", password = "" }) (s "login")
+        [ UrlParser.map (Login { name = "", password = "", problems = [] }) top
+        , UrlParser.map (Login { name = "", password = "", problems = [] }) (s "login")
         , UrlParser.map (Register { register = reg, problems = [] }) (s "register")
         , UrlParser.map (SimpleCalendar Calendar.emptyModel) (s "calendar")
         ]
