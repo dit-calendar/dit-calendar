@@ -97,19 +97,19 @@ calendarEntriesDecoder ( meta, body ) =
             Decode.decodeString calendarEntryDecoder body
     in
     case decode of
-        Ok calendarEntry ->
-            Ok [ calendarEntry ]
+        Ok calendarEntries ->
+            Ok calendarEntries
 
         Err error ->
             Err ("fehler beim decodieren des calendars" ++ Decode.errorToString error)
 
 
-calendarEntryDecoder : Decode.Decoder CalendarEntry
+calendarEntryDecoder : Decode.Decoder (List CalendarEntry)
 calendarEntryDecoder =
-    Decode.map2
+    Decode.list (Decode.map2
         CalendarEntry
         (Decode.at [ "description" ] Decode.string)
-        (Decode.field "date" Decode.string)
+        (Decode.field "date" Decode.string))
 
 
 view : Model -> Html Msg
