@@ -1,6 +1,7 @@
 module Page.Login exposing (Model, Msg(..), init, update, view, viewInput)
 
 import Bootstrap.Alert as Alert
+import Browser.Navigation as Navigation
 import Endpoint.ResponseErrorDecoder exposing (authErrorDecoder)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -43,7 +44,12 @@ update authUrl msg model =
             ( model, login authUrl model )
 
         HttpLogin result ->
-            ( loginResponse result model, Cmd.none )
+            case result of
+                Ok _ ->
+                    ( model, Navigation.load "#calendar" )
+
+                Err error ->
+                    ( loginResponse error model, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -83,14 +89,9 @@ login authUrl model =
         }
 
 
-loginResponse : Result (HttpEx.Error String) ( Http.Metadata, String ) -> Model -> Model
-loginResponse response model =
-    case response of
-        Ok value ->
-            model
-
-        Err error ->
-            { model | problems = authErrorDecoder error }
+loginResponse : HttpEx.Error String -> Model -> Model
+loginResponse error model =
+    { model | problems = authErrorDecoder error }
 
 
 loginEncoder : Model -> Encode.Value
