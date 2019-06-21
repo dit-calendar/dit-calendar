@@ -38,7 +38,7 @@ mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBTaskRepo, MonadDBCalendarRepo |
 userFromDb = def{ loginName="Foo", User.userId=10, belongingTasks=[1,2,3] }
 taskFromDb = def { Task.description="task1", taskId=1, startTime=Nothing, endTime=Nothing}
 dbDate = read "2011-11-19 18:28:52.607875 UTC"::UTCTime
-entryFromDb = def { CalendarEntry.description="termin2", entryId=1, CalendarEntry.userId=10, date=dbDate}
+entryFromDb = def { CalendarEntry.description="termin2", entryId=1, CalendarEntry.userId=10, date=dbDate, tasks=[1,2]}
 newDate = read "2012-11-19 17:51:42.203841 UTC"::UTCTime
 newCalendar = def {CalendarEntry.date = newDate, CalendarEntry.description ="termin2"}
 
@@ -76,3 +76,8 @@ spec = describe "CalendarEntryServiceSpec" $ do
         log!!3 `shouldBe` show (Task.taskId taskFromDb)
         -- Test CalendarRepo calls
         log!!4 `shouldBe` show (Task.taskId taskFromDb)
+    it "getTasks" $ do
+        let calc = def { CalendarEntry.description="termin2", entryId=4, CalendarEntry.userId=2, tasks=[1]}
+        let (result, _) = evalTestFixture (CalendarEntryService.getCalendarTasksIml entryFromDb) fixture
+        length result `shouldBe` 2
+

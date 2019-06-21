@@ -4,7 +4,7 @@
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Data.Service.CalendarEntry ( createEntryImpl, removeCalendarImpl, CalendarEntryService(..) ) where
+module Data.Service.CalendarEntry ( createEntryImpl, removeCalendarImpl, CalendarEntryService(..), getCalendarTasksIml ) where
 
 import           Control.Monad.IO.Class
 import           Data.Maybe                         (fromJust)
@@ -12,7 +12,7 @@ import           Data.Maybe                         (fromJust)
 import           AcidHelper                         (App)
 import           Data.Domain.CalendarEntry          as CalendarEntry
 import           Data.Domain.Task                   as Task
-import           Data.Domain.Types                  (Description)
+import           Data.Domain.Types                  (Description, TaskId)
 import           Data.Domain.User                   as User
 import           Data.Repository.Acid.CalendarEntry (CalendarDAO)
 import           Data.Repository.Acid.Task          (TaskDAO)
@@ -52,11 +52,23 @@ deleteCalendarsTasks calendar =
         MonadDBTaskRepo.deleteTask $ Task.taskId (fromJust task) ))
     (return ()) $ CalendarEntry.tasks calendar
 
+-- https://en.wikibooks.org/wiki/Haskell/do_notation#The_fail_method
+getTaskWithFail :: (MonadDBTaskRepo m) => TaskId -> m Task
+getTaskWithFail taskId = do
+    Just task <- MonadDBTaskRepo.findTaskById taskId
+    return task
+
+getCalendarTasksIml :: (MonadDBTaskRepo m, MonadIO m)
+                                    => CalendarEntry -> m [Task]
+getCalendarTasksIml calendar = mapM getTaskWithFail (CalendarEntry.tasks calendar)
+
 class CalendarEntryService m where
     createEntry :: CalendarEntry -> User -> m CalendarEntry
     removeCalendar :: CalendarEntry -> m ()
+    getCalendarTasks :: CalendarEntry -> m [Task]
 
 instance (MonadDBUserRepo App, MonadDBTaskRepo App, MonadDBCalendarRepo App)
             => CalendarEntryService App where
     createEntry = createEntryImpl
     removeCalendar = removeCalendarImpl
+    getCalendarTasks = getCalendarTasksIml

@@ -20,12 +20,20 @@ import           Presentation.ResponseHelper    (onEntryExist, onTaskExist,
 
 import qualified Data.Repository.CalendarRepo   as CalendarRepo
 import qualified Data.Repository.TaskRepo       as TaskRepo
+import qualified Data.Service.CalendarEntry     as CalendarService
 import qualified Data.Service.Task              as TaskService
 
 
 --handler for taskPage
 taskPage :: TaskId -> App Response
 taskPage i = onTaskExist i (return . Right . transformToDto)
+
+calendarTasks :: EntryId -> DomainUser.User -> App Response
+calendarTasks entryId user = onEntryExist entryId getTasks
+    where
+        getTasks cEntry = do
+              result <- CalendarService.getCalendarTasks cEntry
+              return $ Right (map transformToDto result)
 
 createTask :: EntryId -> TaskDto.Task -> App Response
 createTask calendarId taskDto =
@@ -56,7 +64,7 @@ deleteTask :: EntryId -> TaskId -> DomainUser.User -> App Response
 deleteTask entryId taskId loggedUser = do
     mEntry <- CalendarRepo.findCalendarById entryId
     case mEntry of
-        Nothing ->  notFound $ toResponse $ "Could not find a calendar entry with id " ++ show taskId
+        Nothing ->  notFound $ toResponse $ "Could not find a calendar entry with id " ++ show entryId
         Just entry -> onTaskExist taskId (\t -> do
             TaskService.deleteTaskAndCascadeImpl entry t
             return $ Right ())
