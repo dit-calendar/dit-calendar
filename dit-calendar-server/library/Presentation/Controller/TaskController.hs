@@ -67,5 +67,5 @@ deleteTask entryId taskId loggedUser = do
     case mEntry of
         Nothing ->  notFound $ toResponse $ "Could not find a calendar entry with id " ++ show entryId
         Just entry -> onTaskExist taskId (\t -> do
-            TaskService.deleteTaskAndCascadeImpl entry t
+            TaskService.deleteTaskAndCascade entry t
             return $ Right ())
