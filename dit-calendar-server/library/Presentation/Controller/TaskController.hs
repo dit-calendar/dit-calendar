@@ -12,7 +12,8 @@ import           Data.Domain.Types              (Description, EntryId, TaskId,
                                                  UserId)
 import           Data.Domain.User               as DomainUser (User (..))
 import           Presentation.Dto.Task          as TaskDto (Task (..))
-import           Presentation.Mapper.BaseMapper (transformToDtoE)
+import           Presentation.Mapper.BaseMapper (transformToDtoE,
+                                                 transformToDtoList)
 import           Presentation.Mapper.TaskMapper (transformFromDto,
                                                  transformToDto)
 import           Presentation.ResponseHelper    (onEntryExist, onTaskExist,
@@ -33,7 +34,7 @@ calendarTasks entryId user = onEntryExist entryId getTasks
     where
         getTasks cEntry = do
               result <- CalendarService.getCalendarTasks cEntry
-              return $ Right (map transformToDto result)
+              return $ Right (transformToDtoList result)
 
 createTask :: EntryId -> TaskDto.Task -> App Response
 createTask calendarId taskDto =

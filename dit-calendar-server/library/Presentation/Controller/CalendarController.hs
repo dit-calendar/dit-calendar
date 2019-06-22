@@ -8,11 +8,13 @@ import           AcidHelper                              (App)
 import           Data.Domain.CalendarEntry               as CalendarEntry
 import           Data.Domain.Types                       (Description, EntryId,
                                                           UserId)
-import           Presentation.Mapper.BaseMapper          (transformToDtoE)
+import           Presentation.Mapper.BaseMapper          (transformToDtoE,
+                                                          transformToDtoList)
 import           Presentation.Mapper.CalendarEntryMapper (transformFromDto,
                                                           transformToDto)
-import           Presentation.ResponseHelper             (onEntryExist,
-                                                          onUserExist, okResponseJson)
+import           Presentation.ResponseHelper             (okResponseJson,
+                                                          onEntryExist,
+                                                          onUserExist)
 
 import qualified Data.Domain.User                        as DomainUser
 import qualified Data.Repository.CalendarRepo            as CalendarRepo
@@ -22,8 +24,7 @@ import qualified Presentation.Dto.CalendarEntry          as CalendarDto
 calendarEntries :: DomainUser.User -> App Response
 calendarEntries user = do
     result <- CalendarRepo.findAllCalendarEntries user
-    let dtos = map transformToDto result
-    okResponseJson $ encode dtos
+    okResponseJson $ encode (transformToDtoList result)
 
 
 entryPage :: EntryId -> App Response
