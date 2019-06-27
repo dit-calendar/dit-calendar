@@ -1,4 +1,4 @@
-module Page.CalendarEntryDetails exposing (Model, Msg(..), initModel, main, update, view)
+module Page.CalendarEntryDetails exposing (Model, Msg(..), init, update, view)
 
 import Bootstrap.Grid as Grid
 import Bootstrap.ListGroup as ListGroup
@@ -35,16 +35,6 @@ initModel cal =
 type Msg
     = GetCalendarEntryTasks
     | GetCalendarEntryTasksResult (Result (HttpEx.Error String) ( Http.Metadata, String ))
-
-
-main : Program () Model Msg
-main =
-    Browser.element
-        { init = init
-        , view = view
-        , update = update
-        , subscriptions = \_ -> Sub.none
-        }
 
 
 init : SimpleCal.CalendarEntry -> ( Model, Cmd Msg )

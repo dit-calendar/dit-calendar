@@ -6,6 +6,7 @@ import Browser
 import Endpoint.ResponseErrorDecoder exposing (calendarErrorDecoder)
 import Html exposing (Html, div, h1, text)
 import Html.Attributes exposing (class)
+import Html.Events exposing (onClick)
 import Http
 import Http.Detailed as HttpEx
 import Json.Decode as Decode exposing (Value)
@@ -31,6 +32,7 @@ emptyModel =
 type Msg
     = PerformGetCalendarEntries
     | GetCalendarEntriesResult (Result (HttpEx.Error String) ( Http.Metadata, String ))
+    | OpenCalendarDetialsView CalendarEntry
 
 
 main : Program () Model Msg
@@ -56,6 +58,10 @@ update msg model =
 
         GetCalendarEntriesResult result ->
             ( loadCalendarEntriesResponse result model, Cmd.none )
+
+        OpenCalendarDetialsView _ ->
+            --TODO rais logic error exception
+            ( model, Cmd.none )
 
 
 loadCalendarEntries : Cmd Msg
@@ -106,10 +112,12 @@ calendarEntriesDecoder ( meta, body ) =
 
 calendarEntryDecoder : Decode.Decoder (List CalendarEntry)
 calendarEntryDecoder =
-    Decode.list (Decode.map2
-        CalendarEntry
-        (Decode.at [ "description" ] Decode.string)
-        (Decode.field "date" Decode.string))
+    Decode.list
+        (Decode.map2
+            CalendarEntry
+            (Decode.at [ "description" ] Decode.string)
+            (Decode.field "date" Decode.string)
+        )
 
 
 view : Model -> Html Msg
@@ -117,10 +125,10 @@ view model =
     div []
         [ div [ class "calendar-entries" ]
             [ h1 [] [ text "Kalendar Einträge" ]
-            , ListGroup.ul
+            , ListGroup.custom
                 (List.map
                     (\entry ->
-                        ListGroup.li [] [ text ("description: " ++ entry.description ++ ", date:" ++ entry.date) ]
+                        ListGroup.anchor [ ListGroup.attrs [ onClick (OpenCalendarDetialsView entry) ] ] [ text ("description: " ++ entry.description ++ ", date:" ++ entry.date) ]
                     )
                     model.calendarEntries
                 )
