@@ -9,5 +9,6 @@ The backend is build on happstack in haskell.
 ## dit-calendar-client
 Very simple web-ui written in elm. For creating events and tasks from the perspective of the organization group.
 
-## dit-calendar-boot coming soon
+## dit-calendar-bot
+coming soon
 Telegram bot for user <-> task assignment
