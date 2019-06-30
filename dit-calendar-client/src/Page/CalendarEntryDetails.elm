@@ -1,10 +1,11 @@
 module Page.CalendarEntryDetails exposing (Model, Msg(..), init, update, view)
 
+import Bootstrap.Alert as Alert
 import Bootstrap.Grid as Grid
 import Bootstrap.ListGroup as ListGroup
-import Browser
 import Endpoint.ResponseErrorDecoder exposing (calendarErrorDecoder)
-import Html exposing (Html, text)
+import Html exposing (Html, div, text)
+import Html.Attributes exposing (class)
 import Http
 import Http.Detailed as HttpEx
 import Json.Decode as Decode exposing (Value)
@@ -96,7 +97,7 @@ calendarEntryTasksDecoder ( meta, body ) =
             Ok calendarEntries
 
         Err error ->
-            Err ("fehler beim decodieren des calendars" ++ Decode.errorToString error)
+            Err ("fehler beim decodieren der calendars taks" ++ Decode.errorToString error)
 
 
 tasksDecoder : Decode.Decoder Task
@@ -108,24 +109,33 @@ tasksDecoder =
 
 
 view : Model -> Html Msg
-view calendarEntryDetails =
+view model =
     let
         calendarInfo =
-            calendarEntryDetails.calendarEntry
+            model.calendarEntry
 
         tasks =
-            calendarEntryDetails.tasks
+            model.tasks
     in
-    Grid.container []
-        [ Grid.row []
-            [ Grid.col [] [ text ("description: " ++ calendarInfo.description) ]
-            , Grid.col [] [ text ("date:" ++ calendarInfo.date) ]
-            ]
-        , ListGroup.ul
-            (List.map
-                (\task ->
-                    ListGroup.li [] [ text ("task: " ++ getBla task) ]
+    div []
+        [ Grid.container []
+            [ Grid.row []
+                [ Grid.col [] [ text ("description: " ++ calendarInfo.description) ]
+                , Grid.col [] [ text ("date:" ++ calendarInfo.date) ]
+                ]
+            , ListGroup.ul
+                (List.map
+                    (\task ->
+                        ListGroup.li [] [ text ("task: " ++ getBla task) ]
+                    )
+                    tasks
                 )
-                tasks
-            )
+            ]
+        , div [ class "error-messages" ]
+            (List.map viewProblem model.problems)
         ]
+
+
+viewProblem : String -> Html msg
+viewProblem problem =
+    Alert.simpleDanger [] [ text problem ]
