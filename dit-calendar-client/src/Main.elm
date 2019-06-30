@@ -169,20 +169,11 @@ urlUpdate url model =
         Just route ->
             case route of
                 SimpleCalendar _ ->
+                    -- needed to perform request if url was changed
                     stepCalendar model (Calendar.update Calendar.PerformGetCalendarEntries Calendar.emptyModel)
 
                 _ ->
                     ( { model | page = route }, Cmd.none )
-
-
-
---urlUpdate : Url -> Model -> ( Model, Cmd Msg )
---urlUpdate url model =
---    case decode url of
---        Nothing ->
---            ( { model | page = NotFound }, Cmd.none )
---        Just route ->
---            ( { model | page = route }, Cmd.none )
 
 
 decode : Url -> Maybe Page
