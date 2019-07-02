@@ -80,6 +80,11 @@ curl -X GET https://localhost:8443/users/1 --insecure
 curl -H "Content-Type: application/json" -H "Authorization: Bearer xxx" -X GET https://localhost:8443/calendarentries/1 --insecure
 ```
 
+### show calendar of logged in user
+```sh
+curl -H "Content-Type: application/json" -H "Authorization: Bearer xxx" -X GET https://localhost:8443/calendarentries/ --insecure
+```
+
 ### create calendar
 ```sh
 curl -H "Content-Type: application/json" -H "Authorization: Bearer XXX" -X POST -d '{"description":"testHeute","date":"2011-11-19T18:28:52.607875Z"}' https://localhost:8443/calendarentries --insecure
@@ -95,6 +100,11 @@ curl -H "Content-Type: application/json" -H "Authorization: Bearer XX" -X PUT -d
 ### show task
 ```sh
 curl -H "Content-Type: application/json" -H "Authorization: Bearer xxx" -X GET https://localhost:8443/calendarentries/1/tasks/1 --insecure
+```
+
+### show task of calendar
+```sh
+curl -H "Content-Type: application/json" -H "Authorization: Bearer xxx" -X GET https://localhost:8443/calendarentries/2/tasks --insecure
 ```
 
 ### create task

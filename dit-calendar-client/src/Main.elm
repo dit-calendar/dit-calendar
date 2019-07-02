@@ -6,6 +6,7 @@ import Browser exposing (UrlRequest)
 import Browser.Navigation as Navigation
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Page.CalendarEntryDetails as CalendarEntryDetails
 import Page.Login as Login
 import Page.Register as Register exposing (RegisterModel)
 import Page.SimpleCalendar as Calendar
@@ -30,6 +31,7 @@ type Page
     = Login Login.Model
     | Register Register.Model
     | SimpleCalendar Calendar.Model
+    | CalendarDetails CalendarEntryDetails.Model
     | NotFound
 
 
@@ -64,6 +66,7 @@ type Msg
     | LoginMsg Login.Msg
     | RegisterMsg Register.Msg
     | CalendarMsg Calendar.Msg
+    | CalendarDetailMsg CalendarEntryDetails.Msg
 
 
 subscriptions : Model -> Sub Msg
@@ -96,6 +99,7 @@ update msg model =
                     stepLogin model (Login.update model.config.authUrl loginMsg login)
 
                 _ ->
+                    --TODO kann das enfernt werden?
                     ( model, Cmd.none )
 
         RegisterMsg regMsg ->
@@ -107,9 +111,22 @@ update msg model =
                     ( model, Cmd.none )
 
         CalendarMsg calendarMsg ->
+            case calendarMsg of
+                Calendar.OpenCalendarDetialsView entry ->
+                    stepCalendarDetails model (CalendarEntryDetails.init entry)
+
+                _ ->
+                    case model.page of
+                        SimpleCalendar calendar ->
+                            stepCalendar model (Calendar.update calendarMsg calendar)
+
+                        _ ->
+                            ( model, Cmd.none )
+
+        CalendarDetailMsg calendarDetailMsg ->
             case model.page of
-                SimpleCalendar calendar ->
-                    stepCalendar model (Calendar.update calendarMsg calendar)
+                CalendarDetails calendarDetails ->
+                    stepCalendarDetails model (CalendarEntryDetails.update calendarDetailMsg calendarDetails)
 
                 _ ->
                     ( model, Cmd.none )
@@ -136,6 +153,13 @@ stepCalendar model ( calendar, cmds ) =
     )
 
 
+stepCalendarDetails : Model -> ( CalendarEntryDetails.Model, Cmd CalendarEntryDetails.Msg ) -> ( Model, Cmd Msg )
+stepCalendarDetails model ( calendarDetail, cmds ) =
+    ( { model | page = CalendarDetails calendarDetail }
+    , Cmd.map CalendarDetailMsg cmds
+    )
+
+
 urlUpdate : Url -> Model -> ( Model, Cmd Msg )
 urlUpdate url model =
     case decode url of
@@ -145,6 +169,7 @@ urlUpdate url model =
         Just route ->
             case route of
                 SimpleCalendar _ ->
+                    -- needed to perform request if url was changed
                     stepCalendar model (Calendar.update Calendar.PerformGetCalendarEntries Calendar.emptyModel)
 
                 _ ->
@@ -212,6 +237,9 @@ mainContent model =
 
             SimpleCalendar calendars ->
                 [ Html.map CalendarMsg (Calendar.view calendars) ]
+
+            CalendarDetails calendarDetail ->
+                [ Html.map CalendarDetailMsg (CalendarEntryDetails.view calendarDetail) ]
 
 
 pageNotFound : List (Html Msg)

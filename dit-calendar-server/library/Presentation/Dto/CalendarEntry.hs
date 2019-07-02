@@ -18,7 +18,6 @@ data CalendarEntry = CalendarEntry
     { description :: Maybe Text
     , entryId     :: Maybe Int
     , version     :: Maybe Int
-    , tasks       :: Maybe [Int]
     , date        :: UTCTime
     } deriving (Show, Generic)
 
@@ -29,4 +28,4 @@ instance FromJSON CalendarEntry where
     parseJSON = genericParseJSON defaultOptions { omitNothingFields = True }
 
 instance Default CalendarEntry where
-    def = CalendarEntry {entryId = Nothing, version = Nothing, tasks = Nothing}
+    def = CalendarEntry {entryId = Nothing, version = Nothing}

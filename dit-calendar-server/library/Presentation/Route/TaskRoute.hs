@@ -8,10 +8,10 @@ import           Data.Aeson                             (eitherDecode)
 import           Happstack.Server                       (Method (DELETE, GET, POST, PUT),
                                                          Response, look)
 
+import           AcidHelper                             (App)
 import           Auth.Authorization                     (callIfAuthorized)
 import           Data.Domain.Types                      (EntryId, TaskId,
                                                          UserId)
-import           AcidHelper                (App)
 import           Presentation.Dto.Task                  as TaskDto (Task (..))
 import           Presentation.HttpServerHelper          (getBody, getHttpMethod)
 import           Presentation.ResponseHelper            (badRequest,
@@ -30,6 +30,7 @@ routeTask entryId = do
                  Right taskDto ->
                       TaskController.createTask entryId taskDto
                  Left errorMessage -> badRequest errorMessage
+        GET -> callIfAuthorized (TaskController.calendarTasks entryId)
         other -> notImplemented other
 
 routeTaskDetail :: EntryId ->  TaskId -> App Response
@@ -51,5 +52,5 @@ routeTaskWithUser entryId taskId = do
     m <- getHttpMethod
     case m of
         DELETE -> callIfAuthorized (TaskController.removeUserFromTask taskId)
-        PUT -> callIfAuthorized (TaskController.addUserToTask taskId)
-        other -> notImplemented other
+        PUT    -> callIfAuthorized (TaskController.addUserToTask taskId)
+        other  -> notImplemented other
