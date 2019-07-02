@@ -128,7 +128,7 @@ view model =
             , ListGroup.custom
                 (List.map
                     (\entry ->
-                        ListGroup.anchor [ ListGroup.attrs [ onClick (OpenCalendarDetialsView entry) ] ] [ text ("description: " ++ entry.description ++ ", date:" ++ entry.date) ]
+                        ListGroup.button [ ListGroup.attrs [ onClick (OpenCalendarDetialsView entry) ] ] [ text ("description: " ++ entry.description ++ ", date:" ++ entry.date) ]
                     )
                     model.calendarEntries
                 )
