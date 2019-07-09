@@ -38,9 +38,11 @@ mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBTaskRepo, MonadDBCalendarRepo |
 userFromDb = def{ loginName="Foo", User.userId=10, belongingTasks=[1,2,3] }
 taskFromDb = def { Task.description="task1", taskId=1, startTime=Nothing, endTime=Nothing}
 dbDate = read "2011-11-19 18:28:52.607875 UTC"::UTCTime
-entryFromDb = def { CalendarEntry.description="termin2", entryId=1, CalendarEntry.userId=10, date=dbDate, tasks=[1,2]}
+entryFromDb = def { CalendarEntry.description="termin2", entryId=1, CalendarEntry.userId=10, tasks=[1,2],
+        startDate=dbDate, endDate=dbDate}
 newDate = read "2012-11-19 17:51:42.203841 UTC"::UTCTime
-newCalendar = def {CalendarEntry.date = newDate, CalendarEntry.description ="termin2"}
+newCalendar = def {CalendarEntry.startDate = newDate, CalendarEntry.endDate=dbDate,
+    CalendarEntry.description ="termin2"}
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture { _createCalendarEntry = \a -> tell [show a] >> return entryFromDb

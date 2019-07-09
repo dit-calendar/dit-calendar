@@ -20,7 +20,8 @@ data CalendarEntry = CalendarEntry
     , version     :: Int
     , userId      :: UserId
     , tasks       :: [TaskId]
-    , date        :: UTCTime
+    , startDate   :: UTCTime
+    , endDate     :: UTCTime
     } deriving (Eq, Ord, Read, Show, Data, Typeable)
 
 $(deriveSafeCopy 0 'base ''CalendarEntry)

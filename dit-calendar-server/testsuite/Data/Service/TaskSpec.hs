@@ -38,8 +38,9 @@ mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBTaskRepo, MonadDBCalendarRepo |
 dbDate = read "2011-11-19 18:28:52.607875 UTC"::UTCTime
 userFromDb = def{ loginName="Foo", User.userId=10, belongingTasks=[1,2,3] }
 taskFromDb = def{ Task.description="task1", taskId=5, startTime=Nothing, endTime=Nothing}
-entryFromDb = def { CalendarEntry.description="termin2", entryId=1, CalendarEntry.date=dbDate,
-        CalendarEntry.userId=10, CalendarEntry.tasks = [1, 2]}
+entryFromDb = def { CalendarEntry.description="termin2", entryId=1, CalendarEntry.userId=10,
+        CalendarEntry.startDate=dbDate, CalendarEntry.endDate=dbDate,
+        CalendarEntry.tasks = [1, 2]}
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture { _addTaskToCalendarEntry = \entry taskId -> tell [show entry] >> tell [show taskId] >>= (\_ -> return $ Right entry)
@@ -69,7 +70,8 @@ spec = describe "TaskServiceSpec" $ do
         log!!5 `shouldBe` show (Task.taskId task)
     it "createTaskInCalendar" $ do
         let newDate = read "2011-11-19 18:28:52.607875 UTC"::UTCTime
-        let calc = def{ CalendarEntry.description="termin2", entryId=1, CalendarEntry.userId=2, date=newDate}
+        let calc = def{ CalendarEntry.description="termin2", entryId=1, CalendarEntry.userId=2,
+            startDate=newDate, endDate=newDate}
         let (result, log) = evalTestFixture (TaskService.createTaskInCalendarImpl calc taskFromDb) fixture
         result `shouldBe` taskFromDb
         log!!0 `shouldBe` show calc

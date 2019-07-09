@@ -18,7 +18,8 @@ data CalendarEntry = CalendarEntry
     { description :: Maybe Text
     , entryId     :: Maybe Int
     , version     :: Maybe Int
-    , date        :: UTCTime
+    , startDate   :: UTCTime
+    , endDate     :: UTCTime
     } deriving (Show, Generic)
 
 instance ToJSON CalendarEntry where
