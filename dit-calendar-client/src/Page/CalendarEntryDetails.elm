@@ -1,4 +1,4 @@
-module Page.CalendarEntryDetails exposing (Model, Msg(..), init, update, view)
+module Page.CalendarEntryDetails exposing (CalendarEntry, Model, Msg(..), init, update, view)
 
 import Bootstrap.Alert as Alert
 import Bootstrap.Grid as Grid
@@ -9,7 +9,12 @@ import Html.Attributes exposing (class)
 import Http
 import Http.Detailed as HttpEx
 import Json.Decode as Decode exposing (Value)
-import Page.SimpleCalendar as SimpleCal
+
+
+type alias CalendarEntry =
+    { description : String
+    , date : String
+    }
 
 
 type Task
@@ -22,13 +27,13 @@ getBla (Task str) =
 
 
 type alias Model =
-    { calendarEntry : SimpleCal.CalendarEntry
+    { calendarEntry : CalendarEntry
     , tasks : List Task
     , problems : List String
     }
 
 
-initModel : SimpleCal.CalendarEntry -> Model
+initModel : CalendarEntry -> Model
 initModel cal =
     { calendarEntry = cal, tasks = [], problems = [] }
 
@@ -38,7 +43,7 @@ type Msg
     | GetCalendarEntryTasksResult (Result (HttpEx.Error String) ( Http.Metadata, String ))
 
 
-init : SimpleCal.CalendarEntry -> ( Model, Cmd Msg )
+init : CalendarEntry -> ( Model, Cmd Msg )
 init cal =
     update GetCalendarEntryTasks (initModel cal)
 

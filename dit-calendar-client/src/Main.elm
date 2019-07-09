@@ -9,7 +9,7 @@ import Html.Attributes exposing (..)
 import Page.CalendarEntryDetails as CalendarEntryDetails
 import Page.Login as Login
 import Page.Register as Register exposing (RegisterModel)
-import Page.SimpleCalendar as Calendar
+import Page.SimpleCalendarList as CalendarList
 import Url exposing (Url)
 import Url.Parser as UrlParser exposing ((</>), Parser, s, top)
 
@@ -30,7 +30,7 @@ type alias Model =
 type Page
     = Login Login.Model
     | Register Register.Model
-    | SimpleCalendar Calendar.Model
+    | SimpleCalendar CalendarList.Model
     | CalendarDetails CalendarEntryDetails.Model
     | NotFound
 
@@ -65,7 +65,7 @@ type Msg
     | NavMsg Navbar.State
     | LoginMsg Login.Msg
     | RegisterMsg Register.Msg
-    | CalendarMsg Calendar.Msg
+    | CalendarMsg CalendarList.Msg
     | CalendarDetailMsg CalendarEntryDetails.Msg
 
 
@@ -112,13 +112,13 @@ update msg model =
 
         CalendarMsg calendarMsg ->
             case calendarMsg of
-                Calendar.OpenCalendarDetialsView entry ->
+                CalendarList.OpenCalendarDetialsView entry ->
                     stepCalendarDetails model (CalendarEntryDetails.init entry)
 
                 _ ->
                     case model.page of
                         SimpleCalendar calendar ->
-                            stepCalendar model (Calendar.update calendarMsg calendar)
+                            stepCalendar model (CalendarList.update calendarMsg calendar)
 
                         _ ->
                             ( model, Cmd.none )
@@ -146,7 +146,7 @@ stepRegister model ( register, cmds ) =
     )
 
 
-stepCalendar : Model -> ( Calendar.Model, Cmd Calendar.Msg ) -> ( Model, Cmd Msg )
+stepCalendar : Model -> ( CalendarList.Model, Cmd CalendarList.Msg ) -> ( Model, Cmd Msg )
 stepCalendar model ( calendar, cmds ) =
     ( { model | page = SimpleCalendar calendar }
     , Cmd.map CalendarMsg cmds
@@ -170,7 +170,7 @@ urlUpdate url model =
             case route of
                 SimpleCalendar _ ->
                     -- needed to perform request if url was changed
-                    stepCalendar model (Calendar.update Calendar.PerformGetCalendarEntries Calendar.emptyModel)
+                    stepCalendar model (CalendarList.update CalendarList.PerformGetCalendarEntries CalendarList.emptyModel)
 
                 _ ->
                     ( { model | page = route }, Cmd.none )
@@ -192,7 +192,7 @@ routeParser =
         [ UrlParser.map (Login { name = "", password = "", problems = [] }) top
         , UrlParser.map (Login { name = "", password = "", problems = [] }) (s "login")
         , UrlParser.map (Register { register = reg, problems = [] }) (s "register")
-        , UrlParser.map (SimpleCalendar Calendar.emptyModel) (s "calendar")
+        , UrlParser.map (SimpleCalendar CalendarList.emptyModel) (s "calendar")
         ]
 
 
@@ -236,7 +236,7 @@ mainContent model =
                 pageNotFound
 
             SimpleCalendar calendars ->
-                [ Html.map CalendarMsg (Calendar.view calendars) ]
+                [ Html.map CalendarMsg (CalendarList.view calendars) ]
 
             CalendarDetails calendarDetail ->
                 [ Html.map CalendarDetailMsg (CalendarEntryDetails.view calendarDetail) ]

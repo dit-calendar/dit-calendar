@@ -1,4 +1,4 @@
-module Page.SimpleCalendar exposing (CalendarEntry, Model, Msg(..), emptyModel, main, update, view)
+module Page.SimpleCalendarList exposing (Model, Msg(..), emptyModel, main, update, view)
 
 import Bootstrap.Alert as Alert
 import Bootstrap.ListGroup as ListGroup
@@ -10,12 +10,7 @@ import Html.Events exposing (onClick)
 import Http
 import Http.Detailed as HttpEx
 import Json.Decode as Decode exposing (Value)
-
-
-type alias CalendarEntry =
-    { description : String
-    , date : String
-    }
+import Page.CalendarEntryDetails exposing (CalendarEntry)
 
 
 type alias Model =
