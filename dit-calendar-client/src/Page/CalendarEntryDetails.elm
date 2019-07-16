@@ -43,8 +43,15 @@ initModel cal =
     { calendarEntry = cal, tasks = [], problems = [] }
 
 
+type CalendarDetialMsg
+    = Description String
+    | StartDate String
+    | EndDate String
+
+
 type Msg
-    = GetCalendarEntryTasks Int
+    = CalendarDetialMsg CalendarDetialMsg
+    | GetCalendarEntryTasks Int
     | GetCalendarEntryTasksResult (Result (HttpEx.Error String) ( Http.Metadata, String ))
 
 
@@ -56,6 +63,9 @@ init calId cal =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        CalendarDetialMsg calendarDetialMsg ->
+            mapFirst (\x -> { model | calendarEntry = x }) (updateCalendarDetials calendarDetialMsg model.calendarEntry)
+
         GetCalendarEntryTasks taskId ->
             ( model, loadCalendarEntryTasks taskId )
 
@@ -63,9 +73,21 @@ update msg model =
             ( calendarEntryTasksResponse result model, Cmd.none )
 
 
+updateCalendarDetials : CalendarDetialMsg -> CalendarEntry -> ( CalendarEntry, Cmd Msg )
+updateCalendarDetials msg model =
+    case msg of
+        Description des ->
+            ( { model | description = des }, Cmd.none )
+
+        StartDate startD ->
+            ( { model | startDate = startD }, Cmd.none )
+
+        EndDate endD ->
+            ( { model | endDate = endD }, Cmd.none )
+
+
 loadCalendarEntryTasks : Int -> Cmd Msg
 loadCalendarEntryTasks taskId =
-    --TODO pass id for url
     Http.riskyRequest
         { method = "GET"
         , headers = []
