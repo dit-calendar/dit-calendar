@@ -1,16 +1,7 @@
-module Endpoint.ResponseErrorDecoder exposing (calendarErrorDecoder, authErrorDecoder)
+module Endpoint.ResponseErrorDecoder exposing (ErrorResponse, errorDecoder)
 
 import Http.Detailed as HttpEx
 import Json.Decode as Decode
-
-
-calendarErrorDecoder : HttpEx.Error String -> List String
-calendarErrorDecoder responseError =
-    errorDecoder responseError calendarDecoder
-
-authErrorDecoder : HttpEx.Error String -> List String
-authErrorDecoder responseError =
-    errorDecoder responseError authDecoder
 
 
 errorDecoder : HttpEx.Error String -> Decode.Decoder ErrorResponse -> List String
@@ -48,15 +39,3 @@ errorDecoder responseError responseDecoder =
 type alias ErrorResponse =
     { message : String
     }
-
-
-authDecoder : Decode.Decoder ErrorResponse
-authDecoder =
-    Decode.map
-        ErrorResponse
-        (Decode.at [ "jrData" ] Decode.string)
-
-
-calendarDecoder : Decode.Decoder ErrorResponse
-calendarDecoder =
-    Decode.map ErrorResponse Decode.string

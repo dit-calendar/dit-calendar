@@ -2,7 +2,7 @@ module Page.Register exposing (Model, Msg(..), RegisterModel, init, update, view
 
 import Bootstrap.Alert as Alert
 import Browser
-import Endpoint.ResponseErrorDecoder exposing (authErrorDecoder)
+import Endpoint.AuthEndpoint exposing (authErrorDecoder)
 import Env.Serverurl as Server
 import Html exposing (..)
 import Html.Attributes exposing (..)

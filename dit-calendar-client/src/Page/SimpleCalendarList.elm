@@ -4,7 +4,7 @@ import Bootstrap.Alert as Alert
 import Bootstrap.ListGroup as ListGroup
 import Browser
 import Data.CalendarEntry exposing (CalendarEntry)
-import Endpoint.ResponseErrorDecoder exposing (calendarErrorDecoder)
+import Endpoint.CalendarEntryEndpoint exposing (calendarErrorDecoder)
 import Env.Serverurl as Server
 import Html exposing (Html, div, h1, text)
 import Html.Attributes exposing (class)

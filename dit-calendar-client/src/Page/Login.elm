@@ -2,14 +2,13 @@ module Page.Login exposing (Model, Msg(..), init, update, view, viewInput)
 
 import Bootstrap.Alert as Alert
 import Browser.Navigation as Navigation
-import Endpoint.ResponseErrorDecoder exposing (authErrorDecoder)
+import Endpoint.AuthEndpoint exposing (authErrorDecoder)
 import Env.Serverurl as Server
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Http exposing (Body, Expect, riskyRequest)
+import Http exposing (Body, Expect)
 import Http.Detailed as HttpEx
-import Json.Decode as Decode exposing (Decoder, Value, decodeString, field, string)
 import Json.Encode as Encode
 
 
