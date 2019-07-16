@@ -15,7 +15,7 @@ import Url.Parser as UrlParser exposing ((</>), Parser, s, top)
 
 
 type alias Flags =
-    { authUrl : String
+    {
     }
 
 
@@ -23,7 +23,6 @@ type alias Model =
     { navKey : Navigation.Key
     , page : Page
     , navState : Navbar.State
-    , config : Flags
     }
 
 
@@ -54,7 +53,7 @@ init flags url key =
             Navbar.initialState NavMsg
 
         ( model, urlCmd ) =
-            urlUpdate url { navKey = key, navState = navState, page = Login { name = "", password = "", problems = [] }, config = flags }
+            urlUpdate url { navKey = key, navState = navState, page = Login { name = "", password = "", problems = [] }}
     in
     ( model, Cmd.batch [ urlCmd, navCmd ] )
 
@@ -96,7 +95,7 @@ update msg model =
         LoginMsg loginMsg ->
             case model.page of
                 Login login ->
-                    stepLogin model (Login.update model.config.authUrl loginMsg login)
+                    stepLogin model (Login.update loginMsg login)
 
                 _ ->
                     --TODO kann das enfernt werden?
@@ -105,7 +104,7 @@ update msg model =
         RegisterMsg regMsg ->
             case model.page of
                 Register register ->
-                    stepRegister model (Register.update model.config.authUrl regMsg register)
+                    stepRegister model (Register.update regMsg register)
 
                 _ ->
                     ( model, Cmd.none )

@@ -3,6 +3,7 @@ module Page.Register exposing (Model, Msg(..), RegisterModel, init, update, view
 import Bootstrap.Alert as Alert
 import Browser
 import Endpoint.ResponseErrorDecoder exposing (authErrorDecoder)
+import Env.Serverurl as Server
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -31,7 +32,7 @@ main =
     Browser.element
         { init = init
         , view = view
-        , update = update "https://localhost:8443/authenticate/authentication-methods/password/"
+        , update = update
         , subscriptions = \_ -> Sub.none
         }
 
@@ -60,14 +61,14 @@ type alias RegisterResponse =
     }
 
 
-update : String -> Msg -> Model -> ( Model, Cmd Msg )
-update authUrl msg model =
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
     case msg of
         RegisterUserMsg rMsg ->
             mapFirst (\x -> { model | register = x }) (updateRegister rMsg model.register)
 
         PerformRegister ->
-            ( model, register authUrl model )
+            ( model, register model )
 
         RegisterResult result ->
             ( registerResponse result model, Cmd.none )
@@ -132,10 +133,10 @@ viewInput t p v toMsg =
     input [ type_ t, placeholder p, value v, onInput toMsg ] []
 
 
-register : String -> Model -> Cmd Msg
-register authUrl model =
+register : Model -> Cmd Msg
+register model =
     Http.post
-        { url = authUrl ++ "account"
+        { url = Server.registerUrl
         , body = Http.jsonBody (registerEncoder model)
         , expect = HttpEx.expectString RegisterResult
         }

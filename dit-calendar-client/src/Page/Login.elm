@@ -3,6 +3,7 @@ module Page.Login exposing (Model, Msg(..), init, update, view, viewInput)
 import Bootstrap.Alert as Alert
 import Browser.Navigation as Navigation
 import Endpoint.ResponseErrorDecoder exposing (authErrorDecoder)
+import Env.Serverurl as Server
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -31,8 +32,8 @@ type Msg
     | HttpLogin (Result (HttpEx.Error String) ( Http.Metadata, String ))
 
 
-update : String -> Msg -> Model -> ( Model, Cmd Msg )
-update authUrl msg model =
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
     case msg of
         Name name ->
             ( { model | name = name }, Cmd.none )
@@ -41,7 +42,7 @@ update authUrl msg model =
             ( { model | password = password }, Cmd.none )
 
         Login ->
-            ( model, login authUrl model )
+            ( model, login model )
 
         HttpLogin result ->
             case result of
@@ -76,12 +77,12 @@ viewInput t p v toMsg =
     input [ type_ t, placeholder p, value v, onInput toMsg ] []
 
 
-login : String -> Model -> Cmd Msg
-login authUrl model =
+login : Model -> Cmd Msg
+login model =
     Http.riskyRequest
         { method = "POST"
         , headers = []
-        , url = authUrl ++ "token"
+        , url = Server.loginUrl
         , body = Http.jsonBody (loginEncoder model)
         , expect = HttpEx.expectString HttpLogin
         , timeout = Nothing
