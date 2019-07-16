@@ -4,6 +4,7 @@ import Bootstrap.Alert as Alert
 import Bootstrap.ListGroup as ListGroup
 import Browser
 import Endpoint.ResponseErrorDecoder exposing (calendarErrorDecoder)
+import Env.Serverurl as Server
 import Html exposing (Html, div, h1, text)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
@@ -64,7 +65,7 @@ loadCalendarEntries =
     Http.riskyRequest
         { method = "GET"
         , headers = []
-        , url = "https://localhost:8443/calendarentries/"
+        , url = Server.calendarEntries
         , body = Http.emptyBody
         , expect = HttpEx.expectString GetCalendarEntriesResult
         , timeout = Nothing

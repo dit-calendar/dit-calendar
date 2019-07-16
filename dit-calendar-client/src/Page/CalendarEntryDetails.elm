@@ -4,6 +4,7 @@ import Bootstrap.Alert as Alert
 import Bootstrap.Grid as Grid
 import Bootstrap.ListGroup as ListGroup
 import Endpoint.ResponseErrorDecoder exposing (calendarErrorDecoder)
+import Env.Serverurl as Server
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
 import Http
@@ -64,7 +65,7 @@ loadCalendarEntryTasks =
     Http.riskyRequest
         { method = "GET"
         , headers = []
-        , url = "https://localhost:8443/calendarentries/2/tasks"
+        , url = Server.calendarTask 2
         , body = Http.emptyBody
         , expect = HttpEx.expectString GetCalendarEntryTasksResult
         , timeout = Nothing
