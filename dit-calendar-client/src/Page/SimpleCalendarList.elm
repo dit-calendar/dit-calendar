@@ -109,11 +109,13 @@ calendarEntriesDecoder ( meta, body ) =
 calendarEntryDecoder : Decode.Decoder (List CalendarEntry)
 calendarEntryDecoder =
     Decode.list
-        (Decode.map3
+        (Decode.map5
             CalendarEntry
+            (Decode.nullable (Decode.field "entryId" Decode.int))
+            (Decode.field "version" Decode.int)
             (Decode.at [ "description" ] Decode.string)
-            (Decode.field "date" Decode.string)
-            (Decode.field "entryId" Decode.int)
+            (Decode.field "startDate" Decode.string)
+            (Decode.field "endDate" Decode.string)
         )
 
 
@@ -125,7 +127,7 @@ view model =
             , ListGroup.custom
                 (List.map
                     (\entry ->
-                        ListGroup.button [ ListGroup.attrs [ onClick (OpenCalendarDetialsView entry) ] ] [ text ("description: " ++ entry.description ++ ", date:" ++ entry.date) ]
+                        ListGroup.button [ ListGroup.attrs [ onClick (OpenCalendarDetialsView entry) ] ] [ text ("description: " ++ entry.description ++ ", start date:" ++ entry.startDate) ]
                     )
                     model.calendarEntries
                 )

@@ -10,12 +10,15 @@ import Html.Attributes exposing (class)
 import Http
 import Http.Detailed as HttpEx
 import Json.Decode as Decode exposing (Value)
+import Tuple exposing (mapFirst)
 
 
 type alias CalendarEntry =
-    { description : String
-    , date : String
-    , id : Int
+    { entryId : Maybe Int
+    , version : Int
+    , description : String
+    , startDate : String
+    , endDate : String
     }
 
 
@@ -45,12 +48,12 @@ type Msg
     | GetCalendarEntryTasksResult (Result (HttpEx.Error String) ( Http.Metadata, String ))
 
 
-init : CalendarEntry -> ( Model, Cmd Msg )
-init cal =
-    update (GetCalendarEntryTasks cal.id) (initModel cal)
+init : Int -> CalendarEntry -> ( Model, Cmd Msg )
+init calId cal =
+    update (GetCalendarEntryTasks calId) (initModel cal)
 
 
-update  : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         GetCalendarEntryTasks taskId ->
@@ -128,7 +131,8 @@ view model =
         [ Grid.container []
             [ Grid.row []
                 [ Grid.col [] [ text ("description: " ++ calendarInfo.description) ]
-                , Grid.col [] [ text ("date:" ++ calendarInfo.date) ]
+                , Grid.col [] [ text ("start date:" ++ calendarInfo.startDate) ]
+                , Grid.col [] [ text ("end date:" ++ calendarInfo.endDate) ]
                 ]
             , ListGroup.ul
                 (List.map
