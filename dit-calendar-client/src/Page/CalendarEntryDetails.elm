@@ -10,6 +10,7 @@ import Html.Attributes exposing (class)
 import Http
 import Http.Detailed as HttpEx
 import Json.Decode as Decode exposing (Value)
+import Maybe exposing (withDefault)
 import Tuple exposing (mapFirst)
 
 
@@ -55,9 +56,9 @@ type Msg
     | GetCalendarEntryTasksResult (Result (HttpEx.Error String) ( Http.Metadata, String ))
 
 
-init : Int -> CalendarEntry -> ( Model, Cmd Msg )
-init calId cal =
-    update (GetCalendarEntryTasks calId) (initModel cal)
+init : CalendarEntry -> ( Model, Cmd Msg )
+init cal =
+    update (GetCalendarEntryTasks (withDefault 0 cal.entryId)) (initModel cal)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
