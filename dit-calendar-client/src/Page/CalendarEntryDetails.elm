@@ -1,8 +1,9 @@
-module Page.CalendarEntryDetails exposing (CalendarEntry, Model, Msg(..), init, update, view)
+module Page.CalendarEntryDetails exposing (init, update, view)
 
 import Bootstrap.Alert as Alert
 import Bootstrap.Grid as Grid
 import Bootstrap.ListGroup as ListGroup
+import Data.CalendarEntry exposing (CalendarDetialMsg(..), CalendarEntry, Model, Msg(..), Task(..))
 import Endpoint.ResponseErrorDecoder exposing (calendarErrorDecoder)
 import Env.Serverurl as Server
 import Html exposing (Html, div, text)
@@ -14,46 +15,14 @@ import Maybe exposing (withDefault)
 import Tuple exposing (mapFirst)
 
 
-type alias CalendarEntry =
-    { entryId : Maybe Int
-    , version : Int
-    , description : String
-    , startDate : String
-    , endDate : String
-    }
-
-
-type Task
-    = Task String -- Todo use Task.Model from Task.elm(page)
-
-
 getBla : Task -> String
 getBla (Task str) =
     str
 
 
-type alias Model =
-    { calendarEntry : CalendarEntry
-    , tasks : List Task
-    , problems : List String
-    }
-
-
 initModel : CalendarEntry -> Model
 initModel cal =
     { calendarEntry = cal, tasks = [], problems = [] }
-
-
-type CalendarDetialMsg
-    = Description String
-    | StartDate String
-    | EndDate String
-
-
-type Msg
-    = CalendarDetialMsg CalendarDetialMsg
-    | GetCalendarEntryTasks Int
-    | GetCalendarEntryTasksResult (Result (HttpEx.Error String) ( Http.Metadata, String ))
 
 
 init : CalendarEntry -> ( Model, Cmd Msg )

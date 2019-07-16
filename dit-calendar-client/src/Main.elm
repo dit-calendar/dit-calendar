@@ -4,6 +4,7 @@ import Bootstrap.Grid as Grid
 import Bootstrap.Navbar as Navbar
 import Browser exposing (UrlRequest)
 import Browser.Navigation as Navigation
+import Data.CalendarEntry as CalendarEntryDetails
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Page.CalendarEntryDetails as CalendarEntryDetails
@@ -15,8 +16,7 @@ import Url.Parser as UrlParser exposing ((</>), Parser, s, top)
 
 
 type alias Flags =
-    {
-    }
+    {}
 
 
 type alias Model =
@@ -53,7 +53,7 @@ init flags url key =
             Navbar.initialState NavMsg
 
         ( model, urlCmd ) =
-            urlUpdate url { navKey = key, navState = navState, page = Login { name = "", password = "", problems = [] }}
+            urlUpdate url { navKey = key, navState = navState, page = Login { name = "", password = "", problems = [] } }
     in
     ( model, Cmd.batch [ urlCmd, navCmd ] )
 

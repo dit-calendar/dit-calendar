@@ -3,6 +3,7 @@ module Page.SimpleCalendarList exposing (Model, Msg(..), emptyModel, main, updat
 import Bootstrap.Alert as Alert
 import Bootstrap.ListGroup as ListGroup
 import Browser
+import Data.CalendarEntry exposing (CalendarEntry)
 import Endpoint.ResponseErrorDecoder exposing (calendarErrorDecoder)
 import Env.Serverurl as Server
 import Html exposing (Html, div, h1, text)
@@ -11,7 +12,6 @@ import Html.Events exposing (onClick)
 import Http
 import Http.Detailed as HttpEx
 import Json.Decode as Decode exposing (Value)
-import Page.CalendarEntryDetails exposing (CalendarEntry)
 
 
 type alias Model =
