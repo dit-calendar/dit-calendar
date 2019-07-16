@@ -5,6 +5,7 @@ import Bootstrap.Navbar as Navbar
 import Browser exposing (UrlRequest)
 import Browser.Navigation as Navigation
 import Data.CalendarEntry as CalendarEntryDetails
+import Data.SimpleCalendarList as CalendarList
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Page.CalendarEntryDetails as CalendarEntryDetails

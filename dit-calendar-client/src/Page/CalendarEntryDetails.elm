@@ -4,7 +4,7 @@ import Bootstrap.Alert as Alert
 import Bootstrap.Grid as Grid
 import Bootstrap.ListGroup as ListGroup
 import Data.CalendarEntry exposing (CalendarDetialMsg(..), CalendarEntry, Model, Msg(..), Task(..))
-import Endpoint.CalendarEntryEndpoint exposing (calendarEntryTasksResponse, loadCalendarEntryTasks)
+import Endpoint.CalendarTaskEndpoint exposing (calendarEntryTasksResponse, loadCalendarEntryTasks)
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
 import Maybe exposing (withDefault)

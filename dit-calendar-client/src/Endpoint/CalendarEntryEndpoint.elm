@@ -1,6 +1,7 @@
-module Endpoint.CalendarEntryEndpoint exposing (calendarEntryTasksDecoder, calendarEntryTasksResponse, calendarErrorDecoder, loadCalendarEntryTasks, tasksDecoder)
+module Endpoint.CalendarEntryEndpoint exposing (calendarEntriesResponse, loadCalendarEntries)
 
-import Data.CalendarEntry exposing (CalendarDetialMsg(..), CalendarEntry, Model, Msg(..), Task(..))
+import Data.CalendarEntry as CalendarDetail
+import Data.SimpleCalendarList as CalendarList
 import Endpoint.ResponseErrorDecoder exposing (ErrorResponse, errorDecoder)
 import Env.Serverurl as Server
 import Http
@@ -8,65 +9,70 @@ import Http.Detailed as HttpEx
 import Json.Decode as Decode exposing (Value)
 
 
-calendarErrorDecoder : HttpEx.Error String -> List String
-calendarErrorDecoder responseError =
-    errorDecoder responseError calendarDecoder
-
-
-calendarDecoder : Decode.Decoder ErrorResponse
-calendarDecoder =
-    Decode.map ErrorResponse Decode.string
-
-
-loadCalendarEntryTasks : Int -> Cmd Msg
-loadCalendarEntryTasks taskId =
+loadCalendarEntries : Cmd CalendarList.Msg
+loadCalendarEntries =
     Http.riskyRequest
         { method = "GET"
         , headers = []
-        , url = Server.calendarTask taskId
+        , url = Server.calendarEntries
         , body = Http.emptyBody
-        , expect = HttpEx.expectString GetCalendarEntryTasksResult
+        , expect = HttpEx.expectString CalendarList.GetCalendarEntriesResult
         , timeout = Nothing
         , tracker = Nothing
         }
 
 
-calendarEntryTasksResponse : Result (HttpEx.Error String) ( Http.Metadata, String ) -> Model -> Model
-calendarEntryTasksResponse response model =
+calendarEntriesDecoder : Decode.Decoder (List CalendarDetail.CalendarEntry)
+calendarEntriesDecoder =
+    Decode.list
+        (Decode.map5
+            CalendarDetail.CalendarEntry
+            (Decode.nullable (Decode.field "entryId" Decode.int))
+            (Decode.field "version" Decode.int)
+            (Decode.at [ "description" ] Decode.string)
+            (Decode.field "startDate" Decode.string)
+            (Decode.field "endDate" Decode.string)
+        )
+
+
+calendarEntriesResponse : Result (HttpEx.Error String) ( Http.Metadata, String ) -> CalendarList.Model -> CalendarList.Model
+calendarEntriesResponse response model =
     case response of
         Ok value ->
             let
                 resp =
-                    calendarEntryTasksDecoder value
+                    parseCalendarEntriesResult value
             in
             case resp of
-                Ok tasks ->
-                    { model | tasks = tasks }
+                Ok calendarEntries ->
+                    { model | calendarEntries = calendarEntries }
 
                 Err error ->
                     { model | problems = [ error ] }
 
         Err error ->
-            { model | problems = calendarErrorDecoder error }
+            { model | problems = calendarErrorsDecoder error }
 
 
-calendarEntryTasksDecoder : ( Http.Metadata, String ) -> Result String (List Task)
-calendarEntryTasksDecoder ( meta, body ) =
+parseCalendarEntriesResult : ( Http.Metadata, String ) -> Result String (List CalendarDetail.CalendarEntry)
+parseCalendarEntriesResult ( meta, body ) =
     let
         decode =
-            Decode.decodeString (Decode.list tasksDecoder) body
+            Decode.decodeString calendarEntriesDecoder body
     in
     case decode of
         Ok calendarEntries ->
             Ok calendarEntries
 
         Err error ->
-            Err ("fehler beim decodieren der calendars taks" ++ Decode.errorToString error)
+            Err ("fehler beim decodieren des calendars" ++ Decode.errorToString error)
 
 
-tasksDecoder : Decode.Decoder Task
-tasksDecoder =
-    Decode.map
-        -- TODO reuse decoder from Tasks?
-        Task
-        (Decode.at [ "description" ] Decode.string)
+calendarErrorsDecoder : HttpEx.Error String -> List String
+calendarErrorsDecoder responseError =
+    errorDecoder responseError calendarErrorDecoder
+
+
+calendarErrorDecoder : Decode.Decoder ErrorResponse
+calendarErrorDecoder =
+    Decode.map ErrorResponse Decode.string
