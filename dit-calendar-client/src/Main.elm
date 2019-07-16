@@ -5,12 +5,14 @@ import Bootstrap.Navbar as Navbar
 import Browser exposing (UrlRequest)
 import Browser.Navigation as Navigation
 import Data.CalendarEntry as CalendarEntryDetails
+import Data.Login as Login
+import Data.Register as Register exposing (RegisterModel)
 import Data.SimpleCalendarList as CalendarList
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Page.CalendarEntryDetails as CalendarEntryDetails
 import Page.Login as Login
-import Page.Register as Register exposing (RegisterModel)
+import Page.Register as Register
 import Page.SimpleCalendarList as CalendarList
 import Url exposing (Url)
 import Url.Parser as UrlParser exposing ((</>), Parser, s, top)
