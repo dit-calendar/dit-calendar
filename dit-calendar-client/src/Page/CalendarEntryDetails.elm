@@ -15,6 +15,7 @@ import Json.Decode as Decode exposing (Value)
 type alias CalendarEntry =
     { description : String
     , date : String
+    , id : Int
     }
 
 
@@ -40,32 +41,32 @@ initModel cal =
 
 
 type Msg
-    = GetCalendarEntryTasks
+    = GetCalendarEntryTasks Int
     | GetCalendarEntryTasksResult (Result (HttpEx.Error String) ( Http.Metadata, String ))
 
 
 init : CalendarEntry -> ( Model, Cmd Msg )
 init cal =
-    update GetCalendarEntryTasks (initModel cal)
+    update (GetCalendarEntryTasks cal.id) (initModel cal)
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update  : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        GetCalendarEntryTasks ->
-            ( model, loadCalendarEntryTasks )
+        GetCalendarEntryTasks taskId ->
+            ( model, loadCalendarEntryTasks taskId )
 
         GetCalendarEntryTasksResult result ->
             ( calendarEntryTasksResponse result model, Cmd.none )
 
 
-loadCalendarEntryTasks : Cmd Msg
-loadCalendarEntryTasks =
+loadCalendarEntryTasks : Int -> Cmd Msg
+loadCalendarEntryTasks taskId =
     --TODO pass id for url
     Http.riskyRequest
         { method = "GET"
         , headers = []
-        , url = Server.calendarTask 2
+        , url = Server.calendarTask taskId
         , body = Http.emptyBody
         , expect = HttpEx.expectString GetCalendarEntryTasksResult
         , timeout = Nothing

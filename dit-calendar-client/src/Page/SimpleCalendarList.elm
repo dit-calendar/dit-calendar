@@ -109,10 +109,11 @@ calendarEntriesDecoder ( meta, body ) =
 calendarEntryDecoder : Decode.Decoder (List CalendarEntry)
 calendarEntryDecoder =
     Decode.list
-        (Decode.map2
+        (Decode.map3
             CalendarEntry
             (Decode.at [ "description" ] Decode.string)
             (Decode.field "date" Decode.string)
+            (Decode.field "entryId" Decode.int)
         )
 
 
