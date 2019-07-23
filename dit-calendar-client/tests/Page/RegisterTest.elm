@@ -1,10 +1,11 @@
 module Page.RegisterTest exposing (updateTest)
 
+import Data.Register as RegisterPage exposing (Model)
 import Dict exposing (Dict)
 import Expect
 import Http exposing (Metadata)
 import Http.Detailed exposing (Error(..))
-import Page.Register as RegisterPage exposing (Model)
+import Page.Register as RegisterPage
 import Test exposing (Test, describe, test)
 import Tuple exposing (first, second)
 
@@ -26,7 +27,7 @@ updateTest =
                         [ first >> Expect.equal startModel
                         , second >> Expect.equal Cmd.none
                         ]
-                        (RegisterPage.update "url" registerResult startModel)
+                        (RegisterPage.update registerResult startModel)
             , test "case error" <|
                 \_ ->
                     let
@@ -43,6 +44,6 @@ updateTest =
                         [ first >> Expect.equal expectedModel
                         , second >> Expect.equal Cmd.none
                         ]
-                        (RegisterPage.update "url" registerResult startModel)
+                        (RegisterPage.update registerResult startModel)
             ]
         ]
