@@ -1,14 +1,15 @@
 module Page.CalendarEntryDetails exposing (init, update, view)
 
 import Bootstrap.Alert as Alert
-import Bootstrap.Grid as Grid
+import Bootstrap.Button as Button exposing (onClick)
+import Bootstrap.Form as Form
+import Bootstrap.Form.Input as Input
 import Bootstrap.ListGroup as ListGroup
-import Data.CalendarEntry exposing (CalendarDetialMsg(..), CalendarEntry, Model, Msg(..), Task(..))
+import Data.CalendarEntry exposing (CalendarDetailMsg(..), CalendarEntry, Model, Msg(..), Task(..))
 import Endpoint.CalendarTaskEndpoint exposing (calendarEntryTasksResponse, loadCalendarEntryTasks)
-import Html exposing (Html, div, text)
+import Html exposing (Html, div, h4, text)
 import Html.Attributes exposing (class)
 import Maybe exposing (withDefault)
-import Tuple exposing (mapFirst)
 
 
 getBla : Task -> String
@@ -29,8 +30,8 @@ init cal =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        CalendarDetialMsg calendarDetialMsg ->
-            mapFirst (\x -> { model | calendarEntry = x }) (updateCalendarDetials calendarDetialMsg model.calendarEntry)
+        CalendarDetailMsg calendarDetialMsg ->
+            ( { model | calendarEntry = updateCalendarDetials calendarDetialMsg model.calendarEntry }, Cmd.none )
 
         GetCalendarEntryTasks taskId ->
             ( model, loadCalendarEntryTasks taskId )
@@ -38,18 +39,21 @@ update msg model =
         GetCalendarEntryTasksResult result ->
             ( calendarEntryTasksResponse result model, Cmd.none )
 
+        SaveCalendar ->
+            ( model, Cmd.none )
 
-updateCalendarDetials : CalendarDetialMsg -> CalendarEntry -> ( CalendarEntry, Cmd Msg )
+
+updateCalendarDetials : CalendarDetailMsg -> CalendarEntry -> CalendarEntry
 updateCalendarDetials msg model =
     case msg of
         Description des ->
-            ( { model | description = des }, Cmd.none )
+            { model | description = des }
 
         StartDate startD ->
-            ( { model | startDate = startD }, Cmd.none )
+            { model | startDate = startD }
 
         EndDate endD ->
-            ( { model | endDate = endD }, Cmd.none )
+            { model | endDate = endD }
 
 
 view : Model -> Html Msg
@@ -62,20 +66,29 @@ view model =
             model.tasks
     in
     div []
-        [ Grid.container []
-            [ Grid.row []
-                [ Grid.col [] [ text ("description: " ++ calendarInfo.description) ]
-                , Grid.col [] [ text ("start date:" ++ calendarInfo.startDate) ]
-                , Grid.col [] [ text ("end date:" ++ calendarInfo.endDate) ]
+        [ Form.form []
+            [ h4 [] [ text "Kalendar Eintrag" ]
+            , Form.group []
+                [ Form.label [] [ text "description" ]
+                , Input.text [ Input.value calendarInfo.description, Input.onInput (CalendarDetailMsg << Description) ]
                 ]
-            , ListGroup.ul
-                (List.map
-                    (\task ->
-                        ListGroup.li [] [ text ("task: " ++ getBla task) ]
-                    )
-                    tasks
-                )
+            , Form.group []
+                [ Form.label [] [ text "start date" ]
+                , Input.text [ Input.value calendarInfo.startDate, Input.onInput (CalendarDetailMsg << StartDate) ]
+                ]
+            , Form.group []
+                [ Form.label [] [ text "end date" ]
+                , Input.text [ Input.value calendarInfo.endDate, Input.onInput (CalendarDetailMsg << EndDate) ]
+                ]
             ]
+        , ListGroup.ul
+            (List.map
+                (\task ->
+                    ListGroup.li [] [ text ("task: " ++ getBla task) ]
+                )
+                tasks
+            )
+        , Button.button [ Button.primary, onClick SaveCalendar ] [ text "Speichern" ]
         , div [ class "error-messages" ]
             (List.map viewProblem model.problems)
         ]

@@ -1,4 +1,4 @@
-module Data.CalendarEntry exposing (CalendarDetialMsg(..), CalendarEntry, Model, Msg(..), Task(..))
+module Data.CalendarEntry exposing (CalendarDetailMsg(..), CalendarEntry, Model, Msg(..), Task(..))
 
 import Http
 import Http.Detailed as HttpEx
@@ -24,13 +24,14 @@ type alias Model =
     }
 
 
-type CalendarDetialMsg
+type CalendarDetailMsg
     = Description String
     | StartDate String
     | EndDate String
 
 
 type Msg
-    = CalendarDetialMsg CalendarDetialMsg
+    = CalendarDetailMsg CalendarDetailMsg
     | GetCalendarEntryTasks Int
     | GetCalendarEntryTasksResult (Result (HttpEx.Error String) ( Http.Metadata, String ))
+    | SaveCalendar
