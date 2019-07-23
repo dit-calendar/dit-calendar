@@ -1,4 +1,4 @@
-module Endpoint.CalendarEntryEndpoint exposing (calendarEntriesResponse, loadCalendarEntries)
+module Endpoint.CalendarEntryEndpoint exposing (calendarEntriesResponse, loadCalendarEntries, saveCalendarEntry)
 
 import Data.CalendarEntry as CalendarDetail
 import Data.SimpleCalendarList as CalendarList
@@ -7,6 +7,31 @@ import Env.Serverurl as Server
 import Http
 import Http.Detailed as HttpEx
 import Json.Decode as Decode exposing (Value)
+import Json.Encode as Encode
+import Maybe exposing (withDefault)
+
+
+saveCalendarEntry : CalendarDetail.CalendarEntry -> Cmd CalendarDetail.Msg
+saveCalendarEntry model =
+    Http.riskyRequest
+        { method = "PUT"
+        , headers = []
+        , url = Server.calendarEntry (withDefault 0 model.entryId)
+        , body = Http.jsonBody (calendarEntryEncoder model)
+        , expect = HttpEx.expectString CalendarDetail.SaveCalendarResult
+        , timeout = Nothing
+        , tracker = Nothing
+        }
+
+
+calendarEntryEncoder : CalendarDetail.CalendarEntry -> Encode.Value
+calendarEntryEncoder model =
+    Encode.object
+        [ ( "version", Encode.int model.version )
+        , ( "description", Encode.string model.description )
+        , ( "startDate", Encode.string model.startDate )
+        , ( "endDate", Encode.string model.endDate )
+        ]
 
 
 loadCalendarEntries : Cmd CalendarList.Msg
