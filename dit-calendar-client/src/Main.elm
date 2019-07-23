@@ -4,33 +4,35 @@ import Bootstrap.Grid as Grid
 import Bootstrap.Navbar as Navbar
 import Browser exposing (UrlRequest)
 import Browser.Navigation as Navigation
+import Data.CalendarEntry as CalendarEntryDetails
+import Data.Login as Login
+import Data.Register as Register exposing (RegisterModel)
+import Data.SimpleCalendarList as CalendarList
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Page.CalendarEntryDetails as CalendarEntryDetails
 import Page.Login as Login
-import Page.Register as Register exposing (RegisterModel)
-import Page.SimpleCalendar as Calendar
+import Page.Register as Register
+import Page.SimpleCalendarList as CalendarList
 import Url exposing (Url)
 import Url.Parser as UrlParser exposing ((</>), Parser, s, top)
 
 
 type alias Flags =
-    { authUrl : String
-    }
+    {}
 
 
 type alias Model =
     { navKey : Navigation.Key
     , page : Page
     , navState : Navbar.State
-    , config : Flags
     }
 
 
 type Page
     = Login Login.Model
     | Register Register.Model
-    | SimpleCalendar Calendar.Model
+    | SimpleCalendar CalendarList.Model
     | CalendarDetails CalendarEntryDetails.Model
     | NotFound
 
@@ -54,7 +56,7 @@ init flags url key =
             Navbar.initialState NavMsg
 
         ( model, urlCmd ) =
-            urlUpdate url { navKey = key, navState = navState, page = Login { name = "", password = "", problems = [] }, config = flags }
+            urlUpdate url { navKey = key, navState = navState, page = Login { name = "", password = "", problems = [] } }
     in
     ( model, Cmd.batch [ urlCmd, navCmd ] )
 
@@ -65,7 +67,7 @@ type Msg
     | NavMsg Navbar.State
     | LoginMsg Login.Msg
     | RegisterMsg Register.Msg
-    | CalendarMsg Calendar.Msg
+    | CalendarMsg CalendarList.Msg
     | CalendarDetailMsg CalendarEntryDetails.Msg
 
 
@@ -96,7 +98,7 @@ update msg model =
         LoginMsg loginMsg ->
             case model.page of
                 Login login ->
-                    stepLogin model (Login.update model.config.authUrl loginMsg login)
+                    stepLogin model (Login.update loginMsg login)
 
                 _ ->
                     --TODO kann das enfernt werden?
@@ -105,20 +107,20 @@ update msg model =
         RegisterMsg regMsg ->
             case model.page of
                 Register register ->
-                    stepRegister model (Register.update model.config.authUrl regMsg register)
+                    stepRegister model (Register.update regMsg register)
 
                 _ ->
                     ( model, Cmd.none )
 
         CalendarMsg calendarMsg ->
             case calendarMsg of
-                Calendar.OpenCalendarDetialsView entry ->
+                CalendarList.OpenCalendarDetialsView entry ->
                     stepCalendarDetails model (CalendarEntryDetails.init entry)
 
                 _ ->
                     case model.page of
                         SimpleCalendar calendar ->
-                            stepCalendar model (Calendar.update calendarMsg calendar)
+                            stepCalendar model (CalendarList.update calendarMsg calendar)
 
                         _ ->
                             ( model, Cmd.none )
@@ -146,7 +148,7 @@ stepRegister model ( register, cmds ) =
     )
 
 
-stepCalendar : Model -> ( Calendar.Model, Cmd Calendar.Msg ) -> ( Model, Cmd Msg )
+stepCalendar : Model -> ( CalendarList.Model, Cmd CalendarList.Msg ) -> ( Model, Cmd Msg )
 stepCalendar model ( calendar, cmds ) =
     ( { model | page = SimpleCalendar calendar }
     , Cmd.map CalendarMsg cmds
@@ -170,7 +172,7 @@ urlUpdate url model =
             case route of
                 SimpleCalendar _ ->
                     -- needed to perform request if url was changed
-                    stepCalendar model (Calendar.update Calendar.PerformGetCalendarEntries Calendar.emptyModel)
+                    stepCalendar model (CalendarList.update CalendarList.PerformGetCalendarEntries CalendarList.emptyModel)
 
                 _ ->
                     ( { model | page = route }, Cmd.none )
@@ -192,7 +194,7 @@ routeParser =
         [ UrlParser.map (Login { name = "", password = "", problems = [] }) top
         , UrlParser.map (Login { name = "", password = "", problems = [] }) (s "login")
         , UrlParser.map (Register { register = reg, problems = [] }) (s "register")
-        , UrlParser.map (SimpleCalendar Calendar.emptyModel) (s "calendar")
+        , UrlParser.map (SimpleCalendar CalendarList.emptyModel) (s "calendar")
         ]
 
 
@@ -236,7 +238,7 @@ mainContent model =
                 pageNotFound
 
             SimpleCalendar calendars ->
-                [ Html.map CalendarMsg (Calendar.view calendars) ]
+                [ Html.map CalendarMsg (CalendarList.view calendars) ]
 
             CalendarDetails calendarDetail ->
                 [ Html.map CalendarDetailMsg (CalendarEntryDetails.view calendarDetail) ]

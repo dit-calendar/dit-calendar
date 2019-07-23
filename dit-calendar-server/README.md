@@ -87,12 +87,12 @@ curl -H "Content-Type: application/json" -H "Authorization: Bearer xxx" -X GET h
 
 ### create calendar
 ```sh
-curl -H "Content-Type: application/json" -H "Authorization: Bearer XXX" -X POST -d '{"description":"testHeute","date":"2011-11-19T18:28:52.607875Z"}' https://localhost:8443/calendarentries --insecure
+curl -H "Content-Type: application/json" -H "Authorization: Bearer XXX" -X POST -d '{"description":"testHeute","startDate":"2011-11-19T18:28:52.607875Z", "endDate":"2011-11-20T12:15:53.102875Z"}' https://localhost:8443/calendarentries --insecure
 ```
 
 ### calendar update
 ```sh
-curl -H "Content-Type: application/json" -H "Authorization: Bearer XX" -X PUT -d '{"description":"testHeute","date":"2011-11-19T18:28:52.607875Z"}' https://localhost:8443/calendarentries/1 --insecure
+curl -H "Content-Type: application/json" -H "Authorization: Bearer XX" -X PUT -d '{"description":"testHeute","startDate":"2011-11-19T18:28:52.607875Z", "endDate":"2011-11-20T12:15:53.102875Z"}' https://localhost:8443/calendarentries/1 --insecure
 ```
 
 ## Task

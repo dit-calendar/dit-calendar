@@ -17,7 +17,8 @@ instance Mapper Domain.CalendarEntry CalendarEntry where
             { description = Just (Domain.description domain)
             , entryId = Just (Domain.entryId domain)
             , version = Just $ Domain.version domain
-            , date = Domain.date domain
+            , startDate = Domain.startDate domain
+            , endDate = Domain.endDate domain
             }
 
     transformFromDto dto mDbCalendar =
@@ -28,7 +29,8 @@ instance Mapper Domain.CalendarEntry CalendarEntry where
                     , Domain.version = 0
                     , Domain.description = fromMaybe (error "description is missing") (description dto)
                     , Domain.tasks = []
-                    , Domain.date = date dto
+                    , Domain.startDate = startDate dto
+                    , Domain.endDate = endDate dto
                     }
             Just dbCalendar ->
                 def
@@ -36,5 +38,6 @@ instance Mapper Domain.CalendarEntry CalendarEntry where
                     , Domain.entryId = Domain.entryId dbCalendar
                     , Domain.version = fromMaybe (error "version is missing") (version dto)
                     , Domain.tasks = Domain.tasks dbCalendar
-                    , Domain.date = date dto
+                    , Domain.startDate = startDate dto
+                    , Domain.endDate = endDate dto
                     }

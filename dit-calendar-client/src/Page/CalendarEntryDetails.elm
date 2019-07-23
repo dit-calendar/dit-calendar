@@ -1,19 +1,16 @@
-module Page.CalendarEntryDetails exposing (Model, Msg(..), init, update, view)
+module Page.CalendarEntryDetails exposing (init, update, view)
 
 import Bootstrap.Alert as Alert
-import Bootstrap.Grid as Grid
+import Bootstrap.Button as Button exposing (onClick)
+import Bootstrap.Form as Form
+import Bootstrap.Form.Input as Input
 import Bootstrap.ListGroup as ListGroup
-import Endpoint.ResponseErrorDecoder exposing (calendarErrorDecoder)
-import Html exposing (Html, div, text)
+import Data.CalendarEntry exposing (CalendarDetailMsg(..), CalendarEntry, Model, Msg(..), Task(..))
+import Endpoint.CalendarEntryEndpoint exposing (saveCalendarEntry)
+import Endpoint.CalendarTaskEndpoint exposing (calendarEntryTasksResponse, loadCalendarEntryTasks)
+import Html exposing (Html, div, h4, text)
 import Html.Attributes exposing (class)
-import Http
-import Http.Detailed as HttpEx
-import Json.Decode as Decode exposing (Value)
-import Page.SimpleCalendar as SimpleCal
-
-
-type Task
-    = Task String -- Todo use Task.Model from Task.elm(page)
+import Maybe exposing (withDefault)
 
 
 getBla : Task -> String
@@ -21,91 +18,47 @@ getBla (Task str) =
     str
 
 
-type alias Model =
-    { calendarEntry : SimpleCal.CalendarEntry
-    , tasks : List Task
-    , problems : List String
-    }
-
-
-initModel : SimpleCal.CalendarEntry -> Model
+initModel : CalendarEntry -> Model
 initModel cal =
     { calendarEntry = cal, tasks = [], problems = [] }
 
 
-type Msg
-    = GetCalendarEntryTasks
-    | GetCalendarEntryTasksResult (Result (HttpEx.Error String) ( Http.Metadata, String ))
-
-
-init : SimpleCal.CalendarEntry -> ( Model, Cmd Msg )
+init : CalendarEntry -> ( Model, Cmd Msg )
 init cal =
-    update GetCalendarEntryTasks (initModel cal)
+    update (GetCalendarEntryTasks (withDefault 0 cal.entryId)) (initModel cal)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        GetCalendarEntryTasks ->
-            ( model, loadCalendarEntryTasks )
+        CalendarDetailMsg calendarDetialMsg ->
+            ( { model | calendarEntry = updateCalendarDetials calendarDetialMsg model.calendarEntry }, Cmd.none )
+
+        GetCalendarEntryTasks taskId ->
+            ( model, loadCalendarEntryTasks taskId )
 
         GetCalendarEntryTasksResult result ->
             ( calendarEntryTasksResponse result model, Cmd.none )
 
+        SaveCalendar ->
+            ( model, saveCalendarEntry model.calendarEntry )
 
-loadCalendarEntryTasks : Cmd Msg
-loadCalendarEntryTasks =
-    --TODO pass id for url
-    Http.riskyRequest
-        { method = "GET"
-        , headers = []
-        , url = "https://localhost:8443/calendarentries/2/tasks"
-        , body = Http.emptyBody
-        , expect = HttpEx.expectString GetCalendarEntryTasksResult
-        , timeout = Nothing
-        , tracker = Nothing
-        }
+        SaveCalendarResult result ->
+            -- TODO Benachrichtigung "wurde gespeichert" und error behandlung
+            ( model, Cmd.none )
 
 
-calendarEntryTasksResponse : Result (HttpEx.Error String) ( Http.Metadata, String ) -> Model -> Model
-calendarEntryTasksResponse response model =
-    case response of
-        Ok value ->
-            let
-                resp =
-                    calendarEntryTasksDecoder value
-            in
-            case resp of
-                Ok tasks ->
-                    { model | tasks = tasks }
+updateCalendarDetials : CalendarDetailMsg -> CalendarEntry -> CalendarEntry
+updateCalendarDetials msg model =
+    case msg of
+        Description des ->
+            { model | description = des }
 
-                Err error ->
-                    { model | problems = [ error ] }
+        StartDate startD ->
+            { model | startDate = startD }
 
-        Err error ->
-            { model | problems = calendarErrorDecoder error }
-
-
-calendarEntryTasksDecoder : ( Http.Metadata, String ) -> Result String (List Task)
-calendarEntryTasksDecoder ( meta, body ) =
-    let
-        decode =
-            Decode.decodeString (Decode.list tasksDecoder) body
-    in
-    case decode of
-        Ok calendarEntries ->
-            Ok calendarEntries
-
-        Err error ->
-            Err ("fehler beim decodieren der calendars taks" ++ Decode.errorToString error)
-
-
-tasksDecoder : Decode.Decoder Task
-tasksDecoder =
-    Decode.map
-        -- TODO reuse decoder from Tasks?
-        Task
-        (Decode.at [ "description" ] Decode.string)
+        EndDate endD ->
+            { model | endDate = endD }
 
 
 view : Model -> Html Msg
@@ -118,19 +71,29 @@ view model =
             model.tasks
     in
     div []
-        [ Grid.container []
-            [ Grid.row []
-                [ Grid.col [] [ text ("description: " ++ calendarInfo.description) ]
-                , Grid.col [] [ text ("date:" ++ calendarInfo.date) ]
+        [ Form.form []
+            [ h4 [] [ text "Kalendar Eintrag" ]
+            , Form.group []
+                [ Form.label [] [ text "description" ]
+                , Input.text [ Input.value calendarInfo.description, Input.onInput (CalendarDetailMsg << Description) ]
                 ]
-            , ListGroup.ul
-                (List.map
-                    (\task ->
-                        ListGroup.li [] [ text ("task: " ++ getBla task) ]
-                    )
-                    tasks
-                )
+            , Form.group []
+                [ Form.label [] [ text "start date" ]
+                , Input.text [ Input.value calendarInfo.startDate, Input.onInput (CalendarDetailMsg << StartDate) ]
+                ]
+            , Form.group []
+                [ Form.label [] [ text "end date" ]
+                , Input.text [ Input.value calendarInfo.endDate, Input.onInput (CalendarDetailMsg << EndDate) ]
+                ]
             ]
+        , ListGroup.ul
+            (List.map
+                (\task ->
+                    ListGroup.li [] [ text ("task: " ++ getBla task) ]
+                )
+                tasks
+            )
+        , Button.button [ Button.primary, onClick SaveCalendar ] [ text "Speichern" ]
         , div [ class "error-messages" ]
             (List.map viewProblem model.problems)
         ]
