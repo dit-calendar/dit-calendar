@@ -3,11 +3,13 @@
 
 module Presentation.Dto.CalendarEntry
     (
-    CalendarEntry(..)
+    CalendarEntry(..),
+    validate
     ) where
 
 import           Data.Aeson
 import           Data.Default
+import           Data.Maybe                (isJust)
 import           Data.Text
 import           Data.Time.Clock           (UTCTime)
 import           GHC.Generics
@@ -21,6 +23,15 @@ data CalendarEntry = CalendarEntry
     , startDate   :: UTCTime
     , endDate     :: UTCTime
     } deriving (Show, Generic)
+
+validate :: Either String CalendarEntry -> Either String CalendarEntry
+validate (Left e) = Left e
+validate (Right entry) =
+    if isJust $ entryId entry
+    then if isJust $ version entry
+        then Right entry
+        else Left "version is missing"
+    else Right entry
 
 instance ToJSON CalendarEntry where
     toEncoding = genericToEncoding defaultOptions

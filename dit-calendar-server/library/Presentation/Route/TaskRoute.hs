@@ -12,7 +12,7 @@ import           AcidHelper                             (App)
 import           Auth.Authorization                     (callIfAuthorized)
 import           Data.Domain.Types                      (EntryId, TaskId,
                                                          UserId)
-import           Presentation.Dto.Task                  as TaskDto (Task (..))
+import           Presentation.Dto.Task                  as TaskDto (Task (..), validate)
 import           Presentation.HttpServerHelper          (getBody, getHttpMethod)
 import           Presentation.ResponseHelper            (badRequest,
                                                          notImplemented)
@@ -26,7 +26,7 @@ routeTask entryId = do
     case m of
         POST -> do
             body <- getBody
-            case eitherDecode body :: Either String TaskDto.Task of
+            case validate (eitherDecode body :: Either String TaskDto.Task) of
                  Right taskDto ->
                       TaskController.createTask entryId taskDto
                  Left errorMessage -> badRequest errorMessage
@@ -40,7 +40,7 @@ routeTaskDetail entryId taskId = do
         GET -> TaskController.taskPage taskId
         PUT -> do
             body <- getBody
-            case eitherDecode body :: Either String TaskDto.Task of
+            case validate (eitherDecode body :: Either String TaskDto.Task) of
                   Right taskDto ->
                        callIfAuthorized (TaskController.updateTask taskId taskDto)
                   Left errorMessage -> badRequest errorMessage

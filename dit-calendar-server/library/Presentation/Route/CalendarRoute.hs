@@ -22,6 +22,7 @@ import qualified Presentation.Controller.CalendarController as CalendarControlle
 import qualified Presentation.Controller.TaskController     as TaskController
 import qualified Presentation.Dto.CalendarEntry             as CalendarDto
 import qualified Presentation.Dto.Task                      as TaskDto
+import Presentation.Dto.CalendarEntry (validate)
 
 
 routeCalendarEntry :: App Response
@@ -30,7 +31,7 @@ routeCalendarEntry = do
     case m of
         POST -> do
             body <- getBody
-            case eitherDecode body :: Either String CalendarDto.CalendarEntry of
+            case validate (eitherDecode body :: Either String CalendarDto.CalendarEntry) of
                 Right newCalendar -> callIfAuthorized (CalendarController.createCalendarEntry newCalendar)
                 Left errorMessage -> badRequest errorMessage
         GET -> callIfAuthorized CalendarController.calendarEntries
@@ -46,7 +47,7 @@ routeCalendarEntryDetails entryId = do
         GET -> CalendarController.entryPage entryId
         PUT -> do
             body <- getBody
-            case eitherDecode body :: Either String CalendarDto.CalendarEntry of
+            case validate (eitherDecode body :: Either String CalendarDto.CalendarEntry) of
                   Right calendarDto ->
                         callIfAuthorized (CalendarController.updateCalendarEntry entryId calendarDto)
                   Left errorMessage -> badRequest errorMessage
