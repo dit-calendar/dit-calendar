@@ -7,8 +7,8 @@ module Data.Domain.Types
     , TaskId
     , Description
     , Entry(..)
-    , EitherResponse
-    , ResponseError(..)
+    , EitherResult
+    , ResultError(..)
     , UserIdIndex(..)
     ) where
 
@@ -16,12 +16,12 @@ import           Data.Data     (Data, Typeable)
 import           Data.SafeCopy (base, deriveSafeCopy)
 import           Data.Text
 
-type EitherResponse a = Either ResponseError a
+type EitherResult a = Either ResultError a
 
-data ResponseError = OptimisticLocking
+data ResultError = OptimisticLocking
 
 --why the response of a acid method need do derive from safecopy?
-$(deriveSafeCopy 0 'base ''ResponseError)
+$(deriveSafeCopy 0 'base ''ResultError)
 
 type UserId = Int
 

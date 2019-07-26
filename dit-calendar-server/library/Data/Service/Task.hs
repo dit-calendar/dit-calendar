@@ -15,7 +15,7 @@ import           Data.Maybe                   (fromJust)
 import           AcidHelper                   (App)
 import           Data.Domain.CalendarEntry    as CalendarEntry
 import           Data.Domain.Task             as Task
-import           Data.Domain.Types            (Description, EitherResponse,
+import           Data.Domain.Types            (Description, EitherResult,
                                                UserId)
 import           Data.Domain.User             as User
 
@@ -40,7 +40,7 @@ createTaskInCalendarImpl calendarEntry task = do
     MonadDBCalendarRepo.addTaskToCalendarEntry calendarEntry (Task.taskId mTask)
     return mTask
 
-updateTaskInCalendarImpl :: MonadDBTaskRepo m => Task -> m (EitherResponse Task)
+updateTaskInCalendarImpl :: MonadDBTaskRepo m => Task -> m (EitherResult Task)
 updateTaskInCalendarImpl = TaskRepo.updateTask
 
 deleteTaskFromAllUsers :: (MonadDBUserRepo m, MonadIO m) =>
@@ -53,7 +53,7 @@ deleteTaskFromAllUsers task =
     (return ()) $ Task.belongingUsers task
 
 addUserToTaskImpl :: (MonadDBUserRepo m, MonadDBTaskRepo m, MonadIO m) =>
-                Task -> User -> m (EitherResponse Task)
+                Task -> User -> m (EitherResult Task)
 addUserToTaskImpl task user =
     if taskId task `elem` belongingUsers task
         then return (Right task) -- do nothing and return same task
@@ -62,7 +62,7 @@ addUserToTaskImpl task user =
             TaskRepo.updateTask task {belongingUsers = User.userId user : belongingUsers task}
 
 removeUserFromTaskImpl :: (MonadDBTaskRepo m, MonadDBUserRepo m) =>
-                    Task -> User -> m (EitherResponse Task)
+                    Task -> User -> m (EitherResult Task)
 removeUserFromTaskImpl task user = do
     MonadDBUserRepo.deleteTaskFromUser user (taskId task)
     TaskRepo.updateTask task {belongingUsers = delete (User.userId user) (belongingUsers task)}
@@ -70,9 +70,9 @@ removeUserFromTaskImpl task user = do
 class TaskService m where
     deleteTaskAndCascade :: CalendarEntry -> Task -> m ()
     createTaskInCalendar :: CalendarEntry -> Task -> m Task
-    updateTaskInCalendar :: Task -> m (EitherResponse Task)
-    addUserToTask :: Task -> User -> m (EitherResponse Task)
-    removeUserFromTask :: Task -> User -> m (EitherResponse Task)
+    updateTaskInCalendar :: Task -> m (EitherResult Task)
+    addUserToTask :: Task -> User -> m (EitherResult Task)
+    removeUserFromTask :: Task -> User -> m (EitherResult Task)
 
 instance (MonadDBTaskRepo App, MonadDBUserRepo App, MonadDBCalendarRepo App)
             => TaskService App where

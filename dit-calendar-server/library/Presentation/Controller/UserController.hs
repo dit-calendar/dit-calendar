@@ -19,7 +19,7 @@ import           Web.Routes                           (RouteT, mapRouteT,
 
 import           AcidHelper                           (App)
 import           Data.Domain.Types                    (Description,
-                                                       ResponseError (..),
+                                                       ResultError (..),
                                                        UserId)
 import           Data.Domain.User                     as DomainUser (User (..))
 import           Data.Service.Authorization           as AuthService (deleteAuthUser)

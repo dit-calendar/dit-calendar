@@ -15,7 +15,7 @@ import qualified Happstack.Foundation      as Foundation
 import           AcidHelper                (App)
 import           Data.Domain.CalendarEntry as CalendarEntry
 import           Data.Domain.Task          as Task
-import           Data.Domain.Types         (Description, EitherResponse, TaskId)
+import           Data.Domain.Types         (Description, EitherResult, TaskId)
 import           Data.Repository.Acid.Task (TaskDAO (..))
 
 import qualified Data.Repository.Acid.Task as TaskAcid
@@ -26,7 +26,7 @@ instance TaskDAO App where
     delete = Foundation.update
     query  = Foundation.query
 
-updateTaskImpl :: TaskDAO m => Task -> m (EitherResponse Task)
+updateTaskImpl :: TaskDAO m => Task -> m (EitherResult Task)
 updateTaskImpl = update . TaskAcid.UpdateTask
 
 deleteTaskImpl :: TaskDAO m => TaskId -> m ()
@@ -42,7 +42,7 @@ findTaskByIdImpl = query . TaskAcid.TaskById
 class (Monad m, TaskDAO App) => MonadDBTaskRepo m where
     createTask        :: Task -> m Task
     findTaskById      :: TaskId -> m (Maybe Task)
-    updateTask        :: Task   -> m (EitherResponse Task)
+    updateTask        :: Task   -> m (EitherResult Task)
     deleteTask        :: TaskId   -> m ()
 
 instance MonadDBTaskRepo App where

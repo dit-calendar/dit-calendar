@@ -15,8 +15,8 @@ import           Data.IxSet           (Indexable (..), IxSet (..), deleteIx,
 import           Data.Maybe           (fromJust)
 import           Data.SafeCopy        (base, deriveSafeCopy)
 
-import           Data.Domain.Types    (EitherResponse, Entry,
-                                       ResponseError (..), getId, getVersion,
+import           Data.Domain.Types    (EitherResult, Entry,
+                                       ResultError (..), getId, getVersion,
                                        setId, setVersion)
 
 
@@ -55,7 +55,7 @@ deleteEntry entryToDelete =
             deleteIx entryToDelete entrys
             }
 
-updateEntry :: (Ord a, Typeable a, Indexable a, Entry a) => a -> Update (EntrySet a) (EitherResponse a)
+updateEntry :: (Ord a, Typeable a, Indexable a, Entry a) => a -> Update (EntrySet a) (EitherResult a)
 updateEntry updatedEntry = do
     b@EntrySet{..} <- get
     let dbEntry = fromJust $ getOne (getEQ (getId updatedEntry) entrys)

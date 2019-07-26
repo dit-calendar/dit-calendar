@@ -28,8 +28,8 @@ import qualified Happstack.Server             as HServer (FilterMonad,
 import           AcidHelper                   (App)
 import           Data.Domain.CalendarEntry    (CalendarEntry)
 import           Data.Domain.Task             (Task)
-import           Data.Domain.Types            (EitherResponse, EntryId,
-                                               ResponseError (..), TaskId,
+import           Data.Domain.Types            (EitherResult, EntryId,
+                                               ResultError (..), TaskId,
                                                UserId)
 import           Data.Domain.User             (User)
 
@@ -40,7 +40,7 @@ import qualified Data.Repository.UserRepo     as UserRepo
 preconditionFailed :: (HServer.FilterMonad Response m) => a -> m a
 preconditionFailed = HServer.resp 412
 
-onDBEntryExist :: ToJSON dto => (Int -> App (Maybe entry)) -> Int -> (entry -> App (EitherResponse dto)) -> App Response
+onDBEntryExist :: ToJSON dto => (Int -> App (Maybe entry)) -> Int -> (entry -> App (EitherResult dto)) -> App Response
 onDBEntryExist find i controllerFunction = do
     mDbEntry <- find i
     case mDbEntry of
@@ -49,17 +49,17 @@ onDBEntryExist find i controllerFunction = do
             result <- controllerFunction dbEntry
             handleResponse result
 
-handleResponse :: ToJSON dto => EitherResponse dto -> App Response
+handleResponse :: ToJSON dto => EitherResult dto -> App Response
 handleResponse (Left OptimisticLocking) = preconditionFailedResponse "optimistic locking"
 handleResponse (Right dto)     = okResponseJson $ encode dto
 
-onUserExist :: ToJSON dto => UserId -> (User -> App (EitherResponse dto)) -> App Response
+onUserExist :: ToJSON dto => UserId -> (User -> App (EitherResult dto)) -> App Response
 onUserExist = onDBEntryExist UserRepo.findUserById
 
-onEntryExist :: ToJSON dto => EntryId -> (CalendarEntry -> App (EitherResponse dto)) -> App Response
+onEntryExist :: ToJSON dto => EntryId -> (CalendarEntry -> App (EitherResult dto)) -> App Response
 onEntryExist = onDBEntryExist CalendarRepo.findCalendarById
 
-onTaskExist :: ToJSON dto => TaskId -> (Task -> App (EitherResponse dto)) -> App Response
+onTaskExist :: ToJSON dto => TaskId -> (Task -> App (EitherResult dto)) -> App Response
 onTaskExist = onDBEntryExist TaskRepo.findTaskById
 
 onNothing :: String -> (a -> App Response) -> Maybe a -> App Response

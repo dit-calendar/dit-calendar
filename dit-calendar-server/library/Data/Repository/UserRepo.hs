@@ -19,7 +19,7 @@ import qualified Data.List                 as List
 import qualified Happstack.Foundation      as Foundation
 
 import           AcidHelper                (App)
-import           Data.Domain.Types         (EitherResponse, EntryId, TaskId,
+import           Data.Domain.Types         (EitherResult, EntryId, TaskId,
                                             UserId)
 import           Data.Domain.User          (User (..))
 import           Data.Repository.Acid.User (UserDAO (..))
@@ -42,26 +42,26 @@ createUserImpl name = let user = def { loginName = name
 deleteUserImpl :: UserDAO m => UserId -> m ()
 deleteUserImpl = delete . UserAcid.DeleteUser
 
-updateUserImpl :: UserDAO m => User -> m (EitherResponse User)
+updateUserImpl :: UserDAO m => User -> m (EitherResult User)
 updateUserImpl = update . UserAcid.UpdateUser
 
-updateLoginNameImpl :: UserDAO m => User -> Text -> m (EitherResponse User)
+updateLoginNameImpl :: UserDAO m => User -> Text -> m (EitherResult User)
 updateLoginNameImpl user newName = updateUserImpl user {loginName = newName}
 
-addCalendarEntryToUserImpl :: UserDAO m => User -> EntryId -> m (EitherResponse User)
+addCalendarEntryToUserImpl :: UserDAO m => User -> EntryId -> m (EitherResult User)
 addCalendarEntryToUserImpl user entryId =
     updateUserImpl user {calendarEntries = entryId : calendarEntries user}
 
 deleteCalendarEntryFromUserImpl :: UserDAO m =>
-                            User -> EntryId -> m (EitherResponse User)
+                            User -> EntryId -> m (EitherResult User)
 deleteCalendarEntryFromUserImpl user entryId =
     updateUserImpl user {calendarEntries = List.delete entryId (calendarEntries user)}
 
-addTaskToUserImpl :: UserDAO m => User -> TaskId -> m (EitherResponse User)
+addTaskToUserImpl :: UserDAO m => User -> TaskId -> m (EitherResult User)
 addTaskToUserImpl user taskId =
     updateUserImpl user {belongingTasks = taskId : belongingTasks user}
 
-deleteTaskFromUserImpl :: UserDAO m => User -> TaskId -> m (EitherResponse User)
+deleteTaskFromUserImpl :: UserDAO m => User -> TaskId -> m (EitherResult User)
 deleteTaskFromUserImpl user taskId =
     updateUserImpl user {belongingTasks = List.delete taskId (belongingTasks user)}
 
@@ -74,13 +74,13 @@ findUserByLoginNameIml = queryByLoginName . UserAcid.FindByLoginName
 class (UserDAO App) => MonadDBUserRepo m where
     createUser :: Text -> m User
     findUserById :: UserId -> m (Maybe User)
-    updateUser :: User -> m (EitherResponse User)
+    updateUser :: User -> m (EitherResult User)
     deleteUser :: UserId -> m ()
-    updateLoginName :: User -> Text -> m (EitherResponse User)
-    addCalendarEntryToUser :: User -> EntryId -> m (EitherResponse User)
-    deleteCalendarEntryFromUser :: User -> EntryId -> m (EitherResponse User)
-    addTaskToUser :: User -> TaskId -> m (EitherResponse User)
-    deleteTaskFromUser :: User -> TaskId -> m (EitherResponse User)
+    updateLoginName :: User -> Text -> m (EitherResult User)
+    addCalendarEntryToUser :: User -> EntryId -> m (EitherResult User)
+    deleteCalendarEntryFromUser :: User -> EntryId -> m (EitherResult User)
+    addTaskToUser :: User -> TaskId -> m (EitherResult User)
+    deleteTaskFromUser :: User -> TaskId -> m (EitherResult User)
 
     findUserByLoginName :: Text -> m (Maybe User)
 
