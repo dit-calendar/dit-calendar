@@ -14,7 +14,7 @@ import           Presentation.Mapper.BaseMapper
 instance Mapper Domain.CalendarEntry CalendarEntry where
     transformToDto domain =
         CalendarEntry
-            { description = Just (Domain.description domain)
+            { description = Domain.description domain
             , entryId = Just (Domain.entryId domain)
             , version = Just $ Domain.version domain
             , startDate = Domain.startDate domain
@@ -27,14 +27,14 @@ instance Mapper Domain.CalendarEntry CalendarEntry where
                 def
                     { Domain.entryId = 0
                     , Domain.version = 0
-                    , Domain.description = fromMaybe (error "description is missing") (description dto)
+                    , Domain.description = description dto
                     , Domain.tasks = []
                     , Domain.startDate = startDate dto
                     , Domain.endDate = endDate dto
                     }
             Just dbCalendar ->
                 def
-                    { Domain.description = fromMaybe (Domain.description dbCalendar) (description dto)
+                    { Domain.description = description dto
                     , Domain.entryId = Domain.entryId dbCalendar
                     , Domain.version = fromMaybe (error "version is missing") (version dto)
                     , Domain.tasks = Domain.tasks dbCalendar

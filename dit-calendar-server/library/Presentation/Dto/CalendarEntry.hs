@@ -15,7 +15,7 @@ import           GHC.Generics
 import qualified Data.Domain.CalendarEntry as Domain
 
 data CalendarEntry = CalendarEntry
-    { description :: Maybe Text
+    { description :: Text
     , entryId     :: Maybe Int
     , version     :: Maybe Int
     , startDate   :: UTCTime
