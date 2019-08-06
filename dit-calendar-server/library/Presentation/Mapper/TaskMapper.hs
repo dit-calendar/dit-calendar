@@ -34,7 +34,7 @@ instance Mapper Domain.Task Task where
                     , Domain.endTime = endTime dto
                     }
             Just dbTask ->
-                def
+                Domain.Task
                     { Domain.description = description dto
                     , Domain.taskId = Domain.taskId dbTask
                     , Domain.version = fromMaybe (-1) (version dto)

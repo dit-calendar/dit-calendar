@@ -21,9 +21,11 @@ instance Mapper Domain.User User where
     transformFromDto dto mDbCalendar =
         case mDbCalendar of
             Nothing -> def {Domain.loginName = loginName dto, Domain.userId = 0, Domain.version = 0}
-            Just dbCalendar ->
-                def
+            Just dbUser ->
+                Domain.User
                     { Domain.loginName = loginName dto
-                    , Domain.userId = Domain.userId dbCalendar
+                    , Domain.userId = Domain.userId dbUser
                     , Domain.version = fromMaybe (-1) (version dto)
+                    , Domain.calendarEntries = Domain.calendarEntries dbUser
+                    , Domain.belongingTasks = Domain.belongingTasks dbUser
                     }

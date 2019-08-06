@@ -33,10 +33,11 @@ instance Mapper Domain.CalendarEntry CalendarEntry where
                     , Domain.endDate = endDate dto
                     }
             Just dbCalendar ->
-                def
+                    Domain.CalendarEntry
                     { Domain.description = description dto
                     , Domain.entryId = Domain.entryId dbCalendar
                     , Domain.version = fromMaybe (-1) (version dto)
+                    , Domain.userId = Domain.userId dbCalendar
                     , Domain.tasks = Domain.tasks dbCalendar
                     , Domain.startDate = startDate dto
                     , Domain.endDate = endDate dto
