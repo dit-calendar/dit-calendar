@@ -37,7 +37,7 @@ instance Mapper Domain.Task Task where
                 def
                     { Domain.description = description dto
                     , Domain.taskId = Domain.taskId dbTask
-                    , Domain.version = fromMaybe (error "version is missing") (version dto)
+                    , Domain.version = fromMaybe (-1) (version dto)
                     , Domain.belongingUsers =
                           case belongingUsers dto of
                               [] -> Domain.belongingUsers dbTask

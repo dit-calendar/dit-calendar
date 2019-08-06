@@ -25,5 +25,5 @@ instance Mapper Domain.User User where
                 def
                     { Domain.loginName = loginName dto
                     , Domain.userId = Domain.userId dbCalendar
-                    , Domain.version = fromMaybe (error "version is missing") (version dto)
+                    , Domain.version = fromMaybe (-1) (version dto)
                     }

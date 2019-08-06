@@ -26,12 +26,7 @@ data CalendarEntry = CalendarEntry
 
 validate :: Either String CalendarEntry -> Either String CalendarEntry
 validate (Left e) = Left e
-validate (Right entry) =
-    if isJust $ entryId entry
-    then if isJust $ version entry
-        then Right entry
-        else Left "version is missing"
-    else Right entry
+validate (Right entry) = Right entry
 
 instance ToJSON CalendarEntry where
     toEncoding = genericToEncoding defaultOptions

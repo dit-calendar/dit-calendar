@@ -25,12 +25,7 @@ data Task = Task
 
 validate :: Either String Task -> Either String Task
 validate (Left e) = Left e
-validate (Right task) =
-    if isJust $ taskId task
-    then if isJust $ version task
-        then Right task
-        else Left "version is missing"
-    else Right task
+validate (Right task) = Right task
 
 instance ToJSON Task where
     toEncoding = genericToEncoding defaultOptions
