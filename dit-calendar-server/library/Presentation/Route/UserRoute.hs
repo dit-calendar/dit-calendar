@@ -14,7 +14,7 @@ import           Data.Domain.Types                          (UserId)
 import           AcidHelper                    (App)
 import           Presentation.HttpServerHelper              (getHttpMethod, getBody)
 import           Presentation.ResponseHelper                (badRequest, notImplemented)
-import           Presentation.Dto.User                      as UserDto (User (..))
+import           Presentation.Dto.User                      as UserDto (User (..), validate)
 
 import qualified Presentation.Controller.CalendarController as CalendarController
 import qualified Presentation.Controller.UserController     as UserController
@@ -41,7 +41,7 @@ routeDetailUser = do
         GET -> callIfAuthorized UserController.loggedUserPage
         PUT -> do
               body <- getBody
-              case eitherDecode body :: Either String UserDto.User of
+              case validate (eitherDecode body :: Either String UserDto.User) of
                   Right userDto -> callIfAuthorized (UserController.updateUser userDto)
                   Left errorMessage -> badRequest errorMessage
         DELETE -> callIfAuthorized UserController.deleteUser
