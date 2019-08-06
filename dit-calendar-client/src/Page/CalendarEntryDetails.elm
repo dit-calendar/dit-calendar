@@ -6,7 +6,7 @@ import Bootstrap.Form as Form
 import Bootstrap.Form.Input as Input
 import Bootstrap.ListGroup as ListGroup
 import Data.CalendarEntry exposing (CalendarDetailMsg(..), CalendarEntry, Model, Msg(..), Task(..))
-import Endpoint.CalendarEntryEndpoint exposing (saveCalendarEntry)
+import Endpoint.CalendarEntryEndpoint exposing (calendarEntryResponse, saveCalendarEntry)
 import Endpoint.CalendarTaskEndpoint exposing (calendarEntryTasksResponse, loadCalendarEntryTasks)
 import Html exposing (Html, div, h4, text)
 import Html.Attributes exposing (class)
@@ -45,7 +45,7 @@ update msg model =
 
         SaveCalendarResult result ->
             -- TODO Benachrichtigung "wurde gespeichert" und error behandlung
-            ( model, Cmd.none )
+            ( calendarEntryResponse result model, Cmd.none )
 
 
 updateCalendarDetials : CalendarDetailMsg -> CalendarEntry -> CalendarEntry
