@@ -1,4 +1,4 @@
-module Endpoint.CalendarEntryEndpoint exposing (calendarEntriesResponse, loadCalendarEntries, saveCalendarEntry)
+module Endpoint.CalendarEntryEndpoint exposing (calendarEntriesResponse, calendarEntryResponse, loadCalendarEntries, saveCalendarEntry)
 
 import Data.CalendarEntry as CalendarDetail
 import Data.SimpleCalendarList as CalendarList
@@ -49,7 +49,11 @@ loadCalendarEntries =
 
 calendarEntriesDecoder : Decode.Decoder (List CalendarDetail.CalendarEntry)
 calendarEntriesDecoder =
-    Decode.list
+    Decode.list calendarEntryDecoder
+
+
+calendarEntryDecoder : Decode.Decoder CalendarDetail.CalendarEntry
+calendarEntryDecoder =
         (Decode.map5
             CalendarDetail.CalendarEntry
             (Decode.nullable (Decode.field "entryId" Decode.int))
@@ -58,7 +62,6 @@ calendarEntriesDecoder =
             (Decode.field "startDate" Decode.string)
             (Decode.field "endDate" Decode.string)
         )
-
 
 calendarEntriesResponse : Result (HttpEx.Error String) ( Http.Metadata, String ) -> CalendarList.Model -> CalendarList.Model
 calendarEntriesResponse response model =
@@ -78,6 +81,24 @@ calendarEntriesResponse response model =
         Err error ->
             { model | problems = calendarErrorsDecoder error }
 
+calendarEntryResponse : Result (HttpEx.Error String) ( Http.Metadata, String ) -> CalendarDetail.Model -> CalendarDetail.Model
+calendarEntryResponse response model =
+    case response of
+        Ok value ->
+            let
+                resp =
+                    parseCalendarEntryResult value
+            in
+            case resp of
+                Ok calendarEntry ->
+                    { model | calendarEntry = calendarEntry }
+
+                Err error ->
+                    { model | problems = [ error ] }
+
+        Err error ->
+            { model | problems = calendarErrorsDecoder error }
+
 
 parseCalendarEntriesResult : ( Http.Metadata, String ) -> Result String (List CalendarDetail.CalendarEntry)
 parseCalendarEntriesResult ( meta, body ) =
@@ -88,6 +109,20 @@ parseCalendarEntriesResult ( meta, body ) =
     case decode of
         Ok calendarEntries ->
             Ok calendarEntries
+
+        Err error ->
+            Err ("fehler beim decodieren der calendar Einträge" ++ Decode.errorToString error)
+
+
+parseCalendarEntryResult : ( Http.Metadata, String ) -> Result String CalendarDetail.CalendarEntry
+parseCalendarEntryResult ( meta, body ) =
+    let
+        decode =
+            Decode.decodeString calendarEntryDecoder body
+    in
+    case decode of
+        Ok calendarEntry ->
+            Ok calendarEntry
 
         Err error ->
             Err ("fehler beim decodieren des calendars" ++ Decode.errorToString error)
