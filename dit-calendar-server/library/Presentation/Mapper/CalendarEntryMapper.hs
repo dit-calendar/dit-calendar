@@ -36,7 +36,7 @@ instance Mapper Domain.CalendarEntry CalendarEntry where
                 def
                     { Domain.description = description dto
                     , Domain.entryId = Domain.entryId dbCalendar
-                    , Domain.version = fromMaybe (error "version is missing") (version dto)
+                    , Domain.version = fromMaybe (-1) (version dto)
                     , Domain.tasks = Domain.tasks dbCalendar
                     , Domain.startDate = startDate dto
                     , Domain.endDate = endDate dto

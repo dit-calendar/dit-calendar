@@ -50,7 +50,7 @@ onDBEntryExist find i controllerFunction = do
             handleResponse result
 
 handleResponse :: ToJSON dto => EitherResult dto -> App Response
-handleResponse (Left OptimisticLocking) = preconditionFailedResponse "optimistic locking"
+handleResponse (Left OptimisticLocking) = preconditionFailedResponse "version is not set or not equal with database"
 handleResponse (Right dto)     = okResponseJson $ encode dto
 
 onUserExist :: ToJSON dto => UserId -> (User -> App (EitherResult dto)) -> App Response
