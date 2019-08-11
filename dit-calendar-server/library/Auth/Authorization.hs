@@ -1,28 +1,27 @@
 {-# LANGUAGE FlexibleContexts #-}
 module Auth.Authorization ( callIfAuthorized ) where
 
-import           Control.Monad.IO.Class             (liftIO)
-import           Data.Text                          (unpack)
-import           Data.Time                          (getCurrentTime)
+import           Data.Text                   (unpack)
 
-import           Happstack.Authenticate.Core        (Token (_tokenUser),
-                                                     getToken)
-import           Happstack.Foundation               (HasAcidState (getAcidState))
-import           Happstack.Server                   (Response, getHeaderM,
-                                                     internalServerError,
-                                                     toResponse, unauthorized)
+import           Data.Aeson                  (ToJSON)
+import           Happstack.Authenticate.Core (Token (_tokenUser), getToken)
+import           Happstack.Foundation        (HasAcidState (getAcidState))
+import           Happstack.Server            (Response, getHeaderM,
+                                              internalServerError, toResponse,
+                                              unauthorized)
 
-import           AcidHelper            (App)
-import           Presentation.Route.PageEnum        (Sitemap (..))
+import           AcidHelper                  (App)
+import           Data.Domain.Types           (EitherResult)
+import           Presentation.ResponseHelper (handleResponse)
+import           Presentation.Route.PageEnum (Sitemap (..))
 
-import qualified Data.ByteString.Char8              as B
-import qualified Data.Domain.User                   as DomainUser
-import qualified Data.Repository.UserRepo           as UserRepo
-import qualified Data.Text.Encoding                 as T
-import qualified Happstack.Authenticate.Core        as AuthUser
+import qualified Data.Domain.User            as DomainUser
+import qualified Data.Repository.UserRepo    as UserRepo
+import qualified Happstack.Authenticate.Core as AuthUser
 
 
-callIfAuthorized :: (DomainUser.User -> App Response) -> App Response
+
+callIfAuthorized :: ToJSON dto => (DomainUser.User -> App (EitherResult dto)) -> App Response
 callIfAuthorized route = do
     mAuth <- getUserToken
     case mAuth of
@@ -32,7 +31,7 @@ callIfAuthorized route = do
             loggedUser <- getDomainUser authUser
             case loggedUser of
                 Nothing -> responseWithError authUser
-                Just u -> route u
+                Just u  -> route u >>= handleResponse
 
 getUserToken = do
     authenticateState <- getAcidState

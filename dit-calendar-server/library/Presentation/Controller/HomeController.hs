@@ -6,8 +6,8 @@ import           Happstack.Server                       (Method (GET, POST),
                                                          nullDir, ok,
                                                          toResponse)
 
-import           AcidHelper                (App)
-import           Presentation.Controller.UserController as UserController
+import           AcidHelper                             (App)
+import           Presentation.ResponseHelper            (notImplemented)
 
 
 --handler for homePage
@@ -20,8 +20,5 @@ homePage = do
   greet = do
     m <- rqMethod <$> askRq
     case m of
-    -- curl http://localhost:8000/home
-      GET  -> UserController.usersPage
     -- curl -d '' http://localhost:8000/home
-      POST  ->
-        UserController.userPage 1
+      other -> notImplemented other

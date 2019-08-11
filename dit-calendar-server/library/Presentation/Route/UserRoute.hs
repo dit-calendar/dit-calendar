@@ -4,34 +4,34 @@ module Presentation.Route.UserRoute
     , routeUsers
     ) where
 
-import           Data.Aeson                                 (eitherDecode)
-import           Happstack.Server                           (Method (DELETE, GET, POST, PUT),
-                                                             Response, look,
-                                                             mapServerPartT)
+import           Data.Aeson                             (eitherDecode)
+import           Happstack.Server                       (Method (DELETE, GET, POST, PUT),
+                                                         Response)
 
-import           Auth.Authorization                         (callIfAuthorized)
-import           Data.Domain.Types                          (UserId)
-import           AcidHelper                    (App)
-import           Presentation.HttpServerHelper              (getHttpMethod, getBody)
-import           Presentation.ResponseHelper                (badRequest, notImplemented)
-import           Presentation.Dto.User                      as UserDto (User (..), validate)
+import           AcidHelper                             (App)
+import           Auth.Authorization                     (callIfAuthorized)
+import           Data.Domain.Types                      (UserId)
+import           Presentation.Dto.User                  as UserDto (User (..),
+                                                                    validate)
+import           Presentation.HttpServerHelper          (getBody, getHttpMethod)
+import           Presentation.ResponseHelper            (badRequest,
+                                                         handleResponse,
+                                                         notImplemented)
 
-import qualified Presentation.Controller.CalendarController as CalendarController
-import qualified Presentation.Controller.UserController     as UserController
-import qualified Presentation.Dto.CalendarEntry as CalendarDto
+import qualified Presentation.Controller.UserController as UserController
 
 routeUsers :: App Response
 routeUsers = do
     m <- getHttpMethod
     case m of
-        GET -> UserController.usersPage
+        GET   -> UserController.usersPage >>= handleResponse
         other -> notImplemented other
 
 routeUser :: UserId -> App Response
 routeUser userId = do
     m <- getHttpMethod
     case m of
-        GET -> UserController.userPage userId
+        GET   -> UserController.userPage userId >>= handleResponse
         other -> notImplemented other
 
 routeDetailUser :: App Response
