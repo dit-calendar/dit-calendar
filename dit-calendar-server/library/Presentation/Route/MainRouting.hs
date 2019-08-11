@@ -1,4 +1,4 @@
-module Presentation.Route.Routing
+module Presentation.Route.MainRouting
     ( routeWithOptions
     ) where
 

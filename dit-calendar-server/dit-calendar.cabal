@@ -26,7 +26,7 @@ library
                        Data.Domain.Task,
                        Data.Domain.Types,
                        Presentation.Route.PageEnum,
-                       Presentation.Route.Routing,
+                       Presentation.Route.MainRouting,
                        Presentation.Route.UserRoute,
                        Presentation.Route.CalendarRoute,
                        Presentation.Route.TaskRoute,

@@ -26,7 +26,7 @@ import           Conf.AuthConf                         (authenticateConfig,
 import           Conf.Config
 import           Presentation.Route.PageEnum           (Sitemap (Home),
                                                         urlSitemapParser)
-import           Presentation.Route.Routing            (routeWithOptions)
+import           Presentation.Route.MainRouting        (routeWithOptions)
 
 import qualified Data.Text                             as T
 
