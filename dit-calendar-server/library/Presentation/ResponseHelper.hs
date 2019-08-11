@@ -13,9 +13,9 @@ module Presentation.ResponseHelper
     , addCorsToResponse
     ) where
 
-import           Data.Aeson                   (ToJSON, Value, encode)
+import           Data.Aeson                   (ToJSON, encode)
 import           Data.ByteString.Lazy
-import           Data.Text                    as C (Text, pack)
+import           Data.Text                    (Text)
 import           Happstack.Server             (Method, Response, notFound, ok,
                                                setHeader, toResponse,
                                                toResponseBS)
@@ -40,26 +40,25 @@ import qualified Data.Repository.UserRepo     as UserRepo
 preconditionFailed :: (HServer.FilterMonad Response m) => a -> m a
 preconditionFailed = HServer.resp 412
 
-onDBEntryExist :: ToJSON dto => (Int -> App (Maybe entry)) -> Int -> (entry -> App (EitherResult dto)) -> App Response
+onDBEntryExist :: ToJSON dto => (Int -> App (Maybe entry)) -> Int -> (entry -> App (EitherResult dto)) -> App (EitherResult dto)
 onDBEntryExist find i controllerFunction = do
     mDbEntry <- find i
     case mDbEntry of
-        Nothing -> notFound $ toResponse $ "Could not find a db entry with id " ++ show i
-        Just dbEntry -> do
-            result <- controllerFunction dbEntry
-            handleResponse result
+        Nothing -> return $ Left $ EntryNotFound i
+        Just dbEntry -> controllerFunction dbEntry
 
 handleResponse :: ToJSON dto => EitherResult dto -> App Response
 handleResponse (Left OptimisticLocking) = preconditionFailedResponse "\"version is not set or not equal with database\""
+handleResponse (Left (EntryNotFound i)) = notFound $ toResponse $ "\"Could not find a db entry with id " ++ show i ++ "\""
 handleResponse (Right dto)     = okResponseJson $ encode dto
 
-onUserExist :: ToJSON dto => UserId -> (User -> App (EitherResult dto)) -> App Response
+onUserExist :: ToJSON dto => UserId -> (User -> App (EitherResult dto)) -> App (EitherResult dto)
 onUserExist = onDBEntryExist UserRepo.findUserById
 
-onEntryExist :: ToJSON dto => EntryId -> (CalendarEntry -> App (EitherResult dto)) -> App Response
+onEntryExist :: ToJSON dto => EntryId -> (CalendarEntry -> App (EitherResult dto)) -> App (EitherResult dto)
 onEntryExist = onDBEntryExist CalendarRepo.findCalendarById
 
-onTaskExist :: ToJSON dto => TaskId -> (Task -> App (EitherResult dto)) -> App Response
+onTaskExist :: ToJSON dto => TaskId -> (Task -> App (EitherResult dto)) -> App (EitherResult dto)
 onTaskExist = onDBEntryExist TaskRepo.findTaskById
 
 onNothing :: String -> (a -> App Response) -> Maybe a -> App Response

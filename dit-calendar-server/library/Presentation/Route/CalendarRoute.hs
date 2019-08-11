@@ -7,22 +7,20 @@ import           Data.Aeson                                 (eitherDecode)
 import           Data.Either
 
 import           Happstack.Server                           (Method (DELETE, GET, POST, PUT),
-                                                             Response, look)
+                                                             Response)
 
+import           AcidHelper                                 (App)
 import           Auth.Authorization                         (callIfAuthorized)
-import           Data.Domain.Types                          (Description (..),
-                                                             EntryId)
-import           AcidHelper                    (App)
+import           Data.Domain.Types                          (EntryId)
+import           Presentation.Dto.CalendarEntry             (validate)
 import           Presentation.HttpServerHelper              (getBody,
                                                              getHttpMethod)
 import           Presentation.ResponseHelper                (badRequest,
+                                                             handleResponse,
                                                              notImplemented)
 
 import qualified Presentation.Controller.CalendarController as CalendarController
-import qualified Presentation.Controller.TaskController     as TaskController
 import qualified Presentation.Dto.CalendarEntry             as CalendarDto
-import qualified Presentation.Dto.Task                      as TaskDto
-import Presentation.Dto.CalendarEntry (validate)
 
 
 routeCalendarEntry :: App Response
@@ -44,7 +42,7 @@ routeCalendarEntryDetails entryId = do
     case m of
         DELETE -> callIfAuthorized (CalendarController.deleteCalendarEntry entryId)
         --  https://localhost:8443/calendarentries/1
-        GET -> CalendarController.entryPage entryId
+        GET -> CalendarController.entryPage entryId >>= handleResponse
         PUT -> do
             body <- getBody
             case validate (eitherDecode body :: Either String CalendarDto.CalendarEntry) of

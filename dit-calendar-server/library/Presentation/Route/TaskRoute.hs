@@ -6,15 +6,16 @@ module Presentation.Route.TaskRoute
 
 import           Data.Aeson                             (eitherDecode)
 import           Happstack.Server                       (Method (DELETE, GET, POST, PUT),
-                                                         Response, look)
+                                                         Response)
 
 import           AcidHelper                             (App)
 import           Auth.Authorization                     (callIfAuthorized)
-import           Data.Domain.Types                      (EntryId, TaskId,
-                                                         UserId)
-import           Presentation.Dto.Task                  as TaskDto (Task (..), validate)
+import           Data.Domain.Types                      (EntryId, TaskId)
+import           Presentation.Dto.Task                  as TaskDto (Task (..),
+                                                                    validate)
 import           Presentation.HttpServerHelper          (getBody, getHttpMethod)
 import           Presentation.ResponseHelper            (badRequest,
+                                                         handleResponse,
                                                          notImplemented)
 
 import qualified Presentation.Controller.TaskController as TaskController
@@ -27,8 +28,7 @@ routeTask entryId = do
         POST -> do
             body <- getBody
             case validate (eitherDecode body :: Either String TaskDto.Task) of
-                 Right taskDto ->
-                      TaskController.createTask entryId taskDto
+                 Right taskDto -> TaskController.createTask entryId taskDto >>= handleResponse
                  Left errorMessage -> badRequest errorMessage
         GET -> callIfAuthorized (TaskController.calendarTasks entryId)
         other -> notImplemented other
@@ -37,7 +37,7 @@ routeTaskDetail :: EntryId ->  TaskId -> App Response
 routeTaskDetail entryId taskId = do
     m <- getHttpMethod
     case m of
-        GET -> TaskController.taskPage taskId
+        GET -> TaskController.taskPage taskId >>= handleResponse
         PUT -> do
             body <- getBody
             case validate (eitherDecode body :: Either String TaskDto.Task) of
