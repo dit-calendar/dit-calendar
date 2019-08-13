@@ -1,11 +1,8 @@
-module Data.CalendarEntry exposing (CalendarDetailMsg(..), CalendarEntry, Messages(..), Model, Msg(..), Task(..))
+module Data.CalendarEntry exposing (CalendarDetailMsg(..), CalendarEntry, Messages(..), Model, Msg(..))
 
+import Data.Task exposing (Task)
 import Http
 import Http.Detailed as HttpEx
-
-
-type Task
-    = Task String -- Todo use Task.Model from Task.elm(page)
 
 
 type alias CalendarEntry =
@@ -15,6 +12,7 @@ type alias CalendarEntry =
     , startDate : String
     , endDate : String
     }
+
 
 type Messages
     = Problems (List String)

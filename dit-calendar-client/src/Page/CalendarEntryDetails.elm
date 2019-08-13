@@ -5,17 +5,12 @@ import Bootstrap.Button as Button exposing (onClick)
 import Bootstrap.Form as Form
 import Bootstrap.Form.Input as Input
 import Bootstrap.ListGroup as ListGroup
-import Data.CalendarEntry exposing (CalendarDetailMsg(..), CalendarEntry, Messages(..), Model, Msg(..), Task(..))
+import Data.CalendarEntry exposing (CalendarDetailMsg(..), CalendarEntry, Messages(..), Model, Msg(..))
 import Endpoint.CalendarEntryEndpoint exposing (calendarEntryResponse, saveCalendarEntry)
 import Endpoint.CalendarTaskEndpoint exposing (calendarEntryTasksResponse, loadCalendarEntryTasks)
 import Html exposing (Html, div, h4, text)
 import Html.Attributes exposing (class)
 import Maybe exposing (withDefault)
-
-
-getBla : Task -> String
-getBla (Task str) =
-    str
 
 
 initModel : CalendarEntry -> Model
@@ -89,7 +84,7 @@ view model =
         , ListGroup.ul
             (List.map
                 (\task ->
-                    ListGroup.li [] [ text ("task: " ++ getBla task) ]
+                    ListGroup.li [] [ text ("task: " ++ task.description) ]
                 )
                 tasks
             )
