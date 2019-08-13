@@ -91,13 +91,13 @@ calendarEntryResponse response model =
             in
             case resp of
                 Ok calendarEntry ->
-                    { model | calendarEntry = calendarEntry }
+                    { model | calendarEntry = calendarEntry,  messages = CalendarDetail.SuccessUpdate }
 
                 Err error ->
-                    { model | problems = [ error ] }
+                    { model | messages = CalendarDetail.Problems [ error ] }
 
         Err error ->
-            { model | problems = calendarErrorsDecoder error }
+            { model | messages = CalendarDetail.Problems (calendarErrorsDecoder error) }
 
 
 parseCalendarEntriesResult : ( Http.Metadata, String ) -> Result String (List CalendarDetail.CalendarEntry)

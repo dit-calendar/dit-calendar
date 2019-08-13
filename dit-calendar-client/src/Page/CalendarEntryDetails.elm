@@ -5,7 +5,7 @@ import Bootstrap.Button as Button exposing (onClick)
 import Bootstrap.Form as Form
 import Bootstrap.Form.Input as Input
 import Bootstrap.ListGroup as ListGroup
-import Data.CalendarEntry exposing (CalendarDetailMsg(..), CalendarEntry, Model, Msg(..), Task(..))
+import Data.CalendarEntry exposing (CalendarDetailMsg(..), CalendarEntry, Messages(..), Model, Msg(..), Task(..))
 import Endpoint.CalendarEntryEndpoint exposing (calendarEntryResponse, saveCalendarEntry)
 import Endpoint.CalendarTaskEndpoint exposing (calendarEntryTasksResponse, loadCalendarEntryTasks)
 import Html exposing (Html, div, h4, text)
@@ -20,7 +20,7 @@ getBla (Task str) =
 
 initModel : CalendarEntry -> Model
 initModel cal =
-    { calendarEntry = cal, tasks = [], problems = [] }
+    { calendarEntry = cal, tasks = [], messages = Problems [] }
 
 
 init : CalendarEntry -> ( Model, Cmd Msg )
@@ -41,7 +41,7 @@ update msg model =
             ( calendarEntryTasksResponse result model, Cmd.none )
 
         SaveCalendar ->
-            ( model, saveCalendarEntry model.calendarEntry )
+            ( { model | messages = Problems [] }, saveCalendarEntry model.calendarEntry )
 
         SaveCalendarResult result ->
             -- TODO Benachrichtigung "wurde gespeichert" und error behandlung
@@ -94,11 +94,21 @@ view model =
                 tasks
             )
         , Button.button [ Button.primary, onClick SaveCalendar ] [ text "Speichern" ]
-        , div [ class "error-messages" ]
-            (List.map viewProblem model.problems)
+        , case model.messages of
+            Problems errors ->
+                div [ class "error-messages" ] (List.map viewProblem errors)
+
+            SuccessUpdate ->
+                div [ class "success-messages" ]
+                    [ viewSuccess "Kalendereintrag erfolgreich aktualisiert" ]
         ]
 
 
 viewProblem : String -> Html msg
 viewProblem problem =
     Alert.simpleDanger [] [ text problem ]
+
+
+viewSuccess : String -> Html msg
+viewSuccess success =
+    Alert.simpleSuccess [] [ text success ]
