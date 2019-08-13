@@ -1,4 +1,4 @@
-module Data.Task exposing (Model, Msg(..), Task)
+module Data.Task exposing (Messages(..), Model, Msg(..), Task, TaskMsg(..))
 
 
 type alias Task =
@@ -14,7 +14,7 @@ type alias Task =
 
 type alias Model =
     { task : Task
-    , problems : List String
+    , messages : Messages
     }
 
 
@@ -27,3 +27,12 @@ type TaskMsg
 
 type Msg
     = TaskMsg TaskMsg
+
+
+
+-- TODO rausziehen in eigenes module
+
+
+type Messages
+    = Problems (List String)
+    | SuccessUpdate
