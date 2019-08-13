@@ -1,4 +1,4 @@
-module Data.CalendarEntry exposing (CalendarDetailMsg(..), CalendarEntry, Model, Msg(..), Task(..))
+module Data.CalendarEntry exposing (CalendarDetailMsg(..), CalendarEntry, Messages(..), Model, Msg(..), Task(..))
 
 import Http
 import Http.Detailed as HttpEx
@@ -16,11 +16,15 @@ type alias CalendarEntry =
     , endDate : String
     }
 
+type Messages
+    = Problems (List String)
+    | SuccessUpdate
+
 
 type alias Model =
     { calendarEntry : CalendarEntry
     , tasks : List Task
-    , problems : List String
+    , messages : Messages
     }
 
 

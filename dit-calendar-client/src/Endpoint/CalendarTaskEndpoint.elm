@@ -42,10 +42,10 @@ calendarEntryTasksResponse response model =
                     { model | tasks = tasks }
 
                 Err error ->
-                    { model | problems = [ error ] }
+                    { model | messages = CalendarDetail.Problems [ error ] }
 
         Err error ->
-            { model | problems = taskErrorsDecoder error }
+            { model | messages = CalendarDetail.Problems (taskErrorsDecoder error) }
 
 
 parseCalendarEntryTasksResult : ( Http.Metadata, String ) -> Result String (List CalendarDetail.Task)
