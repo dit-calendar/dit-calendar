@@ -16,7 +16,7 @@ tasksDecoder =
         (Decode.at [ "description" ] Decode.string)
         --(Decode.at [ "belongingUsers" ] Decode.list)
         (Decode.field "startTime" Decode.string)
-        (Decode.nullable (Decode.field "endTime" Decode.string))
+        (Decode.maybe (Decode.field "endTime" Decode.string))
 
 
 taskErrorsDecoder : HttpEx.Error String -> List String

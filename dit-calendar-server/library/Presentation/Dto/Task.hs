@@ -28,7 +28,7 @@ validate (Left e) = Left e
 validate (Right task) = Right task
 
 instance ToJSON Task where
-    toEncoding = genericToEncoding defaultOptions
+    toEncoding = genericToEncoding defaultOptions { omitNothingFields = True }
 
 instance FromJSON Task where
     parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
