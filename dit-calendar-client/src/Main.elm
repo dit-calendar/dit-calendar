@@ -8,12 +8,14 @@ import Data.CalendarEntry as CalendarEntryDetails
 import Data.Login as Login
 import Data.Register as Register exposing (RegisterModel)
 import Data.SimpleCalendarList as CalendarList
+import Data.Task as TaskDetail
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Page.CalendarEntryDetails as CalendarEntryDetails
 import Page.Login as Login
 import Page.Register as Register
 import Page.SimpleCalendarList as CalendarList
+import Page.TaskDetail as TaskDetail
 import Url exposing (Url)
 import Url.Parser as UrlParser exposing ((</>), Parser, s, top)
 
@@ -34,6 +36,7 @@ type Page
     | Register Register.Model
     | SimpleCalendar CalendarList.Model
     | CalendarDetails CalendarEntryDetails.Model
+    | TaskDetail TaskDetail.Model
     | NotFound
 
 
@@ -69,6 +72,7 @@ type Msg
     | RegisterMsg Register.Msg
     | CalendarMsg CalendarList.Msg
     | CalendarDetailMsg CalendarEntryDetails.Msg
+    | TaskDetailMsg TaskDetail.Msg
 
 
 subscriptions : Model -> Sub Msg
@@ -126,9 +130,22 @@ update msg model =
                             ( model, Cmd.none )
 
         CalendarDetailMsg calendarDetailMsg ->
+            case calendarDetailMsg of
+                CalendarEntryDetails.OpenTaskDetailsView task ->
+                    stepTaskDetails model (TaskDetail.init task)
+
+                _ ->
+                    case model.page of
+                        CalendarDetails calendarDetails ->
+                            stepCalendarDetails model (CalendarEntryDetails.update calendarDetailMsg calendarDetails)
+
+                        _ ->
+                            ( model, Cmd.none )
+
+        TaskDetailMsg tskMsg ->
             case model.page of
-                CalendarDetails calendarDetails ->
-                    stepCalendarDetails model (CalendarEntryDetails.update calendarDetailMsg calendarDetails)
+                TaskDetail task ->
+                    stepTaskDetails model (TaskDetail.update tskMsg task)
 
                 _ ->
                     ( model, Cmd.none )
@@ -159,6 +176,13 @@ stepCalendarDetails : Model -> ( CalendarEntryDetails.Model, Cmd CalendarEntryDe
 stepCalendarDetails model ( calendarDetail, cmds ) =
     ( { model | page = CalendarDetails calendarDetail }
     , Cmd.map CalendarDetailMsg cmds
+    )
+
+
+stepTaskDetails : Model -> ( TaskDetail.Model, Cmd TaskDetail.Msg ) -> ( Model, Cmd Msg )
+stepTaskDetails model ( task, cmds ) =
+    ( { model | page = TaskDetail task }
+    , Cmd.map TaskDetailMsg cmds
     )
 
 
@@ -242,6 +266,9 @@ mainContent model =
 
             CalendarDetails calendarDetail ->
                 [ Html.map CalendarDetailMsg (CalendarEntryDetails.view calendarDetail) ]
+
+            TaskDetail taskDetails ->
+                [ Html.map TaskDetailMsg (TaskDetail.view taskDetails) ]
 
 
 pageNotFound : List (Html Msg)

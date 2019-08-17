@@ -1,4 +1,4 @@
-module Page.TaskDetail exposing (update, view)
+module Page.TaskDetail exposing (init, update, view)
 
 import Bootstrap.Alert as Alert
 import Bootstrap.Form as Form
@@ -13,16 +13,21 @@ import Maybe exposing (withDefault)
 main : Program () Model Msg
 main =
     Browser.element
-        { init = init
+        { init = initMain
         , view = view
         , update = update
         , subscriptions = \_ -> Sub.none
         }
 
 
-init : () -> ( Model, Cmd Msg )
-init _ =
+initMain : () -> ( Model, Cmd Msg )
+initMain _ =
     ( Model (Task (Just 1) 0 "" "" (Just "")) (Problems []), Cmd.none )
+
+
+init : Task -> ( Model, Cmd Msg )
+init task =
+    ( Model task (Problems []), Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

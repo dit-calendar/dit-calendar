@@ -38,3 +38,4 @@ type Msg
     | GetCalendarEntryTasksResult (Result (HttpEx.Error String) ( Http.Metadata, String ))
     | SaveCalendar
     | SaveCalendarResult (Result (HttpEx.Error String) ( Http.Metadata, String ))
+    | OpenTaskDetailsView Task

@@ -10,6 +10,7 @@ import Endpoint.CalendarEntryEndpoint exposing (calendarEntryResponse, saveCalen
 import Endpoint.CalendarTaskEndpoint exposing (calendarEntryTasksResponse, loadCalendarEntryTasks)
 import Html exposing (Html, div, h4, text)
 import Html.Attributes exposing (class)
+import Html.Events as HtmlEvent
 import Maybe exposing (withDefault)
 
 
@@ -41,6 +42,10 @@ update msg model =
         SaveCalendarResult result ->
             -- TODO Benachrichtigung "wurde gespeichert" und error behandlung
             ( calendarEntryResponse result model, Cmd.none )
+
+        OpenTaskDetailsView _ ->
+            --TODO rais logic error exception
+            ( model, Cmd.none )
 
 
 updateCalendarDetials : CalendarDetailMsg -> CalendarEntry -> CalendarEntry
@@ -81,10 +86,10 @@ view model =
                 , Input.text [ Input.value calendarInfo.endDate, Input.onInput (CalendarDetailMsg << EndDate) ]
                 ]
             ]
-        , ListGroup.ul
+        , ListGroup.custom
             (List.map
                 (\task ->
-                    ListGroup.li [] [ text ("task: " ++ task.description) ]
+                    ListGroup.button [ ListGroup.attrs [ HtmlEvent.onClick (OpenTaskDetailsView task) ] ] [ text ("task: " ++ task.description) ]
                 )
                 tasks
             )
