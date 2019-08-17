@@ -6,7 +6,7 @@ import Bootstrap.Form as Form
 import Bootstrap.Form.Input as Input
 import Bootstrap.ListGroup as ListGroup
 import Data.CalendarEntry exposing (CalendarDetailMsg(..), CalendarEntry, Messages(..), Model, Msg(..))
-import Endpoint.CalendarEntryEndpoint exposing (calendarEntryResponse, saveCalendarEntry)
+import Endpoint.CalendarEntryEndpoint exposing (calendarEntryResponse, createCalendarEntry, saveCalendarEntry)
 import Endpoint.CalendarTaskEndpoint exposing (calendarEntryTasksResponse, loadCalendarEntryTasks)
 import Html exposing (Html, div, h4, text)
 import Html.Attributes exposing (class)
@@ -28,16 +28,28 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         CalendarDetailMsg calendarDetialMsg ->
-            ( { model | calendarEntry = updateCalendarDetials calendarDetialMsg model.calendarEntry }, Cmd.none )
+            ( { model | calendarEntry = updateCalendarDetails calendarDetialMsg model.calendarEntry }, Cmd.none )
 
         GetCalendarEntryTasks taskId ->
-            ( model, loadCalendarEntryTasks taskId )
+            ( model
+            , if not (taskId == 0) then
+                loadCalendarEntryTasks taskId
+
+              else
+                Cmd.none
+            )
 
         GetCalendarEntryTasksResult result ->
             ( calendarEntryTasksResponse result model, Cmd.none )
 
         SaveCalendar ->
-            ( { model | messages = Problems [] }, saveCalendarEntry model.calendarEntry )
+            ( { model | messages = Problems [] }
+            , if not (model.calendarEntry.entryId == Nothing) then
+                saveCalendarEntry model.calendarEntry
+
+              else
+                createCalendarEntry model.calendarEntry
+            )
 
         SaveCalendarResult result ->
             -- TODO Benachrichtigung "wurde gespeichert" und error behandlung
@@ -47,9 +59,12 @@ update msg model =
             --TODO rais logic error exception
             ( model, Cmd.none )
 
+        CreateCalendarResult result ->
+             ( calendarEntryResponse result model, Cmd.none )
 
-updateCalendarDetials : CalendarDetailMsg -> CalendarEntry -> CalendarEntry
-updateCalendarDetials msg model =
+
+updateCalendarDetails : CalendarDetailMsg -> CalendarEntry -> CalendarEntry
+updateCalendarDetails msg model =
     case msg of
         Description des ->
             { model | description = des }
@@ -100,7 +115,7 @@ view model =
 
             SuccessUpdate ->
                 div [ class "success-messages" ]
-                    [ viewSuccess "Kalendereintrag erfolgreich aktualisiert" ]
+                    [ viewSuccess "Kalendereintrag erfolgreich gespeichert" ]
         ]
 
 

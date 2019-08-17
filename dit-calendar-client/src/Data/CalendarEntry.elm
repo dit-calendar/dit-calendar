@@ -1,4 +1,4 @@
-module Data.CalendarEntry exposing (CalendarDetailMsg(..), CalendarEntry, Messages(..), Model, Msg(..))
+module Data.CalendarEntry exposing (CalendarDetailMsg(..), CalendarEntry, Messages(..), Model, Msg(..), emptyCalendarEntry)
 
 import Data.Task exposing (Task)
 import Http
@@ -13,7 +13,6 @@ type alias CalendarEntry =
     , endDate : String
     }
 
-
 type Messages
     = Problems (List String)
     | SuccessUpdate
@@ -25,6 +24,9 @@ type alias Model =
     , messages : Messages
     }
 
+emptyCalendarEntry : CalendarEntry
+emptyCalendarEntry =
+    {entryId = Nothing, version = 0, description = "", startDate = "", endDate = "" }
 
 type CalendarDetailMsg
     = Description String
@@ -39,3 +41,5 @@ type Msg
     | SaveCalendar
     | SaveCalendarResult (Result (HttpEx.Error String) ( Http.Metadata, String ))
     | OpenTaskDetailsView Task
+    | CreateCalendarResult (Result (HttpEx.Error String) ( Http.Metadata, String ))
+

@@ -1,8 +1,10 @@
 module Page.SimpleCalendarList exposing (main, update, view)
 
 import Bootstrap.Alert as Alert
+import Bootstrap.Button as Button
 import Bootstrap.ListGroup as ListGroup
 import Browser
+import Data.CalendarEntry exposing (emptyCalendarEntry)
 import Data.SimpleCalendarList exposing (Model, Msg(..), emptyModel)
 import Endpoint.CalendarEntryEndpoint exposing (calendarEntriesResponse, loadCalendarEntries)
 import Html exposing (Html, div, h1, text)
@@ -52,6 +54,9 @@ view model =
                     model.calendarEntries
                 )
             ]
+        , Button.button
+              [ Button.primary, Button.block, Button.large, Button.onClick (OpenCalendarDetialsView emptyCalendarEntry)]
+              [ text "Neuen Kalendar Eintrag erstellen" ]
         , div [ class "error-messages" ]
             (List.map viewProblem model.problems)
         ]
