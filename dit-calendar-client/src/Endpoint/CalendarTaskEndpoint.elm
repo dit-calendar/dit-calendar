@@ -1,7 +1,8 @@
 module Endpoint.CalendarTaskEndpoint exposing (calendarEntryTasksResponse, loadCalendarEntryTasks)
 
 import Data.CalendarEntry as CalendarDetail
-import Endpoint.ResponseErrorDecoder exposing (ErrorResponse, errorDecoder)
+import Data.Task exposing (Task)
+import Endpoint.TaskEndpoint exposing (taskErrorsDecoder, tasksDecoder)
 import Env.Serverurl as Server
 import Http
 import Http.Detailed as HttpEx
@@ -19,14 +20,6 @@ loadCalendarEntryTasks taskId =
         , timeout = Nothing
         , tracker = Nothing
         }
-
-
-tasksDecoder : Decode.Decoder CalendarDetail.Task
-tasksDecoder =
-    Decode.map
-        -- TODO reuse decoder from Tasks?
-        CalendarDetail.Task
-        (Decode.at [ "description" ] Decode.string)
 
 
 calendarEntryTasksResponse : Result (HttpEx.Error String) ( Http.Metadata, String ) -> CalendarDetail.Model -> CalendarDetail.Model
@@ -48,7 +41,7 @@ calendarEntryTasksResponse response model =
             { model | messages = CalendarDetail.Problems (taskErrorsDecoder error) }
 
 
-parseCalendarEntryTasksResult : ( Http.Metadata, String ) -> Result String (List CalendarDetail.Task)
+parseCalendarEntryTasksResult : ( Http.Metadata, String ) -> Result String (List Task)
 parseCalendarEntryTasksResult ( meta, body ) =
     let
         decode =
@@ -60,13 +53,3 @@ parseCalendarEntryTasksResult ( meta, body ) =
 
         Err error ->
             Err ("fehler beim decodieren der calendars taks" ++ Decode.errorToString error)
-
-
-taskErrorsDecoder : HttpEx.Error String -> List String
-taskErrorsDecoder responseError =
-    errorDecoder responseError taskErrorDecoder
-
-
-taskErrorDecoder : Decode.Decoder ErrorResponse
-taskErrorDecoder =
-    Decode.map ErrorResponse Decode.string
