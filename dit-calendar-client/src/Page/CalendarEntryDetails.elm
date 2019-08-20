@@ -6,6 +6,7 @@ import Bootstrap.Form as Form
 import Bootstrap.Form.Input as Input
 import Bootstrap.ListGroup as ListGroup
 import Data.CalendarEntry exposing (CalendarDetailMsg(..), CalendarEntry, Messages(..), Model, Msg(..))
+import Data.Task exposing (emptyTask)
 import Endpoint.CalendarEntryEndpoint exposing (calendarEntryResponse, createCalendarEntry, saveCalendarEntry)
 import Endpoint.CalendarTaskEndpoint exposing (calendarEntryTasksResponse, loadCalendarEntryTasks)
 import Html exposing (Html, div, h4, text)
@@ -60,7 +61,7 @@ update msg model =
             ( model, Cmd.none )
 
         CreateCalendarResult result ->
-             ( calendarEntryResponse result model, Cmd.none )
+            ( calendarEntryResponse result model, Cmd.none )
 
 
 updateCalendarDetails : CalendarDetailMsg -> CalendarEntry -> CalendarEntry
@@ -109,6 +110,9 @@ view model =
                 tasks
             )
         , Button.button [ Button.primary, onClick SaveCalendar ] [ text "Speichern" ]
+        , Button.button
+            [ Button.primary, Button.block, Button.large, Button.onClick (OpenTaskDetailsView emptyTask) ]
+            [ text "Neuen Task Eintrag erstellen" ]
         , case model.messages of
             Problems errors ->
                 div [ class "error-messages" ] (List.map viewProblem errors)

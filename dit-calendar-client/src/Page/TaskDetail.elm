@@ -1,10 +1,12 @@
 module Page.TaskDetail exposing (init, update, view)
 
 import Bootstrap.Alert as Alert
+import Bootstrap.Button as Button
 import Bootstrap.Form as Form
 import Bootstrap.Form.Input as Input
 import Browser
 import Data.Task exposing (Messages(..), Model, Msg(..), Task, TaskMsg(..))
+import Endpoint.TaskEndpoint exposing (createTask, taskResponse)
 import Html exposing (Html, div, h4, text)
 import Html.Attributes exposing (class)
 import Maybe exposing (withDefault)
@@ -35,6 +37,18 @@ update msg model =
     case msg of
         TaskMsg taskMsg ->
             ( { model | task = updateTaskDetials taskMsg model.task }, Cmd.none )
+
+        SaveTask ->
+            ( { model | messages = Problems [] }
+            , --if (model.task.taskId /= Nothing) then
+              --  updateTask model.task
+              --else
+              createTask 5 model.task
+              --Todo pass calendarId
+            )
+
+        CreateTaskResult result ->
+            ( taskResponse result model, Cmd.none )
 
 
 updateTaskDetials : TaskMsg -> Task -> Task
@@ -72,13 +86,14 @@ view model =
                 , Input.text [ Input.value (withDefault "" taskInfo.endTime), Input.onInput (TaskMsg << EndTime) ]
                 ]
             ]
+        , Button.button [ Button.primary, Button.onClick SaveTask ] [ text "Speichern" ]
         , case model.messages of
             Problems errors ->
                 div [ class "error-messages" ] (List.map viewProblem errors)
 
             SuccessUpdate ->
                 div [ class "success-messages" ]
-                    [ viewSuccess "Task erfolgreich aktualisiert" ]
+                    [ viewSuccess "Task erfolgreich gespeichert" ]
         ]
 
 

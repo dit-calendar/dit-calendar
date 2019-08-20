@@ -1,4 +1,7 @@
-module Data.Task exposing (Messages(..), Model, Msg(..), Task, TaskMsg(..))
+module Data.Task exposing (Messages(..), Model, Msg(..), Task, TaskMsg(..), emptyTask)
+
+import Http
+import Http.Detailed as HttpEx
 
 
 type alias Task =
@@ -10,6 +13,11 @@ type alias Task =
     , startTime : String
     , endTime : Maybe String
     }
+
+
+emptyTask : Task
+emptyTask =
+    { taskId = Nothing, version = 0, description = "", startTime = "", endTime = Nothing }
 
 
 type alias Model =
@@ -27,6 +35,8 @@ type TaskMsg
 
 type Msg
     = TaskMsg TaskMsg
+    | SaveTask
+    | CreateTaskResult (Result (HttpEx.Error String) ( Http.Metadata, String ))
 
 
 
