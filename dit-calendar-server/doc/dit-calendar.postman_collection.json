@@ -1,0 +1,311 @@
+{
+	"info": {
+		"_postman_id": "79411f7e-addf-4a4a-aa96-b50ff2155487",
+		"name": "dit-calendar",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"user\":\"alex2\",\"password\":\"12345\"}"
+						},
+						"url": {
+							"raw": "https://localhost:8443/authenticate/authentication-methods/password/token",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"authenticate",
+								"authentication-methods",
+								"password",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "calendar",
+			"item": [
+				{
+					"name": "get calendar",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://localhost:8443/calendarentries/1",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"calendarentries",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get calendars",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "https://localhost:8443/calendarentries",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"calendarentries"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get calendar tasks",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "https://localhost:8443/calendarentries/2/tasks",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"calendarentries",
+								"2",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update calendar",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoQWRtaW4iOnRydWUsImV4cCI6MTU2NzY5Mzc1NSwidXNlciI6eyJlbWFpbCI6ImEuYmVmb3J0QGdvb2dsZW1haWwuY29tIiwidXNlcm5hbWUiOiJhbGV4MiIsInVzZXJJZCI6MX19.VDghd6u8ZMwpFQzZdf7avk7R5FBkLCG3xTGfnz4QVSg"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\": \"1\",\n    \"description\": \"testHeute\",\n    \"startDate\": \"2011-11-19T18:28:52.607875Z\",\n    \"endDate\": \"2011-11-20T12:15:53.102875Z\"\n}"
+						},
+						"url": {
+							"raw": "https://localhost:8443/calendarentries/1",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"calendarentries",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create calendar",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoQWRtaW4iOnRydWUsImV4cCI6MTU2NzY5Mzc1NSwidXNlciI6eyJlbWFpbCI6ImEuYmVmb3J0QGdvb2dsZW1haWwuY29tIiwidXNlcm5hbWUiOiJhbGV4MiIsInVzZXJJZCI6MX19.VDghd6u8ZMwpFQzZdf7avk7R5FBkLCG3xTGfnz4QVSg"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"testHeute2\",\n    \"startDate\": \"2016-11-19T18:28:52.607875Z\",\n    \"endDate\": \"2016-11-20T12:15:53.102875Z\"\n}\n"
+						},
+						"url": {
+							"raw": "https://localhost:8443/calendarentries",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"calendarentries"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "get logged user",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "https://localhost:8443/users/me",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"users",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create user",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"naPassword\": \"12345\",\n    \"naPasswordConfirm\": \"12345\",\n    \"naUser\": {\n        \"email\": \"a.befort@googlemail.com\",\n        \"username\": \"alex3\",\n        \"userId\": 0\n    }\n}"
+						},
+						"url": {
+							"raw": "https://localhost:8443/authenticate/authentication-methods/password/account",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"authenticate",
+								"authentication-methods",
+								"password",
+								"account"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "task",
+			"item": [
+				{
+					"name": "create task",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoQWRtaW4iOnRydWUsImV4cCI6MTU2NzY5Mzc1NSwidXNlciI6eyJlbWFpbCI6ImEuYmVmb3J0QGdvb2dsZW1haWwuY29tIiwidXNlcm5hbWUiOiJhbGV4MiIsInVzZXJJZCI6MX19.VDghd6u8ZMwpFQzZdf7avk7R5FBkLCG3xTGfnz4QVSg"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"testHeute\",\n    \"belongingUsers\": [\n        1\n    ],\n    \"startTime\": \"2011-11-19T18:28:52.607875Z\"\n}"
+						},
+						"url": {
+							"raw": "https://localhost:8443/calendarentries/7/tasks",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8443",
+							"path": [
+								"calendarentries",
+								"7",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
