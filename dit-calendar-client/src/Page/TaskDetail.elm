@@ -24,7 +24,7 @@ main =
 
 initMain : () -> ( Model, Cmd Msg )
 initMain _ =
-    ( Model (Task (Just 1) 0 "" "" (Just "")) (Problems []), Cmd.none )
+    ( Model (Task Nothing Nothing 0 "" "" (Just "")) (Problems []), Cmd.none )
 
 
 init : Task -> ( Model, Cmd Msg )
@@ -43,7 +43,7 @@ update msg model =
             , --if (model.task.taskId /= Nothing) then
               --  updateTask model.task
               --else
-              createTask 5 model.task
+              createTask model.task.calendarEntryId model.task
               --Todo pass calendarId
             )
 

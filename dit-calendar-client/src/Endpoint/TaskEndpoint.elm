@@ -7,14 +7,15 @@ import Http
 import Http.Detailed as HttpEx
 import Json.Decode as Decode exposing (Value)
 import Json.Encode as Encode
+import Maybe exposing (withDefault)
 
 
-createTask : Int -> Task -> Cmd Msg
+createTask : Maybe Int -> Task -> Cmd Msg
 createTask calendarId model =
     Http.riskyRequest
         { method = "POST"
         , headers = []
-        , url = Server.calendarTask calendarId
+        , url = Server.calendarTask (withDefault 0 calendarId)
         , body = Http.jsonBody (taskEncoder model)
         , expect = HttpEx.expectString CreateTaskResult
         , timeout = Nothing
@@ -34,11 +35,12 @@ taskEncoder model =
         ]
 
 
-tasksDecoder : Decode.Decoder Task
-tasksDecoder =
-    Decode.map5
+tasksDecoder : Maybe Int -> Decode.Decoder Task
+tasksDecoder calendarId =
+    Decode.map6
         -- TODO reuse decoder from Tasks?
         Task
+        (Decode.succeed calendarId)
         (Decode.nullable (Decode.field "taskId" Decode.int))
         (Decode.field "version" Decode.int)
         (Decode.at [ "description" ] Decode.string)
@@ -63,7 +65,7 @@ taskResponse response model =
         Ok value ->
             let
                 resp =
-                    parseTaskResult value
+                    parseTaskResult model.task.calendarEntryId value
             in
             case resp of
                 Ok task ->
@@ -76,15 +78,15 @@ taskResponse response model =
             { model | messages = Problems (taskErrorsDecoder error) }
 
 
-parseTaskResult : ( Http.Metadata, String ) -> Result String Task
-parseTaskResult ( meta, body ) =
+parseTaskResult : Maybe Int -> ( Http.Metadata, String ) -> Result String Task
+parseTaskResult calendarId ( meta, body ) =
     let
         decode =
-            Decode.decodeString tasksDecoder body
+            Decode.decodeString (tasksDecoder calendarId) body
     in
     case decode of
-        Ok calendarEntry ->
-            Ok calendarEntry
+        Ok task ->
+            Ok task
 
         Err error ->
-            Err ("fehler beim decodieren des calendars" ++ Decode.errorToString error)
+            Err ("fehler beim decodieren des calendars: " ++ Decode.errorToString error)

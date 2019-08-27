@@ -28,7 +28,7 @@ calendarEntryTasksResponse response model =
         Ok value ->
             let
                 resp =
-                    parseCalendarEntryTasksResult value
+                    parseCalendarEntryTasksResult model.calendarEntry.entryId value
             in
             case resp of
                 Ok tasks ->
@@ -41,15 +41,15 @@ calendarEntryTasksResponse response model =
             { model | messages = CalendarDetail.Problems (taskErrorsDecoder error) }
 
 
-parseCalendarEntryTasksResult : ( Http.Metadata, String ) -> Result String (List Task)
-parseCalendarEntryTasksResult ( meta, body ) =
+parseCalendarEntryTasksResult : Maybe Int -> ( Http.Metadata, String ) -> Result String (List Task)
+parseCalendarEntryTasksResult calendarId ( meta, body ) =
     let
         decode =
-            Decode.decodeString (Decode.list tasksDecoder) body
+            Decode.decodeString (Decode.list (tasksDecoder calendarId)) body
     in
     case decode of
         Ok calendarEntries ->
             Ok calendarEntries
 
         Err error ->
-            Err ("fehler beim decodieren der calendars taks" ++ Decode.errorToString error)
+            Err ("fehler beim decodieren der calendars-tasks " ++ Decode.errorToString error)

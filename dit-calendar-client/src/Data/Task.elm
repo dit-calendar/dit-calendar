@@ -5,7 +5,8 @@ import Http.Detailed as HttpEx
 
 
 type alias Task =
-    { taskId : Maybe Int
+    { calendarEntryId : Maybe Int
+    , taskId : Maybe Int
     , version : Int
     , description : String
 
@@ -15,9 +16,9 @@ type alias Task =
     }
 
 
-emptyTask : Task
-emptyTask =
-    { taskId = Nothing, version = 0, description = "", startTime = "", endTime = Nothing }
+emptyTask : Maybe Int -> Task
+emptyTask calendarId =
+    { calendarEntryId = calendarId, taskId = Nothing, version = 0, description = "", startTime = "", endTime = Nothing }
 
 
 type alias Model =
