@@ -6,7 +6,7 @@ import Bootstrap.Form as Form
 import Bootstrap.Form.Input as Input
 import Browser
 import Data.Task exposing (Messages(..), Model, Msg(..), Task, TaskMsg(..))
-import Endpoint.TaskEndpoint exposing (createTask, taskResponse)
+import Endpoint.TaskEndpoint exposing (createTask, taskResponse, updateTask)
 import Html exposing (Html, div, h4, text)
 import Html.Attributes exposing (class)
 import Maybe exposing (withDefault)
@@ -40,11 +40,11 @@ update msg model =
 
         SaveTask ->
             ( { model | messages = Problems [] }
-            , --if (model.task.taskId /= Nothing) then
-              --  updateTask model.task
-              --else
-              createTask model.task.calendarEntryId model.task
-              --Todo pass calendarId
+            , if model.task.taskId /= Nothing then
+                updateTask model.task
+
+              else
+                createTask model.task
             )
 
         CreateTaskResult result ->

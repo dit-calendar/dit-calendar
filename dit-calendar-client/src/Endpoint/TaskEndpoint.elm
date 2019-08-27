@@ -1,4 +1,4 @@
-module Endpoint.TaskEndpoint exposing (createTask, taskErrorsDecoder, taskResponse, tasksDecoder)
+module Endpoint.TaskEndpoint exposing (createTask, taskErrorsDecoder, taskResponse, tasksDecoder, updateTask)
 
 import Data.Task exposing (Messages(..), Model, Msg(..), Task)
 import Endpoint.ResponseErrorDecoder exposing (ErrorResponse, errorDecoder)
@@ -10,12 +10,25 @@ import Json.Encode as Encode
 import Maybe exposing (withDefault)
 
 
-createTask : Maybe Int -> Task -> Cmd Msg
-createTask calendarId model =
+updateTask : Task -> Cmd Msg
+updateTask model =
+    Http.riskyRequest
+        { method = "PUT"
+        , headers = []
+        , url = Server.calendarTask (withDefault 0 model.calendarEntryId)
+        , body = Http.jsonBody (taskEncoder model)
+        , expect = HttpEx.expectString CreateTaskResult
+        , timeout = Nothing
+        , tracker = Nothing
+        }
+
+
+createTask : Task -> Cmd Msg
+createTask model =
     Http.riskyRequest
         { method = "POST"
         , headers = []
-        , url = Server.calendarTask (withDefault 0 calendarId)
+        , url = Server.calendarTask (withDefault 0 model.calendarEntryId)
         , body = Http.jsonBody (taskEncoder model)
         , expect = HttpEx.expectString CreateTaskResult
         , timeout = Nothing
