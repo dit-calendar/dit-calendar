@@ -6,7 +6,7 @@
 module Data.Repository.Acid.InterfaceAcid where
 
 import           Control.Applicative  ((<$>))
-import           Control.Monad.Reader (ask)
+import           Control.Monad.Reader (asks, ask)
 import           Control.Monad.State  (get, put)
 import           Data.Acid            (Query, Update)
 import           Data.Data            (Data, Typeable)
@@ -43,10 +43,10 @@ getEntrySet :: (Ord a, Indexable a) => Query (EntrySet a) (EntrySet a)
 getEntrySet = ask
 
 allEntrysAsList :: (Ord a, Typeable a, Indexable a) => Query (EntrySet a) [a]
-allEntrysAsList = toList . entrys <$> ask
+allEntrysAsList = asks (toList . entrys)
 
 entryById :: (Ord a, Typeable a, Indexable a) => Int -> Query (EntrySet a) (Maybe a)
-entryById eid = getOne . getEQ eid . entrys <$> ask
+entryById eid = asks (getOne . getEQ eid . entrys)
 
 deleteEntry :: (Ord a, Typeable a, Indexable a) => Int -> Update (EntrySet a) ()
 deleteEntry entryToDelete =

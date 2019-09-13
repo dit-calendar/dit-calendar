@@ -8,7 +8,7 @@
 module AcidHelper ( CtrlV, App, withAcid, Acid ) where
 
 import           Control.Exception                  (bracket)
-import           Control.Monad.Reader               (ReaderT, ask)
+import           Control.Monad.Reader               (ReaderT, asks)
 import           Data.Maybe                         (fromMaybe)
 import           Prelude
 import           System.FilePath                    ((</>))
@@ -41,16 +41,16 @@ type CtrlV'   = RouteT Sitemap App
 type CtrlV    = CtrlV' Response
 
 instance HasAcidState App UserAcid.UserList where
-    getAcidState = acidUserListState <$> ask
+    getAcidState = asks acidUserListState
 
 instance HasAcidState App CalendarEntryAcid.EntryList where
-    getAcidState = acidEntryListState <$> ask
+    getAcidState = asks acidEntryListState
 
 instance HasAcidState App TaskAcid.TaskList where
-    getAcidState = acidTaskListState <$> ask
+    getAcidState = asks acidTaskListState
 
 instance HasAcidState App AuthenticateState where
-    getAcidState = acidAuthState <$> ask
+    getAcidState = asks acidAuthState
 
 withAcid :: AcidState AuthenticateState -> Maybe FilePath -- ^ state directory
          -> (Acid -> IO a) -- ^ action

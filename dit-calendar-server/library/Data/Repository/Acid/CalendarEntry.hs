@@ -6,7 +6,7 @@ module Data.Repository.Acid.CalendarEntry
     ( CalendarDAO(..), initialEntryListState, EntryList(..), NewEntry(..), EntryById(..), AllEntrys(..),
     AllEntriesForUser(..), GetEntryList(..), UpdateEntry(..), DeleteEntry(..) ) where
 
-import           Control.Monad.Reader               (ask)
+import           Control.Monad.Reader               (asks)
 import           Data.Acid                          (Query, Update, makeAcidic)
 import           Data.IxSet                         (Indexable (..), getEQ,
                                                      ixFun, ixSet, toList)
@@ -37,7 +37,7 @@ allEntrys = InterfaceAcid.allEntrysAsList
 --TODO sortieren nach Date
 --TODO suche nach mit Predicat? Für suche mit zeitlichen Grenzen
 allEntriesForUser :: User.User -> Query EntryList [CalendarEntry]
-allEntriesForUser user =  toList . getEQ (UserIdIndex $ User.userId user) . InterfaceAcid.entrys <$> ask
+allEntriesForUser user = asks (toList . getEQ (UserIdIndex $ User.userId user) . InterfaceAcid.entrys)
 
 newEntry :: CalendarEntry -> Update EntryList CalendarEntry
 newEntry = InterfaceAcid.newEntry

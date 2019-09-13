@@ -18,7 +18,7 @@
 #
 # resolver: ./custom-snapshot.yaml
 # resolver: https://example.com/snapshots/2018-01-01.yaml
-resolver: lts-10.10
+resolver: lts-11.22
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -44,13 +44,14 @@ extra-deps:
 - happstack-foundation-0.5.9.1
 - happstack-server-7.5.2
 - happstack-server-tls-7.1.6.7
-- web-routes-0.27.14.2
 - web-routes-th-0.22.6.4
 - transformers-0.5.6.2
 - pwstore-purehaskell-2.1.4
-- happy-1.19.9
 - ixset-1.1
-
+- happstack-hsp-7.3.7.3
+- hsx2hs-0.14.1.5
+- reform-hsp-0.2.7.1
+- harp-0.4.3.2
 
 # Override default flag values for local packages and extra-deps
 # flags: {}
