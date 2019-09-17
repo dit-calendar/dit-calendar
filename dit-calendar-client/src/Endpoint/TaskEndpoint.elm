@@ -7,6 +7,7 @@ import Http
 import Http.Detailed as HttpEx
 import Json.Decode as Decode exposing (Value)
 import Json.Encode as Encode
+import Json.Encode.Extra as Encode
 import Maybe exposing (withDefault)
 
 
@@ -15,7 +16,7 @@ updateTask model =
     Http.riskyRequest
         { method = "PUT"
         , headers = []
-        , url = Server.calendarTask (withDefault 0 model.calendarEntryId)
+        , url = Server.updateCalendarTask (withDefault 0 model.calendarEntryId) (withDefault 0 model.taskId)
         , body = Http.jsonBody (taskEncoder model)
         , expect = HttpEx.expectString CreateTaskResult
         , timeout = Nothing
@@ -43,8 +44,7 @@ taskEncoder model =
         , ( "description", Encode.string model.description )
         , ( "startTime", Encode.string model.startTime )
         , ( "belongingUsers", Encode.list Encode.int [] )
-
-        --, ( "endTime", Encode.string model.endTime )
+        , ( "endTime", Encode.maybe Encode.string model.endTime )
         ]
 
 
@@ -57,7 +57,6 @@ tasksDecoder calendarId =
         (Decode.nullable (Decode.field "taskId" Decode.int))
         (Decode.field "version" Decode.int)
         (Decode.at [ "description" ] Decode.string)
-        --(Decode.at [ "belongingUsers" ] Decode.list)
         (Decode.field "startTime" Decode.string)
         (Decode.maybe (Decode.field "endTime" Decode.string))
 
