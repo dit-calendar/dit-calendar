@@ -1,4 +1,4 @@
-module Env.Serverurl exposing (calendarEntries, calendarEntry, calendarTask, loginUrl, registerUrl)
+module Env.Serverurl exposing (calendarEntries, calendarEntry, calendarTask, loginUrl, registerUrl, updateCalendarTask)
 
 
 authUrl : String
@@ -22,8 +22,12 @@ calendarEntries =
 
 
 calendarTask : Int -> String
-calendarTask taskId =
-    calendarEntries ++ String.fromInt taskId ++ "/tasks"
+calendarTask calendarId =
+    calendarEntries ++ String.fromInt calendarId ++ "/tasks"
+
+updateCalendarTask : Int -> Int -> String
+updateCalendarTask calendarId taskId =
+    calendarTask calendarId ++ "/" ++ String.fromInt taskId
 
 
 calendarEntry : Int -> String

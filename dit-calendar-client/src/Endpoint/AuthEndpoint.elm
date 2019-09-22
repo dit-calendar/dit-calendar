@@ -22,7 +22,6 @@ login model =
         , tracker = Nothing
         }
 
-
 loginResponse : HttpEx.Error String -> Login.Model -> Login.Model
 loginResponse error model =
     { model | problems = authErrorDecoder error }
