@@ -10,6 +10,7 @@ type alias CalendarEntry =
     , version : Int
     , description : String
     , startDate : String
+    , startTime : String
     , endDate : String
     }
 
@@ -26,11 +27,12 @@ type alias Model =
 
 emptyCalendarEntry : CalendarEntry
 emptyCalendarEntry =
-    {entryId = Nothing, version = 0, description = "", startDate = "", endDate = "" }
+    {entryId = Nothing, version = 0, description = "", startDate = "", startTime = "", endDate = "" }
 
 type CalendarDetailMsg
     = Description String
     | StartDate String
+    | StartTime String
     | EndDate String
 
 

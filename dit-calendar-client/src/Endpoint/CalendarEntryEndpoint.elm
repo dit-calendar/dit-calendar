@@ -6,9 +6,11 @@ import Endpoint.ResponseErrorDecoder exposing (ErrorResponse, errorDecoder)
 import Env.Serverurl as Server
 import Http
 import Http.Detailed as HttpEx
-import Json.Decode as Decode exposing (Value)
+import Json.Decode as Decode exposing (Decoder, Value, andThen, succeed)
 import Json.Encode as Encode
 import Maybe exposing (withDefault)
+import String exposing (left)
+import String.Extra exposing (leftOf, rightOf)
 
 
 saveCalendarEntry : CalendarDetail.CalendarEntry -> Cmd CalendarDetail.Msg
@@ -42,7 +44,7 @@ calendarEntryEncoder model =
     Encode.object
         [ ( "version", Encode.int model.version )
         , ( "description", Encode.string model.description )
-        , ( "startDate", Encode.string model.startDate )
+        , ( "startDate", Encode.string (model.startDate ++ "T" ++ model.startTime ++ ":00.000000Z") )
         , ( "endDate", Encode.string model.endDate )
         ]
 
@@ -67,13 +69,25 @@ calendarEntriesDecoder =
 
 calendarEntryDecoder : Decode.Decoder CalendarDetail.CalendarEntry
 calendarEntryDecoder =
-    Decode.map5
+    Decode.map6
         CalendarDetail.CalendarEntry
         (Decode.nullable (Decode.field "entryId" Decode.int))
         (Decode.field "version" Decode.int)
         (Decode.at [ "description" ] Decode.string)
-        (Decode.field "startDate" Decode.string)
+        (Decode.field "startDate" stringToDate)
+        (Decode.field "startDate" stringToDateTime)
         (Decode.field "endDate" Decode.string)
+
+
+stringToDate : Decoder String
+stringToDate =
+    Decode.string
+        |> andThen (\val -> succeed <| leftOf "T" val)
+
+stringToDateTime : Decoder String
+stringToDateTime =
+    Decode.string
+        |> andThen (\val -> succeed <| left 5 (rightOf "T" val))
 
 
 calendarEntriesResponse : Result (HttpEx.Error String) ( Http.Metadata, String ) -> CalendarList.Model -> CalendarList.Model
