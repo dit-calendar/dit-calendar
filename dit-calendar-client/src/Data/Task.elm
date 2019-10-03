@@ -1,5 +1,6 @@
-module Data.Task exposing (Messages(..), Model, Msg(..), Task, TaskMsg(..), emptyTask)
+module Data.Task exposing (Model, Msg(..), Task, TaskMsg(..), emptyTask)
 
+import Data.UIMessages exposing (Messages)
 import Http
 import Http.Detailed as HttpEx
 
@@ -42,12 +43,3 @@ type Msg
     = TaskMsg TaskMsg
     | SaveTask
     | CreateTaskResult (Result (HttpEx.Error String) ( Http.Metadata, String ))
-
-
-
--- TODO rausziehen in eigenes module
-
-
-type Messages
-    = Problems (List String)
-    | SuccessUpdate

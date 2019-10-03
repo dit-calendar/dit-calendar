@@ -1,7 +1,8 @@
 module Endpoint.CalendarEntryEndpoint exposing (calendarEntriesResponse, calendarEntryResponse, createCalendarEntry, loadCalendarEntries, saveCalendarEntry)
 
-import Data.CalendarEntry as CalendarDetail
+import Data.CalendarEntry exposing (CalendarEntry, Model, Msg(..))
 import Data.SimpleCalendarList as CalendarList
+import Data.UIMessages exposing (Messages(..))
 import Endpoint.JsonParser.CalendarEntryParser exposing (calendarEntryEncoder, calendarErrorsDecoder, parseCalendarEntriesResult, parseCalendarEntryResult)
 import Env.Serverurl as Server
 import Http as Http
@@ -9,27 +10,27 @@ import Http.Detailed as HttpEx
 import Maybe exposing (withDefault)
 
 
-saveCalendarEntry : CalendarDetail.CalendarEntry -> Cmd CalendarDetail.Msg
+saveCalendarEntry : CalendarEntry -> Cmd Msg
 saveCalendarEntry model =
     Http.riskyRequest
         { method = "PUT"
         , headers = []
         , url = Server.calendarEntry (withDefault 0 model.entryId)
         , body = Http.jsonBody (calendarEntryEncoder model)
-        , expect = HttpEx.expectString CalendarDetail.SaveCalendarResult
+        , expect = HttpEx.expectString SaveCalendarResult
         , timeout = Nothing
         , tracker = Nothing
         }
 
 
-createCalendarEntry : CalendarDetail.CalendarEntry -> Cmd CalendarDetail.Msg
+createCalendarEntry : CalendarEntry -> Cmd Msg
 createCalendarEntry model =
     Http.riskyRequest
         { method = "POST"
         , headers = []
         , url = Server.calendarEntries
         , body = Http.jsonBody (calendarEntryEncoder model)
-        , expect = HttpEx.expectString CalendarDetail.CreateCalendarResult
+        , expect = HttpEx.expectString CreateCalendarResult
         , timeout = Nothing
         , tracker = Nothing
         }
@@ -67,7 +68,7 @@ calendarEntriesResponse response model =
             { model | problems = calendarErrorsDecoder error }
 
 
-calendarEntryResponse : Result (HttpEx.Error String) ( Http.Metadata, String ) -> CalendarDetail.Model -> CalendarDetail.Model
+calendarEntryResponse : Result (HttpEx.Error String) ( Http.Metadata, String ) -> Model -> Model
 calendarEntryResponse response model =
     case response of
         Ok value ->
@@ -77,10 +78,10 @@ calendarEntryResponse response model =
             in
             case resp of
                 Ok calendarEntry ->
-                    { model | calendarEntry = calendarEntry, messages = CalendarDetail.SuccessUpdate }
+                    { model | calendarEntry = calendarEntry, messages = SuccessUpdate }
 
                 Err error ->
-                    { model | messages = CalendarDetail.Problems [ error ] }
+                    { model | messages = Problems [ error ] }
 
         Err error ->
-            { model | messages = CalendarDetail.Problems (calendarErrorsDecoder error) }
+            { model | messages = Problems (calendarErrorsDecoder error) }

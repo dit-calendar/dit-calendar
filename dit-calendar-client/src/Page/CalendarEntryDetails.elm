@@ -5,8 +5,9 @@ import Bootstrap.Button as Button exposing (onClick)
 import Bootstrap.Form as Form
 import Bootstrap.Form.Input as Input
 import Bootstrap.ListGroup as ListGroup
-import Data.CalendarEntry exposing (CalendarDetailMsg(..), CalendarEntry, Messages(..), Model, Msg(..))
+import Data.CalendarEntry exposing (CalendarDetailMsg(..), CalendarEntry, Model, Msg(..))
 import Data.Task exposing (emptyTask)
+import Data.UIMessages exposing (Messages(..))
 import Endpoint.CalendarEntryEndpoint exposing (calendarEntryResponse, createCalendarEntry, saveCalendarEntry)
 import Endpoint.CalendarTaskEndpoint exposing (calendarEntryTasksResponse, loadCalendarEntryTasks)
 import Html exposing (Html, div, h4, text)

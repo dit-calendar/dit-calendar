@@ -1,6 +1,7 @@
 module Endpoint.TaskEndpoint exposing (createTask, taskResponse, updateTask)
 
-import Data.Task exposing (Messages(..), Model, Msg(..), Task)
+import Data.Task exposing (Model, Msg(..), Task)
+import Data.UIMessages exposing (Messages(..))
 import Endpoint.JsonParser.TaskParser exposing (parseTaskResult, taskEncoder, taskErrorsDecoder)
 import Env.Serverurl as Server
 import Http as Http

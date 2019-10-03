@@ -5,7 +5,8 @@ import Bootstrap.Button as Button
 import Bootstrap.Form as Form
 import Bootstrap.Form.Input as Input
 import Browser
-import Data.Task exposing (Messages(..), Model, Msg(..), Task, TaskMsg(..))
+import Data.Task exposing (Model, Msg(..), Task, TaskMsg(..))
+import Data.UIMessages exposing (Messages(..))
 import Endpoint.TaskEndpoint exposing (createTask, taskResponse, updateTask)
 import Html exposing (Html, div, h4, text)
 import Html.Attributes exposing (class)
