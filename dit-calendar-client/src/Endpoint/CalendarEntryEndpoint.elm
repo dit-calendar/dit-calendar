@@ -3,14 +3,13 @@ module Endpoint.CalendarEntryEndpoint exposing (calendarEntriesResponse, calenda
 import Data.CalendarEntry as CalendarDetail
 import Data.SimpleCalendarList as CalendarList
 import Endpoint.ResponseErrorDecoder exposing (ErrorResponse, errorDecoder)
+import Endpoint.Service.DateTimeDecoder exposing (stringToDate, stringToDateTime)
 import Env.Serverurl as Server
 import Http
 import Http.Detailed as HttpEx
-import Json.Decode as Decode exposing (Decoder, Value, andThen, succeed)
+import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Encode as Encode
 import Maybe exposing (withDefault)
-import String exposing (left)
-import String.Extra exposing (leftOf, rightOf)
 
 
 saveCalendarEntry : CalendarDetail.CalendarEntry -> Cmd CalendarDetail.Msg
@@ -78,17 +77,6 @@ calendarEntryDecoder =
         (Decode.field "startDate" stringToDateTime)
         (Decode.field "endDate" stringToDate)
         (Decode.field "endDate" stringToDateTime)
-
-
-stringToDate : Decoder String
-stringToDate =
-    Decode.string
-        |> andThen (\val -> succeed <| leftOf "T" val)
-
-stringToDateTime : Decoder String
-stringToDateTime =
-    Decode.string
-        |> andThen (\val -> succeed <| left 5 (rightOf "T" val))
 
 
 calendarEntriesResponse : Result (HttpEx.Error String) ( Http.Metadata, String ) -> CalendarList.Model -> CalendarList.Model

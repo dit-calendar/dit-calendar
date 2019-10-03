@@ -2,6 +2,7 @@ module Endpoint.TaskEndpoint exposing (createTask, taskErrorsDecoder, taskRespon
 
 import Data.Task exposing (Messages(..), Model, Msg(..), Task)
 import Endpoint.ResponseErrorDecoder exposing (ErrorResponse, errorDecoder)
+import Endpoint.Service.DateTimeDecoder exposing (stringToDate, stringToDateTime)
 import Env.Serverurl as Server
 import Http
 import Http.Detailed as HttpEx
@@ -42,7 +43,7 @@ taskEncoder model =
     Encode.object
         [ ( "version", Encode.int model.version )
         , ( "description", Encode.string model.description )
-        , ( "startTime", Encode.string model.startTime )
+        , ( "startTime", Encode.string (model.startDate ++ "T" ++ model.startTime ++ ":00.000000Z") )
         , ( "belongingUsers", Encode.list Encode.int [] )
         , ( "endTime", Encode.maybe Encode.string model.endTime )
         ]
@@ -50,14 +51,15 @@ taskEncoder model =
 
 tasksDecoder : Maybe Int -> Decode.Decoder Task
 tasksDecoder calendarId =
-    Decode.map6
+    Decode.map7
         -- TODO reuse decoder from Tasks?
         Task
         (Decode.succeed calendarId)
         (Decode.nullable (Decode.field "taskId" Decode.int))
         (Decode.field "version" Decode.int)
         (Decode.at [ "description" ] Decode.string)
-        (Decode.field "startTime" Decode.string)
+        (Decode.field "startTime" stringToDate)
+        (Decode.field "startTime" stringToDateTime)
         (Decode.maybe (Decode.field "endTime" Decode.string))
 
 
