@@ -1,4 +1,4 @@
-module Endpoint.Service.DateTimeDecoder exposing (stringToDate, stringToDateTime)
+module Endpoint.JsonParser.DateTimeDecoder exposing (stringToDate, stringToDateTime)
 
 import Json.Decode as Decode exposing (Decoder, Value, andThen, succeed)
 import String exposing (left)

@@ -2,9 +2,9 @@ module Endpoint.CalendarTaskEndpoint exposing (calendarEntryTasksResponse, loadC
 
 import Data.CalendarEntry as CalendarDetail
 import Data.Task exposing (Task)
-import Endpoint.TaskEndpoint exposing (taskErrorsDecoder, tasksDecoder)
+import Endpoint.JsonParser.TaskParser exposing (taskErrorsDecoder, tasksDecoder)
 import Env.Serverurl as Server
-import Http
+import Http as Http
 import Http.Detailed as HttpEx
 import Json.Decode as Decode exposing (Value)
 

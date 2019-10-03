@@ -1,4 +1,4 @@
-module Endpoint.ResponseErrorDecoder exposing (ErrorResponse, errorDecoder)
+module Endpoint.JsonParser.ResponseErrorDecoder exposing (ErrorResponse, errorDecoder)
 
 import Http.Detailed as HttpEx
 import Json.Decode as Decode
