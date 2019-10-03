@@ -67,7 +67,7 @@ removeUserFromTaskImpl task user = do
     MonadDBUserRepo.deleteTaskFromUser user (taskId task)
     TaskRepo.updateTask task {belongingUsers = delete (User.userId user) (belongingUsers task)}
 
-class TaskService m where
+class Monad m => TaskService m where
     deleteTaskAndCascade :: CalendarEntry -> Task -> m ()
     createTaskInCalendar :: CalendarEntry -> Task -> m Task
     updateTaskInCalendar :: Task -> m (EitherResult Task)

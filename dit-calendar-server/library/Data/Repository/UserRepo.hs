@@ -71,7 +71,7 @@ findUserByIdImpl = query . UserAcid.UserById
 findUserByLoginNameIml :: (UserDAO m, MonadIO m) => Text -> m (Maybe User)
 findUserByLoginNameIml = queryByLoginName . UserAcid.FindByLoginName
 
-class (UserDAO App) => MonadDBUserRepo m where
+class Monad m => MonadDBUserRepo m where
     createUser :: Text -> m User
     findUserById :: UserId -> m (Maybe User)
     updateUser :: User -> m (EitherResult User)
@@ -84,7 +84,7 @@ class (UserDAO App) => MonadDBUserRepo m where
 
     findUserByLoginName :: Text -> m (Maybe User)
 
-instance MonadDBUserRepo App where
+instance UserDAO App => MonadDBUserRepo App where
     createUser = createUserImpl
     findUserById = findUserByIdImpl
     updateUser = updateUserImpl

@@ -39,13 +39,13 @@ findTaskByIdImpl :: (TaskDAO m, MonadIO m) => TaskId -> m (Maybe Task)
 findTaskByIdImpl = query . TaskAcid.TaskById
 
 
-class (Monad m, TaskDAO App) => MonadDBTaskRepo m where
+class Monad m => MonadDBTaskRepo m where
     createTask        :: Task -> m Task
     findTaskById      :: TaskId -> m (Maybe Task)
     updateTask        :: Task   -> m (EitherResult Task)
     deleteTask        :: TaskId   -> m ()
 
-instance MonadDBTaskRepo App where
+instance TaskDAO App => MonadDBTaskRepo App where
     createTask        = createTaskImpl
     findTaskById      = findTaskByIdImpl
     updateTask        = updateTaskImpl

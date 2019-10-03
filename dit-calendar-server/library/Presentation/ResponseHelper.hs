@@ -29,9 +29,11 @@ import           AcidHelper                   (App)
 import           Data.Domain.CalendarEntry    (CalendarEntry)
 import           Data.Domain.Task             (Task)
 import           Data.Domain.Types            (EitherResult, EntryId,
-                                               ResultError (..), TaskId,
-                                               UserId)
+                                               ResultError (..), TaskId, UserId)
 import           Data.Domain.User             (User)
+import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)
+import           Data.Repository.TaskRepo     (MonadDBTaskRepo)
+import           Data.Repository.UserRepo     (MonadDBUserRepo)
 
 import qualified Data.Repository.CalendarRepo as CalendarRepo
 import qualified Data.Repository.TaskRepo     as TaskRepo
@@ -40,34 +42,34 @@ import qualified Data.Repository.UserRepo     as UserRepo
 preconditionFailed :: (HServer.FilterMonad Response m) => a -> m a
 preconditionFailed = HServer.resp 412
 
-onDBEntryExist :: ToJSON dto => (Int -> App (Maybe entry)) -> Int -> (entry -> App (EitherResult dto)) -> App (EitherResult dto)
+onDBEntryExist :: (ToJSON dto, Monad m) => (Int -> m (Maybe entry)) -> Int -> (entry -> m (EitherResult dto)) -> m (EitherResult dto)
 onDBEntryExist find i controllerFunction = do
     mDbEntry <- find i
     case mDbEntry of
-        Nothing -> return $ Left $ EntryNotFound i
+        Nothing      -> return $ Left $ EntryNotFound i
         Just dbEntry -> controllerFunction dbEntry
 
-handleResponse :: ToJSON dto => EitherResult dto -> App Response
+handleResponse :: (ToJSON dto, HServer.FilterMonad Response m ) => EitherResult dto -> m Response
 handleResponse (Left OptimisticLocking) = preconditionFailedResponse "\"version is not set or not equal with database\""
 handleResponse (Left (EntryNotFound i)) = notFound $ toResponse $ "\"Could not find a db entry with id " ++ show i ++ "\""
 handleResponse (Right dto)     = okResponseJson $ encode dto
 
-onUserExist :: ToJSON dto => UserId -> (User -> App (EitherResult dto)) -> App (EitherResult dto)
+onUserExist :: (ToJSON dto, MonadDBUserRepo m) => UserId -> (User -> m (EitherResult dto)) -> m (EitherResult dto)
 onUserExist = onDBEntryExist UserRepo.findUserById
 
-onEntryExist :: ToJSON dto => EntryId -> (CalendarEntry -> App (EitherResult dto)) -> App (EitherResult dto)
+onEntryExist :: (ToJSON dto, MonadDBCalendarRepo m) => EntryId -> (CalendarEntry -> m (EitherResult dto)) -> m (EitherResult dto)
 onEntryExist = onDBEntryExist CalendarRepo.findCalendarById
 
-onTaskExist :: ToJSON dto => TaskId -> (Task -> App (EitherResult dto)) -> App (EitherResult dto)
+onTaskExist :: (ToJSON dto, MonadDBTaskRepo m)  => TaskId -> (Task -> m (EitherResult dto)) -> m (EitherResult dto)
 onTaskExist = onDBEntryExist TaskRepo.findTaskById
 
-onNothing :: String -> (a -> App Response) -> Maybe a -> App Response
+onNothing :: HServer.FilterMonad Response m => String -> (a -> m Response) -> Maybe a -> m Response
 onNothing message = maybe (okResponse message)
 
-okResponse :: String -> App Response
+okResponse :: HServer.FilterMonad Response m => String -> m Response
 okResponse message = ok $ toResponse message
 
-corsResponse :: App Response
+corsResponse :: HServer.FilterMonad Response m => m Response
 corsResponse =
     let res = toResponse ("" :: String)
      in ok $ addCorsHeaders res
@@ -79,17 +81,17 @@ addCorsHeaders response =
     setHeader "Access-Control-Allow-Origin" "http://localhost:8000" $
     setHeader "Access-Control-Allow-Credentials" "true" response
 
-badRequest :: String -> App Response
+badRequest :: HServer.FilterMonad Response m  => String -> m Response
 badRequest message = HServer.badRequest $ toResponse message
 
-okResponseJson :: ByteString -> App Response
+okResponseJson :: HServer.FilterMonad Response m  => ByteString -> m Response
 okResponseJson object = ok $ toResponseBS (T.pack "application/json") object
 
-preconditionFailedResponse :: Text -> App Response
+preconditionFailedResponse :: HServer.FilterMonad Response m => Text -> m Response
 preconditionFailedResponse message = preconditionFailed $ toResponse message
 
-notImplemented :: Method -> App Response
+notImplemented :: HServer.FilterMonad Response m => Method -> m Response
 notImplemented httpMethod = HServer.resp 405 $ toResponse ("HTTP-Method: " ++ show httpMethod ++ " not implemented")
 
-addCorsToResponse :: HServer.Happstack m => m Response -> m Response
+addCorsToResponse :: HServer.FilterMonad Response m => m Response -> m Response
 addCorsToResponse resM = addCorsHeaders <$> resM

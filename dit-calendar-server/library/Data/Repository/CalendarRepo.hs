@@ -64,8 +64,7 @@ deleteTaskFromCalendarEntryImpl calendarEntry taskId =
 addTaskToCalendarEntryImpl :: CalendarDAO m => CalendarEntry -> TaskId -> m (EitherResult CalendarEntry)
 addTaskToCalendarEntryImpl calendarEntry taskId = updateCalendarImpl calendarEntry {tasks = taskId : tasks calendarEntry}
 
-class (Monad m, CalendarDAO App) =>
-      MonadDBCalendarRepo m
+class Monad m => MonadDBCalendarRepo m
     where
     createCalendarEntry :: CalendarEntry -> m CalendarEntry
     findCalendarById :: EntryId -> m (Maybe CalendarEntry)
@@ -75,7 +74,7 @@ class (Monad m, CalendarDAO App) =>
     deleteTaskFromCalendarEntry :: CalendarEntry -> Int -> m (EitherResult CalendarEntry)
     addTaskToCalendarEntry :: CalendarEntry -> TaskId -> m (EitherResult CalendarEntry)
 
-instance MonadDBCalendarRepo App where
+instance CalendarDAO App => MonadDBCalendarRepo App where
     createCalendarEntry = createCalendarEntryImpl
     findCalendarById = findCalendarByIdImpl
     findAllCalendarEntries = findAllCalendarEntriesImpl

@@ -62,7 +62,7 @@ getCalendarTasksIml :: (MonadDBTaskRepo m, MonadIO m)
                                     => CalendarEntry -> m [Task]
 getCalendarTasksIml calendar = mapM getTaskWithFail (CalendarEntry.tasks calendar)
 
-class CalendarEntryService m where
+class Monad m => CalendarEntryService m where
     createEntry :: CalendarEntry -> User -> m CalendarEntry
     removeCalendar :: CalendarEntry -> m ()
     getCalendarTasks :: CalendarEntry -> m [Task]

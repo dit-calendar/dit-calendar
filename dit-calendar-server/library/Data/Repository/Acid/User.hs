@@ -55,7 +55,7 @@ deleteUser = InterfaceAcid.deleteEntry
 
 $(makeAcidic ''UserList ['newUser, 'userById, 'findByLoginName, 'allUsers, 'getUserList, 'updateUser, 'deleteUser])
 
-class UserDAO m where
+class Monad m => UserDAO m where
     create :: NewUser -> m User
     update :: UpdateUser -> m (EitherResult User)
     delete :: DeleteUser -> m ()

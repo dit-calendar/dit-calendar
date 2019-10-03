@@ -39,7 +39,7 @@ removeUserFromTasks user = foldr (\ taskId ->
         TaskService.removeUserFromTask (fromJust task) user))
     (return ()) (belongingTasks user)
 
-class UserService m where
+class Monad m => UserService m where
     deleteUser :: User -> m ()
 
 instance (MonadDBUserRepo App, MonadDBTaskRepo App, MonadDBCalendarRepo App, TaskService App)
