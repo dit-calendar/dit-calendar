@@ -79,6 +79,9 @@ updateCalendarDetails msg model =
         EndDate endD ->
             { model | endDate = endD }
 
+        EndTime endT ->
+            { model | endTime = endT }
+
 
 view : Model -> Html Msg
 view model =
@@ -101,9 +104,10 @@ view model =
                 , Input.date [ Input.value calendarInfo.startDate, Input.onInput (CalendarDetailMsg << StartDate) ]
                 , Input.time [ Input.value calendarInfo.startTime, Input.onInput (CalendarDetailMsg << StartTime) ]
                 ]
-            , Form.group []
+            , Form.formInline []
                 [ Form.label [] [ text "end date" ]
-                , Input.text [ Input.value calendarInfo.endDate, Input.onInput (CalendarDetailMsg << EndDate) ]
+                , Input.date [ Input.value calendarInfo.endDate, Input.onInput (CalendarDetailMsg << EndDate) ]
+                , Input.time [ Input.value calendarInfo.endTime, Input.onInput (CalendarDetailMsg << EndTime) ]
                 ]
             ]
         , ListGroup.custom

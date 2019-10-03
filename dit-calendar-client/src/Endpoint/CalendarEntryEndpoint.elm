@@ -45,7 +45,7 @@ calendarEntryEncoder model =
         [ ( "version", Encode.int model.version )
         , ( "description", Encode.string model.description )
         , ( "startDate", Encode.string (model.startDate ++ "T" ++ model.startTime ++ ":00.000000Z") )
-        , ( "endDate", Encode.string model.endDate )
+        , ( "endDate", Encode.string (model.endDate ++ "T" ++ model.endTime ++ ":00.000000Z") )
         ]
 
 
@@ -69,14 +69,15 @@ calendarEntriesDecoder =
 
 calendarEntryDecoder : Decode.Decoder CalendarDetail.CalendarEntry
 calendarEntryDecoder =
-    Decode.map6
+    Decode.map7
         CalendarDetail.CalendarEntry
         (Decode.nullable (Decode.field "entryId" Decode.int))
         (Decode.field "version" Decode.int)
         (Decode.at [ "description" ] Decode.string)
         (Decode.field "startDate" stringToDate)
         (Decode.field "startDate" stringToDateTime)
-        (Decode.field "endDate" Decode.string)
+        (Decode.field "endDate" stringToDate)
+        (Decode.field "endDate" stringToDateTime)
 
 
 stringToDate : Decoder String
