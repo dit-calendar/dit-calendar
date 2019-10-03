@@ -45,13 +45,23 @@ taskEncoder model =
         , ( "description", Encode.string model.description )
         , ( "startTime", Encode.string (model.startDate ++ "T" ++ model.startTime ++ ":00.000000Z") )
         , ( "belongingUsers", Encode.list Encode.int [] )
-        , ( "endTime", Encode.maybe Encode.string model.endTime )
+        , case model.endDate of
+            Just d ->
+                case model.endTime of
+                    Just t ->
+                        ( "endTime", Encode.string (d ++ "T" ++ t ++ ":00.000000Z") )
+
+                    Nothing ->
+                        ( "endTime", Encode.maybe Encode.string Nothing )
+
+            Nothing ->
+                ( "endTime", Encode.maybe Encode.string Nothing )
         ]
 
 
 tasksDecoder : Maybe Int -> Decode.Decoder Task
 tasksDecoder calendarId =
-    Decode.map7
+    Decode.map8
         -- TODO reuse decoder from Tasks?
         Task
         (Decode.succeed calendarId)
@@ -60,7 +70,8 @@ tasksDecoder calendarId =
         (Decode.at [ "description" ] Decode.string)
         (Decode.field "startTime" stringToDate)
         (Decode.field "startTime" stringToDateTime)
-        (Decode.maybe (Decode.field "endTime" Decode.string))
+        (Decode.maybe (Decode.field "endTime" stringToDate))
+        (Decode.maybe (Decode.field "endTime" stringToDateTime))
 
 
 taskErrorsDecoder : HttpEx.Error String -> List String

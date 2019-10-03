@@ -13,13 +13,14 @@ type alias Task =
     -- TODO , belongingUsers : List User
     , startDate : String
     , startTime : String
+    , endDate : Maybe String
     , endTime : Maybe String
     }
 
 
 emptyTask : Maybe Int -> Task
 emptyTask calendarId =
-    { calendarEntryId = calendarId, taskId = Nothing, version = 0, description = "", startDate = "", startTime = "", endTime = Nothing }
+    { calendarEntryId = calendarId, taskId = Nothing, version = 0, description = "", startDate = "", startTime = "", endDate = Nothing, endTime = Nothing }
 
 
 type alias Model =
@@ -34,6 +35,7 @@ type TaskMsg
     | StartTime String
     | StartDate String
     | EndTime String
+    | EndDate String
 
 
 type Msg
