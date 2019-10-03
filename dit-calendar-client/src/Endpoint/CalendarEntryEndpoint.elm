@@ -3,10 +3,11 @@ module Endpoint.CalendarEntryEndpoint exposing (calendarEntriesResponse, calenda
 import Data.CalendarEntry as CalendarDetail
 import Data.SimpleCalendarList as CalendarList
 import Endpoint.ResponseErrorDecoder exposing (ErrorResponse, errorDecoder)
+import Endpoint.Service.DateTimeDecoder exposing (stringToDate, stringToDateTime)
 import Env.Serverurl as Server
 import Http
 import Http.Detailed as HttpEx
-import Json.Decode as Decode exposing (Value)
+import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Encode as Encode
 import Maybe exposing (withDefault)
 
@@ -42,8 +43,8 @@ calendarEntryEncoder model =
     Encode.object
         [ ( "version", Encode.int model.version )
         , ( "description", Encode.string model.description )
-        , ( "startDate", Encode.string model.startDate )
-        , ( "endDate", Encode.string model.endDate )
+        , ( "startDate", Encode.string (model.startDate ++ "T" ++ model.startTime ++ ":00.000000Z") )
+        , ( "endDate", Encode.string (model.endDate ++ "T" ++ model.endTime ++ ":00.000000Z") )
         ]
 
 
@@ -67,13 +68,15 @@ calendarEntriesDecoder =
 
 calendarEntryDecoder : Decode.Decoder CalendarDetail.CalendarEntry
 calendarEntryDecoder =
-    Decode.map5
+    Decode.map7
         CalendarDetail.CalendarEntry
         (Decode.nullable (Decode.field "entryId" Decode.int))
         (Decode.field "version" Decode.int)
         (Decode.at [ "description" ] Decode.string)
-        (Decode.field "startDate" Decode.string)
-        (Decode.field "endDate" Decode.string)
+        (Decode.field "startDate" stringToDate)
+        (Decode.field "startDate" stringToDateTime)
+        (Decode.field "endDate" stringToDate)
+        (Decode.field "endDate" stringToDateTime)
 
 
 calendarEntriesResponse : Result (HttpEx.Error String) ( Http.Metadata, String ) -> CalendarList.Model -> CalendarList.Model

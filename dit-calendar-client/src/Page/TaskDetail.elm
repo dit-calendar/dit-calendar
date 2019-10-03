@@ -24,7 +24,7 @@ main =
 
 initMain : () -> ( Model, Cmd Msg )
 initMain _ =
-    ( Model (Task Nothing Nothing 0 "" "" (Just "")) (Problems []), Cmd.none )
+    ( Model (Task Nothing Nothing 0 "" "" "" Nothing Nothing) (Problems []), Cmd.none )
 
 
 init : Task -> ( Model, Cmd Msg )
@@ -60,8 +60,14 @@ updateTaskDetials msg model =
         StartTime startT ->
             { model | startTime = startT }
 
+        StartDate startD ->
+            { model | startDate = startD }
+
         EndTime endT ->
             { model | endTime = Just endT }
+
+        EndDate endD ->
+            { model | endDate = Just endD }
 
 
 view : Model -> Html Msg
@@ -77,13 +83,15 @@ view model =
                 [ Form.label [] [ text "description" ]
                 , Input.text [ Input.value taskInfo.description, Input.onInput (TaskMsg << Description) ]
                 ]
-            , Form.group []
+            , Form.formInline []
                 [ Form.label [] [ text "start date" ]
-                , Input.text [ Input.value taskInfo.startTime, Input.onInput (TaskMsg << StartTime) ]
+                , Input.date [ Input.value taskInfo.startDate, Input.onInput (TaskMsg << StartDate) ]
+                , Input.time [ Input.value taskInfo.startTime, Input.onInput (TaskMsg << StartTime) ]
                 ]
-            , Form.group []
+            , Form.formInline []
                 [ Form.label [] [ text "end date" ]
-                , Input.text [ Input.value (withDefault "" taskInfo.endTime), Input.onInput (TaskMsg << EndTime) ]
+                , Input.date [ Input.value (withDefault "" taskInfo.endDate), Input.onInput (TaskMsg << EndDate) ]
+                , Input.time [ Input.value (withDefault "" taskInfo.endTime), Input.onInput (TaskMsg << EndTime) ]
                 ]
             ]
         , Button.button [ Button.primary, Button.onClick SaveTask ] [ text "Speichern" ]
