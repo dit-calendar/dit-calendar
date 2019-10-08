@@ -24,6 +24,7 @@ import           Presentation.Route.UserRoute           (routeDetailUser,
                                                          routeUser, routeUsers)
 
 import qualified Presentation.Controller.HomeController as HomeController
+import qualified Presentation.Controller.LogoutController as LogoutController
 import qualified Presentation.Controller.UserController as UserController
 
 myPolicy :: BodyPolicy
@@ -46,6 +47,7 @@ route url = do
     decodeBody myPolicy
     case url of
         Home                       -> HomeController.homePage
+        Logout                     -> LogoutController.logout
         Userdetail                 -> routeDetailUser
         User i                     -> routeUser i
         Users                      -> routeUsers

@@ -20,6 +20,7 @@ import           Data.Domain.Types           (EntryId, TaskId, UserId)
 --A url type
 data Sitemap
     = Home
+    | Logout
     | Authenticate AuthenticateURL
     | User UserId
     | Userdetail
@@ -37,6 +38,7 @@ $(makeBoomerangs ''Sitemap)
 urlSitemapParser :: Router () (Sitemap :- ())
 urlSitemapParser =
        rHome
+    <> rLogout . lit "logout"
     <> rAuthenticate . (lit "authenticate" </> authenticateURL)
     <> lit "users" . userMapping
     <> lit "calendarentries" . calendarTaskMapping
