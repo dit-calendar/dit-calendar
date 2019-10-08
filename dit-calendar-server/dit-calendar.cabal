@@ -31,6 +31,7 @@ library
                        Presentation.Route.CalendarRoute,
                        Presentation.Route.TaskRoute,
                        Presentation.Controller.HomeController,
+                       Presentation.Controller.LogoutController,
                        Presentation.Controller.UserController,
                        Presentation.Controller.CalendarController,
                        Presentation.Controller.TaskController,

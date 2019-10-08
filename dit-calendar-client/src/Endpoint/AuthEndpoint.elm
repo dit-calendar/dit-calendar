@@ -1,6 +1,7 @@
-module Endpoint.AuthEndpoint exposing (login, loginResponse, register, registerResponse)
+module Endpoint.AuthEndpoint exposing (login, logout, loginResponse, register, registerResponse)
 
 import Data.Login as Login
+import Data.Logout as Logout
 import Data.Register as Register
 import Endpoint.JsonParser.AuthParser exposing (authErrorDecoder, loginEncoder, registerEncoder)
 import Env.Serverurl as Server
@@ -16,6 +17,18 @@ login model =
         , url = Server.loginUrl
         , body = Http.jsonBody (loginEncoder model)
         , expect = HttpEx.expectString Login.HttpLogin
+        , timeout = Nothing
+        , tracker = Nothing
+        }
+
+logout : Cmd Logout.Msg
+logout =
+    Http.riskyRequest
+        { method = "POST"
+        , headers = []
+        , url = Server.logoutUrl
+        , body = Http.emptyBody
+        , expect = HttpEx.expectString Logout.HttpLogout
         , timeout = Nothing
         , tracker = Nothing
         }
