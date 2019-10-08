@@ -1,4 +1,4 @@
-module Env.Serverurl exposing (calendarEntries, calendarEntry, calendarTask, loginUrl, registerUrl, updateCalendarTask)
+module Env.Serverurl exposing (calendarEntries, calendarEntry, calendarTask, loginUrl, logoutUrl, registerUrl, updateCalendarTask)
 
 
 authUrl : String
@@ -9,6 +9,10 @@ authUrl =
 loginUrl : String
 loginUrl =
     authUrl ++ "token"
+
+logoutUrl : String
+logoutUrl =
+    baseUrl ++ "logout"
 
 
 registerUrl : String

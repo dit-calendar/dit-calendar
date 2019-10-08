@@ -1,11 +1,13 @@
 module Main exposing (Model, Msg(..), init, main, update, view)
 
+import Bootstrap.Button as Button exposing (onClick)
 import Bootstrap.Grid as Grid
 import Bootstrap.Navbar as Navbar
 import Browser exposing (UrlRequest)
 import Browser.Navigation as Navigation
 import Data.CalendarEntry as CalendarEntryDetails
 import Data.Login as Login
+import Data.Logout as Logout
 import Data.Register as Register exposing (RegisterModel)
 import Data.SimpleCalendarList as CalendarList
 import Data.Task as TaskDetail
@@ -13,6 +15,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Page.CalendarEntryDetails as CalendarEntryDetails
 import Page.Login as Login
+import Page.Logout as LogoutService
 import Page.Register as Register
 import Page.SimpleCalendarList as CalendarList
 import Page.TaskDetail as TaskDetail
@@ -73,6 +76,7 @@ type Msg
     | CalendarMsg CalendarList.Msg
     | CalendarDetailMsg CalendarEntryDetails.Msg
     | TaskDetailMsg TaskDetail.Msg
+    | LogoutMsg Logout.Msg
 
 
 subscriptions : Model -> Sub Msg
@@ -150,11 +154,20 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
+        LogoutMsg logoutMsg -> stepLogout model (LogoutService.update logoutMsg)
+
+
 
 stepLogin : Model -> ( Login.Model, Cmd Login.Msg ) -> ( Model, Cmd Msg )
 stepLogin model ( login, cmds ) =
     ( { model | page = Login login }
     , Cmd.map LoginMsg cmds
+    )
+
+stepLogout : Model -> Cmd Logout.Msg -> ( Model, Cmd Msg )
+stepLogout model cmds =
+    ( model
+    , Cmd.map LogoutMsg cmds
     )
 
 
@@ -245,6 +258,14 @@ menuView model =
             , Navbar.itemLink [ href "#register" ] [ text "Register" ]
             , Navbar.itemLink [ href "#calendar" ] [ text "Calendar" ]
             ]
+        |> Navbar.customItems
+                    [ Navbar.formItem []
+                        [ Button.button
+                            [ Button.success, onClick (LogoutMsg Logout.TriggerLogout)
+                            ]
+                            [ text "logout"]
+                        ]
+                    ]
         |> Navbar.view model.navState
 
 
