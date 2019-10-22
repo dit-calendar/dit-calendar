@@ -21,7 +21,7 @@ import Page.Register as Register
 import Page.SimpleCalendarList as CalendarList
 import Page.TaskDetail as TaskDetail
 import Url exposing (Url)
-import Url.Parser as UrlParser exposing ((</>), Parser, int, s, top)
+import Url.Parser as UrlParser exposing ((</>), Parser)
 
 
 type alias Flags =
@@ -239,11 +239,11 @@ routeParser =
             RegisterModel "" "" "" ""
     in
     UrlParser.oneOf
-        [ UrlParser.map (LoginPage { name = "", password = "", problems = [] }) top
-        , UrlParser.map (LoginPage { name = "", password = "", problems = [] }) (s "login")
-        , UrlParser.map (RegisterPage { register = reg, problems = [] }) (s "register")
-        , UrlParser.map (SimpleCalendarPage CalendarList.emptyModel) (s "calendar")
-        , UrlParser.map (\num -> CalendarDetailsPage (CalendarEntryDetails.initEmptyModelForPageReload num)) (s "calendar" </> int)
+        [ UrlParser.map (LoginPage { name = "", password = "", problems = [] }) UrlParser.top
+        , UrlParser.map (LoginPage { name = "", password = "", problems = [] }) (UrlParser.s "login")
+        , UrlParser.map (RegisterPage { register = reg, problems = [] }) (UrlParser.s "register")
+        , UrlParser.map (SimpleCalendarPage CalendarList.emptyModel) (UrlParser.s "calendar")
+        , UrlParser.map (\num -> CalendarDetailsPage (CalendarEntryDetails.initEmptyModelForPageReload num)) (UrlParser.s "calendar" </> UrlParser.int)
         ]
 
 
