@@ -8,7 +8,7 @@ import Bootstrap.ListGroup as ListGroup
 import Data.CalendarEntry exposing (CalendarDetailMsg(..), CalendarEntry, Model, Msg(..), emptyCalendarEntry)
 import Data.Task exposing (emptyTask)
 import Data.UIMessages exposing (Messages(..))
-import Endpoint.CalendarEntryEndpoint exposing (calendarEntryResponse, createCalendarEntry, loadCalendarEntry, saveCalendarEntry)
+import Endpoint.CalendarEntryEndpoint exposing (createCalendarEntry, getCalendarEntryResponse, loadCalendarEntry, saveCalendarEntry, saveCalendarEntryResponse)
 import Endpoint.CalendarTaskEndpoint exposing (calendarEntryTasksResponse, loadCalendarEntryTasks)
 import Html exposing (Html, div, h4, text)
 import Html.Attributes exposing (class)
@@ -49,16 +49,15 @@ update msg model =
             )
 
         SaveCalendarResult result ->
-            -- TODO Benachrichtigung "wurde gespeichert" und error behandlung
-            ( calendarEntryResponse result model, Cmd.none )
+            ( saveCalendarEntryResponse result model, Cmd.none )
 
         OpenTaskDetailsView _ ->
             ( model, Cmd.none )
 
-        CalendarResult result ->
+        GetCalendarEntryResult result ->
             let
                 newCalendarModel =
-                    calendarEntryResponse result model
+                    getCalendarEntryResponse result model
             in
             ( newCalendarModel, loadCalendarEntryTasks (withDefault 0 newCalendarModel.calendarEntry.entryId) )
 
