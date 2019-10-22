@@ -13,7 +13,7 @@ import Data.SimpleCalendarList as CalendarList
 import Data.Task as TaskDetail
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Maybe exposing (withDefault)
+import Maybe
 import Page.CalendarEntryDetails as CalendarEntryDetails
 import Page.Login as Login
 import Page.Logout as LogoutService
@@ -57,7 +57,7 @@ main =
 
 
 init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
-init flags url key =
+init _ url key =
     let
         ( navState, navCmd ) =
             Navbar.initialState NavMsg
@@ -213,13 +213,13 @@ urlUpdate url model =
             ( { model | page = NotFound }, Cmd.none )
 
         Just route ->
-            --TODO case über pages? andere Lösung suchen, bessere wäre mit Msg
             case route of
                 SimpleCalendarPage _ ->
                     -- needed to perform request if url was changed
                     stepCalendar model (CalendarList.update CalendarList.PerformGetCalendarEntries CalendarList.emptyModel)
 
                 CalendarDetailsPage calendar ->
+                    -- needed to perform request if url was changed
                     stepCalendarDetails model (CalendarEntryDetails.update CalendarEntryDetails.GetCalendarEntry calendar)
 
                 _ ->
