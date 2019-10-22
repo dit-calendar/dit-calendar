@@ -1,4 +1,4 @@
-module Endpoint.CalendarEntryEndpoint exposing (calendarEntriesResponse, calendarEntryResponse, createCalendarEntry, loadCalendarEntries, saveCalendarEntry)
+module Endpoint.CalendarEntryEndpoint exposing (calendarEntriesResponse, calendarEntryResponse, createCalendarEntry, loadCalendarEntries, loadCalendarEntry, saveCalendarEntry)
 
 import Data.CalendarEntry exposing (CalendarEntry, Model, Msg(..))
 import Data.SimpleCalendarList as CalendarList
@@ -30,7 +30,7 @@ createCalendarEntry model =
         , headers = []
         , url = Server.calendarEntries
         , body = Http.jsonBody (calendarEntryEncoder model)
-        , expect = HttpEx.expectString CreateCalendarResult
+        , expect = HttpEx.expectString CalendarResult
         , timeout = Nothing
         , tracker = Nothing
         }
@@ -44,6 +44,19 @@ loadCalendarEntries =
         , url = Server.calendarEntries
         , body = Http.emptyBody
         , expect = HttpEx.expectString CalendarList.GetCalendarEntriesResult
+        , timeout = Nothing
+        , tracker = Nothing
+        }
+
+
+loadCalendarEntry : Int -> Cmd Msg
+loadCalendarEntry cId =
+    Http.riskyRequest
+        { method = "GET"
+        , headers = []
+        , url = Server.calendarEntry cId
+        , body = Http.emptyBody
+        , expect = HttpEx.expectString CalendarResult
         , timeout = Nothing
         , tracker = Nothing
         }

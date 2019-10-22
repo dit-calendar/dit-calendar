@@ -38,10 +38,10 @@ type CalendarDetailMsg
 
 
 type Msg
-    = CalendarDetailMsg CalendarDetailMsg
-    | GetCalendarEntryTasks Int
+    = CalendarDetailEditMsg CalendarDetailMsg
+    | GetCalendarEntry
     | GetCalendarEntryTasksResult (Result (HttpEx.Error String) ( Http.Metadata, String ))
     | SaveCalendar
     | SaveCalendarResult (Result (HttpEx.Error String) ( Http.Metadata, String ))
     | OpenTaskDetailsView Task
-    | CreateCalendarResult (Result (HttpEx.Error String) ( Http.Metadata, String ))
+    | CalendarResult (Result (HttpEx.Error String) ( Http.Metadata, String ))
