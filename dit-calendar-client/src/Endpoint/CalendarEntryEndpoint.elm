@@ -1,4 +1,4 @@
-module Endpoint.CalendarEntryEndpoint exposing (calendarEntriesResponse, calendarEntryResponse, createCalendarEntry, loadCalendarEntries, saveCalendarEntry)
+module Endpoint.CalendarEntryEndpoint exposing (calendarEntriesResponse, createCalendarEntry, getCalendarEntryResponse, loadCalendarEntries, loadCalendarEntry, saveCalendarEntry, saveCalendarEntryResponse)
 
 import Data.CalendarEntry exposing (CalendarEntry, Model, Msg(..))
 import Data.SimpleCalendarList as CalendarList
@@ -30,7 +30,7 @@ createCalendarEntry model =
         , headers = []
         , url = Server.calendarEntries
         , body = Http.jsonBody (calendarEntryEncoder model)
-        , expect = HttpEx.expectString CreateCalendarResult
+        , expect = HttpEx.expectString SaveCalendarResult
         , timeout = Nothing
         , tracker = Nothing
         }
@@ -44,6 +44,19 @@ loadCalendarEntries =
         , url = Server.calendarEntries
         , body = Http.emptyBody
         , expect = HttpEx.expectString CalendarList.GetCalendarEntriesResult
+        , timeout = Nothing
+        , tracker = Nothing
+        }
+
+
+loadCalendarEntry : Int -> Cmd Msg
+loadCalendarEntry cId =
+    Http.riskyRequest
+        { method = "GET"
+        , headers = []
+        , url = Server.calendarEntry cId
+        , body = Http.emptyBody
+        , expect = HttpEx.expectString GetCalendarEntryResult
         , timeout = Nothing
         , tracker = Nothing
         }
@@ -78,10 +91,28 @@ calendarEntryResponse response model =
             in
             case resp of
                 Ok calendarEntry ->
-                    { model | calendarEntry = calendarEntry, messages = SuccessUpdate }
+                    { model | calendarEntry = calendarEntry }
 
                 Err error ->
                     { model | messages = Problems [ error ] }
 
         Err error ->
             { model | messages = Problems (calendarErrorsDecoder error) }
+
+
+getCalendarEntryResponse : Result (HttpEx.Error String) ( Http.Metadata, String ) -> Model -> Model
+getCalendarEntryResponse response model =
+    let
+        newModel =
+            calendarEntryResponse response model
+    in
+    { newModel | messages = Problems [] }
+
+
+saveCalendarEntryResponse : Result (HttpEx.Error String) ( Http.Metadata, String ) -> Model -> Model
+saveCalendarEntryResponse response model =
+    let
+        newModel =
+            calendarEntryResponse response model
+    in
+    { newModel | messages = SuccessUpdate }

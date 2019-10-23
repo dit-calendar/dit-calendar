@@ -12,6 +12,7 @@ import Json.Decode as Decode exposing (Value)
 
 loadCalendarEntryTasks : Int -> Cmd Msg
 loadCalendarEntryTasks taskId =
+    --TODO hier mit Maybe arbeiten und bei Nothing keine Calendar Task laden oder anderen weg suchen, ansonsten bei nicht vorhandener calendar id wird unnötig nach tasks gesucht
     Http.riskyRequest
         { method = "GET"
         , headers = []

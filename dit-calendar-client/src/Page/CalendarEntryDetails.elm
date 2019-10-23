@@ -1,14 +1,14 @@
-module Page.CalendarEntryDetails exposing (init, update, view)
+module Page.CalendarEntryDetails exposing (init, initEmptyModelForPageReload, update, view)
 
 import Bootstrap.Alert as Alert
 import Bootstrap.Button as Button exposing (onClick)
 import Bootstrap.Form as Form
 import Bootstrap.Form.Input as Input
 import Bootstrap.ListGroup as ListGroup
-import Data.CalendarEntry exposing (CalendarDetailMsg(..), CalendarEntry, Model, Msg(..))
+import Data.CalendarEntry exposing (CalendarDetailMsg(..), CalendarEntry, Model, Msg(..), emptyCalendarEntry)
 import Data.Task exposing (emptyTask)
 import Data.UIMessages exposing (Messages(..))
-import Endpoint.CalendarEntryEndpoint exposing (calendarEntryResponse, createCalendarEntry, saveCalendarEntry)
+import Endpoint.CalendarEntryEndpoint exposing (createCalendarEntry, getCalendarEntryResponse, loadCalendarEntry, saveCalendarEntry, saveCalendarEntryResponse)
 import Endpoint.CalendarTaskEndpoint exposing (calendarEntryTasksResponse, loadCalendarEntryTasks)
 import Html exposing (Html, div, h4, text)
 import Html.Attributes exposing (class)
@@ -16,30 +16,25 @@ import Html.Events as HtmlEvent
 import Maybe exposing (withDefault)
 
 
-initModel : CalendarEntry -> Model
-initModel cal =
-    { calendarEntry = cal, tasks = [], messages = Problems [] }
-
-
 init : CalendarEntry -> ( Model, Cmd Msg )
 init cal =
-    update (GetCalendarEntryTasks (withDefault 0 cal.entryId)) (initModel cal)
+    ( { calendarEntry = cal, tasks = [], messages = Problems [] }, Cmd.none )
+
+
+initEmptyModelForPageReload : Int -> Model
+initEmptyModelForPageReload cId =
+    let
+        cEmptyCalendarEntry =
+            { emptyCalendarEntry | entryId = Just cId }
+    in
+    { calendarEntry = cEmptyCalendarEntry, tasks = [], messages = Problems [] }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        CalendarDetailMsg calendarDetialMsg ->
+        CalendarDetailEditMsg calendarDetialMsg ->
             ( { model | calendarEntry = updateCalendarDetails calendarDetialMsg model.calendarEntry }, Cmd.none )
-
-        GetCalendarEntryTasks taskId ->
-            ( model
-            , if not (taskId == 0) then
-                loadCalendarEntryTasks taskId
-
-              else
-                Cmd.none
-            )
 
         GetCalendarEntryTasksResult result ->
             ( calendarEntryTasksResponse result model, Cmd.none )
@@ -54,15 +49,21 @@ update msg model =
             )
 
         SaveCalendarResult result ->
-            -- TODO Benachrichtigung "wurde gespeichert" und error behandlung
-            ( calendarEntryResponse result model, Cmd.none )
+            ( saveCalendarEntryResponse result model, Cmd.none )
 
         OpenTaskDetailsView _ ->
-            --TODO rais logic error exception
             ( model, Cmd.none )
 
-        CreateCalendarResult result ->
-            ( calendarEntryResponse result model, Cmd.none )
+        GetCalendarEntryResult result ->
+            let
+                newCalendarModel =
+                    getCalendarEntryResponse result model
+            in
+            ( newCalendarModel, loadCalendarEntryTasks (withDefault 0 newCalendarModel.calendarEntry.entryId) )
+
+        GetCalendarEntry ->
+            --TODO sobald id in url übergeben wird, werden tasks nachgeladen; selbst wenn calendar nicht existent
+            ( model, loadCalendarEntry (withDefault 0 model.calendarEntry.entryId) )
 
 
 updateCalendarDetails : CalendarDetailMsg -> CalendarEntry -> CalendarEntry
@@ -98,17 +99,17 @@ view model =
             [ h4 [] [ text "Kalendar Eintrag" ]
             , Form.group []
                 [ Form.label [] [ text "description" ]
-                , Input.text [ Input.value calendarInfo.description, Input.onInput (CalendarDetailMsg << Description) ]
+                , Input.text [ Input.value calendarInfo.description, Input.onInput (CalendarDetailEditMsg << Description) ]
                 ]
             , Form.formInline []
                 [ Form.label [] [ text "start date" ]
-                , Input.date [ Input.value calendarInfo.startDate, Input.onInput (CalendarDetailMsg << StartDate) ]
-                , Input.time [ Input.value calendarInfo.startTime, Input.onInput (CalendarDetailMsg << StartTime) ]
+                , Input.date [ Input.value calendarInfo.startDate, Input.onInput (CalendarDetailEditMsg << StartDate) ]
+                , Input.time [ Input.value calendarInfo.startTime, Input.onInput (CalendarDetailEditMsg << StartTime) ]
                 ]
             , Form.formInline []
                 [ Form.label [] [ text "end date" ]
-                , Input.date [ Input.value calendarInfo.endDate, Input.onInput (CalendarDetailMsg << EndDate) ]
-                , Input.time [ Input.value calendarInfo.endTime, Input.onInput (CalendarDetailMsg << EndTime) ]
+                , Input.date [ Input.value calendarInfo.endDate, Input.onInput (CalendarDetailEditMsg << EndDate) ]
+                , Input.time [ Input.value calendarInfo.endTime, Input.onInput (CalendarDetailEditMsg << EndTime) ]
                 ]
             ]
         , ListGroup.custom

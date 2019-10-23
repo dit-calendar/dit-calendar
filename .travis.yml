@@ -1,5 +1,5 @@
 env:
- - CABALVER=1.24 GHCVER=8.2.2 HAPPYVER=1.19.5 ELMVER=0.19
+ - CABALVER=1.24 GHCVER=8.2.2 HAPPYVER=1.19.5 ELMVER=0.19.1
 
 # Note: the distinction between `before_install` and `install` is not important.
 before_install:

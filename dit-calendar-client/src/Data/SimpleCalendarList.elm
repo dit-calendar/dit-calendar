@@ -19,4 +19,4 @@ emptyModel =
 type Msg
     = PerformGetCalendarEntries
     | GetCalendarEntriesResult (Result (HttpEx.Error String) ( Http.Metadata, String ))
-    | OpenCalendarDetialsView CalendarEntry
+    | OpenCalendarDetailsView CalendarEntry

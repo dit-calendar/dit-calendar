@@ -13,6 +13,7 @@ import Data.SimpleCalendarList as CalendarList
 import Data.Task as TaskDetail
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Maybe
 import Page.CalendarEntryDetails as CalendarEntryDetails
 import Page.Login as Login
 import Page.Logout as LogoutService
@@ -20,7 +21,7 @@ import Page.Register as Register
 import Page.SimpleCalendarList as CalendarList
 import Page.TaskDetail as TaskDetail
 import Url exposing (Url)
-import Url.Parser as UrlParser exposing ((</>), Parser, s, top)
+import Url.Parser as UrlParser exposing ((</>), Parser)
 
 
 type alias Flags =
@@ -35,11 +36,11 @@ type alias Model =
 
 
 type Page
-    = Login Login.Model
-    | Register Register.Model
-    | SimpleCalendar CalendarList.Model
-    | CalendarDetails CalendarEntryDetails.Model
-    | TaskDetail TaskDetail.Model
+    = LoginPage Login.Model
+    | RegisterPage Register.Model
+    | SimpleCalendarPage CalendarList.Model
+    | CalendarDetailsPage CalendarEntryDetails.Model
+    | TaskDetailPage TaskDetail.Model
     | NotFound
 
 
@@ -56,13 +57,13 @@ main =
 
 
 init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
-init flags url key =
+init _ url key =
     let
         ( navState, navCmd ) =
             Navbar.initialState NavMsg
 
         ( model, urlCmd ) =
-            urlUpdate url { navKey = key, navState = navState, page = Login { name = "", password = "", problems = [] } }
+            urlUpdate url { navKey = key, navState = navState, page = LoginPage { name = "", password = "", problems = [] } }
     in
     ( model, Cmd.batch [ urlCmd, navCmd ] )
 
@@ -105,7 +106,7 @@ update msg model =
 
         LoginMsg loginMsg ->
             case model.page of
-                Login login ->
+                LoginPage login ->
                     stepLogin model (Login.update loginMsg login)
 
                 _ ->
@@ -114,7 +115,7 @@ update msg model =
 
         RegisterMsg regMsg ->
             case model.page of
-                Register register ->
+                RegisterPage register ->
                     stepRegister model (Register.update regMsg register)
 
                 _ ->
@@ -122,12 +123,17 @@ update msg model =
 
         CalendarMsg calendarMsg ->
             case calendarMsg of
-                CalendarList.OpenCalendarDetialsView entry ->
-                    stepCalendarDetails model (CalendarEntryDetails.init entry)
+                CalendarList.OpenCalendarDetailsView entry ->
+                    case entry.entryId of
+                        Just eId ->
+                            ( model, Navigation.load ("#calendar/" ++ String.fromInt eId) )
+
+                        Nothing ->
+                            stepCalendarDetails model (CalendarEntryDetails.init entry)
 
                 _ ->
                     case model.page of
-                        SimpleCalendar calendar ->
+                        SimpleCalendarPage calendar ->
                             stepCalendar model (CalendarList.update calendarMsg calendar)
 
                         _ ->
@@ -140,7 +146,7 @@ update msg model =
 
                 _ ->
                     case model.page of
-                        CalendarDetails calendarDetails ->
+                        CalendarDetailsPage calendarDetails ->
                             stepCalendarDetails model (CalendarEntryDetails.update calendarDetailMsg calendarDetails)
 
                         _ ->
@@ -148,21 +154,22 @@ update msg model =
 
         TaskDetailMsg tskMsg ->
             case model.page of
-                TaskDetail task ->
+                TaskDetailPage task ->
                     stepTaskDetails model (TaskDetail.update tskMsg task)
 
                 _ ->
                     ( model, Cmd.none )
 
-        LogoutMsg logoutMsg -> stepLogout model (LogoutService.update logoutMsg)
-
+        LogoutMsg logoutMsg ->
+            stepLogout model (LogoutService.update logoutMsg)
 
 
 stepLogin : Model -> ( Login.Model, Cmd Login.Msg ) -> ( Model, Cmd Msg )
 stepLogin model ( login, cmds ) =
-    ( { model | page = Login login }
+    ( { model | page = LoginPage login }
     , Cmd.map LoginMsg cmds
     )
+
 
 stepLogout : Model -> Cmd Logout.Msg -> ( Model, Cmd Msg )
 stepLogout model cmds =
@@ -173,28 +180,28 @@ stepLogout model cmds =
 
 stepRegister : Model -> ( Register.Model, Cmd Register.Msg ) -> ( Model, Cmd Msg )
 stepRegister model ( register, cmds ) =
-    ( { model | page = Register register }
+    ( { model | page = RegisterPage register }
     , Cmd.map RegisterMsg cmds
     )
 
 
 stepCalendar : Model -> ( CalendarList.Model, Cmd CalendarList.Msg ) -> ( Model, Cmd Msg )
 stepCalendar model ( calendar, cmds ) =
-    ( { model | page = SimpleCalendar calendar }
+    ( { model | page = SimpleCalendarPage calendar }
     , Cmd.map CalendarMsg cmds
     )
 
 
 stepCalendarDetails : Model -> ( CalendarEntryDetails.Model, Cmd CalendarEntryDetails.Msg ) -> ( Model, Cmd Msg )
 stepCalendarDetails model ( calendarDetail, cmds ) =
-    ( { model | page = CalendarDetails calendarDetail }
+    ( { model | page = CalendarDetailsPage calendarDetail }
     , Cmd.map CalendarDetailMsg cmds
     )
 
 
 stepTaskDetails : Model -> ( TaskDetail.Model, Cmd TaskDetail.Msg ) -> ( Model, Cmd Msg )
 stepTaskDetails model ( task, cmds ) =
-    ( { model | page = TaskDetail task }
+    ( { model | page = TaskDetailPage task }
     , Cmd.map TaskDetailMsg cmds
     )
 
@@ -207,9 +214,13 @@ urlUpdate url model =
 
         Just route ->
             case route of
-                SimpleCalendar _ ->
+                SimpleCalendarPage _ ->
                     -- needed to perform request if url was changed
                     stepCalendar model (CalendarList.update CalendarList.PerformGetCalendarEntries CalendarList.emptyModel)
+
+                CalendarDetailsPage calendar ->
+                    -- needed to perform request if url was changed
+                    stepCalendarDetails model (CalendarEntryDetails.update CalendarEntryDetails.GetCalendarEntry calendar)
 
                 _ ->
                     ( { model | page = route }, Cmd.none )
@@ -228,10 +239,11 @@ routeParser =
             RegisterModel "" "" "" ""
     in
     UrlParser.oneOf
-        [ UrlParser.map (Login { name = "", password = "", problems = [] }) top
-        , UrlParser.map (Login { name = "", password = "", problems = [] }) (s "login")
-        , UrlParser.map (Register { register = reg, problems = [] }) (s "register")
-        , UrlParser.map (SimpleCalendar CalendarList.emptyModel) (s "calendar")
+        [ UrlParser.map (LoginPage { name = "", password = "", problems = [] }) UrlParser.top
+        , UrlParser.map (LoginPage { name = "", password = "", problems = [] }) (UrlParser.s "login")
+        , UrlParser.map (RegisterPage { register = reg, problems = [] }) (UrlParser.s "register")
+        , UrlParser.map (SimpleCalendarPage CalendarList.emptyModel) (UrlParser.s "calendar")
+        , UrlParser.map (\num -> CalendarDetailsPage (CalendarEntryDetails.initEmptyModelForPageReload num)) (UrlParser.s "calendar" </> UrlParser.int)
         ]
 
 
@@ -259,13 +271,14 @@ menuView model =
             , Navbar.itemLink [ href "#calendar" ] [ text "Calendar" ]
             ]
         |> Navbar.customItems
-                    [ Navbar.formItem []
-                        [ Button.button
-                            [ Button.success, onClick (LogoutMsg Logout.TriggerLogout)
-                            ]
-                            [ text "logout"]
-                        ]
+            [ Navbar.formItem []
+                [ Button.button
+                    [ Button.success
+                    , onClick (LogoutMsg Logout.TriggerLogout)
                     ]
+                    [ text "logout" ]
+                ]
+            ]
         |> Navbar.view model.navState
 
 
@@ -273,22 +286,22 @@ mainContent : Model -> Html Msg
 mainContent model =
     Grid.container [] <|
         case model.page of
-            Login login ->
+            LoginPage login ->
                 [ Html.map LoginMsg (Login.view login) ]
 
-            Register register ->
+            RegisterPage register ->
                 [ Html.map RegisterMsg (Register.view register) ]
 
             NotFound ->
                 pageNotFound
 
-            SimpleCalendar calendars ->
+            SimpleCalendarPage calendars ->
                 [ Html.map CalendarMsg (CalendarList.view calendars) ]
 
-            CalendarDetails calendarDetail ->
+            CalendarDetailsPage calendarDetail ->
                 [ Html.map CalendarDetailMsg (CalendarEntryDetails.view calendarDetail) ]
 
-            TaskDetail taskDetails ->
+            TaskDetailPage taskDetails ->
                 [ Html.map TaskDetailMsg (TaskDetail.view taskDetails) ]
 
 

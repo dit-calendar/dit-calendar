@@ -36,7 +36,7 @@ update msg model =
         GetCalendarEntriesResult result ->
             ( calendarEntriesResponse result model, Cmd.none )
 
-        OpenCalendarDetialsView _ ->
+        OpenCalendarDetailsView _ ->
             --TODO rais logic error exception
             ( model, Cmd.none )
 
@@ -49,14 +49,14 @@ view model =
             , ListGroup.custom
                 (List.map
                     (\entry ->
-                        ListGroup.button [ ListGroup.attrs [ onClick (OpenCalendarDetialsView entry) ] ] [ text ("description: " ++ entry.description ++ ", start date:" ++ entry.startDate) ]
+                        ListGroup.button [ ListGroup.attrs [ onClick (OpenCalendarDetailsView entry) ] ] [ text ("description: " ++ entry.description ++ ", start date:" ++ entry.startDate) ]
                     )
                     model.calendarEntries
                 )
             ]
         , Button.button
-              [ Button.primary, Button.block, Button.large, Button.onClick (OpenCalendarDetialsView emptyCalendarEntry)]
-              [ text "Neuen Kalendar Eintrag erstellen" ]
+            [ Button.primary, Button.block, Button.large, Button.onClick (OpenCalendarDetailsView emptyCalendarEntry) ]
+            [ text "Neuen Kalendar Eintrag erstellen" ]
         , div [ class "error-messages" ]
             (List.map viewProblem model.problems)
         ]
