@@ -1,11 +1,9 @@
-module Conf.AuthConf ( authenticateConfig, passwordConfig, tlsConf ) where
+module Conf.AuthConf ( authenticateConfig, passwordConfig ) where
 
 import           Conf.Config
 import           Happstack.Authenticate.Core          (AuthenticateConfig (..),
                                                        usernamePolicy)
 import           Happstack.Authenticate.Password.Core (PasswordConfig (..))
-import           Happstack.Server.SimpleHTTPS         (TLSConf (..),
-                                                       nullTLSConf)
 
 import qualified Data.Text                            as T
 
@@ -28,9 +26,3 @@ passwordConfig conf =
          else Just $ T.pack "Must be at least 5 characters."
         }
 
-tlsConf :: Config -> TLSConf
-tlsConf conf =
-    nullTLSConf { tlsPort = netPort $ cfNetwork conf
-                , tlsCert = "library/Auth/ssl/localhost.crt"
-                , tlsKey  = "library/Auth/ssl/localhost.key"
-                }

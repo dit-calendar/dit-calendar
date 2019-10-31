@@ -17,16 +17,17 @@ import           Happstack.Authenticate.Core           (AuthenticateURL (..))
 import           Happstack.Authenticate.Password.Route (initPassword)
 import           Happstack.Authenticate.Route          (initAuthentication)
 import           Happstack.Server                      (Response, ServerPartT,
-                                                        mapServerPartT)
-import           Happstack.Server.SimpleHTTPS          (simpleHTTPS)
+                                                        mapServerPartT,
+                                                        nullConf, simpleHTTP)
+import           Happstack.Server.Types                (Conf, port)
 
 import           AcidHelper                            (Acid, App, withAcid)
 import           Conf.AuthConf                         (authenticateConfig,
-                                                        passwordConfig, tlsConf)
+                                                        passwordConfig)
 import           Conf.Config
+import           Presentation.Route.MainRouting        (routeWithOptions)
 import           Presentation.Route.PageEnum           (Sitemap (Home),
                                                         urlSitemapParser)
-import           Presentation.Route.MainRouting        (routeWithOptions)
 
 import qualified Data.Text                             as T
 
@@ -43,16 +44,24 @@ site routeAuthenticate =
   let realSite = boomerangSite realRoute urlSitemapParser in
         setDefault Home realSite
 
---zu HomePage zu erreichen unter https://localhost:8443
+--zu HomePage zu erreichen unter http://localhost:8443
 run :: IO ()
 run = do
     textConfig <- readFile "application.cfg"
     case readConfig textConfig of
         Left error -> print $ "error with config file: " ++ error
         Right conf -> do
-            putStrLn $ "Server unter: " ++ hostUri (cfNetwork conf)
+            putStrLn $ "Server unter: " ++ hostUrl
             (cleanup, routeAuthenticate, authenticateState) <-
                 initAuthentication Nothing authenticateConfig [ initPassword (passwordConfig conf) ]
-            let startServer acid = simpleHTTPS (tlsConf conf) $ runApp acid appWithRoutetSite
-                appWithRoutetSite = implSite (T.pack $ hostUri (cfNetwork conf)) "" (site routeAuthenticate) in
+            let startServer acid = simpleHTTP (customServerConf netWorkConf) $ runApp acid appWithRoutetSite
+                appWithRoutetSite = implSite (T.pack hostUrl) "" (site routeAuthenticate) in
                 withAcid authenticateState Nothing startServer `finally` cleanup
+            where
+                netWorkConf = cfNetwork conf
+                hostUrl = hostUri netWorkConf
+
+customServerConf :: NetworkConfig -> Conf
+customServerConf netConf =
+    nullConf { port = netPort netConf
+             }
