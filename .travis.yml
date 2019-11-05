@@ -10,7 +10,7 @@ before_install:
  - export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
  - export PATH=/opt/happy/$HAPPYVER/bin:$PATH
  # for elm
- - npm install -g elm@$ELMVER elm-format elm-test
+ - npm install -g elm@latest-$ELMVER elm-format elm-test
 
 install:
  # for haskell
