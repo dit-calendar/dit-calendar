@@ -42,6 +42,7 @@ taskFromDb = def { Task.description="task1", taskId=5, assignedUsers=[10], start
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture { _deleteCalendarEntry = \a -> tell [show a]
+                  , _deleteCalendarEntryById = \a -> tell [show a]
                   , _findTaskById = \a -> tell [show a] >>= (\_ -> return $ Just taskFromDb)
                   , _deleteUser = \a -> tell [show a]
                   , _deleteTaskFromUser = \x a -> tell [show x] >> tell [show a] >>= (\_ -> return $ Right x)
@@ -62,5 +63,5 @@ spec = describe "UserService" $
         assertEqual "CalendarEntry 2 nicht durchgegeben" (log!!1) "2"
         assertEqual "Taskeintrag aus calendar nicht gelöscht" (log!!2) "4"
         assertEqual "Task nicht gelöscht" (log!!3) (show taskFromDb)
-        assertEqual "Falsche userId durchgegeben" (log!!4) (show $ userFromDb)
-        assertEqual "Falscher user gelöscht" (log!!5) (show $ User.userId userFromDb)
+        assertEqual "Falsche userId durchgegeben" (log!!4) (show userFromDb)
+        assertEqual "Falscher user gelöscht" (log!!5) (show userFromDb)

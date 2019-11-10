@@ -39,8 +39,8 @@ createUserImpl name = let user = def { loginName = name
                     } in
         create $ UserAcid.NewUser user
 
-deleteUserImpl :: UserDAO m => UserId -> m ()
-deleteUserImpl = delete . UserAcid.DeleteUser
+deleteUserImpl :: UserDAO m => User -> m ()
+deleteUserImpl =  delete . UserAcid.DeleteUser . userId
 
 updateUserImpl :: UserDAO m => User -> m (EitherResult User)
 updateUserImpl = update . UserAcid.UpdateUser
@@ -75,7 +75,7 @@ class Monad m => MonadDBUserRepo m where
     createUser :: Text -> m User
     findUserById :: UserId -> m (Maybe User)
     updateUser :: User -> m (EitherResult User)
-    deleteUser :: UserId -> m ()
+    deleteUser :: User -> m ()
     updateLoginName :: User -> Text -> m (EitherResult User)
     addCalendarEntryToUser :: User -> EntryId -> m (EitherResult User)
     deleteCalendarEntryFromUser :: User -> EntryId -> m (EitherResult User)

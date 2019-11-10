@@ -29,8 +29,8 @@ instance TaskDAO App where
 updateTaskImpl :: TaskDAO m => Task -> m (EitherResult Task)
 updateTaskImpl = update . TaskAcid.UpdateTask
 
-deleteTaskImpl :: TaskDAO m => TaskId -> m ()
-deleteTaskImpl = delete . TaskAcid.DeleteTask
+deleteTaskImpl :: TaskDAO m => Task -> m ()
+deleteTaskImpl = delete . TaskAcid.DeleteTask . taskId
 
 createTaskImpl :: TaskDAO m => Task -> m Task
 createTaskImpl = create . TaskAcid.NewTask
@@ -43,7 +43,7 @@ class Monad m => MonadDBTaskRepo m where
     createTask        :: Task -> m Task
     findTaskById      :: TaskId -> m (Maybe Task)
     updateTask        :: Task   -> m (EitherResult Task)
-    deleteTask        :: TaskId   -> m ()
+    deleteTask        :: Task   -> m ()
 
 instance TaskDAO App => MonadDBTaskRepo App where
     createTask        = createTaskImpl

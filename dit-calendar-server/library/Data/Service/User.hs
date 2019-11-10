@@ -26,10 +26,10 @@ deleteUserImpl :: (MonadDBUserRepo m, MonadDBTaskRepo m, MonadDBCalendarRepo m, 
             User -> m ()
 deleteUserImpl user = let calendarToDelete = ownerOfCalendarEntries user in
     do
-        foldr ((>>) . MonadDBCalendarRepo.deleteCalendarEntry)
+        foldr ((>>) . MonadDBCalendarRepo.deleteCalendarEntryById)
             (return ()) (ownerOfCalendarEntries user)
         removeUserFromTasks user
-        MonadDBUserRepo.deleteUser $ User.userId user
+        MonadDBUserRepo.deleteUser user
 
 removeUserFromTasks ::(MonadDBTaskRepo m, TaskService m) =>
                      User -> m ()

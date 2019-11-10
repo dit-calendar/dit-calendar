@@ -67,7 +67,7 @@ spec = describe "TaskServiceSpec" $ do
         log!!2 `shouldBe` "7"
         log!!3 `shouldBe` show userFromDb
         log!!4 `shouldBe` "7"
-        log!!5 `shouldBe` show (Task.taskId task)
+        log!!5 `shouldBe` show task
     it "createTaskInCalendar" $ do
         let newDate = read "2011-11-19 18:28:52.607875 UTC"::UTCTime
         let calc = def{ CalendarEntry.description="termin2", entryId=1, CalendarEntry.owner=2,

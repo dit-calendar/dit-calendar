@@ -41,7 +41,7 @@ removeCalendarImpl calendarEntry = let cEntryId = entryId calendarEntry in
        user <- MonadDBUserRepo.findUserById (CalendarEntry.owner calendarEntry)
        MonadDBUserRepo.deleteCalendarEntryFromUser (fromJust user) cEntryId
        deleteCalendarsTasks calendarEntry
-       MonadDBCalendarRepo.deleteCalendarEntry cEntryId
+       MonadDBCalendarRepo.deleteCalendarEntry calendarEntry
 
 deleteCalendarsTasks :: (MonadDBTaskRepo m, MonadDBCalendarRepo m, MonadIO m)
                 => CalendarEntry -> m ()
@@ -49,7 +49,7 @@ deleteCalendarsTasks calendar =
     foldr (\ x ->
       (>>) (do
         task <- MonadDBTaskRepo.findTaskById x
-        MonadDBTaskRepo.deleteTask $ Task.taskId (fromJust task) ))
+        MonadDBTaskRepo.deleteTask (fromJust task) ))
     (return ()) $ CalendarEntry.tasks calendar
 
 -- https://en.wikibooks.org/wiki/Haskell/do_notation#The_fail_method

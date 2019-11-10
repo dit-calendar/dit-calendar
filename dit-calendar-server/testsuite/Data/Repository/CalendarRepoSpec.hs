@@ -48,7 +48,7 @@ spec = describe "CalendarRepo" $ do
         CalendarEntry.tasks result `shouldBe` []
         CalendarEntry.startDate result `shouldBe` oldDate
     it "deleteCalendarEntry" $ do
-        let (_, log) = evalTestFixture (CalendarRepo.deleteCalendarEntryImpl 15) fixture
+        let (_, log) = evalTestFixture (CalendarRepo.deleteCalendarEntryByIdImpl 15) fixture
         log `shouldBe` ["15"::String]
     it "updateCalendar" $ do
         let calc = def { description="termin2", entryId=1, CalendarEntry.owner=2, startDate=oldDate, endDate=oldDate}

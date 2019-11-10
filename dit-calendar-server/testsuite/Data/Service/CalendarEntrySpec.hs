@@ -77,7 +77,7 @@ spec = describe "CalendarEntryServiceSpec" $ do
         log!!2 `shouldBe` show (CalendarEntry.entryId calc)
         log!!3 `shouldBe` show (Task.taskId taskFromDb)
         -- Test CalendarRepo calls
-        log!!4 `shouldBe` show (Task.taskId taskFromDb)
+        log!!4 `shouldBe` show taskFromDb
     it "getTasks" $ do
         let calc = def { CalendarEntry.description="termin2", entryId=4, CalendarEntry.owner=2, tasks=[1]}
         let (result, _) = evalTestFixture (CalendarEntryService.getCalendarTasksIml entryFromDb) fixture

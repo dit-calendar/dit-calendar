@@ -6,7 +6,7 @@
 
 module Data.Repository.CalendarRepo
     ( createCalendarEntryImpl
-    , deleteCalendarEntryImpl
+    , deleteCalendarEntryByIdImpl
     , updateCalendarImpl
     , deleteTaskFromCalendarEntryImpl
     , addTaskToCalendarEntryImpl
@@ -48,8 +48,11 @@ findAllCalendarEntriesImpl = findList . CalendarEntryAcid.AllEntriesForUser
 createCalendarEntryImpl :: CalendarDAO m => CalendarEntry-> m CalendarEntry
 createCalendarEntryImpl = create . CalendarEntryAcid.NewEntry
 
-deleteCalendarEntryImpl :: CalendarDAO m => EntryId -> m ()
-deleteCalendarEntryImpl = delete . CalendarEntryAcid.DeleteEntry
+deleteCalendarEntryImpl :: CalendarDAO m => CalendarEntry -> m ()
+deleteCalendarEntryImpl = delete . CalendarEntryAcid.DeleteEntry . entryId
+
+deleteCalendarEntryByIdImpl :: CalendarDAO m => EntryId -> m ()
+deleteCalendarEntryByIdImpl = delete . CalendarEntryAcid.DeleteEntry
 
 updateCalendarImpl :: CalendarDAO m => CalendarEntry -> m (EitherResult CalendarEntry)
 updateCalendarImpl = update . CalendarEntryAcid.UpdateEntry
@@ -70,7 +73,8 @@ class Monad m => MonadDBCalendarRepo m
     findCalendarById :: EntryId -> m (Maybe CalendarEntry)
     findAllCalendarEntries :: User -> m [CalendarEntry]
     updateCalendar :: CalendarEntry -> m (EitherResult CalendarEntry)
-    deleteCalendarEntry :: EntryId -> m ()
+    deleteCalendarEntryById :: EntryId -> m ()
+    deleteCalendarEntry :: CalendarEntry -> m ()
     deleteTaskFromCalendarEntry :: CalendarEntry -> Int -> m (EitherResult CalendarEntry)
     addTaskToCalendarEntry :: CalendarEntry -> TaskId -> m (EitherResult CalendarEntry)
 
@@ -79,6 +83,7 @@ instance CalendarDAO App => MonadDBCalendarRepo App where
     findCalendarById = findCalendarByIdImpl
     findAllCalendarEntries = findAllCalendarEntriesImpl
     updateCalendar = updateCalendarImpl
+    deleteCalendarEntryById = deleteCalendarEntryByIdImpl
     deleteCalendarEntry = deleteCalendarEntryImpl
     deleteTaskFromCalendarEntry = deleteTaskFromCalendarEntryImpl
     addTaskToCalendarEntry = addTaskToCalendarEntryImpl
