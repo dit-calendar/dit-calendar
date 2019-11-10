@@ -14,7 +14,7 @@ data Task = Task {
     description      :: Description
     , taskId         :: TaskId
     , version        :: Int
-    , belongingUsers :: [UserId]
+    , assignedUsers  :: [UserId]
     , startTime      :: Maybe UTCTime
     , endTime        :: Maybe UTCTime
     }
@@ -28,4 +28,4 @@ instance Entry Task where
     setVersion version newVersion = version { version = newVersion}
 
 instance Default Task where
-    def = Task {taskId = -1, version = 0, belongingUsers = []}
+    def = Task {taskId = -1, version = 0, assignedUsers = []}

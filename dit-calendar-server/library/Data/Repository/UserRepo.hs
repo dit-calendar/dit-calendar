@@ -50,20 +50,20 @@ updateLoginNameImpl user newName = updateUserImpl user {loginName = newName}
 
 addCalendarEntryToUserImpl :: UserDAO m => User -> EntryId -> m (EitherResult User)
 addCalendarEntryToUserImpl user entryId =
-    updateUserImpl user {calendarEntries = entryId : calendarEntries user}
+    updateUserImpl user {ownerOfCalendarEntries = entryId : ownerOfCalendarEntries user}
 
 deleteCalendarEntryFromUserImpl :: UserDAO m =>
                             User -> EntryId -> m (EitherResult User)
 deleteCalendarEntryFromUserImpl user entryId =
-    updateUserImpl user {calendarEntries = List.delete entryId (calendarEntries user)}
+    updateUserImpl user {ownerOfCalendarEntries = List.delete entryId (ownerOfCalendarEntries user)}
 
 addTaskToUserImpl :: UserDAO m => User -> TaskId -> m (EitherResult User)
 addTaskToUserImpl user taskId =
-    updateUserImpl user {belongingTasks = taskId : belongingTasks user}
+    updateUserImpl user {ownerOfTasks = taskId : ownerOfTasks user}
 
 deleteTaskFromUserImpl :: UserDAO m => User -> TaskId -> m (EitherResult User)
 deleteTaskFromUserImpl user taskId =
-    updateUserImpl user {belongingTasks = List.delete taskId (belongingTasks user)}
+    updateUserImpl user {ownerOfTasks = List.delete taskId (ownerOfTasks user)}
 
 findUserByIdImpl :: (UserDAO m, MonadIO m) => UserId -> m (Maybe User)
 findUserByIdImpl = query . UserAcid.UserById

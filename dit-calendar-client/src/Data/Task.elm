@@ -11,7 +11,7 @@ type alias Task =
     , version : Int
     , description : String
 
-    -- TODO , belongingUsers : List User
+    -- TODO , assignedUsers : List User
     , startDate : String
     , startTime : String
     , endDate : Maybe String
@@ -32,7 +32,7 @@ type alias Model =
 
 type TaskMsg
     = Description String
-      --TODO | BelongingUsers (List User)
+      --TODO | assignedUsers (List User)
     | StartTime String
     | StartDate String
     | EndTime String

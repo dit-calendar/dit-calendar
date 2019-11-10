@@ -42,26 +42,26 @@ spec = describe "CalendarRepo" $ do
     it "newCalendarEntry" $ do
         let user = def { loginName="Foo", User.userId=10 }
         let (result, _) = evalTestFixture (CalendarRepo.createCalendarEntryImpl
-                def {startDate=oldDate, endDate=oldDate, description="termin1", CalendarEntry.userId=10}) fixture
+                def {startDate=oldDate, endDate=oldDate, description="termin1", CalendarEntry.owner=10}) fixture
         CalendarEntry.description result `shouldBe` "termin1"
-        CalendarEntry.userId result `shouldBe` 10
+        CalendarEntry.owner result `shouldBe` 10
         CalendarEntry.tasks result `shouldBe` []
         CalendarEntry.startDate result `shouldBe` oldDate
     it "deleteCalendarEntry" $ do
         let (_, log) = evalTestFixture (CalendarRepo.deleteCalendarEntryImpl 15) fixture
         log `shouldBe` ["15"::String]
     it "updateCalendar" $ do
-        let calc = def { description="termin2", entryId=1, CalendarEntry.userId=2, startDate=oldDate, endDate=oldDate}
+        let calc = def { description="termin2", entryId=1, CalendarEntry.owner=2, startDate=oldDate, endDate=oldDate}
         let (_, log) = evalTestFixture (CalendarRepo.updateCalendarImpl calc) fixture
         log!!0 `shouldBe` show calc
     it "addTaskToCalendarEntry" $ do
-        let calc = def{ description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[1],
+        let calc = def{ description="termin2", entryId=1, CalendarEntry.owner=2, tasks=[1],
             startDate=oldDate, endDate=oldDate}
         let (_, log) = evalTestFixture (CalendarRepo.addTaskToCalendarEntryImpl calc 2) fixture
         let newCalc = calc {tasks = [2, 1]}
         log!!0 `shouldBe` show newCalc
     it "deleteTaskFromCalendarEntry" $ do
-        let calc = def{ description="termin2", entryId=1, CalendarEntry.userId=2, tasks=[1,2,3],
+        let calc = def{ description="termin2", entryId=1, CalendarEntry.owner=2, tasks=[1,2,3],
             startDate=oldDate, endDate=oldDate}
         let (_, log) = evalTestFixture (CalendarRepo.deleteTaskFromCalendarEntryImpl calc 2) fixture
         let newCalc = calc {tasks = [1, 3]}

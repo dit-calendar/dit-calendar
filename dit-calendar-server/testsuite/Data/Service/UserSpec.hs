@@ -37,8 +37,8 @@ import qualified Data.Service.User            as UserService
 
 mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBTaskRepo, MonadDBCalendarRepo, TaskService |]
 
-userFromDb = def { loginName="Foo", User.userId=10, calendarEntries=[1,2], belongingTasks=[4] }
-taskFromDb = def { Task.description="task1", taskId=5, belongingUsers=[10], startTime=Nothing, endTime=Nothing}
+userFromDb = def { loginName="Foo", User.userId=10, ownerOfCalendarEntries=[1,2], ownerOfTasks=[4] }
+taskFromDb = def { Task.description="task1", taskId=5, assignedUsers=[10], startTime=Nothing, endTime=Nothing}
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture { _deleteCalendarEntry = \a -> tell [show a]

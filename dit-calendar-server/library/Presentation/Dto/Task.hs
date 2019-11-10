@@ -18,7 +18,7 @@ data Task = Task
     { description    :: Text
     , taskId         :: Maybe Int
     , version        :: Maybe Int
-    , belongingUsers :: [UserId]
+    , assignedUsers  :: [UserId]
     , startTime      :: Maybe UTCTime
     , endTime        :: Maybe UTCTime
     } deriving (Show, Generic)
@@ -34,4 +34,4 @@ instance FromJSON Task where
     parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
 
 instance Default Task where
-    def = Task {taskId = Nothing, version = Nothing, belongingUsers = []}
+    def = Task {taskId = Nothing, version = Nothing, assignedUsers = []}

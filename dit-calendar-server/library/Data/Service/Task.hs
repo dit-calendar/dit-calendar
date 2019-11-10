@@ -50,22 +50,22 @@ deleteTaskFromAllUsers task =
       (>>) (do
         user <- MonadDBUserRepo.findUserById x
         MonadDBUserRepo.deleteTaskFromUser (fromJust user) x ))
-    (return ()) $ Task.belongingUsers task
+    (return ()) $ Task.assignedUsers task
 
 addUserToTaskImpl :: (MonadDBUserRepo m, MonadDBTaskRepo m, MonadIO m) =>
                 Task -> User -> m (EitherResult Task)
 addUserToTaskImpl task user =
-    if taskId task `elem` belongingUsers task
+    if taskId task `elem` assignedUsers task
         then return (Right task) -- do nothing and return same task
         else do
             MonadDBUserRepo.addTaskToUser user (taskId task)
-            TaskRepo.updateTask task {belongingUsers = User.userId user : belongingUsers task}
+            TaskRepo.updateTask task {assignedUsers = User.userId user : assignedUsers task}
 
 removeUserFromTaskImpl :: (MonadDBTaskRepo m, MonadDBUserRepo m) =>
                     Task -> User -> m (EitherResult Task)
 removeUserFromTaskImpl task user = do
     MonadDBUserRepo.deleteTaskFromUser user (taskId task)
-    TaskRepo.updateTask task {belongingUsers = delete (User.userId user) (belongingUsers task)}
+    TaskRepo.updateTask task {assignedUsers = delete (User.userId user) (assignedUsers task)}
 
 class Monad m => TaskService m where
     deleteTaskAndCascade :: CalendarEntry -> Task -> m ()

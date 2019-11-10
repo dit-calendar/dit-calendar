@@ -18,7 +18,7 @@ data CalendarEntry = CalendarEntry
     { description :: Description
     , entryId     :: EntryId
     , version     :: Int
-    , userId      :: UserId
+    , owner       :: UserId
     , tasks       :: [TaskId]
     , startDate   :: UTCTime
     , endDate     :: UTCTime
@@ -33,4 +33,4 @@ instance Entry CalendarEntry where
     getVersion = version
 
 instance Default CalendarEntry where
-    def = CalendarEntry {entryId = -1, version = 0, tasks = [], userId = -1}
+    def = CalendarEntry {entryId = -1, version = 0, tasks = [], owner = -1}

@@ -35,10 +35,10 @@ import qualified Data.Service.User              as UserService
 
 mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBTaskRepo, MonadDBCalendarRepo |]
 
-userFromDb = def{ loginName="Foo", User.userId=10, belongingTasks=[1,2,3] }
+userFromDb = def{ loginName="Foo", User.userId=10, ownerOfTasks=[1,2,3] }
 taskFromDb = def { Task.description="task1", taskId=1, startTime=Nothing, endTime=Nothing}
 dbDate = read "2011-11-19 18:28:52.607875 UTC"::UTCTime
-entryFromDb = def { CalendarEntry.description="termin2", entryId=1, CalendarEntry.userId=10, tasks=[1,2],
+entryFromDb = def { CalendarEntry.description="termin2", entryId=1, CalendarEntry.owner=10, tasks=[1,2],
         startDate=dbDate, endDate=dbDate}
 newDate = read "2012-11-19 17:51:42.203841 UTC"::UTCTime
 newCalendar = def {CalendarEntry.startDate = newDate, CalendarEntry.endDate=dbDate,
@@ -59,19 +59,19 @@ instance MonadIO Identity where
 
 spec = describe "CalendarEntryServiceSpec" $ do
     it "createEntry" $ do
-        let user = def{ loginName="Foo", User.userId=10, calendarEntries=[1,2] }
+        let user = def{ loginName="Foo", User.userId=10, ownerOfCalendarEntries=[1,2] }
         let (result, log) = evalTestFixture (CalendarEntryService.createEntryImpl newCalendar user) fixture
         result `shouldBe` entryFromDb
         -- Test calendarRepo calls
-        log!!0 `shouldBe` show (newCalendar{CalendarEntry.userId=10})
+        log!!0 `shouldBe` show (newCalendar{CalendarEntry.owner=10})
         -- test UserRepo calls
         log!!1 `shouldBe` show user
         log!!2 `shouldBe` show (CalendarEntry.entryId entryFromDb)
     it "removeCalendar" $ do
-        let calc = def { CalendarEntry.description="termin2", entryId=4, CalendarEntry.userId=2, tasks=[1]}
+        let calc = def { CalendarEntry.description="termin2", entryId=4, CalendarEntry.owner=2, tasks=[1]}
         let (_, log) = evalTestFixture (CalendarEntryService.removeCalendarImpl calc) fixture
         -- Test UserRepo calls
-        log!!0 `shouldBe` show (CalendarEntry.userId calc)
+        log!!0 `shouldBe` show (CalendarEntry.owner calc)
         log!!1 `shouldBe` show userFromDb
         -- Test TaskRepo calls
         log!!2 `shouldBe` show (CalendarEntry.entryId calc)
@@ -79,7 +79,7 @@ spec = describe "CalendarEntryServiceSpec" $ do
         -- Test CalendarRepo calls
         log!!4 `shouldBe` show (Task.taskId taskFromDb)
     it "getTasks" $ do
-        let calc = def { CalendarEntry.description="termin2", entryId=4, CalendarEntry.userId=2, tasks=[1]}
+        let calc = def { CalendarEntry.description="termin2", entryId=4, CalendarEntry.owner=2, tasks=[1]}
         let (result, _) = evalTestFixture (CalendarEntryService.getCalendarTasksIml entryFromDb) fixture
         length result `shouldBe` 2
 

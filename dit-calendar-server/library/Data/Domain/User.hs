@@ -14,11 +14,11 @@ import           Data.Text         (Text)
 import           Data.Domain.Types (Entry (..), EntryId, TaskId, UserId)
 
 data User = User
-    { loginName       :: Text
-    , userId          :: UserId
-    , version         :: Int
-    , calendarEntries :: [EntryId]
-    , belongingTasks  :: [TaskId]
+    { loginName              :: Text
+    , userId                 :: UserId
+    , version                :: Int
+    , ownerOfCalendarEntries :: [EntryId]
+    , ownerOfTasks           :: [TaskId]
     } deriving (Eq, Ord, Read, Show, Data, Typeable)
 
 $(deriveSafeCopy 0 'base ''User)
@@ -30,4 +30,4 @@ instance Entry User where
     getVersion = version
 
 instance Default User where
-    def = User {userId = -1, version = 0, calendarEntries = [], belongingTasks = []}
+    def = User {userId = -1, version = 0, ownerOfCalendarEntries = [], ownerOfTasks = []}

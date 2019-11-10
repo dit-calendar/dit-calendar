@@ -31,14 +31,14 @@ createEntryImpl newCalendar user = do
     calendarEntry <- MonadDBCalendarRepo.createCalendarEntry newCalendarWithUser
     MonadDBUserRepo.addCalendarEntryToUser user $ CalendarEntry.entryId calendarEntry
     return calendarEntry
-    where newCalendarWithUser = newCalendar {CalendarEntry.userId = User.userId user }
+    where newCalendarWithUser = newCalendar {CalendarEntry.owner = User.userId user }
 
 
 removeCalendarImpl :: (MonadDBUserRepo m, MonadDBTaskRepo m, MonadDBCalendarRepo m, MonadIO m) =>
                 CalendarEntry -> m ()
 removeCalendarImpl calendarEntry = let cEntryId = entryId calendarEntry in
     do
-       user <- MonadDBUserRepo.findUserById (CalendarEntry.userId calendarEntry)
+       user <- MonadDBUserRepo.findUserById (CalendarEntry.owner calendarEntry)
        MonadDBUserRepo.deleteCalendarEntryFromUser (fromJust user) cEntryId
        deleteCalendarsTasks calendarEntry
        MonadDBCalendarRepo.deleteCalendarEntry cEntryId

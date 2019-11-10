@@ -24,10 +24,10 @@ import qualified Data.Service.Task            as TaskService
 
 deleteUserImpl :: (MonadDBUserRepo m, MonadDBTaskRepo m, MonadDBCalendarRepo m, TaskService m) =>
             User -> m ()
-deleteUserImpl user = let calendarToDelete = calendarEntries user in
+deleteUserImpl user = let calendarToDelete = ownerOfCalendarEntries user in
     do
         foldr ((>>) . MonadDBCalendarRepo.deleteCalendarEntry)
-            (return ()) (calendarEntries user)
+            (return ()) (ownerOfCalendarEntries user)
         removeUserFromTasks user
         MonadDBUserRepo.deleteUser $ User.userId user
 
@@ -37,7 +37,7 @@ removeUserFromTasks user = foldr (\ taskId ->
     (>>) (do
         task <- MonadDBTaskRepo.findTaskById taskId
         TaskService.removeUserFromTask (fromJust task) user))
-    (return ()) (belongingTasks user)
+    (return ()) (ownerOfTasks user)
 
 class Monad m => UserService m where
     deleteUser :: User -> m ()

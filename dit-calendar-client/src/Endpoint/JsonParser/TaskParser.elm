@@ -16,7 +16,7 @@ taskEncoder model =
         [ ( "version", Encode.int model.version )
         , ( "description", Encode.string model.description )
         , ( "startTime", Encode.string (model.startDate ++ "T" ++ model.startTime ++ ":00.000000Z") )
-        , ( "belongingUsers", Encode.list Encode.int [] )
+        , ( "assignedUsers", Encode.list Encode.int [] )
         , case model.endDate of
             Just d ->
                 case model.endTime of

@@ -21,7 +21,7 @@ import qualified Data.Repository.Acid.InterfaceAcid as InterfaceAcid
 
 instance Indexable CalendarEntry where
   empty = ixSet [ ixFun $ \bp -> [ entryId bp ]
-                , ixFun $ \bp -> [ UserIdIndex $ userId bp ]]
+                , ixFun $ \bp -> [ UserIdIndex $ owner bp ]]
 
 type EntryList = InterfaceAcid.EntrySet CalendarEntry
 
