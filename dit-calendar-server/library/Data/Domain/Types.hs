@@ -48,3 +48,4 @@ class Entry a where
     setId :: a -> Int -> a
     getVersion :: a -> Int
     setVersion :: a -> Int -> a
+    getUsersAccessRestriction :: a -> [UserId]

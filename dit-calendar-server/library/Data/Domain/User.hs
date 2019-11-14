@@ -28,6 +28,7 @@ instance Entry User where
     getId = userId
     setVersion user newVersion = user {version = newVersion}
     getVersion = version
+    getUsersAccessRestriction a = [userId a]
 
 instance Default User where
     def = User {userId = -1, version = 0, ownerOfCalendarEntries = [], ownerOfTasks = []}

@@ -51,6 +51,7 @@ library
                        Data.Repository.UserRepo,
                        Data.Repository.CalendarRepo,
                        Data.Repository.TaskRepo,
+                       Data.Repository.PermissionControl,
                        Data.Service.User,
                        Data.Service.CalendarEntry,
                        Data.Service.Authorization,

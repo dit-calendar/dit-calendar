@@ -26,6 +26,7 @@ instance Entry Task where
     getId = taskId
     getVersion = version
     setVersion version newVersion = version { version = newVersion}
+    getUsersAccessRestriction _ = []
 
 instance Default Task where
     def = Task {taskId = -1, version = 0, assignedUsers = []}
