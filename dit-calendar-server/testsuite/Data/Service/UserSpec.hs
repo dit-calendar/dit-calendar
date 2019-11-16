@@ -20,35 +20,24 @@ import           Control.Monad.Identity       (Identity)
 import           Control.Monad.IO.Class
 import           Control.Monad.Writer.Class   (tell)
 
-import           Data.Domain.CalendarEntry    as CalendarEntry
 import           Data.Domain.Task             as Task
-import           Data.Domain.Types            (EntryId, TaskId, UserId)
 import           Data.Domain.User             as User
 
 import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)
-import           Data.Repository.TaskRepo     (MonadDBTaskRepo)
 import           Data.Repository.UserRepo     (MonadDBUserRepo)
-import           Data.Service.Task            (TaskService)
+import           Data.Service.UserTasks       (UserTasksService)
 
-import qualified Data.Service.CalendarEntry   as CalendarEntryService
-import qualified Data.Service.Task            as TaskService
 import qualified Data.Service.User            as UserService
 
 
-mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBTaskRepo, MonadDBCalendarRepo, TaskService |]
+mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBCalendarRepo, UserTasksService |]
 
-userFromDb = def { loginName="Foo", User.userId=10, ownerOfCalendarEntries=[1,2], ownerOfTasks=[4] }
-taskFromDb = def { Task.description="task1", taskId=5, assignedUsers=[10], startTime=Nothing, endTime=Nothing}
+userFromDb = def { loginName="Foo", User.userId=10, ownerOfCalendarEntries=[1,2], assignedToTasks=[4] }
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
-fixture = Fixture { _deleteCalendarEntry = \a -> tell [show a]
-                  , _deleteCalendarEntryById = \a -> tell [show a]
-                  , _findTaskById = \a -> tell [show a] >>= (\_ -> return $ Just taskFromDb)
+fixture = Fixture { _deleteCalendarEntryById = \a -> tell [show a]
                   , _deleteUser = \a -> tell [show a]
-                  , _deleteTaskFromUser = \x a -> tell [show x] >> tell [show a] >>= (\_ -> return $ Right x)
-                  , _findUserById = \a -> tell [show a] >>= (\_ -> return $ Just userFromDb)
-                  , _updateTask = \a -> tell [show a] >>= (\_ -> return $ Right a)
-                  , _removeUserFromTask =  \x a -> tell [show x] >> tell [show a] >>= (\_ -> return $ Right x)
+                  , _removeUserFromTasks = \a -> tell [show a]
                   }
 
 instance MonadIO Identity where
@@ -59,9 +48,8 @@ spec = describe "UserService" $
     it "deleteUser" $ do
         let expectedTask = def { Task.description="task1", taskId=5, startTime=Nothing, endTime=Nothing}
         let (_, log) = evalTestFixture (UserService.deleteUserImpl userFromDb) fixture
-        assertEqual "CalendarEntry 1 nicht durchgegeben" (log!!0) "1"
-        assertEqual "CalendarEntry 2 nicht durchgegeben" (log!!1) "2"
-        assertEqual "Taskeintrag aus calendar nicht gelöscht" (log!!2) "4"
-        assertEqual "Task nicht gelöscht" (log!!3) (show taskFromDb)
-        assertEqual "Falsche userId durchgegeben" (log!!4) (show userFromDb)
-        assertEqual "Falscher user gelöscht" (log!!5) (show userFromDb)
+        length log `shouldBe` 4
+        assertEqual "removeUserFromTasks mit falschen User " (log!!0) (show userFromDb)
+        assertEqual "CalendarEntry 1 nicht durchgegeben" (log!!1) "1"
+        assertEqual "CalendarEntry 2 nicht durchgegeben" (log!!2) "2"
+        assertEqual "Falscher user gelöscht" (log!!3) (show userFromDb)

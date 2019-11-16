@@ -22,6 +22,7 @@ import           AcidHelper                (App)
 import           Data.Domain.Types         (EitherResult, EntryId, TaskId,
                                             UserId)
 import           Data.Domain.User          (User (..))
+import Data.Domain.Task (Task(..))
 import           Data.Repository.Acid.User (UserDAO (..))
 
 import qualified Data.Repository.Acid.User as UserAcid
@@ -59,11 +60,11 @@ deleteCalendarEntryFromUserImpl user entryId =
 
 addTaskToUserImpl :: UserDAO m => User -> TaskId -> m (EitherResult User)
 addTaskToUserImpl user taskId =
-    updateUserImpl user {ownerOfTasks = taskId : ownerOfTasks user}
+    updateUserImpl user {assignedToTasks = taskId : assignedToTasks user}
 
-deleteTaskFromUserImpl :: UserDAO m => User -> TaskId -> m (EitherResult User)
-deleteTaskFromUserImpl user taskId =
-    updateUserImpl user {ownerOfTasks = List.delete taskId (ownerOfTasks user)}
+deleteTaskFromUserImpl :: UserDAO m => User -> Task -> m (EitherResult User)
+deleteTaskFromUserImpl user task =
+    updateUserImpl user {assignedToTasks = List.delete (taskId task) (assignedToTasks user)}
 
 findUserByIdImpl :: (UserDAO m, MonadIO m) => UserId -> m (Maybe User)
 findUserByIdImpl = query . UserAcid.UserById
@@ -80,8 +81,7 @@ class Monad m => MonadDBUserRepo m where
     addCalendarEntryToUser :: User -> EntryId -> m (EitherResult User)
     deleteCalendarEntryFromUser :: User -> EntryId -> m (EitherResult User)
     addTaskToUser :: User -> TaskId -> m (EitherResult User)
-    deleteTaskFromUser :: User -> TaskId -> m (EitherResult User)
-
+    deleteTaskFromUser :: User -> Task -> m (EitherResult User)
     findUserByLoginName :: Text -> m (Maybe User)
 
 instance UserDAO App => MonadDBUserRepo App where

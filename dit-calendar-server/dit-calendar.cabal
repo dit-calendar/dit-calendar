@@ -56,6 +56,8 @@ library
                        Data.Service.CalendarEntry,
                        Data.Service.Authorization,
                        Data.Service.Task,
+                       Data.Service.CalendarTasks,
+                       Data.Service.UserTasks,
                        Conf.Config,
                        Conf.AuthConf,
                        AcidHelper,
@@ -125,7 +127,9 @@ test-suite hspec
                        Data.Repository.UserRepoSpec,
                        Data.Service.CalendarEntrySpec,
                        Data.Service.TaskSpec,
-                       Data.Service.UserSpec
+                       Data.Service.UserSpec,
+                       Data.Service.CalendarTasksSpec,
+                       Data.Service.UserTasksSpec
 
 test-suite hlint
   build-depends:

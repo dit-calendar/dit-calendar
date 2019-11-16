@@ -6,7 +6,7 @@ module Data.Domain.Task where
 
 import           Data.Data         (Data, Typeable)
 import           Data.Default
-import           Data.Domain.Types (Description, Entry (..), TaskId, UserId)
+import           Data.Domain.Types (Description, Entity (..), TaskId, UserId)
 import           Data.SafeCopy     (base, deriveSafeCopy)
 import           Data.Time.Clock   (UTCTime)
 
@@ -21,7 +21,7 @@ data Task = Task {
     deriving (Eq, Ord, Read, Show, Data, Typeable)
 $(deriveSafeCopy 0 'base ''Task)
 
-instance Entry Task where
+instance Entity Task where
     setId task newId = task { taskId = newId }
     getId = taskId
     getVersion = version

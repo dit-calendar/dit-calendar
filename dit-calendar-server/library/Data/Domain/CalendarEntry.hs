@@ -11,7 +11,7 @@ import           Data.Default
 import           Data.SafeCopy     (base, deriveSafeCopy)
 import           Data.Time.Clock   (UTCTime)
 
-import           Data.Domain.Types (Description, Entry (..), EntryId, TaskId,
+import           Data.Domain.Types (Description, Entity (..), EntryId, TaskId,
                                     UserId)
 
 data CalendarEntry = CalendarEntry
@@ -26,7 +26,7 @@ data CalendarEntry = CalendarEntry
 
 $(deriveSafeCopy 0 'base ''CalendarEntry)
 
-instance Entry CalendarEntry where
+instance Entity CalendarEntry where
     setId calendarEntry newId = calendarEntry {entryId = newId}
     getId = entryId
     setVersion calendarEntry newVersion = calendarEntry {version = newVersion}

@@ -7,7 +7,7 @@ module Data.Domain.Types
     , EntryId
     , TaskId
     , Description
-    , Entry(..)
+    , Entity(..)
     , EitherResult
     , ResultError(..)
     , UserIdIndex(..)
@@ -43,7 +43,7 @@ newtype UserIdIndex = UserIdIndex UserId
     deriving (Eq, Ord, Read, Show, Data, Typeable)
 $(deriveSafeCopy 0 'base ''UserIdIndex)
 
-class Entry a where
+class Entity a where
     getId :: a -> Int
     setId :: a -> Int -> a
     getVersion :: a -> Int
