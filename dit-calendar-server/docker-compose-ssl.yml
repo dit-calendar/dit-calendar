@@ -1,0 +1,21 @@
+version: '3'
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
+    ports:
+      - "443:443"
+      - "8443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro # needs socket to read events
+      - ./ssl:/etc/nginx/certs
+    depends_on:
+      - dit-calendar
+
+  dit-calendar:
+    volumes:
+      - ./state/:/app/state
+    build: .
+    environment:
+      - VIRTUAL_HOST=localhost
+      - VIRTUAL_PORT=8443

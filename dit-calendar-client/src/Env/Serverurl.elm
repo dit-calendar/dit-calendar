@@ -41,4 +41,4 @@ calendarEntry entryId =
 
 baseUrl : String
 baseUrl =
-    "https://localhost:8443/"
+    "http://localhost:8080/"

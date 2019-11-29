@@ -71,7 +71,6 @@ library
                        acid-state == 0.14.*,
                        safecopy == 0.9.4.*,
                        happstack-server == 7.5.2,
-                       happstack-server-tls == 7.1.6.7,
                        happstack-authenticate == 2.4.0,
                        happstack-foundation == 0.5.9.1,
                        web-routes == 0.27.14.2,

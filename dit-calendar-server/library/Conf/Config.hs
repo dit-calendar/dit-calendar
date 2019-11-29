@@ -32,7 +32,7 @@ configParser = do
         section "NETWORK" $ do
             host <- fieldOf "host" string
             port <- fieldOf "port" number
-            return NetworkConfig {netHost = host, netPort = port, hostUri = "https://" ++ host ++ ":" ++ show port}
+            return NetworkConfig {netHost = host, netPort = port, hostUri = "http://" ++ host ++ ":" ++ show port}
     locCf <-
         sectionMb "LOCAL" $ do
             user <- fieldOf "admin.user" string
