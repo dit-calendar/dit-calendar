@@ -16,14 +16,14 @@ module Presentation.ResponseHelper
 import           Data.Aeson                   (ToJSON, encode)
 import           Data.ByteString.Lazy
 import           Data.Text                    (Text)
-import           Happstack.Server             (Method, Response, notFound, ok,
-                                               setHeader, toResponse,
-                                               toResponseBS)
+import           Happstack.Server             (Method, Response, forbidden,
+                                               notFound, ok, setHeader,
+                                               toResponse, toResponseBS)
 
 import qualified Data.ByteString.Char8        as T
 import qualified Happstack.Server             as HServer (FilterMonad,
                                                           Happstack, badRequest,
-                                                          resp)
+                                                          forbidden, resp)
 
 import           AcidHelper                   (App)
 import           Data.Domain.CalendarEntry    (CalendarEntry)
@@ -50,9 +50,12 @@ onDBEntryExist find i controllerFunction = do
         Just dbEntry -> controllerFunction dbEntry
 
 handleResponse :: (ToJSON dto, HServer.FilterMonad Response m ) => EitherResult dto -> m Response
-handleResponse (Left OptimisticLocking) = preconditionFailedResponse "\"version is not set or not equal with database\""
-handleResponse (Left (EntryNotFound i)) = notFound $ toResponse $ "\"Could not find a db entry with id " ++ show i ++ "\""
-handleResponse (Right dto)     = okResponseJson $ encode dto
+handleResponse eitherResult = case eitherResult of
+    Left error -> case error of
+        OptimisticLocking -> preconditionFailedResponse "\"version is not set or not equal with database\""
+        EntryNotFound i -> notFound $ toResponse $ "\"Could not find a db entry with id " ++ show i ++ "\""
+        PermissionAccessInsufficient -> forbidden $ toResponse ("\"Sorry, it is forbidden.\""::ByteString)
+    Right dto -> okResponseJson $ encode dto
 
 onUserExist :: (ToJSON dto, MonadDBUserRepo m) => UserId -> (User -> m (EitherResult dto)) -> m (EitherResult dto)
 onUserExist = onDBEntryExist UserRepo.findUserById

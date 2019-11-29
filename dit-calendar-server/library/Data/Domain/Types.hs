@@ -14,22 +14,18 @@ module Data.Domain.Types
     ) where
 
 import           Data.Aeson
+import           Data.Aeson.TH
 import           Data.Data     (Data, Typeable)
 import           Data.SafeCopy (base, deriveSafeCopy)
 import           Data.Text
-import           GHC.Generics  (Generic)
 
 type EitherResult a = Either ResultError a
 
-data ResultError = OptimisticLocking | EntryNotFound Int
-    deriving (Generic)
+data ResultError = OptimisticLocking | EntryNotFound Int | PermissionAccessInsufficient
+deriveJSON defaultOptions ''ResultError
 
 --why the response of a acid method need do derive from safecopy?
 $(deriveSafeCopy 0 'base ''ResultError)
-
---TODO fehler Meldungen hier definieren anstelle im ResponseHelper
-instance ToJSON ResultError where
-    toEncoding = undefined
 
 type UserId = Int
 
