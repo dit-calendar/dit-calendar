@@ -46,4 +46,4 @@ getHttpMethod = do
     ok g
 
 mapServerPartTIO2App :: (ServerPartT IO) Response -> App Response
-mapServerPartTIO2App = mapServerPartT lift
+mapServerPartTIO2App = lift

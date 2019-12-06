@@ -6,6 +6,7 @@ import           Prelude                               hiding (readFile)
 
 import           Control.Exception                     (finally)
 import           Control.Monad.Reader                  (runReaderT)
+import           Control.Monad.Trans.State.Lazy        (evalStateT)
 import           Data.Text.IO                          (readFile)
 
 import           Web.Routes                            (RouteT, Site, runRouteT,
@@ -25,15 +26,17 @@ import           AcidHelper                            (Acid, App, withAcid)
 import           Conf.AuthConf                         (authenticateConfig,
                                                         passwordConfig)
 import           Conf.Config
+import           HappstackHelper                       (AppState(..))
 import           Presentation.Route.MainRouting        (routeWithOptions)
 import           Presentation.Route.PageEnum           (Sitemap (Home),
                                                         urlSitemapParser)
 
 import qualified Data.Text                             as T
 
+initialReqSt = ()
 
 runApp :: Acid -> App a -> ServerPartT IO a
-runApp acid = mapServerPartT (`runReaderT` acid)
+runApp acid app = mapServerPartT id (evalStateT app (AppState acid initialReqSt))
 
 site :: (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response)
        -> Site Sitemap (App Response)
