@@ -1,19 +1,26 @@
 {-# LANGUAGE FlexibleContexts #-}
 
 -- | Replacement for FoundationT from Happstack.Foundation
-module HappstackHelper (FoundationT, AppState(..), getAcidSt) where
+module HappstackHelper (FoundationT, AppState(..), runServerWithFoundationT, liftServerPartT2FoundationT) where
 
-import           Control.Monad.State.Class      (MonadState, get)
-import           Control.Monad.Trans.State.Lazy (StateT)
+import           Control.Monad.Reader           (ReaderT, lift, runReaderT)
+import           Control.Monad.Trans.State.Lazy (StateT, evalStateT)
 
 import           Happstack.Server               (ServerPartT)
 
-data AppState acidState requestState  = AppState {
-    acid    :: acidState
-    , reqSt :: requestState
-}
 
-getAcidSt :: (Functor m, MonadState (AppState acidState requestState) m) => m acidState
-getAcidSt = acid <$> get
+newtype AppState requestState = AppState{
+    reqSt :: requestState
+    }
 
-type FoundationT acidState requestState   = StateT (AppState acidState requestState) (ServerPartT IO)
+type FoundationT acidState requestState = StateT (AppState requestState) (ReaderT acidState (ServerPartT IO))
+
+
+runServerWithState :: FoundationT acidState requestState a -> requestState -> ReaderT acidState (ServerPartT IO) a
+runServerWithState app = evalStateT app . AppState
+
+runServerWithFoundationT :: FoundationT acidState requestState a -> requestState -> acidState -> ServerPartT IO a
+runServerWithFoundationT app = runReaderT . runServerWithState app
+
+liftServerPartT2FoundationT :: ServerPartT IO response -> FoundationT acidState requestState response
+liftServerPartT2FoundationT = lift . lift

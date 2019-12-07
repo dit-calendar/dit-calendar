@@ -21,7 +21,7 @@ import           Happstack.Foundation               (HasAcidState (..))
 import           Happstack.Server                   (Response, ServerPartT)
 import           Web.Routes                         (RouteT)
 
-import           HappstackHelper                    (FoundationT, getAcidSt)
+import           HappstackHelper                    (FoundationT)
 import           Presentation.Route.PageEnum        (Sitemap)
 
 import qualified Data.Repository.Acid.CalendarEntry as CalendarEntryAcid
@@ -42,16 +42,16 @@ type CtrlV'   = RouteT Sitemap App
 type CtrlV    = CtrlV' Response
 
 instance HasAcidState App UserAcid.UserList where
-    getAcidState = acidUserListState <$> getAcidSt
+    getAcidState = asks acidUserListState
 
 instance HasAcidState App CalendarEntryAcid.EntryList where
-    getAcidState = acidEntryListState <$> getAcidSt
+    getAcidState = asks acidEntryListState
 
 instance HasAcidState App TaskAcid.TaskList where
-    getAcidState = acidTaskListState <$> getAcidSt
+    getAcidState = asks acidTaskListState
 
 instance HasAcidState App AuthenticateState where
-    getAcidState = acidAuthState <$> getAcidSt
+    getAcidState = asks acidAuthState
 
 withAcid :: AcidState AuthenticateState -> Maybe FilePath -- ^ state directory
          -> (Acid -> IO a) -- ^ action

@@ -12,8 +12,9 @@ import           Happstack.Server                       (BodyPolicy (..),
 import           Web.Routes                             (RouteT, mapRouteT,
                                                          nestURL)
 
-import           AcidHelper                (App, CtrlV)
-import           Presentation.HttpServerHelper          (mapServerPartTIO2App, getHttpMethod)
+import           AcidHelper                             (App, CtrlV)
+import           HappstackHelper                        (liftServerPartT2FoundationT)
+import           Presentation.HttpServerHelper          (getHttpMethod)
 import           Presentation.ResponseHelper            (corsResponse, addCorsToResponse)
 import           Presentation.Route.CalendarRoute       (routeCalendarEntry, routeCalendarEntryDetails)
 import           Presentation.Route.PageEnum            (Sitemap (..))
@@ -38,7 +39,7 @@ authOrRoute routeAuthenticate url =
             if show authenticateURL ==
                "AuthenticationMethods (Just (AuthenticationMethod {_unAuthenticationMethod = \"password\"},[\"account\"]))"
                 then lift $ UserController.createUser authenticateURL routeAuthenticate
-                else mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
+                else mapRouteT liftServerPartT2FoundationT $ nestURL Authenticate $ routeAuthenticate authenticateURL
         other -> lift $ route other
 
 -- | the route mapping function
