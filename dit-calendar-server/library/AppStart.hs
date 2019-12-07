@@ -19,7 +19,7 @@ import           Happstack.Server                      (Response, ServerPartT,
                                                         nullConf, simpleHTTP)
 import           Happstack.Server.Types                (Conf, port)
 
-import           AcidHelper                            (Acid, App, withAcid)
+import           AcidHelper                            (Acid, App, withAcid, AppContext(..))
 import           Conf.AuthConf                         (authenticateConfig,
                                                         passwordConfig)
 import           Conf.Config
@@ -33,7 +33,7 @@ import qualified Data.Text                             as T
 initialReqSt = ()
 
 runApp :: App a -> Acid -> ServerPartT IO a
-runApp app = runServerWithFoundationT app initialReqSt
+runApp app acid = runServerWithFoundationT app initialReqSt (AppContext acid Nothing)
 
 site :: (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response)
        -> Site Sitemap (App Response)

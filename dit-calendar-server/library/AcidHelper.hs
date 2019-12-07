@@ -5,10 +5,10 @@
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
 
-module AcidHelper ( CtrlV, App, withAcid, Acid ) where
+module AcidHelper ( CtrlV, App, withAcid, Acid, AppContext(..), setCurrentUser, getCurrentUser ) where
 
 import           Control.Exception                  (bracket)
-import           Control.Monad.Reader               (ReaderT, asks)
+import           Control.Monad.Reader               (ReaderT, asks, local)
 import           Data.Maybe                         (fromMaybe)
 import           Prelude
 import           System.FilePath                    ((</>))
@@ -24,6 +24,7 @@ import           Web.Routes                         (RouteT)
 import           HappstackHelper                    (FoundationT)
 import           Presentation.Route.PageEnum        (Sitemap)
 
+import qualified Data.Domain.User                   as DomainUser
 import qualified Data.Repository.Acid.CalendarEntry as CalendarEntryAcid
 import qualified Data.Repository.Acid.Task          as TaskAcid
 import qualified Data.Repository.Acid.User          as UserAcid
@@ -37,21 +38,36 @@ data Acid = Acid
      , acidAuthState      :: AcidState AuthenticateState
    }
 
-type App  = FoundationT Acid ()
+data AppContext = AppContext
+    {
+    acidState     :: Acid
+    , currentUser :: Maybe DomainUser.User
+    }
+
+updateUserInAppContext :: DomainUser.User -> AppContext -> AppContext
+updateUserInAppContext mUser reader = reader { currentUser = Just mUser}
+
+setCurrentUser :: DomainUser.User -> App m -> App m
+setCurrentUser user = local (updateUserInAppContext user)
+
+getCurrentUser :: App (Maybe DomainUser.User)
+getCurrentUser = asks currentUser
+
+type App  = FoundationT AppContext ()
 type CtrlV'   = RouteT Sitemap App
 type CtrlV    = CtrlV' Response
 
 instance HasAcidState App UserAcid.UserList where
-    getAcidState = asks acidUserListState
+    getAcidState = asks (acidUserListState . acidState)
 
 instance HasAcidState App CalendarEntryAcid.EntryList where
-    getAcidState = asks acidEntryListState
+    getAcidState = asks (acidEntryListState . acidState)
 
 instance HasAcidState App TaskAcid.TaskList where
-    getAcidState = asks acidTaskListState
+    getAcidState = asks (acidTaskListState . acidState)
 
 instance HasAcidState App AuthenticateState where
-    getAcidState = asks acidAuthState
+    getAcidState = asks (acidAuthState . acidState)
 
 withAcid :: AcidState AuthenticateState -> Maybe FilePath -- ^ state directory
          -> (Acid -> IO a) -- ^ action

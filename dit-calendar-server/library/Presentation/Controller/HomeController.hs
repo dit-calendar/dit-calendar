@@ -6,7 +6,7 @@ import           Happstack.Server                       (Method (GET, POST),
                                                          nullDir, ok,
                                                          toResponse)
 
-import           AcidHelper                             (App)
+import           AcidHelper                             (App, getCurrentUser)
 import           Presentation.ResponseHelper            (notImplemented)
 
 
@@ -19,6 +19,7 @@ homePage = do
     where
   greet = do
     m <- rqMethod <$> askRq
+    user <- getCurrentUser
     case m of
     -- curl -d '' http://localhost:8000/home
-      other -> notImplemented other
+      other -> ok $ toResponse $ "userId ist: " ++ show user
