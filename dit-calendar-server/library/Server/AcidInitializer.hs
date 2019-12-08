@@ -5,59 +5,27 @@
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
 
-module AcidHelper ( CtrlV, App, withAcid, Acid, AppContext(..), setCurrentUser, getCurrentUser ) where
+module Server.AcidInitializer ( withAcid ) where
 
 import           Control.Exception                  (bracket)
-import           Control.Monad.Reader               (ReaderT, asks, local)
+import           Control.Monad.Reader               (asks)
 import           Data.Maybe                         (fromMaybe)
 import           Prelude
 import           System.FilePath                    ((</>))
 
+import           AppContext                         (App,
+                                                     AppContext (acidState))
 import           Data.Acid                          (AcidState (..),
                                                      openLocalStateFrom)
 import           Data.Acid.Local                    (createCheckpointAndClose)
+import           Data.Repository.Acid.DBState       (Acid (..))
 import           Happstack.Authenticate.Core        (AuthenticateState)
 import           Happstack.Foundation               (HasAcidState (..))
-import           Happstack.Server                   (Response, ServerPartT)
-import           Web.Routes                         (RouteT)
 
-import           Conf.Config                        (Config)
-import           HappstackHelper                    (FoundationT)
-import           Presentation.Route.PageEnum        (Sitemap)
-
-import qualified Data.Domain.User                   as DomainUser
 import qualified Data.Repository.Acid.CalendarEntry as CalendarEntryAcid
 import qualified Data.Repository.Acid.Task          as TaskAcid
 import qualified Data.Repository.Acid.User          as UserAcid
 
-
-data Acid = Acid
-   {
-     acidUserListState    :: AcidState UserAcid.UserList
-     , acidEntryListState :: AcidState CalendarEntryAcid.EntryList
-     , acidTaskListState  :: AcidState TaskAcid.TaskList
-     , acidAuthState      :: AcidState AuthenticateState
-   }
-
-data AppContext = AppContext
-    {
-    acidState     :: Acid
-    , config      :: Config
-    , currentUser :: Maybe DomainUser.User
-    }
-
-updateUserInAppContext :: DomainUser.User -> AppContext -> AppContext
-updateUserInAppContext mUser reader = reader { currentUser = Just mUser}
-
-setCurrentUser :: DomainUser.User -> App m -> App m
-setCurrentUser user = local (updateUserInAppContext user)
-
-getCurrentUser :: App (Maybe DomainUser.User)
-getCurrentUser = asks currentUser
-
-type App  = FoundationT AppContext ()
-type CtrlV'   = RouteT Sitemap App
-type CtrlV    = CtrlV' Response
 
 instance HasAcidState App UserAcid.UserList where
     getAcidState = asks (acidUserListState . acidState)

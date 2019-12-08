@@ -2,14 +2,14 @@ module Presentation.Controller.CalendarController where
 
 import           Data.Maybe                              (fromJust)
 
-import           AcidHelper                              (App)
+import           AppContext                              (App)
 import           Data.Domain.Types                       (EitherResult, EntryId,
                                                           UserId)
 import           Presentation.Mapper.BaseMapper          (transformToDtoE,
                                                           transformToDtoList)
 import           Presentation.Mapper.CalendarEntryMapper (transformFromDto,
                                                           transformToDto)
-import           Presentation.ResponseHelper             (onEntryExist,
+import           Server.ResponseBuilder                  (onEntryExist,
                                                           onUserExist)
 
 import qualified Data.Domain.User                        as DomainUser

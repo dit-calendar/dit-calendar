@@ -18,18 +18,18 @@ import           Happstack.Authenticate.Route          (initAuthentication)
 import           Happstack.Server                      (Response, ServerPartT,
                                                         simpleHTTP)
 
-import           AcidHelper                            (Acid, App,
-                                                        AppContext (..),
-                                                        withAcid)
+import           AppContext                            (App, AppContext (..))
 import           Conf.AuthConf                         (authenticateConfig,
                                                         passwordConfig)
 import           Conf.Config                           (Config (..), readConfig)
 import           Conf.NetworkConfig                    (customHappstackServerConf,
                                                         hostUri)
-import           HappstackHelper                       (runServerWithFoundationT)
+import           Data.Repository.Acid.DBState          (Acid)
 import           Presentation.Route.MainRouting        (routeWithOptions)
 import           Presentation.Route.PageEnum           (Sitemap (Home),
                                                         urlSitemapParser)
+import           Server.AcidInitializer                (withAcid)
+import           Server.HappstackHelper                (runServerWithFoundationT)
 
 import qualified Data.Text                             as T
 

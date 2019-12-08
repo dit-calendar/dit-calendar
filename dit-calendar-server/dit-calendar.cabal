@@ -42,12 +42,11 @@ library
                        Presentation.Mapper.CalendarEntryMapper,
                        Presentation.Mapper.UserMapper,
                        Presentation.Mapper.TaskMapper,
-                       Presentation.HttpServerHelper,
-                       Presentation.ResponseHelper,
                        Data.Repository.Acid.User,
                        Data.Repository.Acid.CalendarEntry,
                        Data.Repository.Acid.Task,
                        Data.Repository.Acid.InterfaceAcid,
+                       Data.Repository.Acid.DBState,
                        Data.Repository.UserRepo,
                        Data.Repository.CalendarRepo,
                        Data.Repository.TaskRepo,
@@ -58,8 +57,11 @@ library
                        Conf.Config,
                        Conf.AuthConf,
                        Conf.NetworkConfig,
-                       HappstackHelper,
-                       AcidHelper,
+                       Server.AcidInitializer,
+                       Server.HttpServerHelper,
+                       Server.HappstackHelper,
+                       Server.ResponseBuilder,
+                       AppContext,
                        AppStart
 
   build-depends:

@@ -27,7 +27,7 @@ data ResultError = OptimisticLocking | EntryNotFound Int
 --why the response of a acid method need do derive from safecopy?
 $(deriveSafeCopy 0 'base ''ResultError)
 
---TODO fehler Meldungen hier definieren anstelle im ResponseHelper
+--TODO fehler Meldungen hier definieren anstelle im ResponseBuilder
 instance ToJSON ResultError where
     toEncoding = undefined
 

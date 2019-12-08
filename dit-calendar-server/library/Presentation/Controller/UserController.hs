@@ -12,25 +12,26 @@ import           Happstack.Authenticate.Password.Core (NewAccountData (..))
 import           Happstack.Foundation                 (HasAcidState (getAcidState),
                                                        query)
 import           Happstack.Server                     (Method (GET), Response,
-                                                       ServerPartT, method, ok, badRequest,
-                                                       rsBody, toResponse)
+                                                       ServerPartT, badRequest,
+                                                       method, ok, rsBody,
+                                                       toResponse)
 import           Web.Routes                           (RouteT, mapRouteT,
                                                        nestURL, unRouteT)
 
-import           AcidHelper                           (App)
-import           HappstackHelper                      (liftServerPartT2FoundationT)
-import           Data.Domain.Types                    (UserId, EitherResult)
+import           AppContext                           (App)
+import           Data.Domain.Types                    (EitherResult, UserId)
 import           Data.Domain.User                     as DomainUser (User (..))
 import           Data.Service.Authorization           as AuthService (deleteAuthUser)
 import           Presentation.Dto.User                as UserDto
-import           Presentation.HttpServerHelper        (getBody,
-                                                       readAuthUserFromBodyAsList)
-import           Presentation.Mapper.BaseMapper       (transformToDtoE, transformToDtoList)
+import           Presentation.Mapper.BaseMapper       (transformToDtoE,
+                                                       transformToDtoList)
 import           Presentation.Mapper.UserMapper       (transformFromDto,
                                                        transformToDto)
-import           Presentation.ResponseHelper          (okResponseJson,
-                                                       onUserExist)
 import           Presentation.Route.PageEnum          (Sitemap)
+import           Server.HappstackHelper               (liftServerPartT2FoundationT)
+import           Server.HttpServerHelper              (getBody, readAuthUserFromBodyAsList)
+import           Server.ResponseBuilder               (okResponseJson,
+                                                       onUserExist)
 
 import qualified Data.Repository.Acid.User            as UserAcid
 import qualified Data.Repository.UserRepo             as UserRepo

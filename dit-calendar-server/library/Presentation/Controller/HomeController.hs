@@ -1,13 +1,11 @@
 module Presentation.Controller.HomeController where
 
-import           Happstack.Server                       (Method (GET, POST),
-                                                         Request (rqMethod),
-                                                         Response, askRq,
-                                                         nullDir, ok,
-                                                         toResponse)
+import           Happstack.Server       (Method (GET, POST), Request (rqMethod),
+                                         Response, askRq, nullDir, ok,
+                                         toResponse)
 
-import           AcidHelper                             (App, getCurrentUser)
-import           Presentation.ResponseHelper            (notImplemented)
+import           AppContext             (App, getCurrentUser)
+import           Server.ResponseBuilder (notImplemented)
 
 
 --handler for homePage

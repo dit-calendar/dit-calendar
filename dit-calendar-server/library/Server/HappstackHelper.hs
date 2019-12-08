@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 
 -- | Replacement for FoundationT from Happstack.Foundation
-module HappstackHelper (FoundationT, AppState(..), runServerWithFoundationT, liftServerPartT2FoundationT) where
+module Server.HappstackHelper (FoundationT, AppState(..), runServerWithFoundationT, liftServerPartT2FoundationT) where
 
 import           Control.Monad.Reader           (ReaderT, lift, runReaderT)
 import           Control.Monad.Trans.State.Lazy (StateT, evalStateT)

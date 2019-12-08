@@ -1,4 +1,4 @@
-module Presentation.HttpServerHelper
+module Server.HttpServerHelper
     ( getBody
     , readAuthUserFromBodyAsList
     , getHttpMethod
@@ -17,7 +17,7 @@ import           Happstack.Server                     (Method,
                                                        unBody)
 import           Happstack.Server.Types               (Request, RqBody)
 
-import           AcidHelper                           (App)
+import           AppContext                           (App)
 import           Presentation.Route.PageEnum          (Sitemap)
 import           Web.Routes                           (RouteT)
 
