@@ -21,6 +21,7 @@ import           Happstack.Foundation               (HasAcidState (..))
 import           Happstack.Server                   (Response, ServerPartT)
 import           Web.Routes                         (RouteT)
 
+import           Conf.Config                        (Config)
 import           HappstackHelper                    (FoundationT)
 import           Presentation.Route.PageEnum        (Sitemap)
 
@@ -41,6 +42,7 @@ data Acid = Acid
 data AppContext = AppContext
     {
     acidState     :: Acid
+    , config      :: Config
     , currentUser :: Maybe DomainUser.User
     }
 

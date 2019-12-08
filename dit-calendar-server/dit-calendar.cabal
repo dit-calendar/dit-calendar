@@ -57,6 +57,7 @@ library
                        Data.Service.Task,
                        Conf.Config,
                        Conf.AuthConf,
+                       Conf.NetworkConfig,
                        HappstackHelper,
                        AcidHelper,
                        AppStart

@@ -16,13 +16,16 @@ import           Happstack.Authenticate.Core           (AuthenticateURL (..))
 import           Happstack.Authenticate.Password.Route (initPassword)
 import           Happstack.Authenticate.Route          (initAuthentication)
 import           Happstack.Server                      (Response, ServerPartT,
-                                                        nullConf, simpleHTTP)
-import           Happstack.Server.Types                (Conf, port)
+                                                        simpleHTTP)
 
-import           AcidHelper                            (Acid, App, withAcid, AppContext(..))
+import           AcidHelper                            (Acid, App,
+                                                        AppContext (..),
+                                                        withAcid)
 import           Conf.AuthConf                         (authenticateConfig,
                                                         passwordConfig)
-import           Conf.Config
+import           Conf.Config                           (Config (..), readConfig)
+import           Conf.NetworkConfig                    (customHappstackServerConf,
+                                                        hostUri)
 import           HappstackHelper                       (runServerWithFoundationT)
 import           Presentation.Route.MainRouting        (routeWithOptions)
 import           Presentation.Route.PageEnum           (Sitemap (Home),
@@ -32,8 +35,8 @@ import qualified Data.Text                             as T
 
 initialReqSt = ()
 
-runApp :: App a -> Acid -> ServerPartT IO a
-runApp app acid = runServerWithFoundationT app initialReqSt (AppContext acid Nothing)
+runApp :: App a -> Config -> Acid -> ServerPartT IO a
+runApp app conf acid = runServerWithFoundationT app initialReqSt (AppContext acid conf Nothing)
 
 site :: (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response)
        -> Site Sitemap (App Response)
@@ -44,24 +47,23 @@ site routeAuthenticate =
   let realSite = boomerangSite realRoute urlSitemapParser in
         setDefault Home realSite
 
---zu HomePage zu erreichen unter http://localhost:8443
+bootServer :: Config -> IO ()
+bootServer conf = do
+    putStrLn $ "Server unter: " ++ hostUrl
+    (cleanup, routeAuthenticate, authenticateState) <- initAuthentication Nothing authenticateConfig [ passwordConf ]
+    let startServer acid = simpleHTTP serverConf $ runApp appWithRoutetSite conf acid
+        appWithRoutetSite = implSite (T.pack hostUrl) "" (site routeAuthenticate) in
+            withAcid authenticateState Nothing startServer `finally` cleanup
+    where
+        netWorkConf = cfNetwork conf
+        hostUrl = hostUri netWorkConf
+        serverConf = customHappstackServerConf netWorkConf
+        passwordConf = initPassword (passwordConfig conf)
+
+--zu HomePage zu erreichen unter http://localhost:8080
 run :: IO ()
 run = do
     textConfig <- readFile "application.cfg"
     case readConfig textConfig of
-        Left error -> print $ "error with config file: " ++ error
-        Right conf -> do
-            putStrLn $ "Server unter: " ++ hostUrl
-            (cleanup, routeAuthenticate, authenticateState) <-
-                initAuthentication Nothing authenticateConfig [ initPassword (passwordConfig conf) ]
-            let startServer acid = simpleHTTP (customServerConf netWorkConf) $ runApp appWithRoutetSite acid
-                appWithRoutetSite = implSite (T.pack hostUrl) "" (site routeAuthenticate) in
-                withAcid authenticateState Nothing startServer `finally` cleanup
-            where
-                netWorkConf = cfNetwork conf
-                hostUrl = hostUri netWorkConf
-
-customServerConf :: NetworkConfig -> Conf
-customServerConf netConf =
-    nullConf { port = netPort netConf
-             }
+        Left error -> putStrLn $ "error with reading config file: " ++ error
+        Right conf -> bootServer conf
