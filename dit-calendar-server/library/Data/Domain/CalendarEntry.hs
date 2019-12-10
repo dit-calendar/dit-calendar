@@ -12,7 +12,7 @@ import           Data.SafeCopy     (base, deriveSafeCopy)
 import           Data.Time.Clock   (UTCTime)
 
 import           Data.Domain.Types (Description, Entry (..), EntryId, TaskId,
-                                    UserId)
+                                    UserId, StartDate, EndDate)
 
 data CalendarEntry = CalendarEntry
     { description :: Description
@@ -20,8 +20,8 @@ data CalendarEntry = CalendarEntry
     , version     :: Int
     , owner       :: UserId
     , tasks       :: [TaskId]
-    , startDate   :: UTCTime
-    , endDate     :: UTCTime
+    , startDate   :: StartDate
+    , endDate     :: EndDate
     } deriving (Eq, Ord, Read, Show, Data, Typeable)
 
 $(deriveSafeCopy 0 'base ''CalendarEntry)

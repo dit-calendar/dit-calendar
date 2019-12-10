@@ -7,6 +7,8 @@ module Data.Domain.Types
     , EntryId
     , TaskId
     , Description
+    , StartDate
+    , EndDate
     , Entry(..)
     , EitherResult
     , ResultError(..)
@@ -18,6 +20,7 @@ import           Data.Data     (Data, Typeable)
 import           Data.SafeCopy (base, deriveSafeCopy)
 import           Data.Text
 import           GHC.Generics  (Generic)
+import Data.Time.Clock (UTCTime)
 
 type EitherResult a = Either ResultError a
 
@@ -32,6 +35,10 @@ instance ToJSON ResultError where
     toEncoding = undefined
 
 type UserId = Int
+
+type StartDate =  UTCTime
+
+type EndDate =  UTCTime
 
 type EntryId = Int
 
