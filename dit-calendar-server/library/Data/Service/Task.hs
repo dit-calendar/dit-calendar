@@ -12,7 +12,7 @@ import           Data.Generics.Aliases        (orElse)
 import           Data.List                    (delete)
 import           Data.Maybe                   (fromJust)
 
-import           AcidHelper                   (App)
+import           AppContext                   (App)
 import           Data.Domain.CalendarEntry    as CalendarEntry
 import           Data.Domain.Task             as Task
 import           Data.Domain.Types            (Description, EitherResult,

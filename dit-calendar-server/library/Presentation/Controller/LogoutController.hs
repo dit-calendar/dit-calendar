@@ -2,7 +2,7 @@ module Presentation.Controller.LogoutController where
 
 import           Happstack.Server (Response, ok, setHeader, toResponse)
 
-import           AcidHelper       (App)
+import           AppContext       (App)
 
 logout :: App Response
 logout = do

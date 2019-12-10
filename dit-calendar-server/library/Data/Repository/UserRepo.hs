@@ -18,11 +18,12 @@ import           Prelude
 import qualified Data.List                 as List
 import qualified Happstack.Foundation      as Foundation
 
-import           AcidHelper                (App)
+import           AppContext                (App)
 import           Data.Domain.Types         (EitherResult, EntryId, TaskId,
                                             UserId)
 import           Data.Domain.User          (User (..))
 import           Data.Repository.Acid.User (UserDAO (..))
+import           Server.AcidInitializer
 
 import qualified Data.Repository.Acid.User as UserAcid
 

@@ -9,13 +9,13 @@ import           Data.Either
 import           Happstack.Server                           (Method (DELETE, GET, POST, PUT),
                                                              Response)
 
-import           AcidHelper                                 (App)
+import           AppContext                                 (App)
 import           Auth.Authorization                         (callIfAuthorized)
 import           Data.Domain.Types                          (EntryId)
 import           Presentation.Dto.CalendarEntry             (validate)
-import           Presentation.HttpServerHelper              (getBody,
+import           Server.HttpServerHelper                    (getBody,
                                                              getHttpMethod)
-import           Presentation.ResponseHelper                (badRequest,
+import           Server.ResponseBuilder                     (badRequest,
                                                              handleResponse,
                                                              notImplemented)
 

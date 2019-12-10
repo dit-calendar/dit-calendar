@@ -10,10 +10,10 @@ import           Happstack.Server            (Response, getHeaderM,
                                               internalServerError, toResponse,
                                               unauthorized)
 
-import           AcidHelper                  (App)
+import           AppContext                  (App, setCurrentUser)
 import           Data.Domain.Types           (EitherResult)
-import           Presentation.ResponseHelper (handleResponse)
 import           Presentation.Route.PageEnum (Sitemap (..))
+import           Server.ResponseBuilder      (handleResponse)
 
 import qualified Data.Domain.User            as DomainUser
 import qualified Data.Repository.UserRepo    as UserRepo
@@ -31,7 +31,7 @@ callIfAuthorized route = do
             loggedUser <- getDomainUser authUser
             case loggedUser of
                 Nothing -> responseWithError authUser
-                Just u  -> route u >>= handleResponse
+                Just u  -> setCurrentUser u $ route u >>= handleResponse
 
 getUserToken = do
     authenticateState <- getAcidState

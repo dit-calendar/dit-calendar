@@ -1,9 +1,11 @@
 module Conf.AuthConf ( authenticateConfig, passwordConfig ) where
 
-import           Conf.Config
 import           Happstack.Authenticate.Core          (AuthenticateConfig (..),
                                                        usernamePolicy)
 import           Happstack.Authenticate.Password.Core (PasswordConfig (..))
+
+import           Conf.Config                          (Config (..))
+import           Conf.NetworkConfig                   (hostUri)
 
 import qualified Data.Text                            as T
 

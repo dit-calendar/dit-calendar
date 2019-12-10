@@ -2,30 +2,34 @@ module Presentation.Route.MainRouting
     ( routeWithOptions
     ) where
 
-import           Happstack.Authenticate.Core            (AuthenticateURL (..))
-import           Happstack.Foundation                   (lift)
-import           Happstack.Server                       (BodyPolicy (..),
-                                                         Response, ServerPartT,
-                                                         decodeBody,
-                                                         defaultBodyPolicy,
-                                                         Method (OPTIONS))
-import           Web.Routes                             (RouteT, mapRouteT,
-                                                         nestURL)
+import           Happstack.Authenticate.Core              (AuthenticateURL (..))
+import           Happstack.Foundation                     (lift)
+import           Happstack.Server                         (BodyPolicy (..),
+                                                           Method (OPTIONS),
+                                                           Response,
+                                                           ServerPartT,
+                                                           decodeBody,
+                                                           defaultBodyPolicy)
+import           Web.Routes                               (RouteT, mapRouteT,
+                                                           nestURL)
 
-import           AcidHelper                (App, CtrlV)
-import           Presentation.HttpServerHelper          (mapServerPartTIO2App, getHttpMethod)
-import           Presentation.ResponseHelper            (corsResponse, addCorsToResponse)
-import           Presentation.Route.CalendarRoute       (routeCalendarEntry, routeCalendarEntryDetails)
-import           Presentation.Route.PageEnum            (Sitemap (..))
-import           Presentation.Route.TaskRoute           (routeTask,
-                                                         routeTaskDetail,
-                                                         routeTaskWithUser)
-import           Presentation.Route.UserRoute           (routeDetailUser,
-                                                         routeUser, routeUsers)
+import           AppContext                               (App, CtrlV)
+import           Presentation.Route.CalendarRoute         (routeCalendarEntry, routeCalendarEntryDetails)
+import           Presentation.Route.PageEnum              (Sitemap (..))
+import           Presentation.Route.TaskRoute             (routeTask,
+                                                           routeTaskDetail,
+                                                           routeTaskWithUser)
+import           Presentation.Route.UserRoute             (routeDetailUser,
+                                                           routeUser,
+                                                           routeUsers)
+import           Server.HappstackHelper                   (liftServerPartT2FoundationT)
+import           Server.HttpServerHelper                  (getHttpMethod)
+import           Server.ResponseBuilder                   (addCorsToResponse,
+                                                           corsResponse)
 
-import qualified Presentation.Controller.HomeController as HomeController
+import qualified Presentation.Controller.HomeController   as HomeController
 import qualified Presentation.Controller.LogoutController as LogoutController
-import qualified Presentation.Controller.UserController as UserController
+import qualified Presentation.Controller.UserController   as UserController
 
 myPolicy :: BodyPolicy
 myPolicy = defaultBodyPolicy "/tmp/" 0 1000 1000
@@ -38,7 +42,7 @@ authOrRoute routeAuthenticate url =
             if show authenticateURL ==
                "AuthenticationMethods (Just (AuthenticationMethod {_unAuthenticationMethod = \"password\"},[\"account\"]))"
                 then lift $ UserController.createUser authenticateURL routeAuthenticate
-                else mapRouteT mapServerPartTIO2App $ nestURL Authenticate $ routeAuthenticate authenticateURL
+                else mapRouteT liftServerPartT2FoundationT $ nestURL Authenticate $ routeAuthenticate authenticateURL
         other -> lift $ route other
 
 -- | the route mapping function
