@@ -8,11 +8,13 @@ module Data.Repository.Acid.CalendarEntry
 
 import           Control.Monad.Reader               (asks)
 import           Data.Acid                          (Query, Update, makeAcidic)
-import           Data.IxSet                         (Indexable (..), getEQ,
-                                                     ixFun, ixSet, toList)
+import           Data.IxSet                         (Indexable (..), Proxy (..),
+                                                     getEQ, getRange, ixFun,
+                                                     ixSet, toDescList)
 
 import           Data.Domain.CalendarEntry          (CalendarEntry (..))
 import           Data.Domain.Types                  (EitherResult, EntryId,
+                                                     StartDate,
                                                      UserIdIndex (..))
 
 import qualified Data.Domain.User                   as User
@@ -21,7 +23,10 @@ import qualified Data.Repository.Acid.InterfaceAcid as InterfaceAcid
 
 instance Indexable CalendarEntry where
   empty = ixSet [ ixFun $ \bp -> [ entryId bp ]
-                , ixFun $ \bp -> [ UserIdIndex $ owner bp ]]
+                , ixFun $ \bp -> [ UserIdIndex $ owner bp ]
+                , ixFun $ \bp -> [ startDate bp]
+                , ixFun $ \bp -> [ endDate bp]
+                ]
 
 type EntryList = InterfaceAcid.EntrySet CalendarEntry
 
@@ -34,10 +39,9 @@ getEntryList = InterfaceAcid.getEntrySet
 allEntrys :: Query EntryList [CalendarEntry]
 allEntrys = InterfaceAcid.allEntrysAsList
 
---TODO sortieren nach Date
 --TODO suche nach mit Predicat? Für suche mit zeitlichen Grenzen
 allEntriesForUser :: User.User -> Query EntryList [CalendarEntry]
-allEntriesForUser user = asks (toList . getEQ (UserIdIndex $ User.userId user) . InterfaceAcid.entrys)
+allEntriesForUser user = asks (toDescList (Proxy :: Proxy StartDate) . getEQ (UserIdIndex $ User.userId user) . InterfaceAcid.entrys)
 
 newEntry :: CalendarEntry -> Update EntryList CalendarEntry
 newEntry = InterfaceAcid.newEntry

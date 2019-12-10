@@ -9,7 +9,7 @@ module Data.Service.User ( deleteUserImpl, UserService(..) ) where
 import           Control.Monad.IO.Class
 import           Data.Maybe                   (fromJust)
 
-import           AcidHelper                   (App)
+import           AppContext                   (App)
 import           Data.Domain.User             as User
 
 import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)

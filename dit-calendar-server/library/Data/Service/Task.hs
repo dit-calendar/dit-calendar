@@ -9,7 +9,7 @@ module Data.Service.Task
 
 import           Control.Monad.IO.Class
 
-import           AcidHelper                   (App)
+import           AppContext                   (App)
 import           Data.Domain.CalendarEntry    as CalendarEntry
 import           Data.Domain.Task             as Task
 import           Data.Domain.Types            (EitherResult)

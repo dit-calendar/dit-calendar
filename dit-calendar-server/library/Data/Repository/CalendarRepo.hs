@@ -23,7 +23,7 @@ import           Data.Time.Clock                    (UTCTime)
 
 import qualified Happstack.Foundation               as Foundation
 
-import           AcidHelper                         (App)
+import           AppContext                         (App)
 import           Data.Domain.CalendarEntry          as CalendarEntry
 import           Data.Domain.CalendarEntry          (CalendarEntry)
 import           Data.Domain.Types                  (Description, EitherResult,
@@ -32,6 +32,7 @@ import           Data.Domain.User                   as User
 import           Data.Domain.User                   (User)
 import           Data.Repository.Acid.CalendarEntry (CalendarDAO (..))
 import           Data.Repository.PermissionControl  (executeUnderUserPermission)
+import           Server.AcidInitializer
 
 import qualified Data.Repository.Acid.CalendarEntry as CalendarEntryAcid
 

@@ -8,13 +8,13 @@ import           Data.Aeson                             (eitherDecode)
 import           Happstack.Server                       (Method (DELETE, GET, POST, PUT),
                                                          Response)
 
-import           AcidHelper                             (App)
+import           AppContext                             (App)
 import           Auth.Authorization                     (callIfAuthorized)
 import           Data.Domain.Types                      (UserId)
 import           Presentation.Dto.User                  as UserDto (User (..),
                                                                     validate)
-import           Presentation.HttpServerHelper          (getBody, getHttpMethod)
-import           Presentation.ResponseHelper            (badRequest,
+import           Server.HttpServerHelper                (getBody, getHttpMethod)
+import           Server.ResponseBuilder                 (badRequest,
                                                          handleResponse,
                                                          notImplemented)
 

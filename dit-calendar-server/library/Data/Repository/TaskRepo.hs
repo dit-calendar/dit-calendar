@@ -12,11 +12,12 @@ import           Data.Default              (def)
 
 import qualified Happstack.Foundation      as Foundation
 
-import           AcidHelper                (App)
+import           AppContext                (App)
 import           Data.Domain.CalendarEntry as CalendarEntry
 import           Data.Domain.Task          as Task
 import           Data.Domain.Types         (Description, EitherResult, TaskId)
 import           Data.Repository.Acid.Task (TaskDAO (..))
+import           Server.AcidInitializer
 
 import qualified Data.Repository.Acid.Task as TaskAcid
 

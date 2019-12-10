@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Presentation.ResponseHelper
+module Server.ResponseBuilder
     ( onUserExist
     , onEntryExist
     , onTaskExist
@@ -25,7 +25,7 @@ import qualified Happstack.Server             as HServer (FilterMonad,
                                                           Happstack, badRequest,
                                                           forbidden, resp)
 
-import           AcidHelper                   (App)
+import           AppContext                   (App)
 import           Data.Domain.CalendarEntry    (CalendarEntry)
 import           Data.Domain.Task             (Task)
 import           Data.Domain.Types            (EitherResult, EntryId,

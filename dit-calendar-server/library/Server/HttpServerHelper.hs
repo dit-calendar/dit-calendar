@@ -1,16 +1,14 @@
-module Presentation.HttpServerHelper
+module Server.HttpServerHelper
     ( getBody
     , readAuthUserFromBodyAsList
     , getHttpMethod
-    , mapServerPartTIO2App
     ) where
 
+import           Control.Concurrent.MVar              (tryReadMVar)
 import           Control.Monad.IO.Class               (MonadIO, liftIO)
 
-import           Control.Concurrent.MVar              (tryReadMVar)
 import           Data.Aeson                           (decode)
 import           Happstack.Authenticate.Password.Core (NewAccountData)
-import           Happstack.Foundation                 (lift)
 import           Happstack.Server                     (Method,
                                                        Request (rqMethod),
                                                        Response, ServerPartT,
@@ -19,7 +17,7 @@ import           Happstack.Server                     (Method,
                                                        unBody)
 import           Happstack.Server.Types               (Request, RqBody)
 
-import           AcidHelper              (App)
+import           AppContext                           (App)
 import           Presentation.Route.PageEnum          (Sitemap)
 import           Web.Routes                           (RouteT)
 
@@ -44,6 +42,3 @@ getHttpMethod = do
     nullDir
     g <- rqMethod <$> askRq
     ok g
-
-mapServerPartTIO2App :: (ServerPartT IO) Response -> App Response
-mapServerPartTIO2App = mapServerPartT lift

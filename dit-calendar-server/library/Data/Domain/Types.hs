@@ -7,6 +7,8 @@ module Data.Domain.Types
     , EntryId
     , TaskId
     , Description
+    , StartDate
+    , EndDate
     , Entity(..)
     , EitherResult
     , ResultError(..)
@@ -15,9 +17,11 @@ module Data.Domain.Types
 
 import           Data.Aeson
 import           Data.Aeson.TH
-import           Data.Data     (Data, Typeable)
-import           Data.SafeCopy (base, deriveSafeCopy)
+import           Data.Data       (Data, Typeable)
+import           Data.SafeCopy   (base, deriveSafeCopy)
 import           Data.Text
+import           Data.Time.Clock (UTCTime)
+import           GHC.Generics    (Generic)
 
 type EitherResult a = Either ResultError a
 
@@ -28,6 +32,10 @@ deriveJSON defaultOptions ''ResultError
 $(deriveSafeCopy 0 'base ''ResultError)
 
 type UserId = Int
+
+type StartDate =  UTCTime
+
+type EndDate =  UTCTime
 
 type EntryId = Int
 

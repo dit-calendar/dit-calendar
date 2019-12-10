@@ -1,6 +1,6 @@
 module Presentation.Controller.TaskController where
 
-import           AcidHelper                     (App)
+import           AppContext                     (App)
 import           Data.Domain.Types              (EitherResult, EntryId,
                                                  ResultError (EntryNotFound),
                                                  TaskId)
@@ -10,7 +10,7 @@ import           Presentation.Mapper.BaseMapper (transformToDtoE,
                                                  transformToDtoList)
 import           Presentation.Mapper.TaskMapper (transformFromDto,
                                                  transformToDto)
-import           Presentation.ResponseHelper    (onEntryExist, onTaskExist)
+import           Server.ResponseBuilder         (onEntryExist, onTaskExist)
 
 import qualified Data.Repository.CalendarRepo   as CalendarRepo
 import qualified Data.Service.CalendarEntry     as CalendarService

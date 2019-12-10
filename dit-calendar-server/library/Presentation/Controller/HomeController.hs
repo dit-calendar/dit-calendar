@@ -1,13 +1,11 @@
 module Presentation.Controller.HomeController where
 
-import           Happstack.Server                       (Method (GET, POST),
-                                                         Request (rqMethod),
-                                                         Response, askRq,
-                                                         nullDir, ok,
-                                                         toResponse)
+import           Happstack.Server       (Method (GET, POST), Request (rqMethod),
+                                         Response, askRq, nullDir, ok,
+                                         toResponse)
 
-import           AcidHelper                             (App)
-import           Presentation.ResponseHelper            (notImplemented)
+import           AppContext             (App, getCurrentUser)
+import           Server.ResponseBuilder (notImplemented)
 
 
 --handler for homePage
@@ -19,6 +17,7 @@ homePage = do
     where
   greet = do
     m <- rqMethod <$> askRq
+    user <- getCurrentUser
     case m of
     -- curl -d '' http://localhost:8000/home
-      other -> notImplemented other
+      other -> ok $ toResponse $ "userId ist: " ++ show user
