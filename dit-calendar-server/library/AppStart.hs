@@ -33,10 +33,8 @@ import           Server.HappstackHelper                (runServerWithFoundationT
 
 import qualified Data.Text                             as T
 
-initialReqSt = ()
-
 runApp :: App a -> Config -> Acid -> ServerPartT IO a
-runApp app conf acid = runServerWithFoundationT app initialReqSt (AppContext acid conf Nothing)
+runApp app conf acid = runServerWithFoundationT app (AppContext acid conf Nothing)
 
 site :: (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response)
        -> Site Sitemap (App Response)

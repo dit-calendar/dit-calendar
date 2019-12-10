@@ -29,6 +29,6 @@ setCurrentUser user = local (updateUserInAppContext user)
 getCurrentUser :: App (Maybe DomainUser.User)
 getCurrentUser = asks currentUser
 
-type App  = FoundationT AppContext ()
+type App  = FoundationT AppContext
 type CtrlV'   = RouteT Sitemap App
 type CtrlV    = CtrlV' Response
