@@ -56,8 +56,8 @@ deleteCalendarEntryByIdImpl :: CalendarDAO m => EntryId -> m ()
 deleteCalendarEntryByIdImpl = delete . CalendarEntryAcid.DeleteEntry
 
 updateCalendarImpl :: (CalendarDAO m, AppContext m ) => CalendarEntry -> m (EitherResult CalendarEntry)
-updateCalendarImpl calendarEntry =
-    executeUnderUserPermission calendarEntry (update  $ CalendarEntryAcid.UpdateEntry calendarEntry)
+updateCalendarImpl calendarEntry = executeUnderUserPermission
+    calendarEntry (update  $ CalendarEntryAcid.UpdateEntry calendarEntry)
 
 updateTaskInCalendar :: CalendarDAO m => CalendarEntry -> m (EitherResult CalendarEntry)
 updateTaskInCalendar = update . CalendarEntryAcid.UpdateEntry
