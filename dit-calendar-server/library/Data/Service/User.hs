@@ -14,34 +14,23 @@ import           Data.Domain.User             as User
 
 import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)
 import qualified Data.Repository.CalendarRepo as MonadDBCalendarRepo
-import           Data.Repository.TaskRepo     (MonadDBTaskRepo)
-import qualified Data.Repository.TaskRepo     as MonadDBTaskRepo
 import           Data.Repository.UserRepo     (MonadDBUserRepo)
 import qualified Data.Repository.UserRepo     as MonadDBUserRepo
-import           Data.Service.Task            (TaskService)
-import qualified Data.Service.Task            as TaskService
+import           Data.Service.UserTasks       (UserTasksService)
+import qualified Data.Service.UserTasks       as UserTasksService
 
 
-deleteUserImpl :: (MonadDBUserRepo m, MonadDBTaskRepo m, MonadDBCalendarRepo m, TaskService m) =>
+deleteUserImpl :: (MonadDBUserRepo m, MonadDBCalendarRepo m, UserTasksService m) =>
             User -> m ()
-deleteUserImpl user = let calendarToDelete = ownerOfCalendarEntries user in
-    do
-        foldr ((>>) . MonadDBCalendarRepo.deleteCalendarEntryById)
-            (return ()) (ownerOfCalendarEntries user)
-        removeUserFromTasks user
-        MonadDBUserRepo.deleteUser user
-
-removeUserFromTasks ::(MonadDBTaskRepo m, TaskService m) =>
-                     User -> m ()
-removeUserFromTasks user = foldr (\ taskId ->
-    (>>) (do
-        task <- MonadDBTaskRepo.findTaskById taskId
-        TaskService.removeUserFromTask (fromJust task) user))
-    (return ()) (ownerOfTasks user)
+deleteUserImpl user = do
+    UserTasksService.removeUserFromTasks user
+    foldr ((>>) . MonadDBCalendarRepo.deleteCalendarEntryById) -- TODO delete all Tasks of Calendar?
+        (return ()) (ownerOfCalendarEntries user)
+    MonadDBUserRepo.deleteUser user
 
 class Monad m => UserService m where
     deleteUser :: User -> m ()
 
-instance (MonadDBUserRepo App, MonadDBTaskRepo App, MonadDBCalendarRepo App, TaskService App)
+instance (MonadDBUserRepo App, MonadDBCalendarRepo App, UserTasksService App)
             => UserService App where
     deleteUser = deleteUserImpl

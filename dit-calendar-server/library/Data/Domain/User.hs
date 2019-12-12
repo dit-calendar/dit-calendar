@@ -11,23 +11,24 @@ import           Data.Default
 import           Data.SafeCopy     (base, deriveSafeCopy)
 import           Data.Text         (Text)
 
-import           Data.Domain.Types (Entry (..), EntryId, TaskId, UserId)
+import           Data.Domain.Types (Entity (..), EntryId, TaskId, UserId)
 
 data User = User
     { loginName              :: Text
     , userId                 :: UserId
     , version                :: Int
     , ownerOfCalendarEntries :: [EntryId]
-    , ownerOfTasks           :: [TaskId]
+    , assignedToTasks        :: [TaskId]
     } deriving (Eq, Ord, Read, Show, Data, Typeable)
 
 $(deriveSafeCopy 0 'base ''User)
 
-instance Entry User where
+instance Entity User where
     setId user newId = user {userId = newId}
     getId = userId
     setVersion user newVersion = user {version = newVersion}
     getVersion = version
+    getUsersAccessRestriction a = [userId a]
 
 instance Default User where
-    def = User {userId = -1, version = 0, ownerOfCalendarEntries = [], ownerOfTasks = []}
+    def = User {userId = -1, version = 0, ownerOfCalendarEntries = [], assignedToTasks = []}

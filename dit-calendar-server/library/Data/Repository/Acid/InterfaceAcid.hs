@@ -15,7 +15,7 @@ import           Data.IxSet           (Indexable (..), IxSet (..), deleteIx,
 import           Data.Maybe           (fromJust)
 import           Data.SafeCopy        (base, deriveSafeCopy)
 
-import           Data.Domain.Types    (EitherResult, Entry,
+import           Data.Domain.Types    (EitherResult, Entity,
                                        ResultError (..), getId, getVersion,
                                        setId, setVersion)
 
@@ -27,7 +27,7 @@ data (Typeable a, Ord a, Indexable a) => EntrySet a = EntrySet
     }
     deriving (Data, Typeable)
 
-incVersion :: Entry a => a -> a
+incVersion :: Entity a => a -> a
 incVersion x = setVersion x (getVersion x + 1)
 
 $(deriveSafeCopy 0 'base ''EntrySet)
@@ -55,7 +55,7 @@ deleteEntry entryToDelete =
             deleteIx entryToDelete entrys
             }
 
-updateEntry :: (Ord a, Typeable a, Indexable a, Entry a) => a -> Update (EntrySet a) (EitherResult a)
+updateEntry :: (Ord a, Typeable a, Indexable a, Entity a) => a -> Update (EntrySet a) (EitherResult a)
 updateEntry updatedEntry = do
     b@EntrySet{..} <- get
     let dbEntry = fromJust $ getOne (getEQ (getId updatedEntry) entrys)
@@ -68,7 +68,7 @@ updateEntry updatedEntry = do
         else return $ Left OptimisticLocking
 
 -- create a new entry and add it to the database
-newEntry :: (Ord a, Typeable a, Indexable a, Entry a) => a -> Update (EntrySet a) a
+newEntry :: (Ord a, Typeable a, Indexable a, Entity a) => a -> Update (EntrySet a) a
 newEntry entry =
     do  b@EntrySet{..} <- get
         let nEntry = setVersion (setId entry nextEntryId) 0

@@ -27,5 +27,5 @@ instance Mapper Domain.User User where
                     , Domain.userId = Domain.userId dbUser
                     , Domain.version = fromMaybe (-1) (version dto)
                     , Domain.ownerOfCalendarEntries = Domain.ownerOfCalendarEntries dbUser
-                    , Domain.ownerOfTasks = Domain.ownerOfTasks dbUser
+                    , Domain.assignedToTasks = Domain.assignedToTasks dbUser
                     }

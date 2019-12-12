@@ -6,9 +6,9 @@
 
 ### Sandbox
 * beim erstem Mal sandbox aufsetzen: `cabal sandbox init`
-** alles Dependency und Compelierte Dateinen werden nicht mehr global sondern local(im Projektverzeichnis) installiert
+  * alles Dependency und Compelierte Dateinen werden nicht mehr global sondern local(im Projektverzeichnis) installiert
 * Play around with the code in GHCi
-** `cabal repl`
+  * `cabal repl`
 
 ### Programm bauen und ausführen
 * bauen: `cabal build `
@@ -18,12 +18,13 @@
 
 ### Test
 * builds tests and runs them: `cabal install --enable-tests`
-** oder `cabal configure --enable-tests`
+  * oder `cabal configure --enable-tests`
 * alle Tests ausführen: `cabal test`
 * einzelne Tests ausführen: ?
 
 ## Stack
 * buil: `stack build`
+  * `stack build --fast --file-watch`
 * execute: `stack exec dit-calendar`
 * if stack broken: `stack clean`
 * repl: `stack ghci`

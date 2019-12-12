@@ -14,7 +14,7 @@ import           Prelude
 import           System.FilePath                    ((</>))
 
 import           AppContext                         (App,
-                                                     AppContext (acidState))
+                                                     AppReader (acidState))
 import           Data.Acid                          (AcidState (..),
                                                      openLocalStateFrom)
 import           Data.Acid.Local                    (createCheckpointAndClose)

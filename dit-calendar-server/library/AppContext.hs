@@ -1,4 +1,5 @@
-module AppContext (CtrlV, App, AppContext(..), setCurrentUser, getCurrentUser)where
+{-# LANGUAGE FlexibleInstances #-}
+module AppContext (AppContext(..), CtrlV, App, AppReader(..))where
 
 import           Control.Monad.Reader           (asks, local)
 
@@ -13,22 +14,24 @@ import           Server.HappstackHelper         (FoundationT)
 import qualified Data.Domain.User               as DomainUser
 
 
-data AppContext = AppContext
+type App  = FoundationT AppReader
+type CtrlV'   = RouteT Sitemap App
+type CtrlV    = CtrlV' Response
+
+data AppReader = AppReader
     {
     acidState     :: Acid
     , config      :: Config
     , currentUser :: Maybe DomainUser.User
     }
 
-updateUserInAppContext :: DomainUser.User -> AppContext -> AppContext
+updateUserInAppContext :: DomainUser.User -> AppReader -> AppReader
 updateUserInAppContext mUser reader = reader { currentUser = Just mUser}
 
-setCurrentUser :: DomainUser.User -> App m -> App m
-setCurrentUser user = local (updateUserInAppContext user)
+class Monad m => AppContext m  where
+    setCurrentUser :: DomainUser.User -> m a -> m a
+    getCurrentUser :: m (Maybe DomainUser.User)
 
-getCurrentUser :: App (Maybe DomainUser.User)
-getCurrentUser = asks currentUser
-
-type App  = FoundationT AppContext
-type CtrlV'   = RouteT Sitemap App
-type CtrlV    = CtrlV' Response
+instance AppContext App where
+    setCurrentUser user = local (updateUserInAppContext user)
+    getCurrentUser = asks currentUser
