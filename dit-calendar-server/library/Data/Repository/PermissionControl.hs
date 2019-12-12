@@ -21,5 +21,5 @@ executeUnderUserPermission entity f = do
 executeUnderPermission :: Monad m => Bool -> m (EitherResult b) -> m (EitherResult b)
 executeUnderPermission executionAllowed f =
     if executionAllowed
-        then return $ Left PermissionAccessInsufficient
-        else f
+        then f
+        else return $ Left PermissionAccessInsufficient
