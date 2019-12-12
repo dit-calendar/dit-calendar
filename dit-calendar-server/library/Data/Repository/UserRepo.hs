@@ -19,10 +19,10 @@ import qualified Data.List                 as List
 import qualified Happstack.Foundation      as Foundation
 
 import           AppContext                (App)
+import           Data.Domain.Task          (Task (..))
 import           Data.Domain.Types         (EitherResult, EntryId, TaskId,
                                             UserId)
 import           Data.Domain.User          (User (..))
-import Data.Domain.Task (Task(..))
 import           Data.Repository.Acid.User (UserDAO (..))
 import           Server.AcidInitializer
 

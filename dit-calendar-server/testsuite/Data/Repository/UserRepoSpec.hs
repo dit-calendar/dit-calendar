@@ -18,8 +18,8 @@ import           Control.Monad.Writer.Class   (tell)
 import           Data.Default                 (def)
 import           Data.Maybe                   (fromJust)
 
+import           Data.Domain.Task             as Task
 import           Data.Domain.User             as User
-import Data.Domain.Task as Task
 import           Data.Repository.Acid.User    (DeleteUser (..),
                                                FindByLoginName (..),
                                                NewUser (..), UpdateUser (..),

@@ -3,7 +3,6 @@
 {-# LANGUAGE MonoLocalBinds       #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
-{-# LANGUAGE AllowAmbiguousTypes #-}
 
 module Data.Repository.CalendarRepo
     ( createCalendarEntryImpl
