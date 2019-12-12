@@ -43,6 +43,6 @@ RUN apt-get update && apt-get -y install libgmp10 netbase
 COPY --from=build /build/bin .
 COPY application.cfg LICENSE /app/
 
-EXPOSE 8443
+EXPOSE 8080
 
 CMD ["/app/dit-calendar"]
