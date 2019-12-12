@@ -18,7 +18,7 @@ import           Happstack.Authenticate.Route          (initAuthentication)
 import           Happstack.Server                      (Response, ServerPartT,
                                                         simpleHTTP)
 
-import           AppContext                            (App, AppContext (..))
+import           AppContext                            (App, AppReader (..))
 import           Conf.AuthConf                         (authenticateConfig,
                                                         passwordConfig)
 import           Conf.Config                           (Config (..), readConfig)
@@ -34,7 +34,7 @@ import           Server.HappstackHelper                (runServerWithFoundationT
 import qualified Data.Text                             as T
 
 runApp :: App a -> Config -> Acid -> ServerPartT IO a
-runApp app conf acid = runServerWithFoundationT app (AppContext acid conf Nothing)
+runApp app conf acid = runServerWithFoundationT app (AppReader acid conf Nothing)
 
 site :: (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response)
        -> Site Sitemap (App Response)

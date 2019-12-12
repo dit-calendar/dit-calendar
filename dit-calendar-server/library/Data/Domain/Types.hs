@@ -26,6 +26,7 @@ import           GHC.Generics    (Generic)
 type EitherResult a = Either ResultError a
 
 data ResultError = OptimisticLocking | EntryNotFound Int | PermissionAccessInsufficient
+    deriving (Eq, Show)
 deriveJSON defaultOptions ''ResultError
 
 --why the response of a acid method need do derive from safecopy?

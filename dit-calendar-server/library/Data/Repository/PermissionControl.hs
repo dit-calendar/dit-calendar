@@ -1,5 +1,6 @@
 module Data.Repository.PermissionControl (executeUnderUserPermission) where
 
+import           AppContext        (App, AppContext (..), getCurrentUser)
 import           Data.Domain.Types (EitherResult, Entity,
                                     ResultError (PermissionAccessInsufficient),
                                     getId, getUsersAccessRestriction)
@@ -10,11 +11,15 @@ isUserAllowed user entity =
     let allowedUser = getUsersAccessRestriction entity in
         (null allowedUser || (getId user `elem` allowedUser))
 
-executeUnderUserPermission :: (Entity a, Monad m) => User -> a -> m (EitherResult b) -> m (EitherResult b)
-executeUnderUserPermission user entity = executeUnderPermission (isUserAllowed user entity)
+executeUnderUserPermission :: (Entity a, AppContext m) => a -> m (EitherResult a) -> m (EitherResult a)
+executeUnderUserPermission entity f = do
+    mUser <- getCurrentUser
+    case mUser of
+        Just user -> executeUnderPermission (isUserAllowed user entity) f
+        Nothing   -> return $ Left PermissionAccessInsufficient
 
 executeUnderPermission :: Monad m => Bool -> m (EitherResult b) -> m (EitherResult b)
-executeUnderPermission executionAllowed execution =
+executeUnderPermission executionAllowed f =
     if executionAllowed
         then return $ Left PermissionAccessInsufficient
-        else execution
+        else f

@@ -3,6 +3,7 @@
 {-# LANGUAGE MonoLocalBinds       #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE AllowAmbiguousTypes #-}
 
 module Data.Repository.CalendarRepo
     ( createCalendarEntryImpl
@@ -23,7 +24,7 @@ import           Data.Time.Clock                    (UTCTime)
 
 import qualified Happstack.Foundation               as Foundation
 
-import           AppContext                         (App)
+import           AppContext                         (App, AppContext)
 import           Data.Domain.CalendarEntry          as CalendarEntry
 import           Data.Domain.CalendarEntry          (CalendarEntry)
 import           Data.Domain.Types                  (Description, EitherResult,
@@ -55,9 +56,9 @@ deleteCalendarEntryImpl = delete . CalendarEntryAcid.DeleteEntry . entryId
 deleteCalendarEntryByIdImpl :: CalendarDAO m => EntryId -> m ()
 deleteCalendarEntryByIdImpl = delete . CalendarEntryAcid.DeleteEntry
 
-updateCalendarImpl :: CalendarDAO m => CalendarEntry -> m (EitherResult CalendarEntry)
+updateCalendarImpl :: (CalendarDAO m, AppContext m ) => CalendarEntry -> m (EitherResult CalendarEntry)
 updateCalendarImpl calendarEntry =
-    executeUnderUserPermission undefined calendarEntry (update  $ CalendarEntryAcid.UpdateEntry calendarEntry)
+    executeUnderUserPermission calendarEntry (update  $ CalendarEntryAcid.UpdateEntry calendarEntry)
 
 updateTaskInCalendar :: CalendarDAO m => CalendarEntry -> m (EitherResult CalendarEntry)
 updateTaskInCalendar = update . CalendarEntryAcid.UpdateEntry
