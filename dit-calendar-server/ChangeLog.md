@@ -1,6 +1,15 @@
 # Revision history for dit-calendar-server
 
-## 0.5.0.0 -- 2019-
+## 0.6.0.0 -- 2019-
+
+## 0.5.0.0 -- 2019-12-14
+* ui
+  * first simple ui client for creating calendar entries and tasks. written in elm
+* backend
+  * user permission resource control
+  * Reader monad for holding AppContext
+  * docker included
+  * dto validation
 
 ## 0.4.0.0 -- 2019-03-12
 

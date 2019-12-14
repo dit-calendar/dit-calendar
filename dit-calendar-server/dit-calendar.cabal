@@ -1,5 +1,5 @@
 name:                dit-calendar
-version:             0.5.0.0
+version:             0.6.0.0
 synopsis:            calendar for participatory projects
 description:         The main goal for the calendar is to provide events entries, create tasks to be done for an event and allow a user-task assigment.
 license:             GPL-3
