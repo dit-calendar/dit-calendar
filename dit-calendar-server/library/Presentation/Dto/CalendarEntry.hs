@@ -26,7 +26,10 @@ data CalendarEntry = CalendarEntry
 
 validate :: Either String CalendarEntry -> Either String CalendarEntry
 validate (Left e) = Left e
-validate (Right entry) = Right entry
+validate (Right entry) =
+    if startDate entry < endDate entry
+        then Right entry
+        else Left "startDate cannot be before endDate"
 
 instance ToJSON CalendarEntry where
     toEncoding = genericToEncoding defaultOptions
