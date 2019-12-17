@@ -4,6 +4,7 @@ module Conf.NetworkConfig (NetworkConfig(..), customHappstackServerConf, network
 
 import           Data.Ini.Config
 
+import           Data.Maybe             (fromMaybe)
 import           Happstack.Server       (nullConf)
 import           Happstack.Server.Types (Conf, port)
 
@@ -14,11 +15,12 @@ data NetworkConfig = NetworkConfig
     , hostUri :: String
     } deriving (Eq, Show)
 
-networkConfigParser :: IniParser NetworkConfig
-networkConfigParser =
+networkConfigParser :: Maybe String -> IniParser NetworkConfig
+networkConfigParser mdefaultPort =
     section "NETWORK" $ do
         host <- fieldOf "host" string
-        port <- fieldOf "port" number
+        defaultPort <- fieldOf "port" number
+        let port = maybe defaultPort read mdefaultPort
         return NetworkConfig {netHost = host, netPort = port, hostUri = "http://" ++ host ++ ":" ++ show port}
 
 customHappstackServerConf :: NetworkConfig -> Conf

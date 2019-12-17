@@ -28,11 +28,11 @@ localConfigParser =
         password <- fieldOf "admin.password" string
         return LocalConfig {adminPassword = password, adminUser = user}
 
-configParser :: IniParser Config
-configParser = do
-    netCf <- networkConfigParser
+configParser :: Maybe String -> IniParser Config
+configParser defaultPort = do
+    netCf <- networkConfigParser defaultPort
     locCf <- localConfigParser
     return Config {cfNetwork = netCf, cfLocal = locCf}
 
-readConfig :: Text -> Either String Config
-readConfig textConfig = parseIniFile textConfig configParser
+readConfig :: Maybe String -> Text -> Either String Config
+readConfig defaultPort textConfig = parseIniFile textConfig $ configParser defaultPort

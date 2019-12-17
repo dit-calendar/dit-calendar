@@ -6,6 +6,7 @@ import           Prelude                               hiding (readFile)
 
 import           Control.Exception                     (finally)
 import           Data.Text.IO                          (readFile)
+import           System.Environment                    (lookupEnv)
 
 import           Web.Routes                            (RouteT, Site, runRouteT,
                                                         setDefault)
@@ -62,6 +63,7 @@ bootServer conf = do
 run :: IO ()
 run = do
     textConfig <- readFile "application.cfg"
-    case readConfig textConfig of
+    portResult <- lookupEnv "PORT"
+    case readConfig portResult textConfig of
         Left error -> putStrLn $ "error with reading config file: " ++ error
         Right conf -> bootServer conf
