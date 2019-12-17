@@ -41,7 +41,7 @@ routeCalendarFilter :: App Response
 routeCalendarFilter = do
     m <- getHttpMethod
     case m of
-        GET   -> do
+        POST   -> do
             body <- getBody
             case FilterDto.validate (eitherDecode body :: Either String FilterDto.CalendarFilter) of
                 Right filter -> callIfAuthorized (CalendarController.calendarEntriesFilter filter)
