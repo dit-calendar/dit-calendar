@@ -50,15 +50,6 @@ findAllCalendarEntriesImpl = findList . CalendarEntryAcid.AllEntriesForUser
 findAllCalendarEntriesWithinRangeImpl :: (CalendarDAO m, MonadIO m) => User -> UTCTime -> UTCTime -> m [CalendarEntry]
 findAllCalendarEntriesWithinRangeImpl user start end = findListForRange (CalendarEntryAcid.AllEntriesForUserAndRange user start end)
 
---findAllCalendarEntriesWithinRangeImpl :: (CalendarDAO m, MonadIO m) => User -> UTCTime -> UTCTime -> m [CalendarEntry]
---findAllCalendarEntriesWithinRangeImpl user start end = do
---        list <- findList $ CalendarEntryAcid.AllEntriesForUser user
---        filterRange start end list
---        return list
-
---filterRange :: UTCTime -> UTCTime -> [CalendarEntry] -> [CalendarEntry]
---filterRange start end = filter (\n -> CalendarEntry.startDate n > start)
-
 createCalendarEntryImpl :: CalendarDAO m => CalendarEntry-> m CalendarEntry
 createCalendarEntryImpl = create . CalendarEntryAcid.NewEntry
 
