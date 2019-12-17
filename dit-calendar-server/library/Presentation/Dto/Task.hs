@@ -25,7 +25,10 @@ data Task = Task
 
 validate :: Either String Task -> Either String Task
 validate (Left e) = Left e
-validate (Right task) = Right task
+validate (Right task) = 
+    if startTime task < endTime task
+        then Right task
+        else Left "startTime cannot be before endTime"
 
 instance ToJSON Task where
     toEncoding = genericToEncoding defaultOptions { omitNothingFields = True }

@@ -1,6 +1,7 @@
 module Presentation.Route.CalendarRoute
     ( routeCalendarEntry
     , routeCalendarEntryDetails
+    , routeCalendarFilter
     ) where
 
 import           Data.Aeson                                 (eitherDecode)
@@ -21,6 +22,7 @@ import           Server.ResponseBuilder                     (badRequest,
 
 import qualified Presentation.Controller.CalendarController as CalendarController
 import qualified Presentation.Dto.CalendarEntry             as CalendarDto
+import qualified Presentation.Dto.CalendarFilter            as FilterDto
 
 
 routeCalendarEntry :: App Response
@@ -35,6 +37,16 @@ routeCalendarEntry = do
         GET -> callIfAuthorized CalendarController.calendarEntries
         other -> notImplemented other
 
+routeCalendarFilter :: App Response
+routeCalendarFilter = do
+    m <- getHttpMethod
+    case m of
+        POST   -> do
+            body <- getBody
+            case eitherDecode body :: Either String FilterDto.CalendarFilter of
+                Right filter -> callIfAuthorized (CalendarController.calendarEntriesFilter filter)
+                Left errorMessage -> badRequest errorMessage
+        other -> notImplemented other
 
 routeCalendarEntryDetails :: EntryId -> App Response
 routeCalendarEntryDetails entryId = do

@@ -4,13 +4,13 @@
 
 module Data.Repository.Acid.CalendarEntry
     ( CalendarDAO(..), initialEntryListState, EntryList(..), NewEntry(..), EntryById(..), AllEntrys(..),
-    AllEntriesForUser(..), GetEntryList(..), UpdateEntry(..), DeleteEntry(..) ) where
+    AllEntriesForUser(..), AllEntriesForUserAndRange(..), GetEntryList(..), UpdateEntry(..), DeleteEntry(..) ) where
 
 import           Control.Monad.Reader               (asks)
 import           Data.Acid                          (Query, Update, makeAcidic)
 import           Data.IxSet                         (Indexable (..), Proxy (..),
                                                      getEQ, getRange, ixFun,
-                                                     ixSet, toDescList)
+                                                     ixSet, toDescList, toList)
 
 import           Data.Domain.CalendarEntry          (CalendarEntry (..))
 import           Data.Domain.Types                  (EitherResult, EntryId,
@@ -43,6 +43,9 @@ allEntrys = InterfaceAcid.allEntrysAsList
 allEntriesForUser :: User.User -> Query EntryList [CalendarEntry]
 allEntriesForUser user = asks (toDescList (Proxy :: Proxy StartDate) . getEQ (UserIdIndex $ User.userId user) . InterfaceAcid.entrys)
 
+allEntriesForUserAndRange :: User.User -> StartDate -> StartDate -> Query EntryList [CalendarEntry]
+allEntriesForUserAndRange user from to = asks (toList . getRange from to . getEQ (UserIdIndex $ User.userId user) . InterfaceAcid.entrys)
+
 newEntry :: CalendarEntry -> Update EntryList CalendarEntry
 newEntry = InterfaceAcid.newEntry
 
@@ -55,7 +58,7 @@ updateEntry = InterfaceAcid.updateEntry
 deleteEntry :: EntryId -> Update EntryList ()
 deleteEntry = InterfaceAcid.deleteEntry
 
-$(makeAcidic ''EntryList ['newEntry, 'entryById, 'allEntrys, 'getEntryList, 'allEntriesForUser, 'updateEntry, 'deleteEntry])
+$(makeAcidic ''EntryList ['newEntry, 'entryById, 'allEntrys, 'getEntryList, 'allEntriesForUser, 'allEntriesForUserAndRange, 'updateEntry, 'deleteEntry])
 
 class Monad m => CalendarDAO m where
     create :: NewEntry -> m CalendarEntry
@@ -63,3 +66,4 @@ class Monad m => CalendarDAO m where
     delete :: DeleteEntry -> m ()
     query  :: EntryById -> m (Maybe CalendarEntry)
     findList   :: AllEntriesForUser -> m [CalendarEntry]
+    findListForRange   :: AllEntriesForUserAndRange -> m [CalendarEntry]
