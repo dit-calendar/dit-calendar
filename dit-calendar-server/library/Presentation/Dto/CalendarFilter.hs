@@ -5,22 +5,27 @@ module Presentation.Dto.CalendarFilter where
 
 import           Data.Aeson
 import           Data.Default
-import           Data.Maybe                (isJust)
+import           Data.Maybe      (isJust)
 import           Data.Text
-import           Data.Time.Clock           (UTCTime)
+import           Data.Time.Clock (UTCTime)
 import           GHC.Generics
 
-data CalendarFilter = CalendarFilter
-    { from   :: UTCTime
-    , to     :: UTCTime
-    } deriving (Show, Generic)
+newtype CalendarFilter = CalendarFilter{startDate :: CalendarRange}
+                           deriving (Show, Generic)
 
-validate :: Either String CalendarFilter -> Either String CalendarFilter
-validate (Left e) = Left e
-validate (Right entry) = Right entry
+data CalendarRange = CalendarRange
+    { from :: UTCTime
+    , to   :: UTCTime
+    } deriving (Show, Generic)
 
 instance ToJSON CalendarFilter where
     toEncoding = genericToEncoding defaultOptions
 
 instance FromJSON CalendarFilter where
+    parseJSON = genericParseJSON defaultOptions { omitNothingFields = True }
+
+instance ToJSON CalendarRange where
+    toEncoding = genericToEncoding defaultOptions
+
+instance FromJSON CalendarRange where
     parseJSON = genericParseJSON defaultOptions { omitNothingFields = True }

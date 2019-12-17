@@ -56,5 +56,5 @@ calendarEntriesFilter filter user = do
     result <- CalendarRepo.findAllCalendarEntriesWithinRange user start end
     return (Right $ transformToDtoList result)
     where
-        start = FilterDto.from filter
-        end = FilterDto.to filter
+        start = FilterDto.from $ FilterDto.startDate filter
+        end = FilterDto.to $ FilterDto.startDate filter

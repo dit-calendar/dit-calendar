@@ -43,7 +43,7 @@ routeCalendarFilter = do
     case m of
         POST   -> do
             body <- getBody
-            case FilterDto.validate (eitherDecode body :: Either String FilterDto.CalendarFilter) of
+            case eitherDecode body :: Either String FilterDto.CalendarFilter of
                 Right filter -> callIfAuthorized (CalendarController.calendarEntriesFilter filter)
                 Left errorMessage -> badRequest errorMessage
         other -> notImplemented other
