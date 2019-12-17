@@ -14,7 +14,7 @@ import           Web.Routes                               (RouteT, mapRouteT,
                                                            nestURL)
 
 import           AppContext                               (App, CtrlV)
-import           Presentation.Route.CalendarRoute         (routeCalendarEntry, routeCalendarEntryDetails)
+import           Presentation.Route.CalendarRoute         (routeCalendarEntry, routeCalendarEntryDetails, routeCalendarFilter)
 import           Presentation.Route.PageEnum              (Sitemap (..))
 import           Presentation.Route.TaskRoute             (routeTask,
                                                            routeTaskDetail,
@@ -57,6 +57,7 @@ route url = do
         Users                      -> routeUsers
         -- calendar routing
         CalendarEntry              -> routeCalendarEntry
+        CalendarFilter             -> routeCalendarFilter
         CalendarEntryDetail eId    -> routeCalendarEntryDetails eId
         -- task routing
         CalendarTask eId           -> routeTask eId

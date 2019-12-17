@@ -42,9 +42,22 @@ instance CalendarDAO App where
     delete = Foundation.update
     query = Foundation.query
     findList = Foundation.query
+    findListForRange = Foundation.query
 
 findAllCalendarEntriesImpl :: (CalendarDAO m, MonadIO m) => User -> m [CalendarEntry]
 findAllCalendarEntriesImpl = findList . CalendarEntryAcid.AllEntriesForUser
+
+findAllCalendarEntriesWithinRangeImpl :: (CalendarDAO m, MonadIO m) => User -> UTCTime -> UTCTime -> m [CalendarEntry]
+findAllCalendarEntriesWithinRangeImpl user start end = findListForRange (CalendarEntryAcid.AllEntriesForUserAndRange user start end)
+
+--findAllCalendarEntriesWithinRangeImpl :: (CalendarDAO m, MonadIO m) => User -> UTCTime -> UTCTime -> m [CalendarEntry]
+--findAllCalendarEntriesWithinRangeImpl user start end = do
+--        list <- findList $ CalendarEntryAcid.AllEntriesForUser user
+--        filterRange start end list
+--        return list
+
+--filterRange :: UTCTime -> UTCTime -> [CalendarEntry] -> [CalendarEntry]
+--filterRange start end = filter (\n -> CalendarEntry.startDate n > start)
 
 createCalendarEntryImpl :: CalendarDAO m => CalendarEntry-> m CalendarEntry
 createCalendarEntryImpl = create . CalendarEntryAcid.NewEntry
@@ -76,6 +89,7 @@ class Monad m => MonadDBCalendarRepo m where
     createCalendarEntry :: CalendarEntry -> m CalendarEntry
     findCalendarById :: EntryId -> m (Maybe CalendarEntry)
     findAllCalendarEntries :: User -> m [CalendarEntry]
+    findAllCalendarEntriesWithinRange :: User -> UTCTime -> UTCTime -> m [CalendarEntry]
     updateCalendar :: CalendarEntry -> m (EitherResult CalendarEntry)
     deleteCalendarEntryById :: EntryId -> m ()
     deleteCalendarEntry :: CalendarEntry -> m ()
@@ -86,6 +100,7 @@ instance CalendarDAO App => MonadDBCalendarRepo App where
     createCalendarEntry = createCalendarEntryImpl
     findCalendarById = findCalendarByIdImpl
     findAllCalendarEntries = findAllCalendarEntriesImpl
+    findAllCalendarEntriesWithinRange = findAllCalendarEntriesWithinRangeImpl
     updateCalendar = updateCalendarImpl
     deleteCalendarEntryById = deleteCalendarEntryByIdImpl
     deleteCalendarEntry = deleteCalendarEntryImpl

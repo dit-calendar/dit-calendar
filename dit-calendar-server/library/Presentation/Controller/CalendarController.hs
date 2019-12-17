@@ -16,6 +16,7 @@ import qualified Data.Domain.User                        as DomainUser
 import qualified Data.Repository.CalendarRepo            as CalendarRepo
 import qualified Data.Service.CalendarEntry              as CalendarService
 import qualified Presentation.Dto.CalendarEntry          as CalendarDto
+import qualified Presentation.Dto.CalendarFilter         as FilterDto
 
 calendarEntries :: DomainUser.User -> App (EitherResult [CalendarDto.CalendarEntry])
 calendarEntries user = do
@@ -48,3 +49,12 @@ updateCalendarEntry entryId calendarDto loggedUser = onEntryExist entryId update
     updateCalendar cEntry = do
         result <- CalendarRepo.updateCalendar (transformFromDto calendarDto $ Just cEntry)
         return $ transformToDtoE result
+
+
+calendarEntriesFilter :: FilterDto.CalendarFilter -> DomainUser.User -> App (EitherResult [CalendarDto.CalendarEntry])
+calendarEntriesFilter filter user = do
+    result <- CalendarRepo.findAllCalendarEntriesWithinRange user start end
+    return (Right $ transformToDtoList result)
+    where
+        start = FilterDto.from filter
+        end = FilterDto.to filter

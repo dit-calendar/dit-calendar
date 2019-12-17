@@ -27,6 +27,7 @@ data Sitemap
     | Users
     --calendar mapping
     | CalendarEntry
+    | CalendarFilter
     | CalendarEntryDetail EntryId
     -- tasks mapping
     | CalendarTask EntryId
@@ -42,6 +43,7 @@ urlSitemapParser =
     <> rAuthenticate . (lit "authenticate" </> authenticateURL)
     <> lit "users" . userMapping
     <> lit "calendarentries" . calendarTaskMapping
+    <> rCalendarFilter . lit "calendarFilter"
     where
         userMapping = rUsers
             <> rUserdetail </> lit "me"
