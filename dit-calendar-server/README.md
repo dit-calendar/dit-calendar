@@ -35,9 +35,14 @@
 * http://taylor.fausak.me/2014/03/04/haskeleton-a-haskell-project-skeleton/
 
 # Deploy
-* build docker image `docker build -t ditcalendar/dit-calendar .`
-* update image to docker hub `docker push ditcalendar/dit-calendar`
-* update pod `kubectl apply -f k8s.yml`
+* create docker image
+  * build docker image `docker build -t ditcalendar/dit-calendar .`
+  * update image to docker hub `docker push ditcalendar/dit-calendar`
+* kubernetes
+  * set up kubectl
+    * export KUBECONFIG=$HOME/Downloads/okteto-kube.config:${KUBECONFIG:-$HOME/.kube/config}
+    * kubectl get all
+  * update pod `kubectl apply -f k8s.yml`
 
 # URL's
 

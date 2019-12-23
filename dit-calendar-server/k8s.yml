@@ -1,5 +1,5 @@
-apiVersion: apps/v1
 kind: Deployment
+apiVersion: apps/v1
 metadata:
   name: dit-calendar
 spec:
@@ -21,16 +21,15 @@ spec:
       volumes:
         - name: dit-calendar-volume
           persistentVolumeClaim:
-            claimName: dit-calendar-claim
+            claimName: dit-calendar-storage
 
 ---
 
-apiVersion: v1
 kind: PersistentVolumeClaim
+apiVersion: v1
 metadata:
-  name: dit-calendar-claim
+  name: dit-calendar-storage
 spec:
-  storageClassName: manual
   accessModes:
     - ReadWriteOnce
   resources:
@@ -38,8 +37,8 @@ spec:
       storage: 1Gi
 ---
 
-apiVersion: v1
 kind: Service
+apiVersion: v1
 metadata:
   name: dit-calendar
   annotations:
