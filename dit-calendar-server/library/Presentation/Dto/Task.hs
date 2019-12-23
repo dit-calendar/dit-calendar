@@ -7,7 +7,7 @@ module Presentation.Dto.Task
 import           Data.Aeson
 import           Data.Data         (Data, Typeable)
 import           Data.Default
-import           Data.Maybe        (isJust)
+import           Data.Maybe        (isJust, isNothing)
 import           Data.Text
 import           Data.Time.Clock   (UTCTime)
 import           GHC.Generics
@@ -25,8 +25,8 @@ data Task = Task
 
 validate :: Either String Task -> Either String Task
 validate (Left e) = Left e
-validate (Right task) = 
-    if startTime task < endTime task
+validate (Right task) =
+    if isNothing (endTime task) || (startTime task < endTime task)
         then Right task
         else Left "startTime cannot be before endTime"
 
