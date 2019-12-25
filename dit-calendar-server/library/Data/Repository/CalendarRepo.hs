@@ -21,8 +21,6 @@ import qualified Data.List                          as List
 import           Data.Maybe                         (fromJust)
 import           Data.Time.Clock                    (UTCTime)
 
-import qualified Happstack.Foundation               as Foundation
-
 import           AppContext                         (App, AppContext)
 import           Data.Domain.CalendarEntry          as CalendarEntry
 import           Data.Domain.CalendarEntry          (CalendarEntry)
@@ -35,6 +33,7 @@ import           Data.Repository.PermissionControl  (executeUnderUserPermission)
 import           Server.AcidInitializer
 
 import qualified Data.Repository.Acid.CalendarEntry as CalendarEntryAcid
+import qualified Server.HappstackHelper             as Foundation
 
 instance CalendarDAO App where
     create = Foundation.update

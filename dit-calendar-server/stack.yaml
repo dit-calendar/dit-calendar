@@ -41,7 +41,6 @@ packages:
 extra-deps:
 - acid-state-0.14.3
 - happstack-authenticate-2.4.0
-- happstack-foundation-0.5.9.1
 - happstack-server-7.5.2
 - web-routes-th-0.22.6.4
 - transformers-0.5.6.2

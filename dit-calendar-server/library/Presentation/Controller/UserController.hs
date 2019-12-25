@@ -9,8 +9,6 @@ import           Data.Text                            (Text)
 
 import           Happstack.Authenticate.Core          (AuthenticateURL (..))
 import           Happstack.Authenticate.Password.Core (NewAccountData (..))
-import           Happstack.Foundation                 (HasAcidState (getAcidState),
-                                                       query)
 import           Happstack.Server                     (Method (GET), Response,
                                                        ServerPartT, badRequest,
                                                        method, ok, rsBody,
@@ -28,7 +26,9 @@ import           Presentation.Mapper.BaseMapper       (transformToDtoE,
 import           Presentation.Mapper.UserMapper       (transformFromDto,
                                                        transformToDto)
 import           Presentation.Route.PageEnum          (Sitemap)
-import           Server.HappstackHelper               (liftServerPartT2FoundationT)
+import           Server.HappstackHelper               (HasAcidState (getAcidState),
+                                                       liftServerPartT2FoundationT,
+                                                       query)
 import           Server.HttpServerHelper              (getBody, readAuthUserFromBodyAsList)
 import           Server.ResponseBuilder               (okResponseJson,
                                                        onUserExist)

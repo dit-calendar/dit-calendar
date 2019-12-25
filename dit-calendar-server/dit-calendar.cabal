@@ -81,7 +81,6 @@ library
                        safecopy == 0.9.4.*,
                        happstack-server == 7.5.2,
                        happstack-authenticate == 2.4.0,
-                       happstack-foundation == 0.5.9.1,
                        web-routes == 0.27.14.2,
                        web-routes-th == 0.22.6.4,
                        web-routes-happstack == 0.23.11,

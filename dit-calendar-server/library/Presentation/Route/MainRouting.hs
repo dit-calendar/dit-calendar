@@ -2,8 +2,9 @@ module Presentation.Route.MainRouting
     ( routeWithOptions
     ) where
 
+import           Control.Monad.Cont                       (lift)
+
 import           Happstack.Authenticate.Core              (AuthenticateURL (..))
-import           Happstack.Foundation                     (lift)
 import           Happstack.Server                         (BodyPolicy (..),
                                                            Method (OPTIONS),
                                                            Response,
@@ -14,7 +15,8 @@ import           Web.Routes                               (RouteT, mapRouteT,
                                                            nestURL)
 
 import           AppContext                               (App, CtrlV)
-import           Presentation.Route.CalendarRoute         (routeCalendarEntry, routeCalendarEntryDetails, routeCalendarFilter)
+import           Presentation.Route.CalendarRoute         (routeCalendarEntry, routeCalendarEntryDetails,
+                                                           routeCalendarFilter)
 import           Presentation.Route.PageEnum              (Sitemap (..))
 import           Presentation.Route.TaskRoute             (routeTask,
                                                            routeTaskDetail,

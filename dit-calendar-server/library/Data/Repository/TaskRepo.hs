@@ -10,8 +10,6 @@ module Data.Repository.TaskRepo
 import           Control.Monad.IO.Class
 import           Data.Default              (def)
 
-import qualified Happstack.Foundation      as Foundation
-
 import           AppContext                (App)
 import           Data.Domain.CalendarEntry as CalendarEntry
 import           Data.Domain.Task          as Task
@@ -20,6 +18,7 @@ import           Data.Repository.Acid.Task (TaskDAO (..))
 import           Server.AcidInitializer
 
 import qualified Data.Repository.Acid.Task as TaskAcid
+import qualified Server.HappstackHelper    as Foundation
 
 instance TaskDAO App where
     create = Foundation.update

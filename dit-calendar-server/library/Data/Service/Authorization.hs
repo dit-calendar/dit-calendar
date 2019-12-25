@@ -1,16 +1,16 @@
-{-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Data.Service.Authorization (deleteAuthUser) where
 
 import           Control.Monad.IO.Class
-import           Data.Maybe                           (fromJust)
-import           Happstack.Authenticate.Core          (AuthenticateState)
-import           Happstack.Foundation                 (HasAcidState (getAcidState),
-                                                       query, update)
+import           Data.Maybe                  (fromJust)
+import           Happstack.Authenticate.Core (AuthenticateState)
 
-import           Data.Domain.User                     as DomainUser (User (..))
+import           Data.Domain.User            as DomainUser (User (..))
+import           Server.HappstackHelper      (HasAcidState (getAcidState),
+                                              query, update)
 
-import qualified Happstack.Authenticate.Core          as AuthUser
+import qualified Happstack.Authenticate.Core as AuthUser
 
 deleteAuthUser :: (Monad m, MonadIO m, HasAcidState m AuthenticateState) => DomainUser.User -> m ()
 deleteAuthUser loggedUser =  do

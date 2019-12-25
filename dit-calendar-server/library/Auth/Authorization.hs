@@ -5,7 +5,6 @@ import           Data.Text                   (unpack)
 
 import           Data.Aeson                  (ToJSON)
 import           Happstack.Authenticate.Core (Token (_tokenUser), getToken)
-import           Happstack.Foundation        (HasAcidState (getAcidState))
 import           Happstack.Server            (Response, getHeaderM,
                                               internalServerError, toResponse,
                                               unauthorized)
@@ -13,6 +12,7 @@ import           Happstack.Server            (Response, getHeaderM,
 import           AppContext                  (App, setCurrentUser)
 import           Data.Domain.Types           (EitherResult)
 import           Presentation.Route.PageEnum (Sitemap (..))
+import           Server.HappstackHelper      (HasAcidState (getAcidState))
 import           Server.ResponseBuilder      (handleResponse)
 
 import qualified Data.Domain.User            as DomainUser
