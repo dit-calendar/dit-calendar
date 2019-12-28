@@ -16,7 +16,6 @@ import           Data.Text                 (Text)
 import           Prelude
 
 import qualified Data.List                 as List
-import qualified Happstack.Foundation      as Foundation
 
 import           AppContext                (App)
 import           Data.Domain.Task          (Task (..))
@@ -27,6 +26,7 @@ import           Data.Repository.Acid.User (UserDAO (..))
 import           Server.AcidInitializer
 
 import qualified Data.Repository.Acid.User as UserAcid
+import qualified Server.HappstackHelper    as Foundation
 
 
 instance UserDAO App where

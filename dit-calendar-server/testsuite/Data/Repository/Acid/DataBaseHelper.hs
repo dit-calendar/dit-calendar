@@ -3,6 +3,7 @@
 module Data.Repository.Acid.DataBaseHelper ( initDatabase, initDatabaseWithList ) where
 
 import           Data.Data                          (Typeable)
+import           Data.SafeCopy
 import           System.Directory                   (removeDirectoryRecursive)
 
 import           Control.Exception                  (bracket)
@@ -20,19 +21,19 @@ basePath = "testsuite/temptestdb"
 removeDataBaseDirectory :: IO ()
 removeDataBaseDirectory = removeDirectoryRecursive basePath
 
-createDatabaseConnection :: IsAcidic a => a -> (AcidState a -> IO ()) -> IO ()
+createDatabaseConnection :: (IsAcidic a, SafeCopy a) => a -> (AcidState a -> IO ()) -> IO ()
 createDatabaseConnection taskAcid =
     bracket (openLocalStateFrom basePath taskAcid)
     $ \c -> (>>) (closeAcidState c) removeDataBaseDirectory
 
-initDatabase :: (IsAcidic (InterfaceAcid.EntrySet a), Typeable a, Ord a, Indexable a) =>
+initDatabase :: (IsAcidic (InterfaceAcid.EntrySet a), Typeable a, Ord a, Indexable a, SafeCopy a) =>
     a -> (AcidState (InterfaceAcid.EntrySet a) -> IO ()) -> IO ()
 initDatabase initEntry = createDatabaseConnection InterfaceAcid.EntrySet{
         InterfaceAcid.nextEntryId   = 1
         , InterfaceAcid.entrys      = insert initEntry empty
         }
 
-initDatabaseWithList :: (IsAcidic (InterfaceAcid.EntrySet a), Typeable a, Ord a, Indexable a) =>
+initDatabaseWithList :: (IsAcidic (InterfaceAcid.EntrySet a), Typeable a, Ord a, Indexable a, SafeCopy a) =>
  [a]-> (AcidState (InterfaceAcid.EntrySet a) -> IO ()) -> IO ()
 initDatabaseWithList initEntry = createDatabaseConnection InterfaceAcid.EntrySet{
      InterfaceAcid.nextEntryId   = 1

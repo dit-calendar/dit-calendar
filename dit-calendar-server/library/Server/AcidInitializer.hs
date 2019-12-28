@@ -13,14 +13,14 @@ import           Data.Maybe                         (fromMaybe)
 import           Prelude
 import           System.FilePath                    ((</>))
 
-import           AppContext                         (App,
-                                                     AppReader (acidState))
+import           AppContext                         (App, AppReader (acidState))
 import           Data.Acid                          (AcidState (..),
                                                      openLocalStateFrom)
 import           Data.Acid.Local                    (createCheckpointAndClose)
 import           Data.Repository.Acid.DBState       (Acid (..))
 import           Happstack.Authenticate.Core        (AuthenticateState)
-import           Happstack.Foundation               (HasAcidState (..))
+
+import           Server.HappstackHelper             (HasAcidState (..))
 
 import qualified Data.Repository.Acid.CalendarEntry as CalendarEntryAcid
 import qualified Data.Repository.Acid.Task          as TaskAcid
