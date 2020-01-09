@@ -8,7 +8,6 @@ module Presentation.Dto.User
 
 import           Data.Aeson
 import           Data.Default
-import           Data.Maybe   (isJust)
 import           Data.Text
 import           GHC.Generics
 

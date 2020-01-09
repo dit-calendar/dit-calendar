@@ -4,7 +4,6 @@ module Presentation.Mapper.CalendarEntryMapper
     ) where
 
 import           Data.Default
-import           Data.Generics.Aliases          (orElse)
 import           Data.Maybe                     (fromMaybe)
 
 import qualified Data.Domain.CalendarEntry      as Domain

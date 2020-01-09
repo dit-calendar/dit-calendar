@@ -1,10 +1,8 @@
 module Presentation.Controller.CalendarController where
 
-import           Data.Maybe                              (fromJust)
-
 import           AppContext                              (App)
-import           Data.Domain.Types                       (EitherResult, EntryId,
-                                                          UserId)
+import           Data.Domain.Types                       (EitherResult, EntryId)
+
 import           Presentation.Mapper.BaseMapper          (transformToDtoE,
                                                           transformToDtoList)
 import           Presentation.Mapper.CalendarEntryMapper (transformFromDto,

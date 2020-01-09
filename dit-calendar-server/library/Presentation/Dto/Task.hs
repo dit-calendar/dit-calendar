@@ -5,9 +5,8 @@ module Presentation.Dto.Task
     ( Task(..), validate ) where
 
 import           Data.Aeson
-import           Data.Data         (Data, Typeable)
 import           Data.Default
-import           Data.Maybe        (isJust, isNothing)
+import           Data.Maybe        (isNothing)
 import           Data.Text
 import           Data.Time.Clock   (UTCTime)
 import           GHC.Generics

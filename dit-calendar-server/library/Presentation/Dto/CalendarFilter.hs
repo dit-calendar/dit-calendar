@@ -4,9 +4,6 @@ module Presentation.Dto.CalendarFilter where
 
 
 import           Data.Aeson
-import           Data.Default
-import           Data.Maybe      (isJust)
-import           Data.Text
 import           Data.Time.Clock (UTCTime)
 import           GHC.Generics
 

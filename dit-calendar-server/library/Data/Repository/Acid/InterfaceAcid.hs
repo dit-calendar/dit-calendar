@@ -5,7 +5,6 @@
 
 module Data.Repository.Acid.InterfaceAcid where
 
-import           Control.Applicative  ((<$>))
 import           Control.Monad.Reader (asks, ask)
 import           Control.Monad.State  (get, put)
 import           Data.Acid            (Query, Update)

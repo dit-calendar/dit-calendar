@@ -21,7 +21,6 @@ import           Data.Data       (Data, Typeable)
 import           Data.SafeCopy   (base, deriveSafeCopy)
 import           Data.Text
 import           Data.Time.Clock (UTCTime)
-import           GHC.Generics    (Generic)
 
 type EitherResult a = Either ResultError a
 

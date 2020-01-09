@@ -11,7 +11,7 @@ import           Control.Category            ((.))
 import           Data.Data                   (Data, Typeable)
 import           Happstack.Authenticate.Core (AuthenticateURL, authenticateURL)
 import           Text.Boomerang.TH           (makeBoomerangs)
-import           Web.Routes.Boomerang        ((:-), Router, anyText, int, lit,
+import           Web.Routes.Boomerang        ((:-), Router, int, lit,
                                               (</>), (<>))
 
 import           Data.Domain.Types           (EntryId, TaskId, UserId)

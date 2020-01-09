@@ -9,12 +9,9 @@ module Presentation.Dto.CalendarEntry
 
 import           Data.Aeson
 import           Data.Default
-import           Data.Maybe                (isJust)
 import           Data.Text
 import           Data.Time.Clock           (UTCTime)
 import           GHC.Generics
-
-import qualified Data.Domain.CalendarEntry as Domain
 
 data CalendarEntry = CalendarEntry
     { description :: Text

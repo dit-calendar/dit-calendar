@@ -7,12 +7,11 @@ module Data.Repository.Acid.User
     ( UserDAO(..), initialUserListState, UserList(..), NewUser(..), UserById(..), AllUsers(..),
     GetUserList(..), UpdateUser(..), DeleteUser(..), FindByLoginName(..) ) where
 
-import           Control.Applicative                ((<$>))
 import           Control.Monad.Reader               (ask)
 import           Data.Acid                          (Query, Update, makeAcidic)
-import           Data.IxSet                         (Indexable (..), getEQ,
+import           Data.IxSet                         (Indexable (..),
                                                      getOne, ixFun, ixSet,
-                                                     toList, (@=))
+                                                     (@=))
 import           Data.Text                          (Text)
 
 import           Data.Domain.Types                  (EitherResult, UserId)

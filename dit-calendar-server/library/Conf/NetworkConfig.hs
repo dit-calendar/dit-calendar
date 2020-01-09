@@ -4,7 +4,6 @@ module Conf.NetworkConfig (NetworkConfig(..), customHappstackServerConf, network
 
 import           Data.Ini.Config
 
-import           Data.Maybe             (fromMaybe)
 import           Happstack.Server       (nullConf)
 import           Happstack.Server.Types (Conf, port)
 

@@ -9,7 +9,6 @@ module Data.Domain.CalendarEntry
 import           Data.Data         (Data, Typeable)
 import           Data.Default
 import           Data.SafeCopy     (base, deriveSafeCopy)
-import           Data.Time.Clock   (UTCTime)
 
 import           Data.Domain.Types (Description, Entity (..), EntryId, TaskId,
                                     UserId, StartDate, EndDate)

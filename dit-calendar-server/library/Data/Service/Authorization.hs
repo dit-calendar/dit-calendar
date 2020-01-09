@@ -7,7 +7,7 @@ import           Data.Maybe                  (fromJust)
 import           Happstack.Authenticate.Core (AuthenticateState)
 
 import           Data.Domain.User            as DomainUser (User (..))
-import           Server.HappstackHelper      (HasAcidState (getAcidState),
+import           Server.HappstackHelper      (HasAcidState,
                                               query, update)
 
 import qualified Happstack.Authenticate.Core as AuthUser
