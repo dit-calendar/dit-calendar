@@ -15,7 +15,7 @@
 
         <main.class>com.ditcalendar.bot.BotKt</main.class>
 
-        <telegram-bot.version>1.2.0-beta4</telegram-bot.version>
+        <telegram-bot.version>1.2.0</telegram-bot.version>
     </properties>
 
     <repositories>

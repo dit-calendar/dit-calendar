@@ -10,6 +10,8 @@ fun config(): Lazy<Configuration> {
             ConfigurationProperties.fromResource("config.properties") }
 }
 
+val bot_name = Key("port", stringType)
+
 val server_port = Key("port", intType)
 val telegram_token =  Key("telegram.token", stringType)
 val heroku_app_name =  Key("heroku.app.name", stringType)

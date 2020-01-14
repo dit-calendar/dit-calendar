@@ -10,20 +10,15 @@ fun main(args: Array<String>) {
     val token = config[telegram_token]
     val herokuApp = config[heroku_app_name]
 
-    val bot = Bot.createWebhook(token) {
+    val bot = Bot.createWebhook(config[bot_name], token) {
         url = "https://$herokuApp.herokuapp.com/$token"
-
-        // below is optional parameters
-        // maxConnections = 20
-        // allowedUpdates = listOf(AllowedUpdates.Message)
-        // setWebhookAutomatically = true
 
         /*
             Jetty server is used to listen to incoming request from Telegram servers.
          */
         server {
             host = "0.0.0.0"
-            port =  config[server_port]
+            port = config[server_port]
         }
     }
 
