@@ -11,6 +11,9 @@ before_install:
  - export PATH=/opt/happy/$HAPPYVER/bin:$PATH
  # for elm
  - npm install -g elm@latest-$ELMVER elm-format elm-test
+ # for kotlin
+ - travis_retry sudo apt install openjdk-8-jdk
+ - travis_retry sudo apt install maven
 
 install:
  # for haskell
@@ -23,6 +26,8 @@ install:
  # for elm
  - elm --version
  - elm-test --version
+ # for kotlin
+ - java --version
 
 script:
  # for haskell
@@ -43,3 +48,6 @@ script:
  - cd ../dit-calendar-client
  - elm make src/Main.elm --output src/Main.js
  - elm-test
+# for kotlin
+ - cd ../dit-calendar-bot
+ - mvn clean install
