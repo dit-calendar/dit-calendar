@@ -10,5 +10,4 @@ The backend is build on happstack in haskell.
 Very simple web-ui written in elm. For creating events and tasks from the perspective of the organization group.
 
 ## dit-calendar-bot
-coming soon
-Telegram bot for user <-> task assignment
+Telegram bot for user task assignment written in kotlin.
