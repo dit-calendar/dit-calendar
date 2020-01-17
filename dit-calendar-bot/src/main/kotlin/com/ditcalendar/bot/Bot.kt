@@ -30,7 +30,10 @@ fun main(args: Array<String>) {
     bot.onCommand("/start") { msg, _ ->
         val calendarId: Long = 1
         val calendar = calendarEndpoint.readCalendar(calendarId)
-        bot.sendMessage(msg.chat.id, calendar.toString())
+        if(calendar != null)
+            bot.sendMessage(msg.chat.id, calendar.toStringInMarkdown(),"MarkdownV2")
+        else
+            bot.sendMessage(msg.chat.id, "kein Kalendar")
     }
 
     bot.onCommand("/echo") { msg, opts ->
