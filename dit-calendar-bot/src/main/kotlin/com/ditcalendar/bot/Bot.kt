@@ -1,5 +1,6 @@
 package com.ditcalendar.bot
 
+import com.ditcalendar.bot.config.*
 import com.elbekD.bot.Bot
 import com.elbekD.bot.server
 
@@ -9,6 +10,7 @@ fun main(args: Array<String>) {
 
     val token = config[telegram_token]
     val herokuApp = config[heroku_app_name]
+
 
     val bot = Bot.createWebhook(config[bot_name], token) {
         url = "https://$herokuApp.herokuapp.com/$token"
