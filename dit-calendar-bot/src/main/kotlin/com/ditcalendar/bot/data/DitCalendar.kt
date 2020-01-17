@@ -6,7 +6,6 @@ import com.google.gson.Gson
 import java.util.*
 
 data class DitCalendar(val description : String,
-                       //val tasks : List<Long>,
                        val startDate : Date) : Base() {
     class Deserializer: ResponseDeserializable<DitCalendar> {
         override fun deserialize(content: String): DitCalendar? = Gson().fromJson(content, DitCalendar::class.java)
@@ -15,6 +14,6 @@ data class DitCalendar(val description : String,
     override fun toStringInMarkdown(): String =
             """
                 *$description*
-                *Datum*:
+                *Datum*: $startDate
             """.trimIndent()
 }

@@ -1,7 +1,6 @@
 package com.ditcalendar.bot
 
 import com.ditcalendar.bot.config.*
-import com.ditcalendar.bot.endpoint.CalendarEndpoint
 import com.elbekD.bot.Bot
 import com.elbekD.bot.server
 
@@ -12,7 +11,7 @@ fun main(args: Array<String>) {
     val token = config[telegram_token]
     val herokuApp = config[heroku_app_name]
 
-    val calendarEndpoint = CalendarEndpoint()
+    val calendarCommand = CalendarCommand()
 
 
     val bot = Bot.createWebhook(config[bot_name], token) {
@@ -29,9 +28,9 @@ fun main(args: Array<String>) {
 
     bot.onCommand("/start") { msg, _ ->
         val calendarId: Long = 1
-        val calendar = calendarEndpoint.readCalendar(calendarId)
+        val calendar = calendarCommand.getCalendarAndTask(calendarId)
         if(calendar != null)
-            bot.sendMessage(msg.chat.id, calendar.toStringInMarkdown(),"MarkdownV2")
+            bot.sendMessage(msg.chat.id, calendar,"MarkdownV2")
         else
             bot.sendMessage(msg.chat.id, "kein Kalendar")
     }
