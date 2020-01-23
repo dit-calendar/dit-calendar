@@ -12,9 +12,6 @@ fun main(args: Array<String>) {
     val token = config[telegram_token]
     val herokuApp = config[heroku_app_name]
 
-    val calendarCommand = CalendarCommand()
-
-
     val bot = Bot.createWebhook(config[bot_name], token) {
         url = "https://$herokuApp.herokuapp.com/$token"
 
@@ -28,6 +25,8 @@ fun main(args: Array<String>) {
     }
 
     bot.onCommand("/start") { msg, _ ->
+        val calendarCommand = CalendarCommand()
+
         val calendarId: Long = 1
         val result = calendarCommand.getCalendarAndTask(calendarId)
 
