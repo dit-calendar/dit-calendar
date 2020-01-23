@@ -14,7 +14,10 @@ data class Task(val description: String,
 
     override fun toStringInMarkdown(): String =
             """
-                    _Task_: $description
-                    _Datum_: $startTime
+                _Task_: $description
+                _Datum_: $startTime
             """.trimIndent()
 }
+
+fun List<Task>.toStringInMarkdown(): String =
+        this.joinToString { it.toStringInMarkdown() + System.lineSeparator() }

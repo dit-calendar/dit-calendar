@@ -3,6 +3,9 @@ package com.ditcalendar.bot
 import com.ditcalendar.bot.endpoint.AuthEndpoint
 import com.ditcalendar.bot.endpoint.CalendarEndpoint
 import com.ditcalendar.bot.endpoint.TaskEndpoint
+import com.github.kittinunf.result.flatMap
+import com.github.kittinunf.result.map
+import com.github.kittinunf.result.Result
 
 class CalendarCommand {
 
@@ -10,14 +13,15 @@ class CalendarCommand {
     private val taskEndpoint = TaskEndpoint()
     private val authEndpoint = AuthEndpoint()
 
-    fun getCalendarAndTask(calendarId: Long) : String? {
-        val calendar = calendarEndpoint.readCalendar(calendarId) ?: return null
-        val oauthToken = authEndpoint.getToken()
-        val tasks = oauthToken?.let { taskEndpoint.readTasks(calendarId, oauthToken) }
+    fun getCalendarAndTask(calendarId: Long): Result<String, Exception> {
+        val calendarResult = calendarEndpoint.readCalendar(calendarId)
+        val tokenResul = authEndpoint.getToken()
+        val tasksResulst = tokenResul.flatMap { taskEndpoint.readTasks(calendarId, it) }
 
-        var response = calendar.toStringInMarkdown() + System.lineSeparator()
-        tasks?.forEach { response += it.toStringInMarkdown() + System.lineSeparator()}
-
-        return response
+        return calendarResult.flatMap { calendar ->
+            tasksResulst.map {
+                calendar.apply { tasks = it }
+            }
+        }.map { it.toStringInMarkdown() + System.lineSeparator() }
     }
 }

@@ -3,6 +3,7 @@ package com.ditcalendar.bot
 import com.ditcalendar.bot.config.*
 import com.elbekD.bot.Bot
 import com.elbekD.bot.server
+import com.github.kittinunf.result.Result
 
 fun main(args: Array<String>) {
 
@@ -28,11 +29,16 @@ fun main(args: Array<String>) {
 
     bot.onCommand("/start") { msg, _ ->
         val calendarId: Long = 1
-        val calendar = calendarCommand.getCalendarAndTask(calendarId)
-        if(calendar != null)
-            bot.sendMessage(msg.chat.id, calendar,"MarkdownV2")
-        else
-            bot.sendMessage(msg.chat.id, "kein Kalendar")
+        val result = calendarCommand.getCalendarAndTask(calendarId)
+
+        when (result) {
+            is Result.Success ->
+                bot.sendMessage(msg.chat.id, result.value, "MarkdownV2")
+            is Result.Failure -> {
+                result.error.printStackTrace()
+                bot.sendMessage(msg.chat.id, "kein Kalendar")
+            }
+        }
     }
 
     bot.onCommand("/echo") { msg, opts ->
