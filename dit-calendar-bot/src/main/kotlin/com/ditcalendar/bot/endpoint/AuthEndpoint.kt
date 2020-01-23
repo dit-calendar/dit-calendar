@@ -7,13 +7,16 @@ import com.ditcalendar.bot.config.dit_calendar_user_password
 import com.github.kittinunf.fuel.core.ResponseDeserializable
 import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.result.Result
-import com.google.gson.Gson
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.UnstableDefault
+import kotlinx.serialization.json.Json
 
 
 class AuthEndpoint {
 
     private val config by config()
 
+    @UnstableDefault
     fun getToken() : String? {
 
         val ditCalendarUrl = config[dit_calendar_server_url]
@@ -23,7 +26,7 @@ class AuthEndpoint {
         val (_, _, result) = "$ditCalendarUrl/authenticate/authentication-methods/password/token"
                 .httpPost()
                 .body("{\"user\":\"$userName\",\"password\":\"$password\"}")
-                .responseObject(JWT.Deserializer())
+                .responseString()
 
         return when (result) {
             is Result.Failure -> {
@@ -32,7 +35,7 @@ class AuthEndpoint {
                 null
             }
             is Result.Success -> {
-                val jwt = result.get()
+                val jwt = Json.parse(JWT.serializer(), result.get())
                 if(jwt.jrStatus == "Ok")
                     jwt.jrData.token
                 else
@@ -41,11 +44,9 @@ class AuthEndpoint {
         }
     }
 
-    data class JWT(val jrStatus : String, val jrData : Token) {
-        class Deserializer : ResponseDeserializable<JWT> {
-            override fun deserialize(content: String): JWT? = Gson().fromJson(content, JWT::class.java)
-        }
+    @Serializable
+    private data class JWT(val jrStatus : String, val jrData : Token) {
+        @Serializable
+        data class Token(val token : String)
     }
-
-    data class Token(val token : String)
 }

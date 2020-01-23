@@ -1,16 +1,16 @@
 package com.ditcalendar.bot.data
 
 import com.ditcalendar.bot.data.core.Base
-import com.github.kittinunf.fuel.core.ResponseDeserializable
-import com.google.gson.Gson
+import com.ditcalendar.bot.data.core.DateSerializer
+import kotlinx.serialization.Serializable
 import java.util.*
 
-data class Task(val description : String,
-                val startTime : Date,
-                val endTime : Date) : Base() {
-    class Deserializer: ResponseDeserializable<Array<Task>> {
-        override fun deserialize(content: String): Array<Task>? = Gson().fromJson(content, Array<Task>::class.java)
-    }
+@Serializable
+data class Task(val description: String,
+                @Serializable(with = DateSerializer::class)
+                val startTime: Date,
+                @Serializable(with = DateSerializer::class)
+                val endTime: Date? = null) : Base() {
 
     override fun toStringInMarkdown(): String =
             """

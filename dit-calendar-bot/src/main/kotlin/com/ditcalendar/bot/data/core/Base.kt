@@ -1,5 +1,8 @@
 package com.ditcalendar.bot.data.core
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 abstract class Base {
     var entryId: Long = 0
 
