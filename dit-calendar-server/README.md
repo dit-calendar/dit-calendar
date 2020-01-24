@@ -40,8 +40,8 @@
   * update image to docker hub `docker push ditcalendar/dit-calendar`
 * kubernetes
   * set up kubectl
-    * export KUBECONFIG=$HOME/Downloads/okteto-kube.config:${KUBECONFIG:-$HOME/.kube/config}
-    * kubectl get all
+    * `export KUBECONFIG=$HOME/Downloads/okteto-kube.config:${KUBECONFIG:-$HOME/.kube/config}`
+    * `kubectl get all`
   * update pod `kubectl apply -f k8s.yml`
 
 # URL's
