@@ -34,6 +34,7 @@ import           Data.Domain.User             (User)
 import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)
 import           Data.Repository.TaskRepo     (MonadDBTaskRepo)
 import           Data.Repository.UserRepo     (MonadDBUserRepo)
+import           Conf.Config                  (CorsConfig(..))
 
 import qualified Data.Repository.CalendarRepo as CalendarRepo
 import qualified Data.Repository.TaskRepo     as TaskRepo
@@ -72,17 +73,17 @@ onNothing message = maybe (okResponse message)
 okResponse :: HServer.FilterMonad Response m => String -> m Response
 okResponse message = ok $ toResponse message
 
-corsResponse :: HServer.FilterMonad Response m => m Response
-corsResponse =
+corsResponse :: HServer.FilterMonad Response m => CorsConfig -> m Response
+corsResponse corsConfig =
     let res = toResponse ("" :: String)
-     in ok $ addCorsHeaders res
+     in ok $ addCorsHeaders corsConfig res
 
-addCorsHeaders :: Response -> Response
-addCorsHeaders response =
+addCorsHeaders :: CorsConfig ->  Response -> Response
+addCorsHeaders corsConfig response =
     setHeader "Access-Control-Allow-Methods" "POST, GET, PUT, DELETE" $
     setHeader "Access-Control-Allow-Headers" "Content-Type" $
-    setHeader "Access-Control-Allow-Origin" "http://localhost:8000" $
-    setHeader "Access-Control-Allow-Credentials" "true" response
+    setHeader "Access-Control-Allow-Origin" (clientUrl corsConfig) $
+    setHeader "Access-Control-Allow-Credentials" (allowCookie corsConfig) response
 
 badRequest :: HServer.FilterMonad Response m  => String -> m Response
 badRequest message = HServer.badRequest $ toResponse message
@@ -96,5 +97,5 @@ preconditionFailedResponse message = preconditionFailed $ toResponse message
 notImplemented :: HServer.FilterMonad Response m => Method -> m Response
 notImplemented httpMethod = HServer.resp 405 $ toResponse ("HTTP-Method: " ++ show httpMethod ++ " not implemented")
 
-addCorsToResponse :: HServer.FilterMonad Response m => m Response -> m Response
-addCorsToResponse resM = addCorsHeaders <$> resM
+addCorsToResponse :: HServer.FilterMonad Response m => CorsConfig -> m Response -> m Response
+addCorsToResponse corsConfig resM = addCorsHeaders corsConfig <$> resM

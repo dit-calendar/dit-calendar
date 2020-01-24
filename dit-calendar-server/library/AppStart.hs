@@ -37,11 +37,11 @@ import qualified Data.Text                             as T
 runApp :: App a -> Config -> Acid -> ServerPartT IO a
 runApp app conf acid = runServerWithFoundationT app (AppReader acid conf Nothing)
 
-site :: (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response)
+site :: (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response) -> Config
        -> Site Sitemap (App Response)
-site routeAuthenticate =
+site routeAuthenticate config =
   --runRouteT removes the RouteT wrapper from our routing function
-  let realRoute = runRouteT (routeWithOptions routeAuthenticate) in
+  let realRoute = runRouteT (routeWithOptions routeAuthenticate config) in
   --convert the new function to a Site
   let realSite = boomerangSite realRoute urlSitemapParser in
         setDefault Home realSite
@@ -51,7 +51,7 @@ bootServer conf = do
     putStrLn $ "Server unter: " ++ hostUrl
     (cleanup, routeAuthenticate, authenticateState) <- initAuthentication Nothing authenticateConfig [ passwordConf ]
     let startServer acid = simpleHTTP serverConf $ runApp appWithRoutetSite conf acid
-        appWithRoutetSite = implSite (T.pack hostUrl) "" (site routeAuthenticate) in
+        appWithRoutetSite = implSite (T.pack hostUrl) "" (site routeAuthenticate conf) in
             withAcid authenticateState Nothing startServer `finally` cleanup
     where
         netWorkConf = cfNetwork conf
