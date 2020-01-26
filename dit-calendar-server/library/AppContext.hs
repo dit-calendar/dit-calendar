@@ -31,7 +31,15 @@ updateUserInAppContext mUser reader = reader { currentUser = Just mUser}
 class Monad m => AppContext m  where
     setCurrentUser :: DomainUser.User -> m a -> m a
     getCurrentUser :: m (Maybe DomainUser.User)
+    getConfig      :: m Config
 
 instance AppContext App where
     setCurrentUser user = local (updateUserInAppContext user)
     getCurrentUser = asks currentUser
+    getConfig = asks config
+
+instance AppContext CtrlV' where
+    setCurrentUser user = local (updateUserInAppContext user)
+    getCurrentUser = asks currentUser
+    getConfig = asks config
+

@@ -14,7 +14,7 @@ import           Happstack.Server                         (BodyPolicy (..),
 import           Web.Routes                               (RouteT, mapRouteT,
                                                            nestURL)
 
-import           AppContext                               (App, CtrlV)
+import           AppContext                               (App, CtrlV, getConfig, AppContext)
 import           Conf.Config                              (Config (..))
 import           Presentation.Route.CalendarRoute         (routeCalendarEntry, routeCalendarEntryDetails,
                                                            routeCalendarFilter)
@@ -67,8 +67,9 @@ route url = do
         CalendarTaskDetail eId tId -> routeTaskDetail eId tId
         TaskWithUser eId tId       -> routeTaskWithUser eId tId
 
-routeWithOptions :: (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response) -> Config -> Sitemap -> CtrlV
-routeWithOptions routeAuthenticate config url = do
+routeWithOptions :: (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response) -> Sitemap -> CtrlV
+routeWithOptions routeAuthenticate url = do
+    config <- getConfig
     m <- lift getHttpMethod
     if m == OPTIONS
         then lift $ corsResponse (cfCors config)
