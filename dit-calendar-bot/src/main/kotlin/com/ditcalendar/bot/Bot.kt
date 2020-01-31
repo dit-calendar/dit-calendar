@@ -28,9 +28,8 @@ fun main(args: Array<String>) {
         val calendarCommand = CalendarCommand()
 
         val calendarId: Long = 1
-        val result = calendarCommand.getCalendarAndTask(calendarId)
 
-        when (result) {
+        when (val result = calendarCommand.getCalendarAndTask(calendarId)) {
             is Result.Success ->
                 bot.sendMessage(msg.chat.id, result.value, "MarkdownV2")
             is Result.Failure -> {
