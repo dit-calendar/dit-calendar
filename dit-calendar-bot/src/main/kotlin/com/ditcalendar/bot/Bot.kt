@@ -12,17 +12,19 @@ fun main(args: Array<String>) {
     val token = config[telegram_token]
     val herokuApp = config[heroku_app_name]
 
-    val bot = Bot.createWebhook(config[bot_name], token) {
-        url = "https://$herokuApp.herokuapp.com/$token"
+    val bot = if (config[webhook_is_enabled]) {
+        Bot.createWebhook(config[bot_name], token) {
+            url = "https://$herokuApp.herokuapp.com/$token"
 
-        /*
+            /*
             Jetty server is used to listen to incoming request from Telegram servers.
          */
-        server {
-            host = "0.0.0.0"
-            port = config[server_port]
+            server {
+                host = "0.0.0.0"
+                port = config[server_port]
+            }
         }
-    }
+    } else Bot.createPolling(config[bot_name], token)
 
     bot.onCommand("/start") { msg, _ ->
         val calendarCommand = CalendarCommand()

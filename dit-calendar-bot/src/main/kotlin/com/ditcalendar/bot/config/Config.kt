@@ -11,11 +11,12 @@ fun config(): Lazy<Configuration> {
 }
 
 val bot_name = Key("bot.name", stringType)
+val webhook_is_enabled = Key("webhook.enabled", booleanType)
 
 val server_port = Key("port", intType)
-val telegram_token =  Key("telegram.token", stringType)
-val heroku_app_name =  Key("heroku.app.name", stringType)
+val telegram_token = Key("telegram.token", stringType)
+val heroku_app_name = Key("heroku.app.name", stringType)
 
-val dit_calendar_server_url =  Key("dit.calendar.server.url", stringType)
-val dit_calendar_user_name =  Key("dit.calendar.user.name", stringType)
-val dit_calendar_user_password =  Key("dit.calendar.user.password", stringType)
+val dit_calendar_server_url = Key("dit.calendar.server.url", stringType)
+val dit_calendar_user_name = Key("dit.calendar.user.name", stringType)
+val dit_calendar_user_password = Key("dit.calendar.user.password", stringType)
