@@ -1,53 +1,34 @@
-env:
- - CABALVER=1.24 GHCVER=8.2.2 HAPPYVER=1.19.5 ELMVER=0.19.1
+matrix:
+  include:
+    - language: java
+      jdk: openjdk8
+      before_script:
+        - cd dit-calendar-bot
+        - gradle assemble
+      script:
+        - gradle build
 
-# Note: the distinction between `before_install` and `install` is not important.
-before_install:
- # for haskell
- - travis_retry sudo add-apt-repository -y ppa:hvr/ghc
- - travis_retry sudo apt-get update
- - travis_retry sudo apt-get install cabal-install-$CABALVER ghc-$GHCVER happy-$HAPPYVER
- - export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
- - export PATH=/opt/happy/$HAPPYVER/bin:$PATH
- # for elm
- - npm install -g elm@latest-$ELMVER elm-format elm-test
- # for kotlin
- - travis_retry sudo apt install openjdk-8-jdk
- - travis_retry sudo apt install maven
+    - language: elm
+      elm:
+        - latest-0.19.1
+      elm-test: 0.19.1-revision2
+      elm-format: 0.8.2
+      before_script:
+        - cd dit-calendar-client
+      script:
+        - elm make src/Main.elm --output src/Main.js
+        - elm-test
 
-install:
- # for haskell
- - cabal --version
- - happy --version
- - echo "$(ghc --version) [$(ghc --print-project-git-commit-id 2> /dev/null || echo '?')]"
- - travis_retry cabal update
- # remove after time-compat is fixed
- - cabal install time-compat-0.1.0.3
- # for elm
- - elm --version
- - elm-test --version
- # for kotlin
- - java --version
-
-script:
- # for haskell
- - cd dit-calendar-server
- - cabal install --only-dependencies --enable-tests --enable-benchmarks
- - if [ -f configure.ac ]; then autoreconf -i; fi
- - cabal configure --enable-tests --enable-benchmarks -v2  # -v2 provides useful information for debugging
- - cabal build
- - cabal test
- - cabal check
- - cabal sdist
-# Check that the resulting source distribution can be built & installed.
-# If there are no other `.tar.gz` files in `dist`, this can be even simpler:
-# `cabal install --force-reinstalls dist/*-*.tar.gz`
- - SRC_TGZ=$(cabal info . | awk '{print $2;exit}').tar.gz &&
-   (cd dist && cabal install --force-reinstalls "$SRC_TGZ")
-# for elm
- - cd ../dit-calendar-client
- - elm make src/Main.elm --output src/Main.js
- - elm-test
-# for kotlin
- - cd ../dit-calendar-bot
- - mvn clean install
+    - env: HAPPYVER=1.19.5
+      language: haskell
+      ghc:
+        - "8.2.2"
+      before_install:
+        - cd dit-calendar-server
+        - cabal install happy-$HAPPYVER
+      script:
+        - cabal configure --enable-tests --enable-benchmarks -v2  # -v2 provides useful information for debugging
+        - cabal build
+        - cabal test
+        - cabal check
+        - cabal sdist
