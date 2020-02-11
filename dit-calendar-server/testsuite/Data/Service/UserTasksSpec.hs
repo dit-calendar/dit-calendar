@@ -24,7 +24,7 @@ import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)
 import           Data.Repository.TaskRepo     (MonadDBTaskRepo)
 import           Data.Repository.UserRepo     (MonadDBUserRepo)
 
-import qualified Data.Service.UserTasks       as UserTasksService
+import qualified Data.Service.TelegramTasksAssignment       as UserTasksService
 
 
 mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBTaskRepo |]

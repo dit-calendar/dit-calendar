@@ -25,7 +25,7 @@ import           Data.Domain.User             as User
 
 import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)
 import           Data.Repository.UserRepo     (MonadDBUserRepo)
-import           Data.Service.UserTasks       (UserTasksService)
+import           Data.Service.TelegramTasksAssignment       (UserTasksService)
 
 import qualified Data.Service.User            as UserService
 

@@ -6,6 +6,7 @@ module Data.Domain.Types
     ( UserId
     , EntryId
     , TaskId
+    , TelegramChatId
     , Description
     , StartDate
     , EndDate
@@ -40,6 +41,8 @@ type EndDate =  UTCTime
 type EntryId = Int
 
 type TaskId = Int
+
+type TelegramChatId = Int
 
 type Description = Text
 

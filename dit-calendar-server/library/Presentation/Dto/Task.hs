@@ -11,13 +11,13 @@ import           Data.Text
 import           Data.Time.Clock   (UTCTime)
 import           GHC.Generics
 
-import           Data.Domain.Types (UserId)
+import           Data.Domain.Types (TelegramChatId)
 
 data Task = Task
     { description    :: Text
     , taskId         :: Maybe Int
     , version        :: Maybe Int
-    , assignedUsers  :: [UserId]
+    , assignedUsers  :: [TelegramChatId]
     , startTime      :: Maybe UTCTime
     , endTime        :: Maybe UTCTime
     } deriving (Show, Generic)

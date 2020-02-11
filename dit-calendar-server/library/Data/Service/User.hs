@@ -16,8 +16,8 @@ import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)
 import qualified Data.Repository.CalendarRepo as MonadDBCalendarRepo
 import           Data.Repository.UserRepo     (MonadDBUserRepo)
 import qualified Data.Repository.UserRepo     as MonadDBUserRepo
-import           Data.Service.UserTasks       (UserTasksService)
-import qualified Data.Service.UserTasks       as UserTasksService
+import           Data.Service.TelegramTasksAssignment       (UserTasksService)
+import qualified Data.Service.TelegramTasksAssignment       as UserTasksService
 
 
 deleteUserImpl :: (MonadDBUserRepo m, MonadDBCalendarRepo m, UserTasksService m) =>

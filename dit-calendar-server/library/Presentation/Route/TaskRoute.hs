@@ -13,6 +13,8 @@ import           Auth.Authorization                     (callIfAuthorized)
 import           Data.Domain.Types                      (EntryId, TaskId)
 import           Presentation.Dto.Task                  as TaskDto (Task (..),
                                                                     validate)
+import           Presentation.Dto.TelegramUserLink      as TelegramDto (TelegramUserLink (..),
+                                                                        validate)
 import           Server.HttpServerHelper                (getBody, getHttpMethod)
 import           Server.ResponseBuilder                 (badRequest,
                                                          handleResponse,
@@ -52,5 +54,10 @@ routeTaskWithUser entryId taskId = do
     m <- getHttpMethod
     case m of
         DELETE -> callIfAuthorized (TaskController.removeUserFromTask taskId)
-        PUT    -> callIfAuthorized (TaskController.addUserToTask taskId)
+        PUT    -> do
+            body <- getBody
+            case TelegramDto.validate (eitherDecode body :: Either String TelegramDto.TelegramUserLink) of
+                  Right telegramDto ->
+                       callIfAuthorized (TaskController.addUserToTask taskId telegramDto)
+                  Left errorMessage -> badRequest errorMessage
         other  -> notImplemented other
