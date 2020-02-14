@@ -17,13 +17,14 @@ import           AppContext                         (App, AppReader (acidState))
 import           Data.Acid                          (AcidState (..),
                                                      openLocalStateFrom)
 import           Data.Acid.Local                    (createCheckpointAndClose)
-import           Data.Repository.Acid.DBState       (Acid (..))
 import           Happstack.Authenticate.Core        (AuthenticateState)
+import           Server.DBState                     (Acid (..))
 
 import           Server.HappstackHelper             (HasAcidState (..))
 
 import qualified Data.Repository.Acid.CalendarEntry as CalendarEntryAcid
 import qualified Data.Repository.Acid.Task          as TaskAcid
+import qualified Data.Repository.Acid.TelegramLink  as TelegramAcid
 import qualified Data.Repository.Acid.User          as UserAcid
 
 
@@ -36,6 +37,9 @@ instance HasAcidState App CalendarEntryAcid.EntryList where
 instance HasAcidState App TaskAcid.TaskList where
     getAcidState = asks (acidTaskListState . acidState)
 
+instance HasAcidState App TelegramAcid.TelegramLinkList where
+    getAcidState = asks (acidTelegramLinkState . acidState)
+
 instance HasAcidState App AuthenticateState where
     getAcidState = asks (acidAuthState . acidState)
 
@@ -47,7 +51,9 @@ withAcid authState mBasePath f =
         userPath = basePath </> "userList"
         calendarEntryPath = basePath </> "entryList"
         taskPath = basePath </> "taskList"
+        telegramPath = basePath </> "telegramList"
     in bracket (openLocalStateFrom userPath UserAcid.initialUserListState) createCheckpointAndClose $ \user ->
        bracket (openLocalStateFrom calendarEntryPath CalendarEntryAcid.initialEntryListState) createCheckpointAndClose $ \calend ->
        bracket (openLocalStateFrom taskPath TaskAcid.initialTaskListState) createCheckpointAndClose $ \task ->
-        f (Acid user calend task authState)
+       bracket (openLocalStateFrom taskPath TelegramAcid.initialTelegramState) createCheckpointAndClose $ \telegram ->
+        f (Acid user calend task telegram authState)

@@ -1,17 +1,17 @@
 {-# LANGUAGE FlexibleInstances #-}
 module AppContext (AppContext(..), CtrlV, App, AppReader(..))where
 
-import           Control.Monad.Reader           (asks, local)
+import           Control.Monad.Reader        (asks, local)
 
-import           Happstack.Server               (Response)
-import           Web.Routes.RouteT              (RouteT)
+import           Happstack.Server            (Response)
+import           Web.Routes.RouteT           (RouteT)
 
-import           Conf.Config                    (Config)
-import           Data.Repository.Acid.DBState (Acid)
-import           Presentation.Route.PageEnum    (Sitemap)
-import           Server.HappstackHelper         (FoundationT)
+import           Conf.Config                 (Config)
+import           Presentation.Route.PageEnum (Sitemap)
+import           Server.DBState              (Acid)
+import           Server.HappstackHelper      (FoundationT)
 
-import qualified Data.Domain.User               as DomainUser
+import qualified Data.Domain.User            as DomainUser
 
 
 type App  = FoundationT AppReader

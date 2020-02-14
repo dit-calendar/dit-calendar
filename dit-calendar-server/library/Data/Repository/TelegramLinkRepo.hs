@@ -10,10 +10,12 @@ import           AppContext                        (App)
 import           Data.Domain.Task
 import           Data.Domain.TelegramLink
 import           Data.Domain.Types                 (EitherResult)
-import           Data.Repository.Acid.TelegramLink (TelegramDAO (..), UpdateTelegramLink(..))
+import           Data.Repository.Acid.TelegramLink (TelegramDAO (..),
+                                                    UpdateTelegramLink (..))
+import           Server.AcidInitializer
 
+import qualified Data.List                         as List
 import qualified Server.HappstackHelper            as Foundation
-import qualified Data.List                 as List
 
 instance TelegramDAO App where
     create = Foundation.update

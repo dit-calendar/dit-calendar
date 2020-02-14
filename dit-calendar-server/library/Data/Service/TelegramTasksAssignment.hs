@@ -4,7 +4,7 @@
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Data.Service.TelegramTasksAssignment (deleteTaskFromAllUsersImpl, addUserToTaskImpl, removeUserFromTaskImpl, removeUserFromTasksImpl, UserTasksService(..) ) where
+module Data.Service.TelegramTasksAssignment (deleteTaskFromAllUsersImpl, addUserToTaskImpl, removeUserFromTaskImpl, TelegramTasksAssignmentService(..) ) where
 
 import           Control.Monad.IO.Class
 import           Data.Generics.Aliases        (orElse)
@@ -34,18 +34,19 @@ deleteTaskFromAllUsersImpl task = undefined
 
 addUserToTaskImpl :: (MonadDBUserRepo m, MonadDBTaskRepo m, MonadIO m) =>
                 Task -> TelegramLink -> m (EitherResult Task)
-addUserToTaskImpl task user =
-    if taskId task `elem` assignedUsers task
-        then return (Right task) -- do nothing and return same task
-        elseUserToTas do
-            MonadDBUserRepo.addTaskToUser user (taskId task)
-            TaskRepo.updateTask task {assignedUsers = User.userId user : assignedUsers task}
+addUserToTaskImpl task user = undefined
+    -- if taskId task `elem` assignedUsers task
+    --    then return (Right task) -- do nothing and return same task
+    --    elseUserToTas do
+    --        MonadDBUserRepo.addTaskToUser user (taskId task)
+    --        TaskRepo.updateTask task {assignedUsers = User.userId user : assignedUsers task}
 
 removeUserFromTaskImpl :: (MonadDBTaskRepo m, MonadDBUserRepo m) =>
                     Task -> TelegramLink -> m (EitherResult Task)
-removeUserFromTaskImpl task user = do
-    MonadDBUserRepo.deleteTaskFromUser user task
-    TaskRepo.updateTask task {assignedUsers = delete (User.userId user) (assignedUsers task)}
+removeUserFromTaskImpl task user = undefined 
+    --do
+    --  MonadDBUserRepo.deleteTaskFromUser user task
+    --  TaskRepo.updateTask task {assignedUsers = delete (User.userId user) (assignedUsers task)}
 
 class Monad m => TelegramTasksAssignmentService m where
     deleteTaskFromAllUsers :: Task -> m ()

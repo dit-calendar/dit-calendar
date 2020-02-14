@@ -4,13 +4,11 @@
 {-# LANGUAGE TypeFamilies      #-}
 
 module Data.Repository.Acid.TelegramLink
-    ( TelegramDAO(..), initialUserListState, NewTelegramLink(..), UpdateTelegramLink(..)) where
+    ( TelegramDAO(..), initialTelegramState, TelegramLinkList, NewTelegramLink(..), UpdateTelegramLink(..)) where
 
-import           Control.Monad.Reader               (ask)
-import           Data.Acid                          (Query, Update, makeAcidic)
-import           Data.IxSet                         (Indexable (..), getOne,
-                                                     ixFun, ixSet, (@=))
-import           Data.Text                          (Text)
+import           Data.Acid                          (Update, makeAcidic)
+import           Data.IxSet                         (Indexable (..), ixFun,
+                                                     ixSet)
 
 import           Data.Domain.TelegramLink           (TelegramLink (..))
 import           Data.Domain.Types                  (EitherResult)
@@ -23,8 +21,8 @@ instance Indexable TelegramLink where
 
 type TelegramLinkList = InterfaceAcid.EntrySet TelegramLink
 
-initialUserListState :: TelegramLinkList
-initialUserListState = InterfaceAcid.initialState
+initialTelegramState :: TelegramLinkList
+initialTelegramState = InterfaceAcid.initialState
 
 -- create a new, empty user and add it to the database
 newTelegramLink :: TelegramLink -> Update TelegramLinkList TelegramLink

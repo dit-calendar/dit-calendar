@@ -51,7 +51,6 @@ library
                        Data.Repository.Acid.Task,
                        Data.Repository.Acid.TelegramLink,
                        Data.Repository.Acid.InterfaceAcid,
-                       Data.Repository.Acid.DBState,
                        Data.Repository.UserRepo,
                        Data.Repository.CalendarRepo,
                        Data.Repository.TaskRepo,
@@ -70,6 +69,7 @@ library
                        Server.HttpServerHelper,
                        Server.HappstackHelper,
                        Server.ResponseBuilder,
+                       Server.DBState,
                        AppContext,
                        AppStart
 
