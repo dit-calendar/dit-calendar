@@ -1,24 +1,25 @@
 module Presentation.Controller.TaskController where
 
-import           AppContext                           (App)
-import           Data.Domain.Types                    (EitherResult, EntryId, ResultError (EntryNotFound),
-                                                       TaskId)
-import           Data.Domain.User                     as DomainUser (User (..))
-import           Presentation.Dto.Task                as TaskDto (Task (..))
-import           Presentation.Dto.TelegramUserLink    as TelegramDto
-import           Presentation.Mapper.BaseMapper       (transformToDtoE,
-                                                       transformToDtoList)
-import           Presentation.Mapper.TaskMapper       (transformFromDto,
-                                                       transformToDto)
-import           Server.ResponseBuilder               (onEntryExist,
-                                                       onTaskExist)
+import           AppContext                             (App)
+import           Data.Domain.Types                      (EitherResult, EntryId, ResultError (EntryNotFound),
+                                                         TaskId, TelegramChatId)
+import           Data.Domain.User                       as DomainUser (User (..))
+import           Presentation.Dto.Task                  as TaskDto (Task (..))
+import           Presentation.Dto.TelegramUserLink      as TelegramDto
+import           Presentation.Mapper.BaseMapper         (transformToDtoE,
+                                                         transformToDtoList)
+import           Presentation.Mapper.TaskMapper         (transformFromDto,
+                                                         transformToDto)
+import           Server.ResponseBuilder                 (onEntryExist,
+                                                         onTaskExist)
 
-import qualified Data.Repository.CalendarRepo         as CalendarRepo
-import qualified Data.Service.CalendarEntry           as CalendarService
-import qualified Data.Service.CalendarTasks           as CalendarTasks
-import qualified Data.Service.Task                    as TaskService
-import qualified Data.Service.TelegramTasksAssignment as TelegramService
-import qualified Presentaion.Mapper.TelegramLinkMapper     as TelegramMapper   
+import qualified Data.Repository.CalendarRepo           as CalendarRepo
+import qualified Data.Repository.TelegramLinkRepo       as TelegramLinkRepo
+import qualified Data.Service.CalendarEntry             as CalendarService
+import qualified Data.Service.CalendarTasks             as CalendarTasks
+import qualified Data.Service.Task                      as TaskService
+import qualified Data.Service.TelegramTasksAssignment   as TelegramService
+import qualified Presentation.Mapper.TelegramLinkMapper as TelegramMapper
 
 
 --handler for taskPage
@@ -48,14 +49,19 @@ updateTask id taskDto loggedUser =
 addUserToTask :: TaskId -> TelegramDto.TelegramUserLink -> DomainUser.User-> App (EitherResult TaskDto.Task)
 addUserToTask taskId telegramDto loggedUser =
     onTaskExist taskId (\t -> do
-        result <- TelegramService.addUserToTask t (TelegramMapper.transformFromDto telegramDto Nothing)
+        result <- TelegramService.addTelegramLinkToTask t (TelegramMapper.transformFromDto telegramDto Nothing)
         return $ transformToDtoE result)
 
-removeUserFromTask :: TaskId -> DomainUser.User -> App (EitherResult TaskDto.Task)
-removeUserFromTask taskId loggedUser =
+removeTelegramLinkFromTask :: TelegramDto.TelegramUserLink -> TaskId -> DomainUser.User -> App (EitherResult TaskDto.Task)
+removeTelegramLinkFromTask telegramDto taskId _ =
     onTaskExist taskId (\t -> do
-        result <- TelegramService.removeUserFromTask t (TelegramMapper.transformFromDto telegramDto Nothing)
-        return $ transformToDtoE result)
+        let chatId = TelegramDto.chatId telegramDto
+        mTelegramLink <- TelegramLinkRepo.findTelegramLinkById chatId
+        case mTelegramLink of
+            Nothing ->  return $ Left (EntryNotFound chatId)
+            Just telegramLink -> do
+                result <- TelegramService.removeTelegramLinkFromTask t telegramLink
+                return $ transformToDtoE result)
 
 deleteTask :: EntryId -> TaskId -> DomainUser.User -> App (EitherResult ())
 deleteTask entryId taskId loggedUser = do

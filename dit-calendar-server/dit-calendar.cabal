@@ -46,6 +46,7 @@ library
                        Presentation.Mapper.CalendarEntryMapper,
                        Presentation.Mapper.UserMapper,
                        Presentation.Mapper.TaskMapper,
+                       Presentation.Mapper.TelegramLinkMapper,
                        Data.Repository.Acid.User,
                        Data.Repository.Acid.CalendarEntry,
                        Data.Repository.Acid.Task,

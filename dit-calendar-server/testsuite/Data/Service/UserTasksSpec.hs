@@ -10,21 +10,21 @@ module Data.Service.UserTasksSpec (spec) where
 
 import           Control.Monad.TestFixture
 import           Control.Monad.TestFixture.TH
-import           Data.Default                 (def)
+import           Data.Default                         (def)
 import           Test.Hspec
-import           Test.HUnit.Base              (assertEqual)
+import           Test.HUnit.Base                      (assertEqual)
 
-import           Control.Monad.Identity       (Identity)
+import           Control.Monad.Identity               (Identity)
 import           Control.Monad.IO.Class
-import           Control.Monad.Writer.Class   (tell)
+import           Control.Monad.Writer.Class           (tell)
 
-import           Data.Domain.Task             as Task
-import           Data.Domain.User             as User
-import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)
-import           Data.Repository.TaskRepo     (MonadDBTaskRepo)
-import           Data.Repository.UserRepo     (MonadDBUserRepo)
+import           Data.Domain.Task                     as Task
+import           Data.Domain.User                     as User
+import           Data.Repository.CalendarRepo         (MonadDBCalendarRepo)
+import           Data.Repository.TaskRepo             (MonadDBTaskRepo)
+import           Data.Repository.UserRepo             (MonadDBUserRepo)
 
-import qualified Data.Service.TelegramTasksAssignment       as UserTasksService
+import qualified Data.Service.TelegramTasksAssignment as UserTasksService
 
 
 mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBTaskRepo |]
@@ -49,7 +49,7 @@ instance MonadIO Identity where
 spec = describe "UserTasksSpec" $ do
     it "deleteTaskFromAllUsers" $ do
         let task = def{ Task.description="task1", taskId=1, assignedUsers=[7,8], startTime=Nothing, endTime=Nothing}
-        let (_, log) = evalTestFixture (UserTasksService.deleteTaskFromAllUsersImpl task) fixture
+        let (_, log) = evalTestFixture (UserTasksService.deleteTaskFromAllTelegramLinksImpl task) fixture
         length log `shouldBe` 2
         -- deleteTaskFromUser calls
         assertEqual "deleteTaskFromUser callend with wrong user or task" (log!!0) (show userFromDb ++ show task)
@@ -57,14 +57,14 @@ spec = describe "UserTasksSpec" $ do
     it "addUserToTask" $ do
         let task = def { Task.description="task1", taskId=1, assignedUsers=[2], startTime=Nothing, endTime=Nothing}
         let expectedTask = def { Task.description="task1", taskId=1, assignedUsers=[10, 2], startTime=Nothing, endTime=Nothing}
-        let (_, log) = evalTestFixture (UserTasksService.addUserToTaskImpl task userFromDb) fixture
+        let (_, log) = evalTestFixture (UserTasksService.addTelegramLinkToTaskImpl task userFromDb) fixture
         length log `shouldBe` 2
         assertEqual "addTaskToUser callend with wrong user or task" (log!!0) (show userFromDb ++ show (Task.taskId task))
         assertEqual "task update with new user failed" (log!!1) (show expectedTask)
     it "removeUserFromTask" $ do
         let task = def { Task.description="task1", taskId=1, assignedUsers=[2,10], startTime=Nothing, endTime=Nothing}
         let expectedTask = def { Task.description="task1", taskId=1, assignedUsers=[2], startTime=Nothing, endTime=Nothing}
-        let (_, log) = evalTestFixture (UserTasksService.removeUserFromTaskImpl task userFromDb) fixture
+        let (_, log) = evalTestFixture (UserTasksService.removeTelegramLinkFromTaskImpl task userFromDb) fixture
         length log `shouldBe` 2
         assertEqual "deleteTaskFromUser callend with wrong user or task" (log!!0) (show userFromDb ++ show task)
         assertEqual "update task without old user" (log!!01) (show expectedTask)

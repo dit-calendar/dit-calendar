@@ -14,14 +14,15 @@ import           Happstack.Server                         (BodyPolicy (..),
 import           Web.Routes                               (RouteT, mapRouteT,
                                                            nestURL)
 
-import           AppContext                               (App, CtrlV, getConfig, AppContext)
+import           AppContext                               (App, AppContext,
+                                                           CtrlV, getConfig)
 import           Conf.Config                              (Config (..))
 import           Presentation.Route.CalendarRoute         (routeCalendarEntry, routeCalendarEntryDetails,
                                                            routeCalendarFilter)
 import           Presentation.Route.PageEnum              (Sitemap (..))
 import           Presentation.Route.TaskRoute             (routeTask,
                                                            routeTaskDetail,
-                                                           routeTaskWithUser)
+                                                           routeTaskWithTelegramLink)
 import           Presentation.Route.UserRoute             (routeDetailUser,
                                                            routeUser,
                                                            routeUsers)
@@ -65,7 +66,7 @@ route url = do
         -- task routing
         CalendarTask eId           -> routeTask eId
         CalendarTaskDetail eId tId -> routeTaskDetail eId tId
-        TaskWithUser eId tId       -> routeTaskWithUser eId tId
+        TaskWithTelegramLink tId   -> routeTaskWithTelegramLink tId
 
 routeWithOptions :: (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response) -> Sitemap -> CtrlV
 routeWithOptions routeAuthenticate url = do

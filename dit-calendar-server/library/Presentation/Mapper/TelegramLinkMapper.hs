@@ -1,5 +1,5 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
-module Presentation.Mapper.TelegramLinkMaper
+module Presentation.Mapper.TelegramLinkMapper
     ( Mapper(..)
     ) where
 
