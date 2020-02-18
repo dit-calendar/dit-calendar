@@ -58,6 +58,6 @@ routeTaskWithTelegramLink taskId = do
           Right telegramDto ->
                case m of
                    DELETE -> callIfAuthorized (TaskController.removeTelegramLinkFromTask telegramDto taskId)
-                   PUT    -> callIfAuthorized (TaskController.addUserToTask taskId telegramDto)
+                   PUT    -> callIfAuthorized (TaskController.addTelegramLinkToTask taskId telegramDto)
                    other  -> notImplemented other
           Left errorMessage -> badRequest errorMessage

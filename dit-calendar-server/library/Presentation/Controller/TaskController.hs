@@ -46,8 +46,8 @@ updateTask id taskDto loggedUser =
         result <- TaskService.updateTaskInCalendar $ transformFromDto taskDto (Just t)
         return $ transformToDtoE result)
 
-addUserToTask :: TaskId -> TelegramDto.TelegramUserLink -> DomainUser.User-> App (EitherResult TaskDto.Task)
-addUserToTask taskId telegramDto loggedUser =
+addTelegramLinkToTask :: TaskId -> TelegramDto.TelegramUserLink -> DomainUser.User-> App (EitherResult TaskDto.Task)
+addTelegramLinkToTask taskId telegramDto _ =
     onTaskExist taskId (\t -> do
         result <- TelegramService.addTelegramLinkToTask t (TelegramMapper.transformFromDto telegramDto Nothing)
         return $ transformToDtoE result)
