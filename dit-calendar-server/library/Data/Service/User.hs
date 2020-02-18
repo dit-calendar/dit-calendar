@@ -10,27 +10,33 @@ import           Control.Monad.IO.Class
 import           Data.Maybe                   (fromJust)
 
 import           AppContext                   (App)
+import           Data.Domain.Types            (EntryId)
 import           Data.Domain.User             as User
 
 import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)
 import qualified Data.Repository.CalendarRepo as MonadDBCalendarRepo
 import           Data.Repository.UserRepo     (MonadDBUserRepo)
 import qualified Data.Repository.UserRepo     as MonadDBUserRepo
-import           Data.Service.TelegramTasksAssignment       (UserTasksService)
-import qualified Data.Service.TelegramTasksAssignment       as UserTasksService
+import           Data.Service.CalendarEntry   (CalendarEntryService)
+import qualified Data.Service.CalendarEntry   as CalendarService
 
-
-deleteUserImpl :: (MonadDBUserRepo m, MonadDBCalendarRepo m, UserTasksService m) =>
+deleteUserImpl :: (CalendarEntryService m, MonadDBUserRepo m, MonadDBCalendarRepo m) =>
             User -> m ()
 deleteUserImpl user = do
-    UserTasksService.removeUserFromTasks user
-    foldr ((>>) . MonadDBCalendarRepo.deleteCalendarEntryById) -- TODO delete all Tasks of Calendar?
+    foldr ((>>) . removeCalendarEntryById)
         (return ()) (ownerOfCalendarEntries user)
     MonadDBUserRepo.deleteUser user
+
+removeCalendarEntryById :: ( CalendarEntryService m, MonadDBCalendarRepo m) => EntryId -> m ()
+removeCalendarEntryById entryId = do
+    mEntry <- MonadDBCalendarRepo.findCalendarById entryId
+    case mEntry of
+        Just entry  -> CalendarService.removeCalendar entry
+        Nothing -> return ()
 
 class Monad m => UserService m where
     deleteUser :: User -> m ()
 
-instance (MonadDBUserRepo App, MonadDBCalendarRepo App, UserTasksService App)
+instance (MonadDBUserRepo App, MonadDBCalendarRepo App)
             => UserService App where
     deleteUser = deleteUserImpl
