@@ -31,4 +31,4 @@ instance Entity TelegramLink where
     setVersion telegramLink newVersion = telegramLink {version = newVersion}
 
 instance Default TelegramLink where
-    def = TelegramLink {chatId = -1, assignedToTasks = []}
+    def = TelegramLink {chatId = -1, assignedToTasks = [], userName = Nothing, version = 0}

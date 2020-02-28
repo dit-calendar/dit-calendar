@@ -19,21 +19,23 @@ import           Control.Monad.IO.Class
 import           Control.Monad.Writer.Class           (tell)
 
 import           Data.Domain.Task                     as Task
-import           Data.Domain.User                     as User
+import           Data.Domain.TelegramLink             as TelegramLink
 import           Data.Repository.CalendarRepo         (MonadDBCalendarRepo)
 import           Data.Repository.TaskRepo             (MonadDBTaskRepo)
+import           Data.Repository.TelegramLinkRepo     (MonadDBTelegramRepo)
 
 import qualified Data.Service.TelegramTasksAssignment as TelegramTasksService
 
 
-mkFixture "Fixture" [ts| MonadDBTaskRepo |]
+mkFixture "Fixture" [ts| MonadDBTaskRepo, MonadDBTelegramRepo |]
 
-
-taskFromDb = def{ Task.description="task1", taskId=5, startTime=Nothing, endTime=Nothing, assignedUsers=[8,11]}
-taskFromDb2 = def{ Task.description="task2", taskId=6, startTime=Nothing, endTime=Nothing, assignedTelegramLinks=[8]}
+telegramLinkDB = def{TelegramLink.telegramUserId = 1}
+taskFromDb = def{ Task.description="task1", taskId=1, startTime=Nothing, endTime=Nothing, assignedTelegramLinks=[1,2]}
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture {
+                    _findTelegramLinkById = \a -> tell [show a] >>= (\_ -> return $ Just telegramLinkDB)
+                    , _deleteTaskFromTelegramLink = \tLink task -> tell [show tLink] >> tell [show task] >>= (\_ -> return $ Right tLink)
                   }
 
 instance MonadIO Identity where
@@ -41,13 +43,15 @@ instance MonadIO Identity where
 
 
 spec = describe "TelegramAssignmentSpec" $ do
-    it "deleteTaskFromAllUsers" $ do
-        let task = def{ Task.description="task1", taskId=1, assignedTelegramLinks=[7,8], startTime=Nothing, endTime=Nothing}
-        let (_, log) = evalTestFixture (TelegramTasksService.deleteTaskFromAllTelegramLinksImpl task) fixture
-        length log `shouldBe` 2
-        -- deleteTaskFromUser calls
---        assertEqual "deleteTaskFromUser callend with wrong user or task" (log!!0) (show userFromDb ++ show task)
---        assertEqual "deleteTaskFromUser callend with wrong user or task" (log!!1) (show userFromDb2 ++ show task)
+    it "deleteTaskFromAllTelegramLinks" $ do
+        let (_, log) = evalTestFixture (TelegramTasksService.deleteTaskFromAllTelegramLinksImpl taskFromDb) fixture
+        length log `shouldBe` 6
+        assertEqual "Nach falscher TelegramLink-Id gesucht" (log!!0) "1"
+        assertEqual "TelegramLink 1 nicht an deleteTaskFromTelegramLink durchgegeben" (log!!1) (show telegramLinkDB)
+        assertEqual "Task nicht an deleteTaskFromTelegramLink durchgegeben" (log!!2) (show taskFromDb)
+        assertEqual "Nach falscher TelegramLink-Id gesucht" (log!!3) "2"
+        assertEqual "Task vom TelegramLink 2 nicht gelöscht" (log!!4) (show telegramLinkDB)
+        assertEqual "Task nicht an deleteTaskFromTelegramLink durchgegeben" (log!!5) (show taskFromDb)
     it "addUserToTask" $ do
         let task = def { Task.description="task1", taskId=1, assignedTelegramLinks=[2], startTime=Nothing, endTime=Nothing}
         let expectedTask = def { Task.description="task1", taskId=1, assignedTelegramLinks=[10, 2], startTime=Nothing, endTime=Nothing}

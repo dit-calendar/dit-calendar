@@ -51,7 +51,7 @@ instance MonadIO Identity where
 
 spec = describe "TaskServiceSpec" $ do
     it "deleteTaskAndCascade" $ do
-        let task = def{ Task.description="task1", taskId=1, assignedUsers=[7], startTime=Nothing, endTime=Nothing}
+        let task = def{ Task.description="task1", taskId=1, assignedTelegramLinks=[7], startTime=Nothing, endTime=Nothing}
         let (_, log) = evalTestFixture (TaskService.deleteTaskAndCascadeImpl entryFromDb task) fixture
         length log `shouldBe` 4
         -- calendarrepo calls

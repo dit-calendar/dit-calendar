@@ -16,19 +16,21 @@ import           Data.Domain.Task         as Task
 import           Data.Domain.TelegramLink as TelegramLink
 import           Data.Domain.Types        (EitherResult)
 
+import           Data.Repository.TelegramLinkRepo (MonadDBTelegramRepo)
 import           Data.Repository.TaskRepo (MonadDBTaskRepo)
 import qualified Data.Repository.TaskRepo as TaskRepo
+import qualified Data.Repository.TelegramLinkRepo as TelegramRepo
 
 
 
-deleteTaskFromAllTelegramLinksImpl :: (MonadIO m) =>
+deleteTaskFromAllTelegramLinksImpl :: (MonadIO m, MonadDBTelegramRepo m) =>
                         Task -> m ()
-deleteTaskFromAllTelegramLinksImpl task = undefined
---    foldr (\ x ->
---      (>>) (do
---        user <- MonadDBUserRepo.findUserById x
---        MonadDBUserRepo.deleteTaskFromUser (fromJust user) task ))
---    (return ()) $ Task.assignedUsers task
+deleteTaskFromAllTelegramLinksImpl task =
+    foldr (\ x ->
+      (>>) (do
+        telegramLink <- TelegramRepo.findTelegramLinkById x
+        TelegramRepo.deleteTaskFromTelegramLink (fromJust telegramLink) task ))
+    (return ()) $ Task.assignedTelegramLinks task
 
 addTelegramLinkToTaskImpl :: (MonadDBTaskRepo m, MonadIO m) =>
                 Task -> TelegramLink -> m (EitherResult Task)
