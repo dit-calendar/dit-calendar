@@ -17,7 +17,7 @@ instance Mapper Domain.Task Task where
             { description = Domain.description domain
             , taskId = Just (Domain.taskId domain)
             , version = Just (Domain.version domain)
-            , assignedUsers = Domain.assignedUsers domain
+            , assignedUsers = Domain.assignedTelegramLinks domain
             , startTime = Domain.startTime domain
             , endTime = Domain.endTime domain
             }
@@ -29,7 +29,7 @@ instance Mapper Domain.Task Task where
                     { Domain.description = description dto
                     , Domain.taskId = 0
                     , Domain.version = 0
-                    , Domain.assignedUsers = assignedUsers dto
+                    , Domain.assignedTelegramLinks = assignedUsers dto
                     , Domain.startTime = startTime dto
                     , Domain.endTime = endTime dto
                     }
@@ -38,9 +38,9 @@ instance Mapper Domain.Task Task where
                     { Domain.description = description dto
                     , Domain.taskId = Domain.taskId dbTask
                     , Domain.version = fromMaybe (-1) (version dto)
-                    , Domain.assignedUsers =
+                    , Domain.assignedTelegramLinks =
                           case assignedUsers dto of
-                              [] -> Domain.assignedUsers dbTask
+                              [] -> Domain.assignedTelegramLinks dbTask
                               x  -> x
                     , Domain.startTime = startTime dto `orElse` Domain.startTime dbTask
                     , Domain.endTime = endTime dto `orElse` Domain.endTime dbTask
