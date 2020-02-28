@@ -23,12 +23,12 @@ import qualified Data.Service.CalendarEntry   as CalendarService
 deleteUserImpl :: (CalendarEntryService m, MonadDBUserRepo m, MonadDBCalendarRepo m) =>
             User -> m ()
 deleteUserImpl user = do
-    foldr ((>>) . removeCalendarEntryById)
+    foldr ((>>) . removeCalendarEntryFromUser)
         (return ()) (ownerOfCalendarEntries user)
     MonadDBUserRepo.deleteUser user
 
-removeCalendarEntryById :: ( CalendarEntryService m, MonadDBCalendarRepo m) => EntryId -> m ()
-removeCalendarEntryById entryId = do
+removeCalendarEntryFromUser :: ( CalendarEntryService m, MonadDBCalendarRepo m) => EntryId -> m ()
+removeCalendarEntryFromUser entryId = do
     mEntry <- MonadDBCalendarRepo.findCalendarById entryId
     case mEntry of
         Just entry  -> CalendarService.removeCalendar entry

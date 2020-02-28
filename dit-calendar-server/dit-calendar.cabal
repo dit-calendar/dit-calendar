@@ -140,7 +140,7 @@ test-suite hspec
                        Data.Service.TaskSpec,
                        Data.Service.UserSpec,
                        Data.Service.CalendarTasksSpec,
-                       Data.Service.UserTasksSpec
+                       Data.Service.TelegramAssignmentSpec
 
 test-suite hlint
   build-depends:

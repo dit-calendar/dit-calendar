@@ -18,12 +18,10 @@ import           Data.Domain.Types        (EitherResult)
 
 import           Data.Repository.TaskRepo (MonadDBTaskRepo)
 import qualified Data.Repository.TaskRepo as TaskRepo
-import           Data.Repository.UserRepo (MonadDBUserRepo)
-import qualified Data.Repository.UserRepo as MonadDBUserRepo
 
 
 
-deleteTaskFromAllTelegramLinksImpl :: (MonadDBUserRepo m, MonadIO m) =>
+deleteTaskFromAllTelegramLinksImpl :: (MonadIO m) =>
                         Task -> m ()
 deleteTaskFromAllTelegramLinksImpl task = undefined
 --    foldr (\ x ->
@@ -32,7 +30,7 @@ deleteTaskFromAllTelegramLinksImpl task = undefined
 --        MonadDBUserRepo.deleteTaskFromUser (fromJust user) task ))
 --    (return ()) $ Task.assignedUsers task
 
-addTelegramLinkToTaskImpl :: (MonadDBUserRepo m, MonadDBTaskRepo m, MonadIO m) =>
+addTelegramLinkToTaskImpl :: (MonadDBTaskRepo m, MonadIO m) =>
                 Task -> TelegramLink -> m (EitherResult Task)
 addTelegramLinkToTaskImpl task user = undefined
     -- if taskId task `elem` assignedUsers task
@@ -41,7 +39,7 @@ addTelegramLinkToTaskImpl task user = undefined
     --        MonadDBUserRepo.addTaskToUser user (taskId task)
     --        TaskRepo.updateTask task {assignedUsers = User.userId user : assignedUsers task}
 
-removeTelegramLinkFromTaskImpl :: (MonadDBTaskRepo m, MonadDBUserRepo m) =>
+removeTelegramLinkFromTaskImpl :: (MonadDBTaskRepo m) =>
                     Task -> TelegramLink -> m (EitherResult Task)
 removeTelegramLinkFromTaskImpl task user = undefined
     --do
@@ -53,7 +51,7 @@ class Monad m => TelegramTasksAssignmentService m where
     addTelegramLinkToTask :: Task -> TelegramLink -> m (EitherResult Task)
     removeTelegramLinkFromTask :: Task -> TelegramLink -> m (EitherResult Task)
 
-instance (MonadDBTaskRepo App, MonadDBUserRepo App)
+instance (MonadDBTaskRepo App)
             => TelegramTasksAssignmentService App where
     deleteTaskFromAllTelegramLinks = deleteTaskFromAllTelegramLinksImpl
     addTelegramLinkToTask = addTelegramLinkToTaskImpl

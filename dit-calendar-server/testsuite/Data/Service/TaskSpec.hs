@@ -10,26 +10,25 @@ module Data.Service.TaskSpec (spec) where
 
 import           Control.Monad.TestFixture
 import           Control.Monad.TestFixture.TH
-import           Data.Default                 (def)
+import           Data.Default                         (def)
 import           Test.Hspec
 
-import           Control.Monad.Identity       (Identity)
+import           Control.Monad.Identity               (Identity)
 import           Control.Monad.IO.Class
-import           Control.Monad.Writer.Class   (tell)
-import           Data.Time.Clock              (UTCTime)
+import           Control.Monad.Writer.Class           (tell)
+import           Data.Time.Clock                      (UTCTime)
 
-import           Data.Domain.CalendarEntry    as CalendarEntry
-import           Data.Domain.Task             as Task
+import           Data.Domain.CalendarEntry            as CalendarEntry
+import           Data.Domain.Task                     as Task
 
-import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)
-import           Data.Repository.TaskRepo     (MonadDBTaskRepo)
-import           Data.Service.TelegramTasksAssignment       (UserTasksService)
+import           Data.Repository.CalendarRepo         (MonadDBCalendarRepo)
+import           Data.Repository.TaskRepo             (MonadDBTaskRepo)
+import           Data.Service.TelegramTasksAssignment (TelegramTasksAssignmentService)
 
-import qualified Data.Service.Task            as TaskService
+import qualified Data.Service.Task                    as TaskService
 
 
-mkFixture "Fixture" [ts| UserTasksService, MonadDBTaskRepo, MonadDBCalendarRepo |]
-
+mkFixture "Fixture" [ts| TelegramTasksAssignmentService, MonadDBTaskRepo, MonadDBCalendarRepo |]
 dbDate = read "2011-11-19 18:28:52.607875 UTC"::UTCTime
 taskFromDb = def{ Task.description="task1", taskId=5, startTime=Nothing, endTime=Nothing}
 entryFromDb = def { CalendarEntry.description="termin2", entryId=1, CalendarEntry.owner=10,
@@ -43,7 +42,7 @@ fixture = Fixture { _addTaskToCalendarEntry = \entry taskId -> tell [show entry]
                   , _createTask = \a -> return taskFromDb
                   , _findTaskById = \a -> tell [show a] >>= (\_ -> return $ Just taskFromDb)
                   , _deleteTaskFromCalendarEntry = \c i -> tell [show c] >> tell [show i] >>= (\_ -> return $ Right undefined)
-                  , _deleteTaskFromAllUsers = \a -> tell [show a]
+                  , _deleteTaskFromAllTelegramLinks = \a -> tell [show a]
                   }
 
 instance MonadIO Identity where
