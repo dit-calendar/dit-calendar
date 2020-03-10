@@ -62,7 +62,7 @@ library
                        Data.Service.Authorization,
                        Data.Service.Task,
                        Data.Service.CalendarTasks,
-                       Data.Service.TelegramTasksAssignment,
+                       Data.Service.TelegramTasks,
                        Conf.Config,
                        Conf.AuthConf,
                        Conf.NetworkConfig,
