@@ -35,7 +35,8 @@ taskFromDb = def{ Task.description="task1", taskId=1, startTime=Nothing, endTime
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture {
                     _findTelegramLinkById = \a -> tell [show a] >>= (\_ -> return $ Just telegramLinkDB)
-                    , _deleteTaskFromTelegramLink = \tLink task -> tell [show tLink] >> tell [show task] >>= (\_ -> return $ Right tLink)
+                    , _updateTelegramLink = \tLink -> tell [show tLink] >>= (\_ -> return $ Right tLink)
+                    , _updateTask  = \task -> tell [show task] >>= (\_ -> return $ Right task)
                   }
 
 instance MonadIO Identity where
@@ -45,13 +46,11 @@ instance MonadIO Identity where
 spec = describe "TelegramAssignmentSpec" $ do
     it "deleteTaskFromAllTelegramLinks" $ do
         let (_, log) = evalTestFixture (TelegramTasksService.deleteTaskFromAllTelegramLinksImpl taskFromDb) fixture
-        length log `shouldBe` 6
+        length log `shouldBe` 4
         assertEqual "Nach falscher TelegramLink-Id gesucht" (log!!0) "1"
         assertEqual "TelegramLink 1 nicht an deleteTaskFromTelegramLink durchgegeben" (log!!1) (show telegramLinkDB)
-        assertEqual "Task nicht an deleteTaskFromTelegramLink durchgegeben" (log!!2) (show taskFromDb)
-        assertEqual "Nach falscher TelegramLink-Id gesucht" (log!!3) "2"
-        assertEqual "Task vom TelegramLink 2 nicht gelöscht" (log!!4) (show telegramLinkDB)
-        assertEqual "Task nicht an deleteTaskFromTelegramLink durchgegeben" (log!!5) (show taskFromDb)
+        assertEqual "Nach falscher TelegramLink-Id gesucht" (log!!2) "2"
+        assertEqual "Task vom TelegramLink 2 nicht gelöscht" (log!!3) (show telegramLinkDB)
     it "addUserToTask" $ do
         let task = def { Task.description="task1", taskId=1, assignedTelegramLinks=[2], startTime=Nothing, endTime=Nothing}
         let expectedTask = def { Task.description="task1", taskId=1, assignedTelegramLinks=[10, 2], startTime=Nothing, endTime=Nothing}

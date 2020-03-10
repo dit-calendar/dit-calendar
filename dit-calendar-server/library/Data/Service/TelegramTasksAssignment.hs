@@ -29,7 +29,8 @@ deleteTaskFromAllTelegramLinksImpl task =
     foldr (\ x ->
       (>>) (do
         telegramLink <- TelegramRepo.findTelegramLinkById x
-        TelegramRepo.deleteTaskFromTelegramLink (fromJust telegramLink) task ))
+        TelegramRepo.updateTelegramLink (fromJust telegramLink) {assignedToTasks = delete (taskId task) (assignedToTasks (fromJust telegramLink))}
+        )) 
     (return ()) $ Task.assignedTelegramLinks task
 
 addTelegramLinkToTaskImpl :: (MonadDBTaskRepo m, MonadDBTelegramRepo m) =>

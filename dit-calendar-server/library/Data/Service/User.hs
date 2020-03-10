@@ -19,6 +19,7 @@ import           Data.Repository.UserRepo     (MonadDBUserRepo)
 import qualified Data.Repository.UserRepo     as MonadDBUserRepo
 import           Data.Service.CalendarEntry   (CalendarEntryService)
 import qualified Data.Service.CalendarEntry   as CalendarService
+import Data.Foldable (forM_)
 
 deleteUserImpl :: (CalendarEntryService m, MonadDBUserRepo m, MonadDBCalendarRepo m) =>
             User -> m ()
@@ -30,9 +31,7 @@ deleteUserImpl user = do
 removeCalendarEntryFromUser :: ( CalendarEntryService m, MonadDBCalendarRepo m) => EntryId -> m ()
 removeCalendarEntryFromUser entryId = do
     mEntry <- MonadDBCalendarRepo.findCalendarById entryId
-    case mEntry of
-        Just entry  -> CalendarService.removeCalendar entry
-        Nothing -> return ()
+    forM_ mEntry CalendarService.removeCalendar
 
 class Monad m => UserService m where
     deleteUser :: User -> m ()

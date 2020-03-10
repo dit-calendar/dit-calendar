@@ -29,19 +29,13 @@ instance TelegramDAO App where
 findTelegramLinkByIdImpl :: (TelegramDAO m, MonadIO m) => TelegramChatId -> m (Maybe TelegramLink)
 findTelegramLinkByIdImpl = query . TelegramLinkById
 
-deleteTaskFromTelegramLinkImpl :: TelegramDAO m => TelegramLink -> Task -> m (EitherResult TelegramLink)
-deleteTaskFromTelegramLinkImpl user task =
-    undefined
-
 updateTelegramLinkImpl :: TelegramDAO m => TelegramLink -> m (EitherResult TelegramLink)
 updateTelegramLinkImpl = update . UpdateTelegramLink
 
 class Monad m => MonadDBTelegramRepo m where
     findTelegramLinkById :: TelegramChatId -> m (Maybe TelegramLink)
     updateTelegramLink :: TelegramLink -> m (EitherResult TelegramLink)
-    deleteTaskFromTelegramLink :: TelegramLink -> Task -> m (EitherResult TelegramLink)
 
 instance TelegramDAO App => MonadDBTelegramRepo App where
     findTelegramLinkById = findTelegramLinkByIdImpl
     updateTelegramLink = updateTelegramLinkImpl
-    deleteTaskFromTelegramLink = deleteTaskFromTelegramLinkImpl
