@@ -33,7 +33,7 @@ deleteTaskFromTelegramLinkImpl :: TelegramDAO m => TelegramLink -> Task -> m (Ei
 deleteTaskFromTelegramLinkImpl user task =
     undefined
 
-updateTelegramLinkImpl :: (TelegramDAO m, MonadIO m) => TelegramLink -> m (EitherResult TelegramLink)
+updateTelegramLinkImpl :: TelegramDAO m => TelegramLink -> m (EitherResult TelegramLink)
 updateTelegramLinkImpl = update . UpdateTelegramLink
 
 class Monad m => MonadDBTelegramRepo m where
