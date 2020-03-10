@@ -32,14 +32,14 @@ deleteTaskFromAllTelegramLinksImpl task =
         TelegramRepo.deleteTaskFromTelegramLink (fromJust telegramLink) task ))
     (return ()) $ Task.assignedTelegramLinks task
 
-addTelegramLinkToTaskImpl :: (MonadDBTaskRepo m, MonadIO m) =>
+addTelegramLinkToTaskImpl :: (MonadDBTaskRepo m, MonadDBTelegramRepo m, MonadIO m) =>
                 Task -> TelegramLink -> m (EitherResult Task)
-addTelegramLinkToTaskImpl task user = undefined
-    -- if taskId task `elem` assignedUsers task
-    --    then return (Right task) -- do nothing and return same task
-    --    elseUserToTas do
-    --        MonadDBUserRepo.addTaskToUser user (taskId task)
-    --        TaskRepo.updateTask task {assignedUsers = User.userId user : assignedUsers task}
+addTelegramLinkToTaskImpl task telegramLink =
+    if taskId task `elem` assignedTelegramLinks task
+    then return (Right task) -- do nothing and return same task
+    else do
+        TelegramRepo.addTaskToTelegramLinkImpl telegramLink task
+        TaskRepo.updateTask task {assignedTelegramLinks = TelegramLink.chatId telegramLink : assignedTelegramLinks task}
 
 removeTelegramLinkFromTaskImpl :: (MonadDBTaskRepo m) =>
                     Task -> TelegramLink -> m (EitherResult Task)
@@ -53,7 +53,7 @@ class Monad m => TelegramTasksAssignmentService m where
     addTelegramLinkToTask :: Task -> TelegramLink -> m (EitherResult Task)
     removeTelegramLinkFromTask :: Task -> TelegramLink -> m (EitherResult Task)
 
-instance (MonadDBTaskRepo App)
+instance (MonadDBTaskRepo App, MonadDBTelegramRepo App)
             => TelegramTasksAssignmentService App where
     deleteTaskFromAllTelegramLinks = deleteTaskFromAllTelegramLinksImpl
     addTelegramLinkToTask = addTelegramLinkToTaskImpl
