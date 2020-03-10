@@ -18,7 +18,7 @@ import qualified Data.Repository.TelegramLinkRepo       as TelegramLinkRepo
 import qualified Data.Service.CalendarEntry             as CalendarService
 import qualified Data.Service.CalendarTasks             as CalendarTasks
 import qualified Data.Service.Task                      as TaskService
-import qualified Data.Service.TelegramTasks   as TelegramService
+import qualified Data.Service.TelegramTasks             as TelegramService
 import qualified Presentation.Mapper.TelegramLinkMapper as TelegramMapper
 
 
@@ -49,7 +49,12 @@ updateTask id taskDto loggedUser =
 addTelegramLinkToTask :: TaskId -> TelegramDto.TelegramUserLink -> DomainUser.User-> App (EitherResult TaskDto.Task)
 addTelegramLinkToTask taskId telegramDto _ =
     onTaskExist taskId (\t -> do
-        result <- TelegramService.addTelegramLinkToTask t (TelegramMapper.transformFromDto telegramDto Nothing)
+        mTelegramLink <- TelegramLinkRepo.findTelegramLinkById (chatId telegramDto)
+        result <- case mTelegramLink of
+            Just link -> TelegramService.addTelegramLinkToTask t (TelegramMapper.transformFromDto telegramDto mTelegramLink)
+            Nothing -> do
+                newLink <- TelegramLinkRepo.createTelegramLink (TelegramMapper.transformFromDto telegramDto Nothing)
+                TelegramService.addTelegramLinkToTask t newLink
         return $ transformToDtoE result)
 
 removeTelegramLinkFromTask :: TelegramDto.TelegramUserLink -> TaskId -> DomainUser.User -> App (EitherResult TaskDto.Task)

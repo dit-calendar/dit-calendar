@@ -15,7 +15,7 @@ import           Data.Domain.Types                 (EitherResult,
                                                     TelegramChatId)
 import           Data.Repository.Acid.TelegramLink (TelegramDAO (..),
                                                     TelegramLinkById (..),
-                                                    UpdateTelegramLink (..))
+                                                    UpdateTelegramLink (..), NewTelegramLink (..))
 import           Server.AcidInitializer
 
 import qualified Data.List                         as List
@@ -25,6 +25,9 @@ instance TelegramDAO App where
     create = Foundation.update
     update = Foundation.update
     query  = Foundation.query
+    
+createTelegramLinkImpl :: TelegramDAO m => TelegramLink -> m TelegramLink
+createTelegramLinkImpl = create . NewTelegramLink
 
 findTelegramLinkByIdImpl :: (TelegramDAO m, MonadIO m) => TelegramChatId -> m (Maybe TelegramLink)
 findTelegramLinkByIdImpl = query . TelegramLinkById
@@ -35,7 +38,9 @@ updateTelegramLinkImpl = update . UpdateTelegramLink
 class Monad m => MonadDBTelegramRepo m where
     findTelegramLinkById :: TelegramChatId -> m (Maybe TelegramLink)
     updateTelegramLink :: TelegramLink -> m (EitherResult TelegramLink)
+    createTelegramLink :: TelegramLink -> m TelegramLink
 
 instance TelegramDAO App => MonadDBTelegramRepo App where
     findTelegramLinkById = findTelegramLinkByIdImpl
     updateTelegramLink = updateTelegramLinkImpl
+    createTelegramLink = createTelegramLinkImpl
