@@ -38,7 +38,7 @@ addTelegramLinkToTaskImpl task telegramLink =
     if taskId task `elem` assignedTelegramLinks task
     then return (Right task) -- do nothing and return same task
     else do
-        TelegramRepo.addTaskToTelegramLinkImpl telegramLink task
+        TelegramRepo.updateTelegramLink telegramLink {assignedToTasks = taskId task : assignedToTasks telegramLink} 
         TaskRepo.updateTask task {assignedTelegramLinks = TelegramLink.chatId telegramLink : assignedTelegramLinks task}
 
 removeTelegramLinkFromTaskImpl :: (MonadDBTaskRepo m) =>

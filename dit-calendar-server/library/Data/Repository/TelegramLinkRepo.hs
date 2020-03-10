@@ -4,7 +4,7 @@
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Data.Repository.TelegramLinkRepo where
+module Data.Repository.TelegramLinkRepo (MonadDBTelegramRepo(..)) where
 
 import           Control.Monad.IO.Class            (MonadIO)
 
@@ -29,23 +29,19 @@ instance TelegramDAO App where
 findTelegramLinkByIdImpl :: (TelegramDAO m, MonadIO m) => TelegramChatId -> m (Maybe TelegramLink)
 findTelegramLinkByIdImpl = query . TelegramLinkById
 
-addTaskToTelegramLinkImpl :: TelegramDAO m => TelegramLink -> Task -> m (EitherResult TelegramLink)
-addTaskToTelegramLinkImpl user taskId =
-    undefined
-
 deleteTaskFromTelegramLinkImpl :: TelegramDAO m => TelegramLink -> Task -> m (EitherResult TelegramLink)
 deleteTaskFromTelegramLinkImpl user task =
     undefined
 
-updateTelegramLink :: TelegramDAO m => TelegramLink -> m (EitherResult TelegramLink)
-updateTelegramLink = update . UpdateTelegramLink
+updateTelegramLinkImpl :: (TelegramDAO m, MonadIO m) => TelegramLink -> m (EitherResult TelegramLink)
+updateTelegramLinkImpl = update . UpdateTelegramLink
 
 class Monad m => MonadDBTelegramRepo m where
     findTelegramLinkById :: TelegramChatId -> m (Maybe TelegramLink)
-    addTaskToTelegramLink :: TelegramLink -> Task -> m (EitherResult TelegramLink)
+    updateTelegramLink :: TelegramLink -> m (EitherResult TelegramLink)
     deleteTaskFromTelegramLink :: TelegramLink -> Task -> m (EitherResult TelegramLink)
 
 instance TelegramDAO App => MonadDBTelegramRepo App where
     findTelegramLinkById = findTelegramLinkByIdImpl
-    addTaskToTelegramLink = addTaskToTelegramLinkImpl
+    updateTelegramLink = updateTelegramLinkImpl
     deleteTaskFromTelegramLink = deleteTaskFromTelegramLinkImpl
