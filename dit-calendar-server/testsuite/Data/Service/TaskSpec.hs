@@ -23,7 +23,7 @@ import           Data.Domain.Task                     as Task
 
 import           Data.Repository.CalendarRepo         (MonadDBCalendarRepo)
 import           Data.Repository.TaskRepo             (MonadDBTaskRepo)
-import           Data.Service.TelegramTasksAssignment (TelegramTasksAssignmentService)
+import           Data.Service.TelegramTasks (TelegramTasksAssignmentService)
 
 import qualified Data.Service.Task                    as TaskService
 

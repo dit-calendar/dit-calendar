@@ -18,7 +18,7 @@ import qualified Data.Repository.TelegramLinkRepo       as TelegramLinkRepo
 import qualified Data.Service.CalendarEntry             as CalendarService
 import qualified Data.Service.CalendarTasks             as CalendarTasks
 import qualified Data.Service.Task                      as TaskService
-import qualified Data.Service.TelegramTasksAssignment   as TelegramService
+import qualified Data.Service.TelegramTasks   as TelegramService
 import qualified Presentation.Mapper.TelegramLinkMapper as TelegramMapper
 
 

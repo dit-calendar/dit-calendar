@@ -24,7 +24,7 @@ import           Data.Repository.CalendarRepo         (MonadDBCalendarRepo)
 import           Data.Repository.TaskRepo             (MonadDBTaskRepo)
 import           Data.Repository.TelegramLinkRepo     (MonadDBTelegramRepo)
 
-import qualified Data.Service.TelegramTasksAssignment as TelegramTasksService
+import qualified Data.Service.TelegramTasks as TelegramTasksService
 
 
 mkFixture "Fixture" [ts| MonadDBTaskRepo, MonadDBTelegramRepo |]

@@ -18,8 +18,8 @@ import           Data.Repository.CalendarRepo         (MonadDBCalendarRepo)
 import qualified Data.Repository.CalendarRepo         as MonadDBCalendarRepo
 import           Data.Repository.TaskRepo             (MonadDBTaskRepo)
 import qualified Data.Repository.TaskRepo             as TaskRepo
-import           Data.Service.TelegramTasksAssignment (TelegramTasksAssignmentService)
-import qualified Data.Service.TelegramTasksAssignment as TelegramTasksAssignmentService
+import           Data.Service.TelegramTasks (TelegramTasksAssignmentService)
+import qualified Data.Service.TelegramTasks as TelegramTasksAssignmentService
 
 
 deleteTaskAndCascadeImpl :: (MonadDBTaskRepo m, TelegramTasksAssignmentService m, MonadIO m, MonadDBCalendarRepo m) => CalendarEntry -> Task -> m ()
