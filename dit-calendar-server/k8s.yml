@@ -18,6 +18,9 @@ spec:
         volumeMounts:
           - name: dit-calendar-volume
             mountPath: /app/state
+        resources:
+          requests:
+            memory: "2Gi"
       volumes:
         - name: dit-calendar-volume
           persistentVolumeClaim:
@@ -34,7 +37,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: 4Gi
 ---
 
 kind: Service
