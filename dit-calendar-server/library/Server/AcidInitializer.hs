@@ -55,5 +55,5 @@ withAcid authState mBasePath f =
     in bracket (openLocalStateFrom userPath UserAcid.initialUserListState) createCheckpointAndClose $ \user ->
        bracket (openLocalStateFrom calendarEntryPath CalendarEntryAcid.initialEntryListState) createCheckpointAndClose $ \calend ->
        bracket (openLocalStateFrom taskPath TaskAcid.initialTaskListState) createCheckpointAndClose $ \task ->
-       bracket (openLocalStateFrom taskPath TelegramAcid.initialTelegramState) createCheckpointAndClose $ \telegram ->
+       bracket (openLocalStateFrom telegramPath TelegramAcid.initialTelegramState) createCheckpointAndClose $ \telegram ->
         f (Acid user calend task telegram authState)
