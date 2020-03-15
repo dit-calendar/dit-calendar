@@ -37,6 +37,7 @@ library
                        Presentation.Controller.UserController,
                        Presentation.Controller.CalendarController,
                        Presentation.Controller.TaskController,
+                       Presentation.Controller.TelegramLinkController,
                        Presentation.Dto.CalendarEntry,
                        Presentation.Dto.User,
                        Presentation.Dto.Task,
