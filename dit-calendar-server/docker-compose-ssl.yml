@@ -10,9 +10,9 @@ services:
       - /var/run/docker.sock:/tmp/docker.sock:ro # needs socket to read events
       - ./ssl:/etc/nginx/certs
     depends_on:
-      - dit-calendar
+      - dit-calendar-server
 
-  dit-calendar:
+  dit-calendar-server:
     volumes:
       - ./state/:/app/state
     build: .

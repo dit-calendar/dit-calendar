@@ -1,7 +1,7 @@
 # Build
 
 ## Cabal
-* Dependency hinzufügen: in dit-calendar.cabal unter dem "build-depends:"-Tag
+* Dependency hinzufügen: in dit-calendar-server.cabal unter dem "build-depends:"-Tag
 * alles installieren und bauen: `cabal install -j`
 
 ### Sandbox
@@ -12,7 +12,7 @@
 
 ### Programm bauen und ausführen
 * bauen: `cabal build `
-* starten: `.cabal-sandbox/bin/dit-calendar`
+* starten: `.cabal-sandbox/bin/dit-calendar-server`
 * einzelne Datein ausführen: ?
 * bei kaputtem cabal: `cabal clean`
 
@@ -25,7 +25,7 @@
 ## Stack
 * buil: `stack build`
   * `stack build --fast --file-watch`
-* execute: `stack exec dit-calendar`
+* execute: `stack exec dit-calendar-server`
 * if stack broken: `stack clean`
 * repl: `stack ghci`
 * test: `stack test`
@@ -36,8 +36,8 @@
 
 # Deploy
 * create docker image
-  * build docker image `docker build -t ditcalendar/dit-calendar .`
-  * update image to docker hub `docker push ditcalendar/dit-calendar`
+  * build docker image `docker build -t ditcalendar/dit-calendar-server .`
+  * update image to docker hub `docker push ditcalendar/dit-calendar-server`
 * kubernetes
   * set up kubectl
     * `export KUBECONFIG=$HOME/Downloads/okteto-kube.config:${KUBECONFIG:-$HOME/.kube/config}`
