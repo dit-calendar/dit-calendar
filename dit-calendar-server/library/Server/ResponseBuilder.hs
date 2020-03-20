@@ -5,6 +5,7 @@ module Server.ResponseBuilder
     ( onUserExist
     , onEntryExist
     , onTaskExist
+    , onTelegramLinkExist
     , badRequest
     , okResponseJson
     , notImplemented
@@ -13,32 +14,37 @@ module Server.ResponseBuilder
     , addCorsToResponse
     ) where
 
-import           Data.Aeson                   (ToJSON, encode)
+import           Data.Aeson                       (ToJSON, encode)
 import           Data.ByteString.Lazy
-import           Data.Text                    (Text)
-import           Happstack.Server             (Method, Response, forbidden,
-                                               notFound, ok, setHeader,
-                                               toResponse, toResponseBS)
+import           Data.Text                        (Text)
+import           Happstack.Server                 (Method, Response, forbidden,
+                                                   notFound, ok, setHeader,
+                                                   toResponse, toResponseBS)
 
-import qualified Data.ByteString.Char8        as T
-import qualified Happstack.Server             as HServer (FilterMonad,
-                                                          Happstack, badRequest,
-                                                          forbidden, resp)
+import qualified Data.ByteString.Char8            as T
+import qualified Happstack.Server                 as HServer (FilterMonad,
+                                                              Happstack,
+                                                              badRequest,
+                                                              forbidden, resp)
 
-import           AppContext                   (App)
-import           Data.Domain.CalendarEntry    (CalendarEntry)
-import           Data.Domain.Task             (Task)
-import           Data.Domain.Types            (EitherResult, EntryId,
-                                               ResultError (..), TaskId, UserId)
-import           Data.Domain.User             (User)
-import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)
-import           Data.Repository.TaskRepo     (MonadDBTaskRepo)
-import           Data.Repository.UserRepo     (MonadDBUserRepo)
-import           Conf.Config                  (CorsConfig(..))
+import           AppContext                       (App)
+import           Conf.Config                      (CorsConfig (..))
+import           Data.Domain.CalendarEntry        (CalendarEntry)
+import           Data.Domain.Task                 (Task)
+import           Data.Domain.TelegramLink         (TelegramLink)
+import           Data.Domain.Types                (EitherResult, EntryId,
+                                                   ResultError (..), TaskId,
+                                                   TelegramChatId, UserId)
+import           Data.Domain.User                 (User)
+import           Data.Repository.CalendarRepo     (MonadDBCalendarRepo)
+import           Data.Repository.TaskRepo         (MonadDBTaskRepo)
+import           Data.Repository.TelegramLinkRepo (MonadDBTelegramRepo)
+import           Data.Repository.UserRepo         (MonadDBUserRepo)
 
-import qualified Data.Repository.CalendarRepo as CalendarRepo
-import qualified Data.Repository.TaskRepo     as TaskRepo
-import qualified Data.Repository.UserRepo     as UserRepo
+import qualified Data.Repository.CalendarRepo     as CalendarRepo
+import qualified Data.Repository.TaskRepo         as TaskRepo
+import qualified Data.Repository.TelegramLinkRepo as TelegramRepo
+import qualified Data.Repository.UserRepo         as UserRepo
 
 preconditionFailed :: (HServer.FilterMonad Response m) => a -> m a
 preconditionFailed = HServer.resp 412
@@ -66,6 +72,10 @@ onEntryExist = onDBEntryExist CalendarRepo.findCalendarById
 
 onTaskExist :: (ToJSON dto, MonadDBTaskRepo m)  => TaskId -> (Task -> m (EitherResult dto)) -> m (EitherResult dto)
 onTaskExist = onDBEntryExist TaskRepo.findTaskById
+
+onTelegramLinkExist :: (ToJSON dto, MonadDBTelegramRepo m)
+    => TelegramChatId -> (TelegramLink -> m (EitherResult dto)) -> m (EitherResult dto)
+onTelegramLinkExist = onDBEntryExist TelegramRepo.findTelegramLinkById
 
 onNothing :: HServer.FilterMonad Response m => String -> (a -> m Response) -> Maybe a -> m Response
 onNothing message = maybe (okResponse message)

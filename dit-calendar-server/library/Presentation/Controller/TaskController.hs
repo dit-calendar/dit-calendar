@@ -1,9 +1,7 @@
 module Presentation.Controller.TaskController where
 
 import           AppContext                     (App)
-import           Data.Domain.Types              (EitherResult, EntryId,
-                                                 ResultError (EntryNotFound),
-                                                 TaskId)
+import           Data.Domain.Types              (EitherResult, EntryId, TaskId)
 import           Data.Domain.User               as DomainUser (User (..))
 import           Presentation.Dto.Task          as TaskDto (Task (..))
 import           Presentation.Mapper.BaseMapper (transformToDtoE,
@@ -43,10 +41,9 @@ updateTask id taskDto loggedUser =
         return $ transformToDtoE result)
 
 deleteTask :: EntryId -> TaskId -> DomainUser.User -> App (EitherResult ())
-deleteTask entryId taskId loggedUser = do
-    mEntry <- CalendarRepo.findCalendarById entryId
-    case mEntry of
-        Nothing ->  return $ Left (EntryNotFound entryId)
-        Just entry -> onTaskExist taskId (\t -> do
-            TaskService.deleteTaskAndCascade entry t
-            return $ Right ())
+deleteTask entryId taskId loggedUser =
+    onEntryExist entryId
+        (\entry ->
+        onTaskExist taskId (\task -> do
+            TaskService.deleteTaskAndCascade entry task
+            return $ Right ()))
