@@ -1,9 +1,7 @@
 module Presentation.Controller.TaskController where
 
 import           AppContext                     (App)
-import           Data.Domain.Types              (EitherResult, EntryId,
-                                                 ResultError (EntryNotFound),
-                                                 TaskId)
+import           Data.Domain.Types              (EitherResult, EntryId, TaskId)
 import           Data.Domain.User               as DomainUser (User (..))
 import           Presentation.Dto.Task          as TaskDto (Task (..))
 import           Presentation.Mapper.BaseMapper (transformToDtoE,
@@ -16,7 +14,6 @@ import qualified Data.Repository.CalendarRepo   as CalendarRepo
 import qualified Data.Service.CalendarEntry     as CalendarService
 import qualified Data.Service.CalendarTasks     as CalendarTasks
 import qualified Data.Service.Task              as TaskService
-import qualified Data.Service.UserTasks         as UserTasksService
 
 
 --handler for taskPage
@@ -43,23 +40,10 @@ updateTask id taskDto loggedUser =
         result <- TaskService.updateTaskInCalendar $ transformFromDto taskDto (Just t)
         return $ transformToDtoE result)
 
-addUserToTask :: TaskId -> DomainUser.User-> App (EitherResult TaskDto.Task)
-addUserToTask taskId loggedUser =
-    onTaskExist taskId (\t -> do
-        result <- UserTasksService.addUserToTask t loggedUser
-        return $ transformToDtoE result)
-
-removeUserFromTask :: TaskId -> DomainUser.User -> App (EitherResult TaskDto.Task)
-removeUserFromTask taskId loggedUser =
-    onTaskExist taskId (\t -> do
-        result <- UserTasksService.removeUserFromTask t loggedUser
-        return $ transformToDtoE result)
-
 deleteTask :: EntryId -> TaskId -> DomainUser.User -> App (EitherResult ())
-deleteTask entryId taskId loggedUser = do
-    mEntry <- CalendarRepo.findCalendarById entryId
-    case mEntry of
-        Nothing ->  return $ Left (EntryNotFound entryId)
-        Just entry -> onTaskExist taskId (\t -> do
-            TaskService.deleteTaskAndCascade entry t
-            return $ Right ())
+deleteTask entryId taskId loggedUser =
+    onEntryExist entryId
+        (\entry ->
+        onTaskExist taskId (\task -> do
+            TaskService.deleteTaskAndCascade entry task
+            return $ Right ()))

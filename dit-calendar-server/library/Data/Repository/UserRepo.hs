@@ -5,8 +5,8 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Data.Repository.UserRepo
-    ( deleteUserImpl, updateUserImpl, updateLoginNameImpl, addCalendarEntryToUserImpl, addTaskToUserImpl
-    , deleteCalendarEntryFromUserImpl, deleteTaskFromUserImpl, findUserByIdImpl, createUserImpl, findUserByLoginNameIml,
+    ( deleteUserImpl, updateUserImpl, updateLoginNameImpl, addCalendarEntryToUserImpl
+    , deleteCalendarEntryFromUserImpl, findUserByIdImpl, createUserImpl, findUserByLoginNameIml,
      MonadDBUserRepo(..) ) where
 
 import           Control.Monad.IO.Class
@@ -59,14 +59,6 @@ deleteCalendarEntryFromUserImpl :: UserDAO m =>
 deleteCalendarEntryFromUserImpl user entryId =
     updateUserImpl user {ownerOfCalendarEntries = List.delete entryId (ownerOfCalendarEntries user)}
 
-addTaskToUserImpl :: UserDAO m => User -> TaskId -> m (EitherResult User)
-addTaskToUserImpl user taskId =
-    updateUserImpl user {assignedToTasks = taskId : assignedToTasks user}
-
-deleteTaskFromUserImpl :: UserDAO m => User -> Task -> m (EitherResult User)
-deleteTaskFromUserImpl user task =
-    updateUserImpl user {assignedToTasks = List.delete (taskId task) (assignedToTasks user)}
-
 findUserByIdImpl :: (UserDAO m, MonadIO m) => UserId -> m (Maybe User)
 findUserByIdImpl = query . UserAcid.UserById
 
@@ -81,8 +73,6 @@ class Monad m => MonadDBUserRepo m where
     updateLoginName :: User -> Text -> m (EitherResult User)
     addCalendarEntryToUser :: User -> EntryId -> m (EitherResult User)
     deleteCalendarEntryFromUser :: User -> EntryId -> m (EitherResult User)
-    addTaskToUser :: User -> TaskId -> m (EitherResult User)
-    deleteTaskFromUser :: User -> Task -> m (EitherResult User)
     findUserByLoginName :: Text -> m (Maybe User)
 
 instance UserDAO App => MonadDBUserRepo App where
@@ -93,6 +83,4 @@ instance UserDAO App => MonadDBUserRepo App where
     updateLoginName = updateLoginNameImpl
     addCalendarEntryToUser = addCalendarEntryToUserImpl
     deleteCalendarEntryFromUser = deleteCalendarEntryFromUserImpl
-    addTaskToUser = addTaskToUserImpl
-    deleteTaskFromUser = deleteTaskFromUserImpl
     findUserByLoginName = findUserByLoginNameIml

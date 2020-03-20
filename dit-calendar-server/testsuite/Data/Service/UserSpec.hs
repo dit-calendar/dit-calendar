@@ -20,24 +20,29 @@ import           Control.Monad.Identity       (Identity)
 import           Control.Monad.IO.Class
 import           Control.Monad.Writer.Class   (tell)
 
-import           Data.Domain.Task             as Task
+import           Data.Domain.CalendarEntry    as CalendarEntry (CalendarEntry (..))
 import           Data.Domain.User             as User
 
 import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)
 import           Data.Repository.UserRepo     (MonadDBUserRepo)
-import           Data.Service.UserTasks       (UserTasksService)
+import           Data.Service.CalendarEntry   (CalendarEntryService)
+import           Data.Time.Clock              (UTCTime)
 
 import qualified Data.Service.User            as UserService
 
 
-mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBCalendarRepo, UserTasksService |]
+mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBCalendarRepo, CalendarEntryService |]
 
-userFromDb = def { loginName="Foo", User.userId=10, ownerOfCalendarEntries=[1,2], assignedToTasks=[4] }
+userFromDb = def { loginName="Foo", User.userId=10, ownerOfCalendarEntries=[1,2]}
+dbDate = read "2011-11-19 18:28:52.607875 UTC"::UTCTime
+entryFromDb = def { CalendarEntry.description="termin2", entryId=1, CalendarEntry.owner=10, tasks=[1,2],
+        startDate=dbDate, endDate=dbDate}
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture { _deleteCalendarEntryById = \a -> tell [show a]
                   , _deleteUser = \a -> tell [show a]
-                  , _removeUserFromTasks = \a -> tell [show a]
+                  , _removeCalendar = \a -> tell [show a]
+                  , _findCalendarById = \a -> tell [show a] >>= (\_ -> return $ Just entryFromDb)
                   }
 
 instance MonadIO Identity where
@@ -46,10 +51,10 @@ instance MonadIO Identity where
 
 spec = describe "UserService" $
     it "deleteUser" $ do
-        let expectedTask = def { Task.description="task1", taskId=5, startTime=Nothing, endTime=Nothing}
         let (_, log) = evalTestFixture (UserService.deleteUserImpl userFromDb) fixture
-        length log `shouldBe` 4
-        assertEqual "removeUserFromTasks mit falschen User " (log!!0) (show userFromDb)
-        assertEqual "CalendarEntry 1 nicht durchgegeben" (log!!1) "1"
+        length log `shouldBe` 5
+        assertEqual "CalendarEntry 1 nicht durchgegeben" (log!!0) "1"
+        assertEqual "CalendarEntry 1 nicht gelöscht" (log!!1) (show entryFromDb)
         assertEqual "CalendarEntry 2 nicht durchgegeben" (log!!2) "2"
-        assertEqual "Falscher user gelöscht" (log!!3) (show userFromDb)
+        assertEqual "CalendarEntry 2 nicht gelöscht" (log!!3) (show entryFromDb)
+        assertEqual "Falscher user gelöscht" (log!!4) (show userFromDb)

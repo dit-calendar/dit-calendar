@@ -6,17 +6,18 @@ module Data.Domain.Task where
 
 import           Data.Data         (Data, Typeable)
 import           Data.Default
-import           Data.Domain.Types (Description, Entity (..), TaskId, UserId)
+import           Data.Domain.Types (Description, Entity (..), TaskId,
+                                    TelegramChatId)
 import           Data.SafeCopy     (base, deriveSafeCopy)
 import           Data.Time.Clock   (UTCTime)
 
 data Task = Task {
-    description      :: Description
-    , taskId         :: TaskId
-    , version        :: Int
-    , assignedUsers  :: [UserId]
-    , startTime      :: Maybe UTCTime
-    , endTime        :: Maybe UTCTime
+    description             :: Description
+    , taskId                :: TaskId
+    , version               :: Int
+    , assignedTelegramLinks :: [TelegramChatId]
+    , startTime             :: Maybe UTCTime
+    , endTime               :: Maybe UTCTime
     }
     deriving (Eq, Ord, Read, Show, Data, Typeable)
 $(deriveSafeCopy 0 'base ''Task)
@@ -29,4 +30,4 @@ instance Entity Task where
     getUsersAccessRestriction _ = []
 
 instance Default Task where
-    def = Task {taskId = -1, version = 0, assignedUsers = []}
+    def = Task {taskId = -1, version = 0, assignedTelegramLinks = []}

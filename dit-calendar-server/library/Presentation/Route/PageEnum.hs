@@ -11,8 +11,8 @@ import           Control.Category            ((.))
 import           Data.Data                   (Data, Typeable)
 import           Happstack.Authenticate.Core (AuthenticateURL, authenticateURL)
 import           Text.Boomerang.TH           (makeBoomerangs)
-import           Web.Routes.Boomerang        ((:-), Router, int, lit,
-                                              (</>), (<>))
+import           Web.Routes.Boomerang        ((:-), Router, int, lit, (</>),
+                                              (<>))
 
 import           Data.Domain.Types           (EntryId, TaskId, UserId)
 
@@ -32,7 +32,7 @@ data Sitemap
     -- tasks mapping
     | CalendarTask EntryId
     | CalendarTaskDetail EntryId TaskId
-    | TaskWithUser EntryId TaskId
+    | TaskWithTelegramLink TaskId
     deriving (Eq, Ord, Read, Show, Data, Typeable)
 $(makeBoomerangs ''Sitemap)
 
@@ -57,4 +57,4 @@ urlSitemapParser =
         taskMapping =
             rCalendarTask </> int </> lit "tasks" -- create, findAll
             <> rCalendarTaskDetail </> int </> lit "tasks" </> int -- read, update, delete
-            <> rTaskWithUser </> int </> lit "tasks" </> int </> lit "assignment" -- add/remove user to Task
+            <> rTaskWithTelegramLink </> lit "tasks" </> int </> lit "assignment" -- add/remove telegramLink to Task

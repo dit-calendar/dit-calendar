@@ -3,11 +3,12 @@ package com.ditcalendar.bot
 import com.ditcalendar.bot.endpoint.AuthEndpoint
 import com.ditcalendar.bot.endpoint.CalendarEndpoint
 import com.ditcalendar.bot.endpoint.TaskEndpoint
+import com.elbekD.bot.types.User
+import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.map
-import com.github.kittinunf.result.Result
 
-class CalendarCommand {
+class DitCalendarCommand {
 
     private val calendarEndpoint = CalendarEndpoint()
     private val taskEndpoint = TaskEndpoint()
@@ -23,5 +24,10 @@ class CalendarCommand {
                 calendar.apply { tasks = it }
             }
         }.map { it.toStringInMarkdown() + System.lineSeparator() }
+    }
+
+    fun assignUserToTask(taskId: Long, user: User): Result<Unit, Exception> {
+        return authEndpoint.getToken()
+                .flatMap { taskEndpoint.assignUserToTask(taskId, user, it) }
     }
 }

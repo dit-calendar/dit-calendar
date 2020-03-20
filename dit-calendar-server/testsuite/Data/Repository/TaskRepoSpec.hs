@@ -44,7 +44,7 @@ spec = describe "TaskRepo" $ do
     it "createTask" $ do
         let (result, _) = evalTestFixture (TaskRepo.createTaskImpl taskFromDb) fixture
         result `shouldBe` taskFromDb
-        Task.assignedUsers result `shouldBe` []
+        Task.assignedTelegramLinks result `shouldBe` []
     it "deleteTask" $ do
         let task = def { description="task1", taskId=1}
         let (_, log) = evalTestFixture (TaskRepo.deleteTaskImpl task) fixture

@@ -18,7 +18,6 @@ data User = User
     , userId                 :: UserId
     , version                :: Int
     , ownerOfCalendarEntries :: [EntryId]
-    , assignedToTasks        :: [TaskId]
     } deriving (Eq, Ord, Read, Show, Data, Typeable)
 
 $(deriveSafeCopy 0 'base ''User)
@@ -31,4 +30,4 @@ instance Entity User where
     getUsersAccessRestriction a = [userId a]
 
 instance Default User where
-    def = User {userId = -1, version = 0, ownerOfCalendarEntries = [], assignedToTasks = []}
+    def = User {userId = -1, version = 0, ownerOfCalendarEntries = []}

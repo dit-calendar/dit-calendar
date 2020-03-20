@@ -25,11 +25,11 @@ import           Conf.AuthConf                         (authenticateConfig,
 import           Conf.Config                           (Config (..), readConfig)
 import           Conf.NetworkConfig                    (customHappstackServerConf,
                                                         hostUri)
-import           Data.Repository.Acid.DBState          (Acid)
 import           Presentation.Route.MainRouting        (routeWithOptions)
 import           Presentation.Route.PageEnum           (Sitemap (Home),
                                                         urlSitemapParser)
 import           Server.AcidInitializer                (withAcid)
+import           Server.DBState                        (Acid)
 import           Server.HappstackHelper                (runServerWithFoundationT)
 
 import qualified Data.Text                             as T

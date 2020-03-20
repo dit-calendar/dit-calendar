@@ -27,7 +27,7 @@ fun main(args: Array<String>) {
     } else Bot.createPolling(config[bot_name], token)
 
     bot.onCommand("/start") { msg, _ ->
-        val calendarCommand = CalendarCommand()
+        val calendarCommand = DitCalendarCommand()
 
         val calendarId: Long = 1
 
@@ -37,6 +37,23 @@ fun main(args: Array<String>) {
             is Result.Failure -> {
                 result.error.printStackTrace()
                 bot.sendMessage(msg.chat.id, "kein Kalendar")
+            }
+        }
+    }
+
+    bot.onCommand("/assaignToTask") { msg, opts ->
+        val calendarCommand = DitCalendarCommand()
+
+        val taskId: Long = 1
+
+        msg.from?.also {
+            when (val result = calendarCommand.assignUserToTask(taskId, it)) {
+                is Result.Success ->
+                    bot.sendMessage(msg.chat.id, "Ok")
+                is Result.Failure -> {
+                    result.error.printStackTrace()
+                    bot.sendMessage(msg.chat.id, "Fehler")
+                }
             }
         }
     }

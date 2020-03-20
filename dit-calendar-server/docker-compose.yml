@@ -1,8 +1,9 @@
 version: "3"
 services:
-  dit-calendar:
+  dit-calendar-server:
     volumes:
       - ./state/:/app/state
+    image: ditcalendar/dit-calendar-server
     build: .
     ports:
       - "8080:8080"

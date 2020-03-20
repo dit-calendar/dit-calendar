@@ -9,23 +9,23 @@ module Data.Service.Task
 
 import           Control.Monad.IO.Class
 
-import           AppContext                   (App)
-import           Data.Domain.CalendarEntry    as CalendarEntry
-import           Data.Domain.Task             as Task
-import           Data.Domain.Types            (EitherResult)
+import           AppContext                           (App)
+import           Data.Domain.CalendarEntry            as CalendarEntry
+import           Data.Domain.Task                     as Task
+import           Data.Domain.Types                    (EitherResult)
 
-import           Data.Repository.CalendarRepo (MonadDBCalendarRepo)
-import qualified Data.Repository.CalendarRepo as MonadDBCalendarRepo
-import           Data.Repository.TaskRepo     (MonadDBTaskRepo)
-import qualified Data.Repository.TaskRepo     as TaskRepo
-import           Data.Service.UserTasks       (UserTasksService)
-import qualified Data.Service.UserTasks       as UserTasksService
+import           Data.Repository.CalendarRepo         (MonadDBCalendarRepo)
+import qualified Data.Repository.CalendarRepo         as MonadDBCalendarRepo
+import           Data.Repository.TaskRepo             (MonadDBTaskRepo)
+import qualified Data.Repository.TaskRepo             as TaskRepo
+import           Data.Service.TelegramTasks (TelegramTasksAssignmentService)
+import qualified Data.Service.TelegramTasks as TelegramTasksAssignmentService
 
 
-deleteTaskAndCascadeImpl :: (MonadDBTaskRepo m, UserTasksService m, MonadIO m, MonadDBCalendarRepo m) => CalendarEntry -> Task -> m ()
+deleteTaskAndCascadeImpl :: (MonadDBTaskRepo m, TelegramTasksAssignmentService m, MonadIO m, MonadDBCalendarRepo m) => CalendarEntry -> Task -> m ()
 deleteTaskAndCascadeImpl calendar task = do
     MonadDBCalendarRepo.deleteTaskFromCalendarEntry calendar (taskId task)
-    UserTasksService.deleteTaskFromAllUsers task
+    TelegramTasksAssignmentService.deleteTaskFromAllTelegramLinks task
     TaskRepo.deleteTask task
 
 createTaskInCalendarImpl :: (MonadDBTaskRepo m, MonadDBCalendarRepo m) =>
