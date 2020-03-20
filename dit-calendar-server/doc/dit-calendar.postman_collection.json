@@ -25,12 +25,12 @@
 							"raw": "{\"user\":\"alex2\",\"password\":\"12345\"}"
 						},
 						"url": {
-							"raw": "https://localhost:8443/authenticate/authentication-methods/password/token",
-							"protocol": "https",
+							"raw": "http://localhost:8080/authenticate/authentication-methods/password/token",
+							"protocol": "http",
 							"host": [
 								"localhost"
 							],
-							"port": "8443",
+							"port": "8080",
 							"path": [
 								"authenticate",
 								"authentication-methods",
@@ -59,12 +59,12 @@
 							}
 						],
 						"url": {
-							"raw": "https://localhost:8443/calendarentries/1",
-							"protocol": "https",
+							"raw": "http://localhost:8080/calendarentries/1",
+							"protocol": "http",
 							"host": [
 								"localhost"
 							],
-							"port": "8443",
+							"port": "8080",
 							"path": [
 								"calendarentries",
 								"1"
@@ -83,15 +83,20 @@
 								"name": "Content-Type",
 								"type": "text",
 								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoQWRtaW4iOnRydWUsImV4cCI6MTU3NTEyMDQwMiwidXNlciI6eyJlbWFpbCI6ImEuYmVmb3J0QGdvb2dsZW1haWwuY29tIiwidXNlcm5hbWUiOiJhbGV4MiIsInVzZXJJZCI6MX19.Nm6oDrefIZUhPyxThdW3GjF9_k7EKd___vMxdpZDJiM",
+								"type": "text"
 							}
 						],
 						"url": {
-							"raw": "https://localhost:8443/calendarentries",
-							"protocol": "https",
+							"raw": "http://localhost:8080/calendarentries",
+							"protocol": "http",
 							"host": [
 								"localhost"
 							],
-							"port": "8443",
+							"port": "8080",
 							"path": [
 								"calendarentries"
 							]
@@ -112,16 +117,15 @@
 							}
 						],
 						"url": {
-							"raw": "https://localhost:8443/calendarentries/2/tasks",
-							"protocol": "https",
+							"raw": "http://localhost:8080/calendarentries/1",
+							"protocol": "http",
 							"host": [
 								"localhost"
 							],
-							"port": "8443",
+							"port": "8080",
 							"path": [
 								"calendarentries",
-								"2",
-								"tasks"
+								"1"
 							]
 						}
 					},
@@ -146,15 +150,15 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"id\": \"1\",\n    \"description\": \"testHeute\",\n    \"startDate\": \"2011-11-19T18:28:52.607875Z\",\n    \"endDate\": \"2011-11-20T12:15:53.102875Z\"\n}"
+							"raw": "{\n    \"description\": \"test123213\",\n    \"entryId\": 1,\n    \"version\": 4,\n    \"startDate\": \"2011-11-19T18:28:00Z\",\n    \"endDate\": \"2011-11-19T18:28:00Z\"\n}"
 						},
 						"url": {
-							"raw": "https://localhost:8443/calendarentries/1",
-							"protocol": "https",
+							"raw": "http://localhost:8080/calendarentries/1",
+							"protocol": "http",
 							"host": [
 								"localhost"
 							],
-							"port": "8443",
+							"port": "8080",
 							"path": [
 								"calendarentries",
 								"1"
@@ -216,12 +220,12 @@
 							}
 						],
 						"url": {
-							"raw": "https://localhost:8443/users/me",
-							"protocol": "https",
+							"raw": "http://localhost:8080/users/me",
+							"protocol": "http",
 							"host": [
 								"localhost"
 							],
-							"port": "8443",
+							"port": "8080",
 							"path": [
 								"users",
 								"me"
@@ -244,7 +248,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"naPassword\": \"12345\",\n    \"naPasswordConfirm\": \"12345\",\n    \"naUser\": {\n        \"email\": \"a.befort@googlemail.com\",\n        \"username\": \"alex3\",\n        \"userId\": 0\n    }\n}"
+							"raw": "{\n    \"naPassword\": \"12345\",\n    \"naPasswordConfirm\": \"12345\",\n    \"naUser\": {\n        \"email\": \"a.befort@googlemail.com\",\n        \"username\": \"alex2\",\n        \"userId\": 0\n    }\n}"
 						},
 						"url": {
 							"raw": "https://localhost:8443/authenticate/authentication-methods/password/account",
@@ -287,18 +291,18 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"description\": \"testHeute\",\n    \"belongingUsers\": [\n        1\n    ],\n    \"startTime\": \"2011-11-19T18:28:52.607875Z\"\n}"
+							"raw": "{\n    \"description\": \"testHeute\",\n    \"assignedUsers\": [\n        1\n    ],\n    \"startTime\": \"2011-11-19T18:28:52.607875Z\"\n}"
 						},
 						"url": {
-							"raw": "https://localhost:8443/calendarentries/7/tasks",
-							"protocol": "https",
+							"raw": "http://localhost:8080/calendarentries/1/tasks",
+							"protocol": "http",
 							"host": [
 								"localhost"
 							],
-							"port": "8443",
+							"port": "8080",
 							"path": [
 								"calendarentries",
-								"7",
+								"1",
 								"tasks"
 							]
 						}
@@ -330,12 +334,12 @@
 							"raw": "{\n    \"description\": \"testHeute\",\n    \"belongingUsers\": [\n        1\n    ],\n    \"startTime\": \"2011-11-19T18:28:52.607875Z\"\n}"
 						},
 						"url": {
-							"raw": "https://localhost:8443/calendarentries/1/tasks",
-							"protocol": "https",
+							"raw": "http://localhost:8080/calendarentries/1/tasks",
+							"protocol": "http",
 							"host": [
 								"localhost"
 							],
-							"port": "8443",
+							"port": "8080",
 							"path": [
 								"calendarentries",
 								"1",
@@ -370,12 +374,12 @@
 							"raw": "{\n    \"description\": \"testHeute\",\n    \"belongingUsers\": [\n        1\n    ],\n    \"startTime\": \"2011-11-19T18:28:52.607875Z\"\n}"
 						},
 						"url": {
-							"raw": "https://localhost:8443/calendarentries/1/tasks/1",
-							"protocol": "https",
+							"raw": "http://localhost:8080/calendarentries/1/tasks/1",
+							"protocol": "http",
 							"host": [
 								"localhost"
 							],
-							"port": "8443",
+							"port": "8080",
 							"path": [
 								"calendarentries",
 								"1",
@@ -387,6 +391,76 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "telegramLink",
+			"item": [
+				{
+					"name": "assign User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"chatId\": 1,\n    \"userId\": 1\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/calendarentries/tasks/1/assignment",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"calendarentries",
+								"tasks",
+								"1",
+								"assignment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "unassign User",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"chatId\": 1,\n    \"userId\": 1\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/calendarentries/tasks/1/assignment",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"calendarentries",
+								"tasks",
+								"1",
+								"assignment"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
 		}
 	]
 }
