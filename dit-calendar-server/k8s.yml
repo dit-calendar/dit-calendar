@@ -1,7 +1,7 @@
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: dit-calendar
+  name: dit-calendar-server
 spec:
   replicas: 1
   selector:
@@ -12,19 +12,19 @@ spec:
       labels:
         app: dit-calendar-server
     spec:
-      containers:
-      - image: ditcalendar/dit-calendar-server:latest
-        name: dit-calendar-server
-        volumeMounts:
-          - name: dit-calendar-volume
-            mountPath: /app/state
-        resources:
-          requests:
-            memory: "2Gi"
       volumes:
         - name: dit-calendar-volume
           persistentVolumeClaim:
             claimName: dit-calendar-storage
+      containers:
+      - image: ditcalendar/dit-calendar-server:latest
+        name: dit-calendar-server
+        resources:
+          requests:
+            memory: "3Gi"
+        volumeMounts:
+          - name: dit-calendar-volume
+            mountPath: /app/state
 
 ---
 
@@ -43,13 +43,13 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: dit-calendar-server
+  name: dit-calendar
   annotations:
     dev.okteto.com/auto-ingress: "true"
 spec:
   type: ClusterIP
   ports:
-  - name: "dit-calendar-server"
+  - name: "dit-calendar"
     port: 8080
   selector:
     app: dit-calendar-server
