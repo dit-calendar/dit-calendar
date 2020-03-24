@@ -8,8 +8,8 @@ import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.UnstableDefault
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 
 
 class AuthEndpoint {
@@ -20,7 +20,8 @@ class AuthEndpoint {
     private val userName = config[dit_calendar_user_name]
     private val password = config[dit_calendar_user_password]
 
-    @UnstableDefault
+    private val json = Json(JsonConfiguration.Stable.copy())
+
     fun getToken(): Result<String, Exception> {
 
         val (_, _, result) = "$ditCalendarUrl/authenticate/authentication-methods/password/token"
@@ -31,7 +32,7 @@ class AuthEndpoint {
 
         return result.flatMap {
             Result.of<String, Exception> {
-                val jwt = Json.parse(JWT.serializer(), result.get())
+                val jwt = json.parse(JWT.serializer(), result.get())
                 if (jwt.jrStatus == "Ok")
                     jwt.jrData.token
                 else

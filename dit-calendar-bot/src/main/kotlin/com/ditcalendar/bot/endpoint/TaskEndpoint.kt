@@ -9,15 +9,18 @@ import com.github.kittinunf.fuel.core.extensions.authentication
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPut
 import com.github.kittinunf.result.Result
+import com.github.kittinunf.result.flatMap
+import kotlinx.serialization.builtins.list
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
-import kotlinx.serialization.list
 
 class TaskEndpoint {
 
     private val config by config()
 
     private val ditCalendarUrl = config[dit_calendar_server_url]
+
+    private val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
 
     fun readTasks(calendarId: Long, token: String): Result<Tasks, Exception> {
 
@@ -26,9 +29,10 @@ class TaskEndpoint {
                 .authentication().bearer(token)
                 .responseString()
 
-        return Result.of {
-            Json(JsonConfiguration.Stable.copy(strictMode = false))
-                    .parse(Task.serializer().list, result.get())
+        return result.flatMap {
+            Result.of<Tasks, Exception> {
+                json.parse(Task.serializer().list, result.get())
+            }
         }
     }
 

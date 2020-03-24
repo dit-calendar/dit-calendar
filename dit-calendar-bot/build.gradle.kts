@@ -1,8 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+group = "dit-calendar"
+version = "1.0-SNAPSHOT"
 
 plugins {
-    val kotlinVersion = "1.3.61"
+    val kotlinVersion = "1.3.70"
 
     application
 
@@ -16,9 +18,6 @@ application {
     mainClassName = "com.ditcalendar.bot.BotKt"
 }
 
-group = "dit-calendar"
-version = "1.0-SNAPSHOT"
-
 repositories {
     mavenLocal()
     mavenCentral()
@@ -28,10 +27,10 @@ repositories {
 
 dependencies {
     val fuelVersion = "2.2.1"
-    val kittinunfResultVersion = "2.0.0"
+    val kittinunfResultVersion = "3.0.0"
     val konfigVersion = "1.6.10.0"
-    val kotlinxSerializationVersion = "0.14.0"
-    val ktBotVersion = "1.2.0"
+    val kotlinxSerializationVersion = "0.20.0"
+    val ktBotVersion = "1.2.4"
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("com.github.kittinunf.fuel:fuel:$fuelVersion")
