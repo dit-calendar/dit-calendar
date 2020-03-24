@@ -4,7 +4,7 @@ import com.ditcalendar.bot.config.config
 import com.ditcalendar.bot.config.dit_calendar_server_url
 import com.ditcalendar.bot.data.Task
 import com.ditcalendar.bot.data.Tasks
-import com.elbekD.bot.types.User
+import com.ditcalendar.bot.data.TelegramLink
 import com.github.kittinunf.fuel.core.extensions.authentication
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPut
@@ -36,13 +36,17 @@ class TaskEndpoint {
         }
     }
 
-    fun assignUserToTask(taskId: Long, user: User, token: String): Result<Unit, Exception> {
-        val (_, response, result) = "$ditCalendarUrl/calendarentries/1/tasks/$taskId/assignment"
+    fun assignUserToTask(taskId: Long, telegramLink: TelegramLink, token: String): Result<String, Exception> {
+
+        val (_, response, result) = "$ditCalendarUrl/calendarentries/tasks/$taskId/assignment"
                 .httpPut()
-                //TODO: Send proper body
-                .body("user")
+                .body(json.stringify(TelegramLink.serializer(), telegramLink))
                 .authentication().bearer(token)
                 .responseString()
-        return if (response.statusCode == 200) Result.Success(Unit) else Result.error(result.component2()!!)
+
+        return if (response.statusCode == 200)
+            Result.Success("erfolgreich")
+        else
+            Result.error(result.component2()!!)
     }
 }

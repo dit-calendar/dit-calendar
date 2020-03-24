@@ -3,6 +3,7 @@ package com.ditcalendar.bot
 import com.ditcalendar.bot.config.*
 import com.elbekD.bot.Bot
 import com.elbekD.bot.server
+import com.github.kittinunf.fuel.core.FuelError
 import com.github.kittinunf.result.Result
 
 fun main(args: Array<String>) {
@@ -26,34 +27,45 @@ fun main(args: Array<String>) {
         }
     } else Bot.createPolling(config[bot_name], token)
 
-    bot.onCommand("/start") { msg, _ ->
+    bot.onCommand("/start") { msg, opts ->
         val calendarCommand = DitCalendarCommand()
+        val msgText = msg.text
 
-        val calendarId: Long = 1
+        val result = if (msgText != null) {
+            if (opts == null || !opts.startsWith("assign")) {
+                val calendarId: Long = 1
+                calendarCommand.getCalendarAndTask(calendarId)
+            } else {
+                val msgUser = msg.from
+                val taskId: Long = 1
 
-        when (val result = calendarCommand.getCalendarAndTask(calendarId)) {
+                if (msgUser != null)
+                    calendarCommand.assignUserToTask(taskId, msg.chat.id, msgUser)
+                else
+                    Result.error(RuntimeException("no telegram user"))
+            }
+        } else {
+            Result.error(RuntimeException("no text message"))
+        }
+
+
+        when (result) {
             is Result.Success ->
                 bot.sendMessage(msg.chat.id, result.value, "MarkdownV2")
             is Result.Failure -> {
-                result.error.printStackTrace()
-                bot.sendMessage(msg.chat.id, "kein Kalendar")
-            }
-        }
-    }
+                val error = result.error
+                if (error is FuelError) {
+                    val response = error.response
+                    when (response.statusCode) {
+                        403 -> bot.sendMessage(msg.chat.id, "Zugriff vom bot nicht erlaubt")
+                        404 -> bot.sendMessage(msg.chat.id, "kein Kalendar gefunden")
+                        else -> bot.sendMessage(msg.chat.id, "unbekannter Fehler")
+                    }
 
-    bot.onCommand("/assaignToTask") { msg, opts ->
-        val calendarCommand = DitCalendarCommand()
-
-        val taskId: Long = 1
-
-        msg.from?.also {
-            when (val result = calendarCommand.assignUserToTask(taskId, it)) {
-                is Result.Success ->
-                    bot.sendMessage(msg.chat.id, "Ok")
-                is Result.Failure -> {
-                    result.error.printStackTrace()
-                    bot.sendMessage(msg.chat.id, "Fehler")
+                } else {
+                    bot.sendMessage(msg.chat.id, "unbekannter Fehler")
                 }
+                result.error.printStackTrace()
             }
         }
     }

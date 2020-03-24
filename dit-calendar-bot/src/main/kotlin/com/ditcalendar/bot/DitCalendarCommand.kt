@@ -1,5 +1,6 @@
 package com.ditcalendar.bot
 
+import com.ditcalendar.bot.data.TelegramLink
 import com.ditcalendar.bot.endpoint.AuthEndpoint
 import com.ditcalendar.bot.endpoint.CalendarEndpoint
 import com.ditcalendar.bot.endpoint.TaskEndpoint
@@ -26,8 +27,9 @@ class DitCalendarCommand {
         }.map { it.toStringInMarkdown() + System.lineSeparator() }
     }
 
-    fun assignUserToTask(taskId: Long, user: User): Result<Unit, Exception> {
+    fun assignUserToTask(taskId: Long, chatId: Long, user: User): Result<String, Exception> {
+        val telegramLink = TelegramLink(chatId, user.id, user.username)
         return authEndpoint.getToken()
-                .flatMap { taskEndpoint.assignUserToTask(taskId, user, it) }
+                .flatMap { taskEndpoint.assignUserToTask(taskId, telegramLink, it) }
     }
 }
