@@ -6,6 +6,7 @@ import com.ditcalendar.bot.endpoint.CalendarEndpoint
 import com.ditcalendar.bot.endpoint.TaskEndpoint
 import com.ditcalendar.bot.error.DitBotError
 import com.ditcalendar.bot.error.InvalidRequest
+import com.ditcalendar.bot.error.UnassigmentError
 import com.elbekD.bot.types.Message
 import com.elbekD.bot.types.User
 import com.github.kittinunf.fuel.core.FuelError
@@ -21,17 +22,27 @@ class DitCalendarCommand {
 
     fun parseRequest(msg: Message, opts: String?): String {
 
-        val result = if (opts == null || !opts.startsWith("assign")) {
-            val calendarId: Long = 1
-            getCalendarAndTask(calendarId)
+        val msgUser = msg.from
+        //if message user is not set, we can't process
+        val result = if (msgUser == null) {
+            Result.error(InvalidRequest())
         } else {
-            val msgUser = msg.from
-            val taskId: Long? = opts.substringAfter("_").toLongOrNull()
-
-            if (msgUser != null && taskId != null)
-                assignUserToTask(taskId, msg.chat.id, msgUser)
-            else
-                Result.error(InvalidRequest())
+            if (opts != null && opts.startsWith("assign")) {
+                val taskId: Long? = opts.substringAfter("_").toLongOrNull()
+                if (taskId != null)
+                    assignUserToTask(taskId, msg.chat.id, msgUser)
+                else
+                    Result.error(InvalidRequest())
+            } else if (opts != null && opts.startsWith("unassign")) {
+                val taskId: Long? = opts.substringAfter("_").toLongOrNull()
+                if (taskId != null)
+                    unassignUserToTask(taskId, msg.chat.id, msgUser)
+                else
+                    Result.error(InvalidRequest())
+            } else {
+                val calendarId: Long = 1
+                getCalendarAndTask(calendarId)
+            }
         }
 
         return parseResponse(result)
@@ -56,6 +67,7 @@ class DitCalendarCommand {
                         is DitBotError -> {
                             when (error) {
                                 is InvalidRequest -> "fehlerhafte Anfrage"
+                                is UnassigmentError -> "fehlgeschlagen"
                             }
                         }
                         else -> "unbekannter Fehler"
@@ -86,5 +98,11 @@ class DitCalendarCommand {
                 ${it.toStringInMarkdown()}
             """.trimIndent()
         }
+    }
+
+    private fun unassignUserToTask(taskId: Long, chatId: Long, user: User): Result<String, Exception> {
+        val telegramLink = TelegramLink(chatId, user.id, user.username)
+        return authEndpoint.getToken()
+                .flatMap { taskEndpoint.unassignUserFromTask(taskId, telegramLink, it) }
     }
 }

@@ -18,11 +18,12 @@ data class Task(val taskId: Long,
     override fun toStringInMarkdown(): String =
             """_Task_: $description
                _Datum_: $startTime
+               [unassign me](https://t.me/ditcalendarbot?start=unassign_$taskId)
             """.trimIndent()
 
     fun toStringForCalendarInMarkdown(): String =
             """
-                _Task_: $description [assignMe](https://t.me/ditcalendarbot?start=assign_$taskId)
+                _Task_: $description [assign me](https://t.me/ditcalendarbot?start=assign_$taskId)
                 _Datum_: $startTime
             """.trimIndent()
 
