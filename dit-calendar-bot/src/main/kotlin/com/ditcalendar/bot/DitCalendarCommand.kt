@@ -77,7 +77,14 @@ class DitCalendarCommand {
 
     private fun assignUserToTask(taskId: Long, chatId: Long, user: User): Result<String, Exception> {
         val telegramLink = TelegramLink(chatId, user.id, user.username)
-        return authEndpoint.getToken()
+        val taskAfterAssignment = authEndpoint.getToken()
                 .flatMap { taskEndpoint.assignUserToTask(taskId, telegramLink, it) }
+
+        return taskAfterAssignment.map {
+            """
+                *erfolgreich hinzugefügt zu:*
+                ${it.toStringInMarkdown()}
+            """.trimIndent()
+        }
     }
 }

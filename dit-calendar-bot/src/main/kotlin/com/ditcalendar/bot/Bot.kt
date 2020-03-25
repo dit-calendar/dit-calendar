@@ -27,7 +27,8 @@ fun main(args: Array<String>) {
     } else Bot.createPolling(config[bot_name], token)
 
     bot.onCommand("/start") { msg, opts ->
-        bot.sendMessage(msg.chat.id, calendarCommand.parseRequest(msg, opts), "MarkdownV2", true)
+        val result = calendarCommand.parseRequest(msg, opts)
+        bot.sendMessage(msg.chat.id, result, "MarkdownV2", true)
     }
 
     bot.start()

@@ -36,17 +36,18 @@ class TaskEndpoint {
         }
     }
 
-    fun assignUserToTask(taskId: Long, telegramLink: TelegramLink, token: String): Result<String, Exception> {
+    fun assignUserToTask(taskId: Long, telegramLink: TelegramLink, token: String): Result<Task, Exception> {
 
-        val (_, response, result) = "$ditCalendarUrl/calendarentries/tasks/$taskId/assignment"
+        val (_, _, result) = "$ditCalendarUrl/calendarentries/tasks/$taskId/assignment"
                 .httpPut()
                 .body(json.stringify(TelegramLink.serializer(), telegramLink))
                 .authentication().bearer(token)
                 .responseString()
 
-        return if (response.statusCode == 200)
-            Result.Success("erfolgreich")
-        else
-            Result.error(result.component2()!!)
+        return result.flatMap {
+            Result.of<Task, Exception> {
+                json.parse(Task.serializer(), result.get())
+            }
+        }
     }
 }

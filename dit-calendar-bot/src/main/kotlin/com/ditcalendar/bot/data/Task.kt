@@ -16,14 +16,20 @@ data class Task(val taskId: Long,
                 val endTime: Date? = null) : Base() {
 
     override fun toStringInMarkdown(): String =
+            """_Task_: $description
+               _Datum_: $startTime
+            """.trimIndent()
+
+    fun toStringForCalendarInMarkdown(): String =
             """
                 _Task_: $description [assignMe](https://t.me/ditcalendarbot?start=assign_$taskId)
                 _Datum_: $startTime
             """.trimIndent()
+
 }
 
 fun Tasks.toStringInMarkdown(): String {
     var response = ""
-    this.forEach { response += it.toStringInMarkdown() + System.lineSeparator() }
+    this.forEach { response += it.toStringForCalendarInMarkdown() + System.lineSeparator() }
     return response
 }
