@@ -37,15 +37,15 @@ fun main(args: Array<String>) {
                 calendarCommand.getCalendarAndTask(calendarId)
             } else {
                 val msgUser = msg.from
-                val taskId: Long = 1
+                val taskId: Long? = opts.substringAfter("_").toLongOrNull()
 
-                if (msgUser != null)
+                if (msgUser != null && taskId != null)
                     calendarCommand.assignUserToTask(taskId, msg.chat.id, msgUser)
                 else
-                    Result.error(RuntimeException("no telegram user"))
+                    Result.error(RuntimeException("request invalid"))
             }
         } else {
-            Result.error(RuntimeException("no text message"))
+            Result.error(RuntimeException("request invalid"))
         }
 
 

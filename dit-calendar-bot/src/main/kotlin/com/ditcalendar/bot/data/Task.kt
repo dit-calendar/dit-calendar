@@ -8,7 +8,8 @@ import java.util.*
 typealias Tasks = List<Task>
 
 @Serializable
-data class Task(val description: String,
+data class Task(val taskId: Long,
+                val description: String,
                 @Serializable(with = DateSerializer::class)
                 val startTime: Date,
                 @Serializable(with = DateSerializer::class)
@@ -16,7 +17,7 @@ data class Task(val description: String,
 
     override fun toStringInMarkdown(): String =
             """
-                _Task_: $description
+                _Task_: $description [assignMe](https://t.me/ditcalendarbot?start=assign_$taskId)
                 _Datum_: $startTime
             """.trimIndent()
 }
