@@ -1,6 +1,6 @@
 # deployment
 * `gradle build`
-* `heroku deploy:jar build/libs/dit-calendar-bot-1.0-SNAPSHOT-all.jar --app dit-calendar`
+* `heroku deploy:jar build/libs/dit-calendar-bot-*-all.jar --app dit-calendar`
 
 # manual test
 * https://core.telegram.org/bots/webhooks
