@@ -29,8 +29,8 @@ createTelegramLink telegramDto task = do
     newLink <- TelegramLinkRepo.createTelegramLink (TelegramMapper.transformFromDto telegramDto Nothing)
     TelegramService.addTelegramLinkToTask task newLink
 
-removeTelegramLinkFromTask :: TelegramDto.TelegramUserLink -> TaskId -> DomainUser.User -> App (EitherResult TaskDto.Task)
-removeTelegramLinkFromTask telegramDto taskId _ =
+removeTelegramLinkFromTask :: TaskId -> TelegramDto.TelegramUserLink ->  DomainUser.User -> App (EitherResult TaskDto.Task)
+removeTelegramLinkFromTask taskId telegramDto _ =
     onTaskExist taskId (onTelegramLinkExist chatId . unassignTelegramLink)
     where
         chatId = TelegramDto.chatId telegramDto

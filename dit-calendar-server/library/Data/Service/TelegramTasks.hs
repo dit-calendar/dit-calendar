@@ -36,7 +36,7 @@ deleteTaskFromAllTelegramLinksImpl task =
 addTelegramLinkToTaskImpl :: (MonadDBTaskRepo m, MonadDBTelegramRepo m) =>
                 Task -> TelegramLink -> m (EitherResult Task)
 addTelegramLinkToTaskImpl task telegramLink =
-    if taskId task `elem` assignedTelegramLinks task
+    if chatId telegramLink `elem` assignedTelegramLinks task
     then return (Right task) -- do nothing and return same task
     else do
         TelegramRepo.updateTelegramLink telegramLink {assignedToTasks = taskId task : assignedToTasks telegramLink} 
@@ -45,7 +45,7 @@ addTelegramLinkToTaskImpl task telegramLink =
 removeTelegramLinkFromTaskImpl :: (MonadDBTaskRepo m, MonadDBTelegramRepo m) =>
                     Task -> TelegramLink -> m (EitherResult Task)
 removeTelegramLinkFromTaskImpl task telegramLink =
-    if taskId task `elem` assignedTelegramLinks task
+    if chatId telegramLink `notElem` assignedTelegramLinks task
     then return (Right task) -- do nothing and return same task
     else do
         TelegramRepo.updateTelegramLink telegramLink {assignedToTasks = delete (taskId task) (assignedToTasks telegramLink)} 
