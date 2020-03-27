@@ -6,13 +6,15 @@
 module Data.Repository.Acid.TelegramLink
     ( TelegramDAO(..), initialTelegramState, TelegramLinkList, TelegramLinkById(..), NewTelegramLink(..), UpdateTelegramLink(..)) where
 
+import           Control.Monad.State                (get, put)
+
 import           Data.Acid                          (Query, Update, makeAcidic)
-import           Data.IxSet                         (Indexable (..), ixFun,
-                                                     ixSet)
+import           Data.IxSet                         (Indexable (..), insert,
+                                                     ixFun, ixSet)
 
 import           Data.Domain.TelegramLink           (TelegramLink (..))
 import           Data.Domain.Types                  (EitherResult,
-                                                     TelegramChatId)
+                                                     TelegramChatId, setVersion)
 
 import qualified Data.Repository.Acid.InterfaceAcid as InterfaceAcid
 
@@ -30,7 +32,11 @@ telegramLinkById = InterfaceAcid.entryById
 
 -- create a new, empty user and add it to the database
 newTelegramLink :: TelegramLink -> Update TelegramLinkList TelegramLink
-newTelegramLink = InterfaceAcid.newEntry
+newTelegramLink entry =
+    do  b@InterfaceAcid.EntrySet{..} <- get
+        put b { InterfaceAcid.entrys      = insert (setVersion entry 0) entrys
+              }
+        return entry
 
 updateTelegramLink :: TelegramLink -> Update TelegramLinkList (EitherResult TelegramLink)
 updateTelegramLink = InterfaceAcid.updateEntry
