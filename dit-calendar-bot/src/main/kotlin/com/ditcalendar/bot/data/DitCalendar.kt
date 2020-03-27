@@ -11,12 +11,4 @@ data class DitCalendar(val description: String,
                        @Serializable(with = DateSerializer::class)
                        val startDate: Date,
                        @Transient
-                       var tasks: Tasks = listOf()) : Base() {
-
-    override fun toStringInMarkdown(): String =
-            """
-                *$description*
-                *Datum*: $startDate
-                
-            """.trimIndent() + tasks.toStringInMarkdown()
-}
+                       var tasks: Tasks = listOf()) : Base()
