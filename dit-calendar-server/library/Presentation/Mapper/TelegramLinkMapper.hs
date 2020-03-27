@@ -16,9 +16,14 @@ instance Mapper Domain.TelegramLink TelegramUserLink where
             { chatId = Domain.chatId domain
             , userId = Domain.telegramUserId domain
             , userName = Domain.userName domain
+            , firstName = Domain.firstName domain
             }
 
     transformFromDto dto
       = fromMaybe
-          def{Domain.chatId = chatId dto, Domain.telegramUserId = userId dto,
-              Domain.userName = userName dto}
+          def
+          { Domain.chatId = chatId dto
+          , Domain.telegramUserId = userId dto
+          , Domain.userName = userName dto
+          , Domain.firstName = firstName dto
+          }

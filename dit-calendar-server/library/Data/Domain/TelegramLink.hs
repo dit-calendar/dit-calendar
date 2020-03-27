@@ -17,6 +17,7 @@ data TelegramLink = TelegramLink
     { chatId          :: TelegramChatId
     , telegramUserId  :: Int
     , userName        :: Maybe Text
+    , firstName       :: Text
     , assignedToTasks :: [TaskId]
     , version         :: Int
     } deriving (Eq, Ord, Read, Show, Data, Typeable)

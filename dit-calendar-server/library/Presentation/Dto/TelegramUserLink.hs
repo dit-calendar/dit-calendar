@@ -15,6 +15,7 @@ data TelegramUserLink = TelegramUserLink
     { chatId          :: TelegramChatId
     , userId          :: Int
     , userName        :: Maybe Text
+    , firstName       :: Text
     } deriving (Show, Generic)
 
 validate :: Either String TelegramUserLink -> Either String TelegramUserLink
