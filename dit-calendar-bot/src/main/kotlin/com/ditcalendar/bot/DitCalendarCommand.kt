@@ -104,5 +104,6 @@ class DitCalendarCommand {
         val telegramLink = TelegramLink(chatId, user.id, user.username, user.first_name)
         return authEndpoint.getToken()
                 .flatMap { taskEndpoint.unassignUserFromTask(taskId, telegramLink, it) }
+                .fold({_-> Result.Success("erfolgreich ausgetragen") }, {_-> Result.error(UnassigmentError())})
     }
 }

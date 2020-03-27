@@ -5,7 +5,6 @@ import com.ditcalendar.bot.config.dit_calendar_server_url
 import com.ditcalendar.bot.data.Task
 import com.ditcalendar.bot.data.Tasks
 import com.ditcalendar.bot.data.TelegramLink
-import com.ditcalendar.bot.error.UnassigmentError
 import com.github.kittinunf.fuel.core.extensions.authentication
 import com.github.kittinunf.fuel.httpDelete
 import com.github.kittinunf.fuel.httpGet
@@ -53,17 +52,13 @@ class TaskEndpoint {
         }
     }
 
-    fun unassignUserFromTask(taskId: Long, telegramLink: TelegramLink, token: String): Result<String, Exception> {
+    fun unassignUserFromTask(taskId: Long, telegramLink: TelegramLink, token: String): Result<String, Exception> =
 
-        val (_, response, result) = "$ditCalendarUrl/calendarentries/tasks/$taskId/assignment"
+        "$ditCalendarUrl/calendarentries/tasks/$taskId/assignment"
                 .httpDelete()
                 .body(json.stringify(TelegramLink.serializer(), telegramLink))
                 .authentication().bearer(token)
                 .responseString()
+                .third
 
-        return if (response.statusCode == 200)
-            Result.Success("erfolgreich ausgetragen")
-        else
-            Result.error(UnassigmentError())
-    }
 }
