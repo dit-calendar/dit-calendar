@@ -8,9 +8,37 @@ import java.util.*
 typealias Tasks = List<Task>
 
 @Serializable
-data class Task(val taskId: Long,
-                val description: String,
-                @Serializable(with = DateSerializer::class)
-                val startTime: Date,
-                @Serializable(with = DateSerializer::class)
-                val endTime: Date? = null) : Base()
+sealed class Task : Base() {
+    abstract val taskId: Long
+    abstract val description: String
+
+    @Serializable(with = DateSerializer::class)
+    abstract val startTime: Date
+
+    @Serializable(with = DateSerializer::class)
+    abstract val endTime: Date?
+}
+
+@Serializable
+class TaskForAssignment(override val taskId: Long,
+                        override val description: String,
+                        @Serializable(with = DateSerializer::class)
+                        override val startTime: Date,
+                        @Serializable(with = DateSerializer::class)
+                        override val endTime: Date? = null) : Task()
+
+@Serializable
+class TaskForUnassignment(override val taskId: Long,
+                          override val description: String,
+                          @Serializable(with = DateSerializer::class)
+                          override val startTime: Date,
+                          @Serializable(with = DateSerializer::class)
+                          override val endTime: Date? = null) : Task()
+
+@Serializable
+class TaskAfterUnassignment(override val taskId: Long,
+                            override val description: String,
+                            @Serializable(with = DateSerializer::class)
+                            override val startTime: Date,
+                            @Serializable(with = DateSerializer::class)
+                            override val endTime: Date? = null) : Task()

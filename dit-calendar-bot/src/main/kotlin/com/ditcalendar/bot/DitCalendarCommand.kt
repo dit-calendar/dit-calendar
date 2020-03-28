@@ -7,9 +7,7 @@ import com.ditcalendar.bot.endpoint.TaskEndpoint
 import com.ditcalendar.bot.error.DitBotError
 import com.ditcalendar.bot.error.InvalidRequest
 import com.ditcalendar.bot.error.UnassigmentError
-import com.ditcalendar.bot.markdown.toStringInMarkdown
-import com.elbekD.bot.types.Message
-import com.elbekD.bot.types.User
+import com.ditcalendar.bot.markdown.toMarkdown
 import com.github.kittinunf.fuel.core.FuelError
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
@@ -21,30 +19,25 @@ class DitCalendarCommand {
     private val taskEndpoint = TaskEndpoint()
     private val authEndpoint = AuthEndpoint()
 
-    fun parseRequest(msg: Message, opts: String?): String {
+    fun parseRequest(telegramLink: TelegramLink, opts: String?): String {
 
-        val msgUser = msg.from
-        //if message user is not set, we can't process
-        val result = if (msgUser == null) {
-            Result.error(InvalidRequest())
-        } else {
-            if (opts != null && opts.startsWith("assign")) {
-                val taskId: Long? = opts.substringAfter("_").toLongOrNull()
-                if (taskId != null)
-                    assignUserToTask(taskId, msg.chat.id, msgUser)
-                else
-                    Result.error(InvalidRequest())
-            } else if (opts != null && opts.startsWith("unassign")) {
-                val taskId: Long? = opts.substringAfter("_").toLongOrNull()
-                if (taskId != null)
-                    unassignUserToTask(taskId, msg.chat.id, msgUser)
-                else
-                    Result.error(InvalidRequest())
-            } else {
-                val calendarId: Long = 1
-                getCalendarAndTask(calendarId)
-            }
-        }
+        val result =
+                if (opts != null && opts.startsWith("assign")) {
+                    val taskId: Long? = opts.substringAfter("_").toLongOrNull()
+                    if (taskId != null)
+                        assignUserToTask(taskId, telegramLink)
+                    else
+                        Result.error(InvalidRequest())
+                } else if (opts != null && opts.startsWith("unassign")) {
+                    val taskId: Long? = opts.substringAfter("_").toLongOrNull()
+                    if (taskId != null)
+                        unassignUserFromTask(taskId, telegramLink)
+                    else
+                        Result.error(InvalidRequest())
+                } else {
+                    val calendarId: Long = 1
+                    getCalendarAndTask(calendarId)
+                }
 
         return parseResponse(result)
 
@@ -85,26 +78,21 @@ class DitCalendarCommand {
             tasksResulst.map {
                 calendar.apply { tasks = it }
             }
-        }.map { it.toStringInMarkdown() + System.lineSeparator() }
+        }.map { it.toMarkdown() + System.lineSeparator() }
     }
 
-    private fun assignUserToTask(taskId: Long, chatId: Long, user: User): Result<String, Exception> {
-        val telegramLink = TelegramLink(chatId, user.id, user.username, user.first_name)
+    private fun assignUserToTask(taskId: Long, telegramLink: TelegramLink): Result<String, Exception> {
         val taskAfterAssignment = authEndpoint.getToken()
                 .flatMap { taskEndpoint.assignUserToTask(taskId, telegramLink, it) }
 
         return taskAfterAssignment.map {
-            """
-                *erfolgreich hinzugefügt zu:*
-                ${it.toStringInMarkdown()}
-            """.trimIndent()
+            "*erfolgreich hinzugefügt zu:*" + System.lineSeparator() + it.toMarkdown()
         }
     }
 
-    private fun unassignUserToTask(taskId: Long, chatId: Long, user: User): Result<String, Exception> {
-        val telegramLink = TelegramLink(chatId, user.id, user.username, user.first_name)
+    private fun unassignUserFromTask(taskId: Long, telegramLink: TelegramLink): Result<String, Exception> {
         return authEndpoint.getToken()
                 .flatMap { taskEndpoint.unassignUserFromTask(taskId, telegramLink, it) }
-                .fold({_-> Result.Success("erfolgreich ausgetragen") }, {_-> Result.error(UnassigmentError())})
+                .fold({ Result.Success(it.toMarkdown()) }, { Result.error(UnassigmentError()) })
     }
 }

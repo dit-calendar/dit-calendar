@@ -1,6 +1,7 @@
 package com.ditcalendar.bot
 
 import com.ditcalendar.bot.config.*
+import com.ditcalendar.bot.data.TelegramLink
 import com.elbekD.bot.Bot
 import com.elbekD.bot.server
 
@@ -27,8 +28,15 @@ fun main(args: Array<String>) {
     } else Bot.createPolling(config[bot_name], token)
 
     bot.onCommand("/start") { msg, opts ->
-        val result = calendarCommand.parseRequest(msg, opts)
-        bot.sendMessage(msg.chat.id, result, "MarkdownV2", true)
+        val msgUser = msg.from
+        //if message user is not set, we can't process
+        if (msgUser == null) {
+            bot.sendMessage(msg.chat.id, "fehlerhafte Anfrage")
+        } else {
+            val telegramLink = TelegramLink(msg.chat.id, msgUser.id, msgUser.username, msgUser.first_name)
+            val result = calendarCommand.parseRequest(telegramLink, opts)
+            bot.sendMessage(msg.chat.id, result, "MarkdownV2", true)
+        }
     }
 
     bot.start()
