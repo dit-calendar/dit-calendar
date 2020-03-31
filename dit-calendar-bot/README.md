@@ -1,6 +1,6 @@
 # deployment
-* `mvn clean package`
-* `heroku deploy:jar target/bot-1.0-SNAPSHOT-jar-with-dependencies.jar --app dit-calendar`
+* `gradle build`
+* `heroku deploy:jar build/libs/dit-calendar-bot-*-all.jar --app dit-calendar`
 
 # manual test
 * https://core.telegram.org/bots/webhooks
