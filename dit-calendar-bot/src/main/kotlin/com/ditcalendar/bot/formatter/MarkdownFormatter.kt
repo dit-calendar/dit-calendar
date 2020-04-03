@@ -1,4 +1,4 @@
-package com.ditcalendar.bot.parsing
+package com.ditcalendar.bot.formatter
 
 import com.ditcalendar.bot.config.bot_name
 import com.ditcalendar.bot.config.config

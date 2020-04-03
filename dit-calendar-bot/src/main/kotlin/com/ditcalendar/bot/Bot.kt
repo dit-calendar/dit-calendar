@@ -4,7 +4,7 @@ import com.ditcalendar.bot.config.*
 import com.ditcalendar.bot.data.OnlyText
 import com.ditcalendar.bot.data.TelegramLink
 import com.ditcalendar.bot.data.WithInline
-import com.ditcalendar.bot.parsing.parseResponse
+import com.ditcalendar.bot.formatter.parseResponse
 import com.elbekD.bot.Bot
 import com.elbekD.bot.server
 import com.elbekD.bot.types.InlineKeyboardButton
@@ -40,9 +40,10 @@ fun main(args: Array<String>) {
         } else {
             val telegramLink = TelegramLink(msg.chat.id, msgUser.id, msgUser.username, msgUser.first_name)
             val response = calendarCommand.parseRequest(telegramLink, opts)
-            val result = parseResponse(response)
-            when (result) {
-                is OnlyText -> bot.sendMessage(msg.chat.id, result.message, "MarkdownV2", true)
+
+            when (val result = parseResponse(response)) {
+                is OnlyText ->
+                    bot.sendMessage(msg.chat.id, result.message, "MarkdownV2", true)
                 is WithInline -> {
                     val inlineButton = InlineKeyboardButton(result.callBackText, callback_data = result.callBackData)
                     val inlineKeyboardMarkup = InlineKeyboardMarkup(listOf(listOf(inlineButton)))
