@@ -14,7 +14,7 @@ matrix:
       elm-test: 0.19.1-revision2
       elm-format: 0.8.2
       before_script:
-        - cd dit-calendar-client
+        - cd dit-calendar-ui
       script:
         - elm make src/Main.elm --output src/Main.js
         - elm-test

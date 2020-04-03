@@ -6,7 +6,7 @@ This is a tool for collective participatory projects. A calendar for self-admini
 ## dit-calendar-server
 The backend is build on happstack in haskell.
 
-## dit-calendar-client
+## dit-calendar-ui
 Very simple web-ui written in elm. For creating events and tasks from the perspective of the organization group.
 
 ## dit-calendar-bot
