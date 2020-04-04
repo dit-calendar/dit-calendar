@@ -14,23 +14,28 @@ import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.map
 
-class DitCalendarCommand {
+class DitCalendarService {
 
     private val calendarEndpoint = CalendarEndpoint()
     private val taskEndpoint = TaskEndpoint()
     private val authEndpoint = AuthEndpoint()
 
-    fun parseRequest(telegramLink: TelegramLink, opts: String?): Result<Base, Exception> =
+    fun executeCallback(telegramLink: TelegramLink, request: String): Result<TaskAfterUnassignment, Exception> =
+            if (request.startsWith("unassign")) {
+                val taskId: Long? = request.substringAfter("_").toLongOrNull()
+                if (taskId != null)
+                    unassignUserFromTask(taskId, telegramLink)
+                else
+                    Result.error(InvalidRequest())
+            } else
+                Result.error(InvalidRequest())
+
+
+    fun executeCommandRequest(telegramLink: TelegramLink, opts: String?): Result<Base, Exception> =
             if (opts != null && opts.startsWith("assign")) {
                 val taskId: Long? = opts.substringAfter("_").toLongOrNull()
                 if (taskId != null)
                     assignUserToTask(taskId, telegramLink)
-                else
-                    Result.error(InvalidRequest())
-            } else if (opts != null && opts.startsWith("unassign")) {
-                val taskId: Long? = opts.substringAfter("_").toLongOrNull()
-                if (taskId != null)
-                    unassignUserFromTask(taskId, telegramLink)
                 else
                     Result.error(InvalidRequest())
             } else {

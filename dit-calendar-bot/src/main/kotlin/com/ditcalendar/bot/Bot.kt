@@ -16,7 +16,7 @@ fun main(args: Array<String>) {
 
     val token = config[telegram_token]
     val herokuApp = config[heroku_app_name]
-    val calendarCommand = DitCalendarCommand()
+    val calendarService = DitCalendarService()
 
     val bot = if (config[webhook_is_enabled]) {
         Bot.createWebhook(config[bot_name], token) {
@@ -32,6 +32,29 @@ fun main(args: Array<String>) {
         }
     } else Bot.createPolling(config[bot_name], token)
 
+    bot.onCallbackQuery { callbackQuery ->
+        val request = callbackQuery.data
+        val originallyMessage = callbackQuery.message
+
+        if (request == null || originallyMessage == null) {
+            bot.answerCallbackQuery(callbackQuery.id, "fehlerhafte Anfrage")
+        } else {
+            val msgUser = callbackQuery.from
+            val telegramLink = TelegramLink(originallyMessage.chat.id, msgUser.id, msgUser.username, msgUser.first_name)
+            val response = calendarService.executeCallback(telegramLink, request)
+
+            when (val result = parseResponse(response)) {
+                is OnlyText -> {
+                    bot.answerCallbackQuery(callbackQuery.id, "erfolgreich ausgetragen")
+                    bot.editMessageText(originallyMessage.chat.id, originallyMessage.message_id, text = result.message,
+                            parseMode = "MarkdownV2")
+                }
+                is WithInline ->
+                    bot.answerCallbackQuery(callbackQuery.id, "nicht implementiert", true)
+            }
+        }
+    }
+
     bot.onCommand("/start") { msg, opts ->
         val msgUser = msg.from
         //if message user is not set, we can't process
@@ -39,7 +62,7 @@ fun main(args: Array<String>) {
             bot.sendMessage(msg.chat.id, "fehlerhafte Anfrage")
         } else {
             val telegramLink = TelegramLink(msg.chat.id, msgUser.id, msgUser.username, msgUser.first_name)
-            val response = calendarCommand.parseRequest(telegramLink, opts)
+            val response = calendarService.executeCommandRequest(telegramLink, opts)
 
             when (val result = parseResponse(response)) {
                 is OnlyText ->

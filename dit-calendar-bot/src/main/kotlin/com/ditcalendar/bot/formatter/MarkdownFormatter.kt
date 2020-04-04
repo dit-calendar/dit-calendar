@@ -23,7 +23,7 @@ fun Task.toMarkdown(): String =
                 """.trimIndent()
             is TaskAfterUnassignment ->
                 """
-                    erfolgreich ausgetragen von:
+                    *erfolgreich ausgetragen von*:
                     _Task_: $description
                     _Datum_: $startTime
                 """.trimIndent()
