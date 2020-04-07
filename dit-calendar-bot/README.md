@@ -1,3 +1,6 @@
+# config
+* enable inline queries `https://core.telegram.org/bots/inline`
+
 # deployment
 * `gradle build`
 * `heroku deploy:jar build/libs/dit-calendar-bot-*-all.jar --app dit-calendar`

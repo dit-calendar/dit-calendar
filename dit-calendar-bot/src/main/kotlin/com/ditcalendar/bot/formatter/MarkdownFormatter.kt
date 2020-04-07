@@ -1,4 +1,4 @@
-package com.ditcalendar.bot.markdown
+package com.ditcalendar.bot.formatter
 
 import com.ditcalendar.bot.config.bot_name
 import com.ditcalendar.bot.config.config
@@ -20,11 +20,10 @@ fun Task.toMarkdown(): String =
                 """
                     _Task_: $description
                     _Datum_: $startTime
-                    [unassign me](https://t.me/$botName?start=unassign_$taskId)
                 """.trimIndent()
             is TaskAfterUnassignment ->
                 """
-                    erfolgreich ausgetragen von:
+                    *erfolgreich ausgetragen von*:
                     _Task_: $description
                     _Datum_: $startTime
                 """.trimIndent()

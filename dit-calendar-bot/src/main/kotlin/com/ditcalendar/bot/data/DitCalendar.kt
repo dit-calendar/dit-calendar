@@ -7,7 +7,8 @@ import kotlinx.serialization.Transient
 import java.util.*
 
 @Serializable
-data class DitCalendar(val description: String,
+data class DitCalendar(var entryId: Long,
+                       val description: String,
                        @Serializable(with = DateSerializer::class)
                        val startDate: Date,
                        @Transient
