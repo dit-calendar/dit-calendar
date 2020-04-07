@@ -31,7 +31,7 @@ class DitCalendarService {
                 Result.error(InvalidRequest())
 
 
-    fun executeCommandRequest(telegramLink: TelegramLink, opts: String?): Result<Base, Exception> =
+    fun executeTaskAssignmentCommand(telegramLink: TelegramLink, opts: String?): Result<Base, Exception> =
             if (opts != null && opts.startsWith("assign")) {
                 val taskId: Long? = opts.substringAfter("_").toLongOrNull()
                 if (taskId != null)
@@ -39,9 +39,17 @@ class DitCalendarService {
                 else
                     Result.error(InvalidRequest())
             } else {
-                val calendarId: Long = 1
-                getCalendarAndTask(calendarId)
+                Result.error(InvalidRequest())
             }
+
+    fun executePublishCalendarCommand(opts: String?): Result<Base, Exception> {
+        val calendarId: Long? = opts?.toLongOrNull()
+        return if (calendarId != null)
+            getCalendarAndTask(calendarId)
+        else
+            Result.error(InvalidRequest())
+    }
+
 
     private fun getCalendarAndTask(calendarId: Long): Result<DitCalendar, Exception> {
         val calendarResult = calendarEndpoint.readCalendar(calendarId)

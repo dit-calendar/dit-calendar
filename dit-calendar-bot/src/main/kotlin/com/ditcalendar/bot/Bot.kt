@@ -4,11 +4,14 @@ import com.ditcalendar.bot.config.*
 import com.ditcalendar.bot.data.OnlyText
 import com.ditcalendar.bot.data.TelegramLink
 import com.ditcalendar.bot.data.WithInline
+import com.ditcalendar.bot.data.core.Base
 import com.ditcalendar.bot.formatter.parseResponse
 import com.elbekD.bot.Bot
 import com.elbekD.bot.server
 import com.elbekD.bot.types.InlineKeyboardButton
 import com.elbekD.bot.types.InlineKeyboardMarkup
+import com.elbekD.bot.types.Message
+import com.github.kittinunf.result.Result
 
 fun main(args: Array<String>) {
 
@@ -62,20 +65,35 @@ fun main(args: Array<String>) {
             bot.sendMessage(msg.chat.id, "fehlerhafte Anfrage")
         } else {
             val telegramLink = TelegramLink(msg.chat.id, msgUser.id, msgUser.username, msgUser.first_name)
-            val response = calendarService.executeCommandRequest(telegramLink, opts)
+            val response = calendarService.executeTaskAssignmentCommand(telegramLink, opts)
 
-            when (val result = parseResponse(response)) {
-                is OnlyText ->
-                    bot.sendMessage(msg.chat.id, result.message, "MarkdownV2", true)
-                is WithInline -> {
-                    val inlineButton = InlineKeyboardButton(result.callBackText, callback_data = result.callBackData)
-                    val inlineKeyboardMarkup = InlineKeyboardMarkup(listOf(listOf(inlineButton)))
-                    bot.sendMessage(msg.chat.id, result.message, "MarkdownV2", true, markup = inlineKeyboardMarkup)
-                }
-            }
+            sendMessage(response, bot, msg)
 
         }
     }
 
+    bot.onCommand("/postcalendar") { msg, opts ->
+        val msgUser = msg.from
+        //if message user is not set, we can't process
+        if (msgUser == null) {
+            bot.sendMessage(msg.chat.id, "fehlerhafte Anfrage")
+        } else {
+            val response = calendarService.executePublishCalendarCommand(opts)
+            sendMessage(response, bot, msg)
+        }
+    }
+
     bot.start()
+}
+
+private fun sendMessage(response: Result<Base, Exception>, bot: Bot, msg: Message) {
+    when (val result = parseResponse(response)) {
+        is OnlyText ->
+            bot.sendMessage(msg.chat.id, result.message, "MarkdownV2", true)
+        is WithInline -> {
+            val inlineButton = InlineKeyboardButton(result.callBackText, callback_data = result.callBackData)
+            val inlineKeyboardMarkup = InlineKeyboardMarkup(listOf(listOf(inlineButton)))
+            bot.sendMessage(msg.chat.id, result.message, "MarkdownV2", true, markup = inlineKeyboardMarkup)
+        }
+    }
 }
