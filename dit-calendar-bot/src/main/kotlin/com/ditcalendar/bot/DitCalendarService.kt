@@ -31,16 +31,13 @@ class DitCalendarService {
                 Result.error(InvalidRequest())
 
 
-    fun executeTaskAssignmentCommand(telegramLink: TelegramLink, opts: String?): Result<Base, Exception> =
-            if (opts != null && opts.startsWith("assign")) {
-                val taskId: Long? = opts.substringAfter("_").toLongOrNull()
-                if (taskId != null)
-                    assignUserToTask(taskId, telegramLink)
-                else
-                    Result.error(InvalidRequest())
-            } else {
-                Result.error(InvalidRequest())
-            }
+    fun executeTaskAssignmentCommand(telegramLink: TelegramLink, opts: String): Result<Base, Exception> {
+        val taskId: Long? = opts.substringAfter("_").toLongOrNull()
+        return if (taskId != null)
+            assignUserToTask(taskId, telegramLink)
+        else
+            Result.error(InvalidRequest())
+    }
 
     fun executePublishCalendarCommand(opts: String?): Result<Base, Exception> {
         val calendarId: Long? = opts?.toLongOrNull()

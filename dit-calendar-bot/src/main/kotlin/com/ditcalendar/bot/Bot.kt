@@ -13,7 +13,14 @@ import com.elbekD.bot.types.InlineKeyboardMarkup
 import com.elbekD.bot.types.Message
 import com.github.kittinunf.result.Result
 
+val helpMessage =
+        """
+            Mögliche Befehle sind:
+            /postcalendar {Hier Id einfügen}
+        """.trimIndent()
+
 fun main(args: Array<String>) {
+
 
     val config by config()
 
@@ -58,17 +65,22 @@ fun main(args: Array<String>) {
         }
     }
 
+    //for deeplinking
     bot.onCommand("/start") { msg, opts ->
         val msgUser = msg.from
         //if message user is not set, we can't process
         if (msgUser == null) {
             bot.sendMessage(msg.chat.id, "fehlerhafte Anfrage")
         } else {
-            val telegramLink = TelegramLink(msg.chat.id, msgUser.id, msgUser.username, msgUser.first_name)
-            val response = calendarService.executeTaskAssignmentCommand(telegramLink, opts)
+            if (opts != null && opts.startsWith("assign")) {
+                val telegramLink = TelegramLink(msg.chat.id, msgUser.id, msgUser.username, msgUser.first_name)
+                val response = calendarService.executeTaskAssignmentCommand(telegramLink, opts)
 
-            sendMessage(response, bot, msg)
+                sendMessage(response, bot, msg)
+            } else {
 
+                bot.sendMessage(msg.chat.id, helpMessage)
+            }
         }
     }
 
