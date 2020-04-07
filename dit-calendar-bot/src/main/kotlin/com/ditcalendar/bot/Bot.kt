@@ -15,8 +15,9 @@ import com.github.kittinunf.result.Result
 
 val helpMessage =
         """
-            Mögliche Befehle sind:
-            /postcalendar {Hier Id einfügen}
+            Mögliche Befehle sind
+            /postcalendar {Hier Id einfügen} = Postet den Calendar mit der angegebenen ID
+            /help = Zeigt alle Befehle an
         """.trimIndent()
 
 fun main(args: Array<String>) {
@@ -78,10 +79,13 @@ fun main(args: Array<String>) {
 
                 sendMessage(response, bot, msg)
             } else {
-
                 bot.sendMessage(msg.chat.id, helpMessage)
             }
         }
+    }
+
+    bot.onCommand("/help") { msg, _ ->
+        bot.sendMessage(msg.chat.id, helpMessage)
     }
 
     bot.onCommand("/postcalendar") { msg, opts ->
