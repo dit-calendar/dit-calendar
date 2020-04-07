@@ -12,6 +12,8 @@ import com.elbekD.bot.types.InlineKeyboardButton
 import com.elbekD.bot.types.InlineKeyboardMarkup
 import com.elbekD.bot.types.Message
 import com.github.kittinunf.result.Result
+import com.github.kittinunf.result.failure
+import com.github.kittinunf.result.success
 
 val helpMessage =
         """
@@ -56,9 +58,12 @@ fun main(args: Array<String>) {
 
             when (val result = parseResponse(response)) {
                 is OnlyText -> {
-                    bot.answerCallbackQuery(callbackQuery.id, "erfolgreich ausgetragen")
-                    bot.editMessageText(originallyMessage.chat.id, originallyMessage.message_id, text = result.message,
-                            parseMode = "MarkdownV2")
+                    response.failure {bot.answerCallbackQuery(callbackQuery.id, result.message)}
+                    response.success {
+                        bot.answerCallbackQuery(callbackQuery.id, "erfolgreich ausgetragen")
+                        bot.editMessageText(originallyMessage.chat.id, originallyMessage.message_id, text = result.message,
+                                parseMode = "MarkdownV2")
+                    }
                 }
                 is WithInline ->
                     bot.answerCallbackQuery(callbackQuery.id, "nicht implementiert", true)
