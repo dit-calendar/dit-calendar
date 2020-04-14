@@ -1,9 +1,6 @@
 package com.ditcalendar.bot
 
-import com.ditcalendar.bot.data.DitCalendar
-import com.ditcalendar.bot.data.TaskAfterUnassignment
-import com.ditcalendar.bot.data.TaskForUnassignment
-import com.ditcalendar.bot.data.TelegramLink
+import com.ditcalendar.bot.data.*
 import com.ditcalendar.bot.data.core.Base
 import com.ditcalendar.bot.endpoint.AuthEndpoint
 import com.ditcalendar.bot.endpoint.CalendarEndpoint
@@ -20,15 +17,11 @@ class DitCalendarService {
     private val taskEndpoint = TaskEndpoint()
     private val authEndpoint = AuthEndpoint()
 
-    fun executeCallback(telegramLink: TelegramLink, request: String): Result<TaskAfterUnassignment, Exception> =
-            if (request.startsWith("unassign")) {
-                val taskId: Long? = request.substringAfter("_").toLongOrNull()
-                if (taskId != null)
-                    unassignUserFromTask(taskId, telegramLink)
-                else
-                    Result.error(InvalidRequest())
-            } else
-                Result.error(InvalidRequest())
+    fun executeCallback(telegramLink: TelegramLink, callbackRequest: CallbackRequest?): Result<TaskAfterUnassignment, Exception> =
+            when (callbackRequest) {
+                is UnassignCallbackRequest -> unassignUserFromTask(callbackRequest.taskId, telegramLink)
+                null -> Result.error(InvalidRequest())
+            }
 
 
     fun executeTaskAssignmentCommand(telegramLink: TelegramLink, opts: String): Result<Base, Exception> {

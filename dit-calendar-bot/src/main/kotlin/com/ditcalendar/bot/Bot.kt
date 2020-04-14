@@ -5,6 +5,7 @@ import com.ditcalendar.bot.data.OnlyText
 import com.ditcalendar.bot.data.TelegramLink
 import com.ditcalendar.bot.data.WithInline
 import com.ditcalendar.bot.data.core.Base
+import com.ditcalendar.bot.data.parse
 import com.ditcalendar.bot.formatter.parseResponse
 import com.elbekD.bot.Bot
 import com.elbekD.bot.server
@@ -54,11 +55,12 @@ fun main(args: Array<String>) {
         } else {
             val msgUser = callbackQuery.from
             val telegramLink = TelegramLink(originallyMessage.chat.id, msgUser.id, msgUser.username, msgUser.first_name)
-            val response = calendarService.executeCallback(telegramLink, request)
+            val callbackRequest = parse(request)
+            val response = calendarService.executeCallback(telegramLink, callbackRequest)
 
             when (val result = parseResponse(response)) {
                 is OnlyText -> {
-                    response.failure {bot.answerCallbackQuery(callbackQuery.id, result.message)}
+                    response.failure { bot.answerCallbackQuery(callbackQuery.id, result.message) }
                     response.success {
                         bot.answerCallbackQuery(callbackQuery.id, "erfolgreich ausgetragen")
                         bot.editMessageText(originallyMessage.chat.id, originallyMessage.message_id, text = result.message,
