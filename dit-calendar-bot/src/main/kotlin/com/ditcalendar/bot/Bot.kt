@@ -67,8 +67,13 @@ fun main(args: Array<String>) {
                                 parseMode = "MarkdownV2")
                     }
                 }
-                is WithInline ->
-                    bot.answerCallbackQuery(callbackQuery.id, "nicht implementiert", true)
+                is WithInline -> {
+                    bot.answerCallbackQuery(callbackQuery.id, "calendar wurde neugeladen")
+                    val inlineButton = InlineKeyboardButton(result.callBackText, callback_data = result.callBackData)
+                    val inlineKeyboardMarkup = InlineKeyboardMarkup(listOf(listOf(inlineButton)))
+                    bot.editMessageText(originallyMessage.chat.id, originallyMessage.message_id, text = result.message,
+                            parseMode = "MarkdownV2", markup = inlineKeyboardMarkup)
+                }
             }
         }
     }

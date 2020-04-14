@@ -17,9 +17,10 @@ class DitCalendarService {
     private val taskEndpoint = TaskEndpoint()
     private val authEndpoint = AuthEndpoint()
 
-    fun executeCallback(telegramLink: TelegramLink, callbackRequest: CallbackRequest?): Result<TaskAfterUnassignment, Exception> =
+    fun executeCallback(telegramLink: TelegramLink, callbackRequest: CallbackRequest?): Result<Base, Exception> =
             when (callbackRequest) {
                 is UnassignCallbackRequest -> unassignUserFromTask(callbackRequest.taskId, telegramLink)
+                is ReloadCallbackRequest -> getCalendarAndTask(callbackRequest.calendarId)
                 null -> Result.error(InvalidRequest())
             }
 
