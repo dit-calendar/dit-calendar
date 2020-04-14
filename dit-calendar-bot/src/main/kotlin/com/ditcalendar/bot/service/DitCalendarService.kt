@@ -1,4 +1,4 @@
-package com.ditcalendar.bot
+package com.ditcalendar.bot.service
 
 import com.ditcalendar.bot.data.*
 import com.ditcalendar.bot.data.core.Base

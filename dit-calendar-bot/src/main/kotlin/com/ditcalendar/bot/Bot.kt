@@ -7,6 +7,7 @@ import com.ditcalendar.bot.data.WithInline
 import com.ditcalendar.bot.data.core.Base
 import com.ditcalendar.bot.data.parse
 import com.ditcalendar.bot.formatter.parseResponse
+import com.ditcalendar.bot.service.DitCalendarService
 import com.elbekD.bot.Bot
 import com.elbekD.bot.server
 import com.elbekD.bot.types.InlineKeyboardButton
