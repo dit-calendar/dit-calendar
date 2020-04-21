@@ -6,20 +6,21 @@ module Presentation.Dto.Task
 
 import           Data.Aeson
 import           Data.Default
-import           Data.Maybe        (isNothing)
+import           Data.Maybe                        (isNothing)
 import           Data.Text
-import           Data.Time.Clock   (UTCTime)
+import           Data.Time.Clock                   (UTCTime)
 import           GHC.Generics
 
-import           Data.Domain.Types (TelegramChatId)
+import           Data.Domain.Types                 (TelegramChatId)
+import           Presentation.Dto.TelegramUserLink (TelegramUserLink)
 
 data Task = Task
-    { description    :: Text
-    , taskId         :: Maybe Int
-    , version        :: Maybe Int
-    , assignedUsers  :: [TelegramChatId]
-    , startTime      :: Maybe UTCTime
-    , endTime        :: Maybe UTCTime
+    { description   :: Text
+    , taskId        :: Maybe Int
+    , version       :: Maybe Int
+    , assignedUsers :: [TelegramUserLink]
+    , startTime     :: Maybe UTCTime
+    , endTime       :: Maybe UTCTime
     } deriving (Show, Generic)
 
 validate :: Either String Task -> Either String Task

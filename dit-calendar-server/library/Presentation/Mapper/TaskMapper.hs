@@ -9,6 +9,7 @@ import           Data.Maybe                     (fromMaybe)
 
 import qualified Data.Domain.Task               as Domain
 import           Presentation.Dto.Task
+import Presentation.Dto.TelegramUserLink (TelegramUserLink(chatId))
 import           Presentation.Mapper.BaseMapper
 
 instance Mapper Domain.Task Task where
@@ -17,7 +18,7 @@ instance Mapper Domain.Task Task where
             { description = Domain.description domain
             , taskId = Just (Domain.taskId domain)
             , version = Just (Domain.version domain)
-            , assignedUsers = Domain.assignedTelegramLinks domain
+            , assignedUsers = []
             , startTime = Domain.startTime domain
             , endTime = Domain.endTime domain
             }
@@ -29,7 +30,7 @@ instance Mapper Domain.Task Task where
                     { Domain.description = description dto
                     , Domain.taskId = 0
                     , Domain.version = 0
-                    , Domain.assignedTelegramLinks = assignedUsers dto
+                    , Domain.assignedTelegramLinks = map chatId (assignedUsers dto)
                     , Domain.startTime = startTime dto
                     , Domain.endTime = endTime dto
                     }
@@ -38,10 +39,7 @@ instance Mapper Domain.Task Task where
                     { Domain.description = description dto
                     , Domain.taskId = Domain.taskId dbTask
                     , Domain.version = fromMaybe (-1) (version dto)
-                    , Domain.assignedTelegramLinks =
-                          case assignedUsers dto of
-                              [] -> Domain.assignedTelegramLinks dbTask
-                              x  -> x
+                    , Domain.assignedTelegramLinks = map chatId (assignedUsers dto)
                     , Domain.startTime = startTime dto `orElse` Domain.startTime dbTask
                     , Domain.endTime = endTime dto `orElse` Domain.endTime dbTask
                     }
