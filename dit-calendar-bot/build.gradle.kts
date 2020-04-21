@@ -4,7 +4,7 @@ group = "dit-calendar"
 version = "0.6.0.0-SNAPSHOT"
 
 plugins {
-    val kotlinVersion = "1.3.71"
+    val kotlinVersion = "1.3.72"
 
     application
 
