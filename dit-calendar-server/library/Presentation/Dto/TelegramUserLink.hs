@@ -15,7 +15,7 @@ data TelegramUserLink = TelegramUserLink
     { chatId          :: TelegramChatId
     , userId          :: Int
     , userName        :: Maybe Text
-    , firstName       :: Text
+    , firstName       :: Maybe Text
     } deriving (Show, Generic)
 
 validate :: Either String TelegramUserLink -> Either String TelegramUserLink
@@ -29,4 +29,4 @@ instance FromJSON TelegramUserLink where
     parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
 
 instance Default TelegramUserLink where
-    def = TelegramUserLink {userName = Nothing}
+    def = TelegramUserLink {userName = Nothing, firstName = Nothing}

@@ -17,7 +17,7 @@ data TelegramLink = TelegramLink
     { chatId          :: TelegramChatId
     , telegramUserId  :: Int
     , userName        :: Maybe Text
-    , firstName       :: Text
+    , firstName       :: Maybe Text
     , assignedToTasks :: [TaskId]
     , version         :: Int
     } deriving (Eq, Ord, Read, Show, Data, Typeable)
@@ -32,4 +32,4 @@ instance Entity TelegramLink where
     setVersion telegramLink newVersion = telegramLink {version = newVersion}
 
 instance Default TelegramLink where
-    def = TelegramLink {chatId = -1, assignedToTasks = [], userName = Nothing, version = 0}
+    def = TelegramLink {chatId = -1, assignedToTasks = [], userName = Nothing, version = 0, firstName = Nothing}
