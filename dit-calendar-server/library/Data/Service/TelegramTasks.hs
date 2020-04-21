@@ -51,13 +51,18 @@ removeTelegramLinkFromTaskImpl task telegramLink =
         TelegramRepo.updateTelegramLink telegramLink {assignedToTasks = delete (taskId task) (assignedToTasks telegramLink)}
         TaskRepo.updateTask task {assignedTelegramLinks = delete (TelegramLink.chatId telegramLink) (assignedTelegramLinks task)}
 
+findTelegramLinksByIdsImpl :: MonadDBTelegramRepo m => [TelegramChatId] -> m [TelegramLink]
+findTelegramLinksByIdsImpl chatIds =  fmap catMaybes (mapM (TelegramRepo.findTelegramLinkById) chatIds)
+
 class Monad m => TelegramTasksAssignmentService m where
     deleteTaskFromAllTelegramLinks :: Task -> m ()
     addTelegramLinkToTask :: Task -> TelegramLink -> m (EitherResult Task)
     removeTelegramLinkFromTask :: Task -> TelegramLink -> m (EitherResult Task)
+    findTelegramLinksByIds :: [TelegramChatId] -> m [TelegramLink]
 
 instance (MonadDBTaskRepo App, MonadDBTelegramRepo App)
             => TelegramTasksAssignmentService App where
     deleteTaskFromAllTelegramLinks = deleteTaskFromAllTelegramLinksImpl
     addTelegramLinkToTask = addTelegramLinkToTaskImpl
     removeTelegramLinkFromTask = removeTelegramLinkFromTaskImpl
+    findTelegramLinksByIds = findTelegramLinksByIdsImpl
