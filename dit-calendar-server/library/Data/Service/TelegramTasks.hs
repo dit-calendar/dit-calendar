@@ -4,17 +4,17 @@
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Data.Service.TelegramTasks (deleteTaskFromAllTelegramLinksImpl, addTelegramLinkToTaskImpl, removeTelegramLinkFromTaskImpl, TelegramTasksAssignmentService(..) ) where
+module Data.Service.TelegramTasks (deleteTaskFromAllTelegramLinksImpl, addTelegramLinkToTaskImpl,
+    addNewTelegramLinkToTaskImpl, removeTelegramLinkFromTaskImpl, TelegramTasksAssignmentService(..) ) where
 
 import           Control.Monad.IO.Class
-import           Data.Generics.Aliases            (orElse)
 import           Data.List                        (delete)
-import           Data.Maybe                       (fromJust, catMaybes)
+import           Data.Maybe                       (fromJust)
 
 import           AppContext                       (App)
 import           Data.Domain.Task                 as Task
 import           Data.Domain.TelegramLink         as TelegramLink
-import           Data.Domain.Types                (EitherResult, TelegramChatId)
+import           Data.Domain.Types                (EitherResult)
 
 import           Data.Repository.TaskRepo         (MonadDBTaskRepo)
 import qualified Data.Repository.TaskRepo         as TaskRepo
@@ -22,20 +22,26 @@ import           Data.Repository.TelegramLinkRepo (MonadDBTelegramRepo)
 import qualified Data.Repository.TelegramLinkRepo as TelegramRepo
 
 
+addNewTelegramLinkToTaskImpl :: (MonadDBTaskRepo m, MonadDBTelegramRepo m) =>
+                TelegramLink -> Task ->  m (EitherResult Task)
+addNewTelegramLinkToTaskImpl newEntity task = do
+    newLink <- TelegramRepo.createTelegramLink newEntity
+    addTelegramLinkToTaskImpl newLink task
 
 deleteTaskFromAllTelegramLinksImpl :: (MonadIO m, MonadDBTelegramRepo m) =>
                         Task -> m ()
 deleteTaskFromAllTelegramLinksImpl task =
-    foldr (\ x ->
-      (>>) (do
-        telegramLink <- TelegramRepo.findTelegramLinkById x
-        TelegramRepo.updateTelegramLink (fromJust telegramLink) {assignedToTasks = delete (taskId task) (assignedToTasks (fromJust telegramLink))}
-        ))
+    foldr (\ chatId ->
+      (>>) (deleteTaskFromTelegramLink chatId task))
     (return ()) $ Task.assignedTelegramLinks task
 
+deleteTaskFromTelegramLink chatId task = do
+    telegramLink <- TelegramRepo.findTelegramLinkById chatId
+    TelegramRepo.updateTelegramLink (fromJust telegramLink) {assignedToTasks = delete (taskId task) (assignedToTasks (fromJust telegramLink))}
+
 addTelegramLinkToTaskImpl :: (MonadDBTaskRepo m, MonadDBTelegramRepo m) =>
-                Task -> TelegramLink -> m (EitherResult Task)
-addTelegramLinkToTaskImpl task telegramLink =
+                TelegramLink -> Task -> m (EitherResult Task)
+addTelegramLinkToTaskImpl telegramLink task =
     if chatId telegramLink `elem` assignedTelegramLinks task
     then return (Right task) -- do nothing and return same task
     else do
@@ -51,18 +57,15 @@ removeTelegramLinkFromTaskImpl task telegramLink =
         TelegramRepo.updateTelegramLink telegramLink {assignedToTasks = delete (taskId task) (assignedToTasks telegramLink)}
         TaskRepo.updateTask task {assignedTelegramLinks = delete (TelegramLink.chatId telegramLink) (assignedTelegramLinks task)}
 
-findTelegramLinksByIdsImpl :: MonadDBTelegramRepo m => [TelegramChatId] -> m [TelegramLink]
-findTelegramLinksByIdsImpl =  fmap catMaybes . mapM TelegramRepo.findTelegramLinkById
-
 class Monad m => TelegramTasksAssignmentService m where
+    addNewTelegramLinkToTask :: TelegramLink -> Task  -> m (EitherResult Task)
+    addTelegramLinkToTask :: TelegramLink -> Task -> m (EitherResult Task)
     deleteTaskFromAllTelegramLinks :: Task -> m ()
-    addTelegramLinkToTask :: Task -> TelegramLink -> m (EitherResult Task)
     removeTelegramLinkFromTask :: Task -> TelegramLink -> m (EitherResult Task)
-    findTelegramLinksByIds :: [TelegramChatId] -> m [TelegramLink]
 
 instance (MonadDBTaskRepo App, MonadDBTelegramRepo App)
             => TelegramTasksAssignmentService App where
-    deleteTaskFromAllTelegramLinks = deleteTaskFromAllTelegramLinksImpl
+    addNewTelegramLinkToTask = addNewTelegramLinkToTaskImpl
     addTelegramLinkToTask = addTelegramLinkToTaskImpl
+    deleteTaskFromAllTelegramLinks = deleteTaskFromAllTelegramLinksImpl
     removeTelegramLinkFromTask = removeTelegramLinkFromTaskImpl
-    findTelegramLinksByIds = findTelegramLinksByIdsImpl

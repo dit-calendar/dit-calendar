@@ -6,7 +6,7 @@
 {-# LANGUAGE QuasiQuotes           #-}
 {-# LANGUAGE TemplateHaskell       #-}
 
-module Data.Service.TelegramAssignmentSpec (spec) where
+module Data.Service.TelegramTasksSpec (spec) where
 
 import           Control.Monad.TestFixture
 import           Control.Monad.TestFixture.TH
@@ -55,7 +55,7 @@ spec = describe "TelegramAssignmentSpec" $ do
         assertEqual "Nach falscher TelegramLink-Id gesucht" (log!!2) (show $ TelegramLink.chatId telegramLinkDB)
         assertEqual "Task vom TelegramLink 2 nicht gelöscht" (log!!3) (show telegramLinkToUpdate)
     it "addTelegramLinkToTask" $ do
-        let (_, log) = evalTestFixture (TelegramTasksService.addTelegramLinkToTaskImpl taskFromDb newTelegramLink) fixture
+        let (_, log) = evalTestFixture (TelegramTasksService.addTelegramLinkToTaskImpl newTelegramLink taskFromDb) fixture
         let telegramLinkToUpdate = newTelegramLink {assignedToTasks = Task.taskId taskFromDb : assignedToTasks newTelegramLink}
         let expectedTask = taskFromDb {assignedTelegramLinks = TelegramLink.chatId newTelegramLink : assignedTelegramLinks taskFromDb}
         length log `shouldBe` 2
