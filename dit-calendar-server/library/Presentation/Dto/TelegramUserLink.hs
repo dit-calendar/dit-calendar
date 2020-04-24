@@ -11,6 +11,7 @@ import           Data.Maybe        (isNothing)
 import           Data.Text
 import           GHC.Generics
 
+-- TODO add bot reference?
 data TelegramUserLink = TelegramUserLink
     { chatId          :: TelegramChatId
     , userId          :: Int
