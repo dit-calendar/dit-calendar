@@ -21,7 +21,11 @@ spec:
         name: dit-calendar-server
         resources:
           requests:
-            memory: "3Gi"
+            cpu:    "1"
+            memory: "2Gi"
+          limits:
+            cpu:    "2"
+            memory: "4Gi"
         volumeMounts:
           - name: dit-calendar-volume
             mountPath: /app/state
