@@ -29,6 +29,7 @@ data Sitemap
     | CalendarEntry
     | CalendarFilter
     | CalendarEntryDetail EntryId
+    | CalendarTelegramLinks EntryId
     -- tasks mapping
     | CalendarTask EntryId
     | CalendarTaskDetail EntryId TaskId
@@ -54,6 +55,7 @@ urlSitemapParser =
         calendarMapping =
             rCalendarEntry --create, findAll
             <> rCalendarEntryDetail </> int -- read, update, delete
+            <> rCalendarTelegramLinks </> int </> lit "telegramlinks" -- get all telegramtaskassignments of calendar
         taskMapping =
             rCalendarTask </> int </> lit "tasks" -- create, findAll
             <> rCalendarTaskDetail </> int </> lit "tasks" </> int -- read, update, delete

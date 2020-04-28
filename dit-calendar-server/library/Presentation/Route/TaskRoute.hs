@@ -59,7 +59,6 @@ routeTaskWithTelegramLink taskId = do
     case m of
         DELETE -> parseBodyAndExecute (TelegramController.removeTelegramLinkFromTask taskId)
         PUT    -> parseBodyAndExecute (TelegramController.addTelegramLinkToTask taskId)
-        GET    -> callIfAuthorized (TelegramController.tasksTelegramLinks taskId)
         other  -> notImplemented other
     where
         parseBodyAndExecute f = do

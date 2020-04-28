@@ -43,11 +43,13 @@ library
                        Presentation.Dto.Task,
                        Presentation.Dto.TelegramUserLink,
                        Presentation.Dto.CalendarFilter,
+                       Presentation.Dto.TelegramTaskAssignment,
                        Presentation.Mapper.BaseMapper
                        Presentation.Mapper.CalendarEntryMapper,
                        Presentation.Mapper.UserMapper,
                        Presentation.Mapper.TaskMapper,
                        Presentation.Mapper.TelegramLinkMapper,
+                       Presentation.Mapper.TelegramTaskAssignmentMapper,
                        Data.Repository.Acid.User,
                        Data.Repository.Acid.CalendarEntry,
                        Data.Repository.Acid.Task,

@@ -18,7 +18,8 @@ import           AppContext                               (App, AppContext,
                                                            CtrlV, getConfig)
 import           Conf.Config                              (Config (..))
 import           Presentation.Route.CalendarRoute         (routeCalendarEntry, routeCalendarEntryDetails,
-                                                           routeCalendarFilter)
+                                                           routeCalendarFilter,
+                                                           routeCalendarTelegramLinks)
 import           Presentation.Route.PageEnum              (Sitemap (..))
 import           Presentation.Route.TaskRoute             (routeTask,
                                                            routeTaskDetail,
@@ -63,6 +64,7 @@ route url = do
         CalendarEntry              -> routeCalendarEntry
         CalendarFilter             -> routeCalendarFilter
         CalendarEntryDetail eId    -> routeCalendarEntryDetails eId
+        CalendarTelegramLinks eId  -> routeCalendarTelegramLinks eId
         -- task routing
         CalendarTask eId           -> routeTask eId
         CalendarTaskDetail eId tId -> routeTaskDetail eId tId
