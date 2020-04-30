@@ -1,24 +1,26 @@
 package com.ditcalendar.bot.endpoint
 
-import com.ditcalendar.bot.config.config
-import com.ditcalendar.bot.config.dit_calendar_server_url
-import com.ditcalendar.bot.config.dit_calendar_user_name
-import com.ditcalendar.bot.config.dit_calendar_user_password
 import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
+import org.eclipse.microprofile.config.inject.ConfigProperty
+import javax.enterprise.context.ApplicationScoped
 
-
+@ApplicationScoped
 class AuthEndpoint {
 
-    private val config by config()
 
-    private val ditCalendarUrl = config[dit_calendar_server_url]
-    private val userName = config[dit_calendar_user_name]
-    private val password = config[dit_calendar_user_password]
+    @ConfigProperty(name = "dit.calendar.server.url")
+    private lateinit var ditCalendarUrl: String
+
+    @ConfigProperty(name = "dit.calendar.user.name")
+    private lateinit var userName: String
+
+    @ConfigProperty(name = "dit.calendar.user.password")
+    private lateinit var password: String
 
     private val json = Json(JsonConfiguration.Stable.copy())
 

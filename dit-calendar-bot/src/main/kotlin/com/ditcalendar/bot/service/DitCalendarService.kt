@@ -10,12 +10,12 @@ import com.ditcalendar.bot.error.UnassigmentError
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.map
+import javax.enterprise.context.ApplicationScoped
 
-class DitCalendarService {
-
-    private val calendarEndpoint = CalendarEndpoint()
-    private val taskEndpoint = TaskEndpoint()
-    private val authEndpoint = AuthEndpoint()
+@ApplicationScoped
+class DitCalendarService(private val calendarEndpoint: CalendarEndpoint,
+                         private val taskEndpoint: TaskEndpoint,
+                         private val authEndpoint: AuthEndpoint) {
 
     fun executeCallback(telegramLink: TelegramLink, callbackRequest: CallbackRequest?): Result<Base, Exception> =
             when (callbackRequest) {
