@@ -7,10 +7,12 @@ spec:
   selector:
     matchLabels:
       app: dit-calendar-server
+      tier: backend
   template:
     metadata:
       labels:
         app: dit-calendar-server
+        tier: backend
     spec:
       volumes:
         - name: dit-calendar-volume
@@ -57,3 +59,4 @@ spec:
     port: 8080
   selector:
     app: dit-calendar-server
+    tier: backend
