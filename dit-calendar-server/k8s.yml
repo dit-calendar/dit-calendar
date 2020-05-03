@@ -6,12 +6,12 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: dit-calendar-server
+      app: dit-calendar
       tier: backend
   template:
     metadata:
       labels:
-        app: dit-calendar-server
+        app: dit-calendar
         tier: backend
     spec:
       volumes:
@@ -49,7 +49,7 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: dit-calendar
+  name: dit-calendar-server
   annotations:
     dev.okteto.com/auto-ingress: "true"
 spec:
@@ -58,5 +58,5 @@ spec:
   - name: "dit-calendar"
     port: 8080
   selector:
-    app: dit-calendar-server
+    app: dit-calendar
     tier: backend

@@ -12,3 +12,14 @@ Very simple web-ui written in elm. For creating events and tasks from the perspe
 
 ## Test
 * elm-test
+
+
+# Deploy
+* create docker image
+  * build docker image `docker build -t ditcalendar/dit-calendar-ui .`
+  * update image to docker hub `docker push ditcalendar/dit-calendar-ui`
+* kubernetes
+  * set up kubectl
+    * `export KUBECONFIG=$HOME/Downloads/okteto-kube.config:${KUBECONFIG:-$HOME/.kube/config}`
+    * `kubectl get all`
+  * update pod `kubectl apply -f k8s.yml`
