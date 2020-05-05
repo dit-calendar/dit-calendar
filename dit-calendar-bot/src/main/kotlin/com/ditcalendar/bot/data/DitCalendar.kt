@@ -12,4 +12,4 @@ data class DitCalendar(var entryId: Long,
                        @Serializable(with = DateSerializer::class)
                        val startDate: Date,
                        @Transient
-                       var tasks: Tasks = listOf()) : Base()
+                       var telegramTaskAssignments: TelegramTaskAssignments = listOf()) : Base()

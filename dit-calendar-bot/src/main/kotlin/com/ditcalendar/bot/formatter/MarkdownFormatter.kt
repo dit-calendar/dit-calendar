@@ -29,12 +29,13 @@ fun Task.toMarkdown(): String =
                 """.trimIndent()
         }
 
+fun TelegramTaskAssignment.toMarkdown(): String = this.task.toMarkdown()
 
-fun Tasks.toMarkdown(): String = joinToString(separator = System.lineSeparator()) { it.toMarkdown() }
+fun TelegramTaskAssignments.toMarkdown(): String = joinToString(separator = System.lineSeparator()) { it.toMarkdown() }
 
 fun DitCalendar.toMarkdown(): String =
         """
             *$description*
             *Datum*: $startDate
             
-        """.trimIndent() + tasks.toMarkdown()
+        """.trimIndent() + telegramTaskAssignments.toMarkdown()

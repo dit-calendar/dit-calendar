@@ -8,12 +8,12 @@ import com.github.kittinunf.fuel.httpDelete
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPut
 import com.github.kittinunf.result.Result
-import com.github.kittinunf.result.flatMap
+import com.github.kittinunf.result.map
 import kotlinx.serialization.builtins.list
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 
-class TaskEndpoint {
+class TelegramAssignmentEndpoint {
 
     private val config by config()
 
@@ -21,21 +21,17 @@ class TaskEndpoint {
 
     private val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
 
-    fun readTasks(calendarId: Long, token: String): Result<Tasks, Exception> {
+    fun readTasks(calendarId: Long, token: String): Result<TelegramTaskAssignments, Exception> {
 
-        val (_, _, result) = "$ditCalendarUrl/calendarentries/$calendarId/tasks"
+        val (_, _, result) = "$ditCalendarUrl/calendarentries/$calendarId/telegramlinks"
                 .httpGet()
                 .authentication().bearer(token)
                 .responseString()
 
-        return result.flatMap {
-            Result.of<Tasks, Exception> {
-                json.parse(TaskForAssignment.serializer().list, result.get())
-            }
-        }
+        return result.map { json.parse(TelegramTaskForAssignment.serializer().list, result.get()) }
     }
 
-    fun assignUserToTask(taskId: Long, telegramLink: TelegramLink, token: String): Result<TaskForUnassignment, Exception> {
+    fun assignUserToTask(taskId: Long, telegramLink: TelegramLink, token: String): Result<TelegramTaskForUnassignment, Exception> {
 
         val (_, _, result) = "$ditCalendarUrl/calendarentries/tasks/$taskId/assignment"
                 .httpPut()
@@ -43,25 +39,19 @@ class TaskEndpoint {
                 .authentication().bearer(token)
                 .responseString()
 
-        return result.flatMap {
-            Result.of<TaskForUnassignment, Exception> {
-                json.parse(TaskForUnassignment.serializer(), result.get())
-            }
+        return result.map {
+            json.parse(TelegramTaskForUnassignment.serializer(), result.get())
         }
     }
 
-    fun unassignUserFromTask(taskId: Long, telegramLink: TelegramLink, token: String): Result<TaskAfterUnassignment, Exception> {
+    fun unassignUserFromTask(taskId: Long, telegramLink: TelegramLink, token: String): Result<TelegramTaskAfterUnassignment, Exception> {
         val (_, _, result) = "$ditCalendarUrl/calendarentries/tasks/$taskId/assignment"
                 .httpDelete()
                 .body(json.stringify(TelegramLink.serializer(), telegramLink))
                 .authentication().bearer(token)
                 .responseString()
 
-        return result.flatMap {
-            Result.of<TaskAfterUnassignment, Exception> {
-                json.parse(TaskAfterUnassignment.serializer(), result.get())
-            }
-        }
+        return result.map { json.parse(TelegramTaskAfterUnassignment.serializer(), result.get()) }
     }
 
 
