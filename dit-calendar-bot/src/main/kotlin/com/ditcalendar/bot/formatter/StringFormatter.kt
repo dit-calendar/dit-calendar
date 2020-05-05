@@ -24,9 +24,9 @@ private fun parseSuccess(result: Base): TelegramResponse =
             is TelegramTaskForUnassignment ->
                 WithInline("*erfolgreich hinzugefügt zu:*" + System.lineSeparator() + result.toMarkdown(),
                         "unassign me", "unassign_${result.task.taskId}")
-            is TaskForAssignment ->
+            is TelegramTaskForAssignment ->
                 OnlyText("nicht implementiert")
-            is TaskAfterUnassignment ->
+            is TelegramTaskAfterUnassignment ->
                 OnlyText(result.toMarkdown())
             else ->
                 OnlyText("interner server Fehler")

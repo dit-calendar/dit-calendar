@@ -9,27 +9,25 @@ private val config by config()
 
 private val botName = config[bot_name]
 
-fun Task.toMarkdown(): String =
-        when (this) {
+fun TelegramTaskAssignment.toMarkdown(): String =
+        when (this.task) {
             is TaskForAssignment ->
                 """
-                    _Task_: $description [assign me](https://t.me/$botName?start=assign_$taskId)
-                    _Datum_: $startTime
+                    _Task_: ${task.description} [assign me](https://t.me/$botName?start=assign_${task.taskId})
+                    _Datum_: ${task.startTime}
                 """.trimIndent()
             is TaskForUnassignment ->
                 """
-                    _Task_: $description
-                    _Datum_: $startTime
+                    _Task_: ${task.description}
+                    _Datum_: ${task.startTime}
                 """.trimIndent()
             is TaskAfterUnassignment ->
                 """
                     *erfolgreich ausgetragen von*:
-                    _Task_: $description
-                    _Datum_: $startTime
+                    _Task_: ${task.description}
+                    _Datum_: ${task.startTime}
                 """.trimIndent()
         }
-
-fun TelegramTaskAssignment.toMarkdown(): String = this.task.toMarkdown()
 
 fun TelegramTaskAssignments.toMarkdown(): String = joinToString(separator = System.lineSeparator()) { it.toMarkdown() }
 
