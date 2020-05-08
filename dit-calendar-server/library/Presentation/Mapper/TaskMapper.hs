@@ -40,6 +40,7 @@ instance Mapper Domain.Task Task where
                     { Domain.description = description dto
                     , Domain.taskId = Domain.taskId dbTask
                     , Domain.version = fromMaybe (-1) (version dto)
+                    , Domain.owner = Domain.owner dbTask
                     , Domain.assignedTelegramLinks = assignedUsers dto
                     , Domain.startTime = startTime dto `orElse` Domain.startTime dbTask
                     , Domain.endTime = endTime dto `orElse` Domain.endTime dbTask

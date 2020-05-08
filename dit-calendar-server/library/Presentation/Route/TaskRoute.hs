@@ -34,7 +34,7 @@ routeTask entryId = do
         POST -> do
             body <- getBody
             case TaskDto.validate (eitherDecode body :: Either String TaskDto.Task) of
-                 Right taskDto -> TaskController.createTask entryId taskDto >>= handleResponse
+                 Right taskDto -> callIfAuthorized (TaskController.createTask entryId taskDto)
                  Left errorMessage -> badRequest errorMessage
         GET -> callIfAuthorized (TaskController.calendarTasks entryId)
         other -> notImplemented other

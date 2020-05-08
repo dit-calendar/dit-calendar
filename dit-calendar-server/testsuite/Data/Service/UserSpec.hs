@@ -39,8 +39,7 @@ entryFromDb = def { CalendarEntry.description="termin2", entryId=1, CalendarEntr
         startDate=dbDate, endDate=dbDate}
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
-fixture = Fixture { _deleteCalendarEntryById = \a -> tell [show a]
-                  , _deleteUser = \a -> tell [show a]
+fixture = Fixture { _deleteUser = \a -> tell [show a]
                   , _removeCalendar = \a -> tell [show a]
                   , _findCalendarById = \a -> tell [show a] >>= (\_ -> return $ Just entryFromDb)
                   }

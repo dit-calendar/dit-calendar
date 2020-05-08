@@ -8,17 +8,19 @@ module Data.Repository.TaskRepo
     ( deleteTaskImpl, createTaskImpl, updateTaskImpl, findTaskByIdImpl, MonadDBTaskRepo(..) ) where
 
 import           Control.Monad.IO.Class
-import           Data.Default              (def)
+import           Data.Default                      (def)
 
-import           AppContext                (App)
-import           Data.Domain.CalendarEntry as CalendarEntry
-import           Data.Domain.Task          as Task
-import           Data.Domain.Types         (Description, EitherResult, TaskId)
-import           Data.Repository.Acid.Task (TaskDAO (..))
+import           AppContext                        (App, AppContext)
+import           Data.Domain.CalendarEntry         as CalendarEntry
+import           Data.Domain.Task                  as Task
+import           Data.Domain.Types                 (Description, EitherResult,
+                                                    TaskId)
+import           Data.Repository.Acid.Task         (TaskDAO (..))
+import           Data.Repository.PermissionControl (executeUnderUserPermission)
 import           Server.AcidInitializer
 
-import qualified Data.Repository.Acid.Task as TaskAcid
-import qualified Server.HappstackHelper    as Foundation
+import qualified Data.Repository.Acid.Task         as TaskAcid
+import qualified Server.HappstackHelper            as Foundation
 
 instance TaskDAO App where
     create = Foundation.update
@@ -26,9 +28,11 @@ instance TaskDAO App where
     delete = Foundation.update
     query  = Foundation.query
 
-updateTaskImpl :: TaskDAO m => Task -> m (EitherResult Task)
-updateTaskImpl = update . TaskAcid.UpdateTask
+updateTaskImpl :: (TaskDAO m, AppContext m ) => Task -> m (EitherResult Task)
+updateTaskImpl task = executeUnderUserPermission
+    task (update $ TaskAcid.UpdateTask task)
 
+--TODO permission for delete
 deleteTaskImpl :: TaskDAO m => Task -> m ()
 deleteTaskImpl = delete . TaskAcid.DeleteTask . taskId
 

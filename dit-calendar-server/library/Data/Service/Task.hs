@@ -31,9 +31,10 @@ deleteTaskAndCascadeImpl calendar task = do
 createTaskInCalendarImpl :: (MonadDBTaskRepo m, MonadDBCalendarRepo m) =>
             CalendarEntry -> Task -> m Task
 createTaskInCalendarImpl calendarEntry task = do
-    mTask <- TaskRepo.createTask task
+    mTask <- TaskRepo.createTask newTaskWithUser
     MonadDBCalendarRepo.addTaskToCalendarEntry calendarEntry (Task.taskId mTask)
     return mTask
+    where newTaskWithUser = task {Task.owner = CalendarEntry.owner calendarEntry }
 
 updateTaskInCalendarImpl :: MonadDBTaskRepo m => Task -> m (EitherResult Task)
 updateTaskInCalendarImpl = TaskRepo.updateTask
