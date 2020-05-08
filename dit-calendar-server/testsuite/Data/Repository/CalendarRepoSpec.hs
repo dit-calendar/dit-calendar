@@ -14,13 +14,11 @@ import           Control.Monad.TestFixture.TH
 import           Test.Hspec
 import           Test.HUnit.Base                    (assertEqual, assertFailure)
 
-import           Control.Monad.Identity             (Identity)
 import           Control.Monad.Writer.Class         (tell)
 import           Data.Default                       (def)
 
 import           AppContext                         (AppContext)
 import           Data.Domain.CalendarEntry          as CalendarEntry
-import           Data.Domain.Types                  (ResultError (PermissionAccessInsufficient))
 import           Data.Domain.User                   as User
 import           Data.Repository.Acid.CalendarEntry (CalendarDAO,
                                                      DeleteEntry (..),
@@ -65,13 +63,6 @@ spec = describe "CalendarRepo" $ do
         case result of
             Left _ -> assertFailure "updated calendar should be returned"
             Right r -> assertEqual "updated calendar should be returned" r calc
-    it "updateCalendarWithoutPermission" $ do
-        let calc = def { description="termin2", entryId=1, CalendarEntry.owner=2, startDate=oldDate, endDate=oldDate}
-        let (result, log) = evalTestFixture (CalendarRepo.updateCalendarImpl calc) fixture
-        length log `shouldBe` 0
-        case result of
-            Left error -> assertEqual "wrong error returned" error PermissionAccessInsufficient
-            Right _ -> assertFailure "updated calendar should be returned"
     it "addTaskToCalendarEntry" $ do
         let calc = def{ description="termin2", entryId=1, CalendarEntry.owner=2, tasks=[1],
             startDate=oldDate, endDate=oldDate}

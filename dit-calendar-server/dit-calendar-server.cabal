@@ -140,6 +140,7 @@ test-suite hspec
                        Data.Repository.CalendarRepoSpec,
                        Data.Repository.TaskRepoSpec,
                        Data.Repository.UserRepoSpec,
+                       Data.Repository.PermissionSpec,
                        Data.Service.CalendarEntrySpec,
                        Data.Service.TaskSpec,
                        Data.Service.UserSpec,
