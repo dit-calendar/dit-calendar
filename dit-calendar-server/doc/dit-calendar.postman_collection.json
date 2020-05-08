@@ -25,12 +25,14 @@
 							"raw": "{\"user\":\"alex2\",\"password\":\"12345\"}"
 						},
 						"url": {
-							"raw": "http://localhost:8080/authenticate/authentication-methods/password/token",
-							"protocol": "http",
+							"raw": "https://dit-calendar-vitab.cloud.okteto.net/authenticate/authentication-methods/password/token",
+							"protocol": "https",
 							"host": [
-								"localhost"
+								"dit-calendar-vitab",
+								"cloud",
+								"okteto",
+								"net"
 							],
-							"port": "8080",
 							"path": [
 								"authenticate",
 								"authentication-methods",
@@ -105,33 +107,6 @@
 					"response": []
 				},
 				{
-					"name": "get calendar tasks",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"type": "text",
-								"value": "application/json"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:8080/calendarentries/1",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"calendarentries",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "update calendar",
 					"request": {
 						"method": "PUT",
@@ -189,12 +164,14 @@
 							"raw": "{\n    \"description\": \"testHeute2\",\n    \"startDate\": \"2016-11-19T18:28:52.607875Z\",\n    \"endDate\": \"2016-11-20T12:15:53.102875Z\"\n}\n"
 						},
 						"url": {
-							"raw": "https://localhost:8443/calendarentries",
+							"raw": "https://dit-calendar-vitab.cloud.okteto.net/calendarentries",
 							"protocol": "https",
 							"host": [
-								"localhost"
+								"dit-calendar-vitab",
+								"cloud",
+								"okteto",
+								"net"
 							],
-							"port": "8443",
 							"path": [
 								"calendarentries"
 							]
@@ -251,12 +228,14 @@
 							"raw": "{\n    \"naPassword\": \"12345\",\n    \"naPasswordConfirm\": \"12345\",\n    \"naUser\": {\n        \"email\": \"a.befort@googlemail.com\",\n        \"username\": \"alex2\",\n        \"userId\": 0\n    }\n}"
 						},
 						"url": {
-							"raw": "https://localhost:8443/authenticate/authentication-methods/password/account",
+							"raw": "https://dit-calendar-vitab.cloud.okteto.net/authenticate/authentication-methods/password/account",
 							"protocol": "https",
 							"host": [
-								"localhost"
+								"dit-calendar-vitab",
+								"cloud",
+								"okteto",
+								"net"
 							],
-							"port": "8443",
 							"path": [
 								"authenticate",
 								"authentication-methods",
@@ -291,15 +270,17 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"description\": \"testHeute\",\n    \"assignedUsers\": [\n        1\n    ],\n    \"startTime\": \"2011-11-19T18:28:52.607875Z\"\n}"
+							"raw": "{\n    \"description\": \"testAufgabe2\",\n    \"assignedUsers\": [],\n    \"startTime\": \"2013-12-09T16:12:32.506871Z\"\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8080/calendarentries/1/tasks",
-							"protocol": "http",
+							"raw": "https://dit-calendar-vitab.cloud.okteto.net/calendarentries/1/tasks",
+							"protocol": "https",
 							"host": [
-								"localhost"
+								"dit-calendar-vitab",
+								"cloud",
+								"okteto",
+								"net"
 							],
-							"port": "8080",
 							"path": [
 								"calendarentries",
 								"1",
@@ -310,7 +291,7 @@
 					"response": []
 				},
 				{
-					"name": "show tasks",
+					"name": "get calendar tasks",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -334,12 +315,14 @@
 							"raw": "{\n    \"description\": \"testHeute\",\n    \"belongingUsers\": [\n        1\n    ],\n    \"startTime\": \"2011-11-19T18:28:52.607875Z\"\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8080/calendarentries/1/tasks",
-							"protocol": "http",
+							"raw": "https://dit-calendar-vitab.cloud.okteto.net/calendarentries/1/tasks",
+							"protocol": "https",
 							"host": [
-								"localhost"
+								"dit-calendar-vitab",
+								"cloud",
+								"okteto",
+								"net"
 							],
-							"port": "8080",
 							"path": [
 								"calendarentries",
 								"1",
@@ -374,12 +357,14 @@
 							"raw": "{\n    \"description\": \"testHeute\",\n    \"belongingUsers\": [\n        1\n    ],\n    \"startTime\": \"2011-11-19T18:28:52.607875Z\"\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8080/calendarentries/1/tasks/1",
-							"protocol": "http",
+							"raw": "https://dit-calendar-vitab.cloud.okteto.net/calendarentries/1/tasks/1",
+							"protocol": "https",
 							"host": [
-								"localhost"
+								"dit-calendar-vitab",
+								"cloud",
+								"okteto",
+								"net"
 							],
-							"port": "8080",
 							"path": [
 								"calendarentries",
 								"1",
@@ -408,15 +393,17 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"chatId\": 1,\n    \"userId\": 1\n}"
+							"raw": "{\n    \"chatId\": 111,\n    \"userId\": 1\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8080/calendarentries/tasks/1/assignment",
-							"protocol": "http",
+							"raw": "https://dit-calendar-vitab.cloud.okteto.net/calendarentries/tasks/1/assignment",
+							"protocol": "https",
 							"host": [
-								"localhost"
+								"dit-calendar-vitab",
+								"cloud",
+								"okteto",
+								"net"
 							],
-							"port": "8080",
 							"path": [
 								"calendarentries",
 								"tasks",
@@ -440,20 +427,64 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"chatId\": 1,\n    \"userId\": 1\n}"
+							"raw": "{\n    \"chatId\": 111,\n    \"userId\": 1\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8080/calendarentries/tasks/1/assignment",
-							"protocol": "http",
+							"raw": "https://dit-calendar-vitab.cloud.okteto.net/calendarentries/tasks/1/assignment",
+							"protocol": "https",
 							"host": [
-								"localhost"
+								"dit-calendar-vitab",
+								"cloud",
+								"okteto",
+								"net"
 							],
-							"port": "8080",
 							"path": [
 								"calendarentries",
 								"tasks",
 								"1",
 								"assignment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "show telegramlinks",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoQWRtaW4iOnRydWUsImV4cCI6MTU3MjY5ODcyNiwidXNlciI6eyJlbWFpbCI6ImEuYmVmb3J0QGdvb2dsZW1haWwuY29tIiwidXNlcm5hbWUiOiJhbGV4MiIsInVzZXJJZCI6MX19.-DxiC441e3LVWWIkHDCLAMqBf0UAEkouqq71h9nCNr0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"testHeute\",\n    \"belongingUsers\": [\n        1\n    ],\n    \"startTime\": \"2011-11-19T18:28:52.607875Z\"\n}"
+						},
+						"url": {
+							"raw": "https://dit-calendar-vitab.cloud.okteto.net/calendarentries/1/telegramlinks",
+							"protocol": "https",
+							"host": [
+								"dit-calendar-vitab",
+								"cloud",
+								"okteto",
+								"net"
+							],
+							"path": [
+								"calendarentries",
+								"1",
+								"telegramlinks"
 							]
 						}
 					},
