@@ -8,14 +8,14 @@ typealias TelegramTaskAssignments = List<TelegramTaskAssignment>
 @Serializable
 sealed class TelegramTaskAssignment : Base() {
     abstract val task: Task
-    abstract val assignedUsers: List<TelegramLink>
+    abstract val assignedUsers: TelegramLinks
 }
 
 @Serializable
-class TelegramTaskForAssignment(override val task: TaskForAssignment, override val assignedUsers: List<TelegramLink>) : TelegramTaskAssignment()
+class TelegramTaskForAssignment(override val task: TaskForAssignment, override val assignedUsers: TelegramLinks) : TelegramTaskAssignment()
 
 @Serializable
-class TelegramTaskForUnassignment(override val task: TaskForUnassignment, override val assignedUsers: List<TelegramLink>) : TelegramTaskAssignment()
+class TelegramTaskForUnassignment(override val task: TaskForUnassignment, override val assignedUsers: TelegramLinks) : TelegramTaskAssignment()
 
 @Serializable
-class TelegramTaskAfterUnassignment(override val task: TaskAfterUnassignment, override val assignedUsers: List<TelegramLink>) : TelegramTaskAssignment()
+class TelegramTaskAfterUnassignment(override val task: TaskAfterUnassignment, override val assignedUsers: TelegramLinks) : TelegramTaskAssignment()
