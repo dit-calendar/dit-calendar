@@ -26,8 +26,8 @@ spec:
             cpu:    "1"
             memory: "2Gi"
           limits:
-            cpu:    "2"
-            memory: "4Gi"
+            cpu:    "1.8"
+            memory: "3Gi"
         volumeMounts:
           - name: dit-calendar-volume
             mountPath: /app/state
