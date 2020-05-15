@@ -10,6 +10,7 @@ loginUrl : String
 loginUrl =
     authUrl ++ "token"
 
+
 logoutUrl : String
 logoutUrl =
     baseUrl ++ "logout"
@@ -29,6 +30,7 @@ calendarTask : Int -> String
 calendarTask calendarId =
     calendarEntries ++ String.fromInt calendarId ++ "/tasks"
 
+
 updateCalendarTask : Int -> Int -> String
 updateCalendarTask calendarId taskId =
     calendarTask calendarId ++ "/" ++ String.fromInt taskId
@@ -41,4 +43,4 @@ calendarEntry entryId =
 
 baseUrl : String
 baseUrl =
-    "http://localhost:8080/"
+    "https://dit-calendar-vitab.cloud.okteto.net/"
