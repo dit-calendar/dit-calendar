@@ -47,18 +47,18 @@ fixture = Fixture { _create = \(NewEntry caledarEntry) -> return caledarEntry
 spec = describe "CalendarRepo" $ do
     it "newCalendarEntry" $ do
         let (result, _) = evalTestFixture (CalendarRepo.createCalendarEntryImpl
-                def {startDate=oldDate, endDate=oldDate, description="termin1", CalendarEntry.owner=10}) fixture
-        CalendarEntry.description result `shouldBe` "termin1"
+                def {CalendarEntry.title = "A", startDate=oldDate, endDate=oldDate, description=Just "termin1", CalendarEntry.owner=10}) fixture
+        CalendarEntry.description result `shouldBe` Just "termin1"
         CalendarEntry.owner result `shouldBe` 10
         CalendarEntry.tasks result `shouldBe` []
         CalendarEntry.startDate result `shouldBe` oldDate
     it "deleteCalendarEntry" $ do
-        let calc = def{ description="termin2", entryId=1, CalendarEntry.owner=10, tasks=[1,2,3],
+        let calc = def{ CalendarEntry.title = "A", description=Just "termin2", entryId=1, CalendarEntry.owner=10, tasks=[1,2,3],
                 startDate=oldDate, endDate=oldDate}
         let (_, log) = evalTestFixture (CalendarRepo.deleteCalendarEntryImpl calc) fixture
         log `shouldBe` ["1"::String]
     it "updateCalendar" $ do
-        let calc = def { description="termin2", entryId=1, CalendarEntry.owner=10, startDate=oldDate, endDate=oldDate}
+        let calc = def { CalendarEntry.title = "A", description=Just "termin2", entryId=1, CalendarEntry.owner=10, startDate=oldDate, endDate=oldDate}
         let (result, log) = evalTestFixture (CalendarRepo.updateCalendarImpl calc) fixture
         length log `shouldBe` 1
         assertEqual "update calendar with wrong calendar" (log!!0) (show calc)
@@ -66,13 +66,13 @@ spec = describe "CalendarRepo" $ do
             Left _ -> assertFailure "updated calendar should be returned"
             Right r -> assertEqual "updated calendar should be returned" r calc
     it "addTaskToCalendarEntry" $ do
-        let calc = def{ description="termin2", entryId=1, CalendarEntry.owner=10, tasks=[1],
+        let calc = def{ CalendarEntry.title = "A", description=Just "termin2", entryId=1, CalendarEntry.owner=10, tasks=[1],
             startDate=oldDate, endDate=oldDate}
         let (_, log) = evalTestFixture (CalendarRepo.addTaskToCalendarEntryImpl calc 2) fixture
         let newCalc = calc {tasks = [2, 1]}
         log!!0 `shouldBe` show newCalc
     it "deleteTaskFromCalendarEntry" $ do
-        let calc = def{ description="termin2", entryId=1, CalendarEntry.owner=10, tasks=[1,2,3],
+        let calc = def{ CalendarEntry.title = "A", description=Just "termin2", entryId=1, CalendarEntry.owner=10, tasks=[1,2,3],
             startDate=oldDate, endDate=oldDate}
         let (_, log) = evalTestFixture (CalendarRepo.deleteTaskFromCalendarEntryImpl calc 2) fixture
         let newCalc = calc {tasks = [1, 3]}

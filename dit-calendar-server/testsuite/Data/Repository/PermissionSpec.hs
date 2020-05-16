@@ -42,7 +42,7 @@ fixture = Fixture { _update = \(UpdateEntry a)-> tell [show a] >>= (\_ -> return
 
 spec = describe "CalendarRepo" $ do
     it "updateCalendarWithoutPermission" $ do
-        let calc = def { description="termin2", entryId=1, CalendarEntry.owner=2, startDate=oldDate, endDate=oldDate}
+        let calc = def { description=Just "termin2", entryId=1, CalendarEntry.owner=2, startDate=oldDate, endDate=oldDate}
         let (result, log) = evalTestFixture (CalendarRepo.updateCalendarImpl calc) fixture
         length log `shouldBe` 0
         case result of

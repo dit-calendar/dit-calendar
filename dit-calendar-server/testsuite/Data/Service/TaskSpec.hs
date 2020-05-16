@@ -30,8 +30,8 @@ import qualified Data.Service.Task                    as TaskService
 
 mkFixture "Fixture" [ts| TelegramTasksAssignmentService, MonadDBTaskRepo, MonadDBCalendarRepo |]
 dbDate = read "2011-11-19 18:28:52.607875 UTC"::UTCTime
-taskFromDb = def{ Task.description="task1", taskId=5, startTime=Nothing, endTime=Nothing, Task.owner=10}
-entryFromDb = def { CalendarEntry.description="termin2", entryId=1, CalendarEntry.owner=10,
+taskFromDb = def{ Task.title="A", Task.description=Just "task1", taskId=5, startTime=Nothing, endTime=Nothing, Task.owner=10}
+entryFromDb = def { CalendarEntry.title="A", CalendarEntry.description=Just "termin2", entryId=1, CalendarEntry.owner=10,
         CalendarEntry.startDate=dbDate, CalendarEntry.endDate=dbDate,
         CalendarEntry.tasks = [1, 2]}
 
@@ -51,7 +51,7 @@ instance MonadIO Identity where
 
 spec = describe "TaskServiceSpec" $ do
     it "deleteTaskAndCascade" $ do
-        let task = def{ Task.description="task1", taskId=1, assignedTelegramLinks=[7], startTime=Nothing, endTime=Nothing, Task.owner=10}
+        let task = def{ Task.title="A", Task.description=Just "task1", taskId=1, assignedTelegramLinks=[7], startTime=Nothing, endTime=Nothing, Task.owner=10}
         let (_, log) = evalTestFixture (TaskService.deleteTaskAndCascadeImpl entryFromDb task) fixture
         length log `shouldBe` 4
         -- calendarrepo calls
@@ -63,9 +63,9 @@ spec = describe "TaskServiceSpec" $ do
         log!!3 `shouldBe` show task
     it "createTaskInCalendar" $ do
         let newDate = read "2011-11-19 18:28:52.607875 UTC"::UTCTime
-        let calc = def{ CalendarEntry.description="termin2", entryId=1, CalendarEntry.owner=2,
+        let calc = def{ CalendarEntry.title = "A", CalendarEntry.description=Just "termin2", entryId=1, CalendarEntry.owner=2,
             startDate=newDate, endDate=newDate}
-        let newTask = def{ Task.description="task1", taskId=1, assignedTelegramLinks=[7], startTime=Nothing, endTime=Nothing}
+        let newTask = def{ Task.title="A", Task.description=Just "task1", taskId=1, assignedTelegramLinks=[7], startTime=Nothing, endTime=Nothing}
         let (result, log) = evalTestFixture (TaskService.createTaskInCalendarImpl calc newTask) fixture
         length log `shouldBe` 3
         result `shouldBe` taskFromDb

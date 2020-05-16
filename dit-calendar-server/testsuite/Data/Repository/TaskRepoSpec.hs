@@ -33,7 +33,7 @@ import Test.HUnit.Base (assertEqual, assertFailure)
 
 mkFixture "Fixture" [ts| TaskDAO, AppContext |]
 
-taskFromDb = def{ description="task1", taskId=1, startTime=Nothing, endTime=Nothing, owner=1}
+taskFromDb = def{ Task.title="A", description=Just "task1", taskId=1, startTime=Nothing, endTime=Nothing, owner=1}
 user = def { loginName="Foo", User.userId=10 }
 
 fixture :: (Monad m, MonadWriter String m) => Fixture m
@@ -53,11 +53,11 @@ spec = describe "TaskRepo" $ do
         result `shouldBe` taskFromDb
         Task.assignedTelegramLinks result `shouldBe` []
     it "deleteTask" $ do
-        let task = def { description="task1", taskId=1}
+        let task = def { Task.title="A", description=Just "task1", taskId=1}
         let (_, log) = evalTestFixture (TaskRepo.deleteTaskImpl task) fixture
         log `shouldBe` "1"
     it "updateTask" $ do
-        let task = def { description="task1", taskId=1, startTime=Nothing, endTime=Nothing, owner=10}
+        let task = def { Task.title="A", description=Just "task1", taskId=1, startTime=Nothing, endTime=Nothing, owner=10}
         let (result, log) = evalTestFixture (TaskRepo.updateTaskImpl task) fixture
         assertEqual "update task with wrong task" log (show task)
         case result of

@@ -32,11 +32,11 @@ mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBCalendarRepo, CalendarTasksServ
 
 userFromDb = def{ loginName="Foo", User.userId=10}
 dbDate = read "2011-11-19 18:28:52.607875 UTC"::UTCTime
-entryFromDb = def { CalendarEntry.description="termin2", entryId=1, CalendarEntry.owner=10, tasks=[1,2],
+entryFromDb = def { CalendarEntry.title="A", CalendarEntry.description=Just "termin2", entryId=1, CalendarEntry.owner=10, tasks=[1,2],
         startDate=dbDate, endDate=dbDate}
 newDate = read "2012-11-19 17:51:42.203841 UTC"::UTCTime
-newCalendar = def {CalendarEntry.startDate = newDate, CalendarEntry.endDate=dbDate,
-    CalendarEntry.description ="termin2"}
+newCalendar = def {CalendarEntry.title="A", CalendarEntry.startDate = newDate, CalendarEntry.endDate=dbDate,
+    CalendarEntry.description =Just "termin2"}
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture { _createCalendarEntry = \a -> tell [show a] >> return entryFromDb
@@ -62,7 +62,7 @@ spec = describe "CalendarEntryServiceSpec" $ do
         log!!1 `shouldBe` show user
         log!!2 `shouldBe` show (CalendarEntry.entryId entryFromDb)
     it "removeCalendar" $ do
-        let calc = def { CalendarEntry.description="termin2", entryId=4, CalendarEntry.owner=2, tasks=[1],
+        let calc = def { CalendarEntry.title="A", CalendarEntry.description=Just "termin2", entryId=4, CalendarEntry.owner=2, tasks=[1],
             startDate=dbDate, CalendarEntry.endDate=dbDate}
         let (_, log) = evalTestFixture (CalendarEntryService.removeCalendarImpl calc) fixture
         -- Test UserRepo calls

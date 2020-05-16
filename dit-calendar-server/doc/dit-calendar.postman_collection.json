@@ -125,7 +125,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"description\": \"test123213\",\n    \"entryId\": 1,\n    \"version\": 4,\n    \"startDate\": \"2011-11-19T18:28:00Z\",\n    \"endDate\": \"2011-11-19T18:28:00Z\"\n}"
+							"raw": "{\n    \"title\": \"VA FooBar\",\n    \"description\": \"test123213\",\n    \"entryId\": 1,\n    \"version\": 4,\n    \"startDate\": \"2011-11-19T18:28:00Z\",\n    \"endDate\": \"2011-11-19T18:28:00Z\"\n}"
 						},
 						"url": {
 							"raw": "http://localhost:8080/calendarentries/1",
@@ -161,7 +161,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"description\": \"testHeute2\",\n    \"startDate\": \"2016-11-19T18:28:52.607875Z\",\n    \"endDate\": \"2016-11-20T12:15:53.102875Z\"\n}\n"
+							"raw": "{\n    \"title\": \"Veranstaltung FooBar\",\n    \"description\": \"testHeute2\",\n    \"startDate\": \"2016-11-19T18:28:52.607875Z\",\n    \"endDate\": \"2016-11-20T12:15:53.102875Z\"\n}\n"
 						},
 						"url": {
 							"raw": "https://dit-calendar-vitab.cloud.okteto.net/calendarentries",
@@ -270,7 +270,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"description\": \"testAufgabe2\",\n    \"assignedUsers\": [],\n    \"startTime\": \"2013-12-09T16:12:32.506871Z\"\n}"
+							"raw": "{\n    \"title\": \"Bar\",\n    \"description\": \"testAufgabe2\",\n    \"assignedUsers\": [],\n    \"startTime\": \"2013-12-09T16:12:32.506871Z\"\n}"
 						},
 						"url": {
 							"raw": "https://dit-calendar-vitab.cloud.okteto.net/calendarentries/1/tasks",

@@ -13,7 +13,8 @@ import           Presentation.Mapper.BaseMapper
 instance Mapper Domain.CalendarEntry CalendarEntry where
     transformToDto domain =
         CalendarEntry
-            { description = Domain.description domain
+            { title       = Domain.title domain
+            , description = Domain.description domain
             , entryId = Just (Domain.entryId domain)
             , version = Just $ Domain.version domain
             , startDate = Domain.startDate domain
@@ -26,6 +27,7 @@ instance Mapper Domain.CalendarEntry CalendarEntry where
                 def
                     { Domain.entryId = 0
                     , Domain.version = 0
+                    , Domain.title = title dto
                     , Domain.description = description dto
                     , Domain.tasks = []
                     , Domain.startDate = startDate dto
@@ -33,7 +35,8 @@ instance Mapper Domain.CalendarEntry CalendarEntry where
                     }
             Just dbCalendar ->
                     Domain.CalendarEntry
-                    { Domain.description = description dto
+                    { Domain.title  = title dto
+                    , Domain.description = description dto
                     , Domain.entryId = Domain.entryId dbCalendar
                     , Domain.version = fromMaybe (-1) (version dto)
                     , Domain.owner = Domain.owner dbCalendar

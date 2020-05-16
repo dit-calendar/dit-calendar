@@ -35,7 +35,7 @@ mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBCalendarRepo, CalendarEntryServ
 
 userFromDb = def { loginName="Foo", User.userId=10, ownerOfCalendarEntries=[1,2]}
 dbDate = read "2011-11-19 18:28:52.607875 UTC"::UTCTime
-entryFromDb = def { CalendarEntry.description="termin2", entryId=1, CalendarEntry.owner=10, tasks=[1,2],
+entryFromDb = def { CalendarEntry.title="A", CalendarEntry.description=Just "termin2", entryId=1, CalendarEntry.owner=10, tasks=[1,2],
         startDate=dbDate, endDate=dbDate}
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
