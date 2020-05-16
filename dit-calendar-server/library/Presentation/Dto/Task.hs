@@ -14,7 +14,8 @@ import           GHC.Generics
 import           Data.Domain.Types                 (TelegramChatId)
 
 data Task = Task
-    { description   :: Text
+    { title         :: Text
+    , description   :: Maybe Text
     , taskId        :: Maybe Int
     , version       :: Maybe Int
     , assignedUsers :: [TelegramChatId]

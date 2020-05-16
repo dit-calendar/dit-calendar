@@ -16,7 +16,8 @@ import qualified Data.Domain.Task                  as Domain
 instance Mapper Domain.Task Task where
     transformToDto domain =
         Task
-            { description = Domain.description domain
+            { title  = Domain.title domain
+            , description = Domain.description domain
             , taskId = Just (Domain.taskId domain)
             , version = Just (Domain.version domain)
             , assignedUsers = Domain.assignedTelegramLinks domain
@@ -28,7 +29,8 @@ instance Mapper Domain.Task Task where
         case mOld of
             Nothing ->
                 def
-                    { Domain.description = description dto
+                    { Domain.title = title dto
+                    , Domain.description = description dto
                     , Domain.taskId = 0
                     , Domain.version = 0
                     , Domain.assignedTelegramLinks = assignedUsers dto
@@ -37,7 +39,8 @@ instance Mapper Domain.Task Task where
                     }
             Just dbTask ->
                 Domain.Task
-                    { Domain.description = description dto
+                    { Domain.title = title dto
+                    , Domain.description = description dto
                     , Domain.taskId = Domain.taskId dbTask
                     , Domain.version = fromMaybe (-1) (version dto)
                     , Domain.owner = Domain.owner dbTask

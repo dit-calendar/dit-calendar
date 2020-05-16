@@ -30,7 +30,7 @@ dependencies {
     val kittinunfResultVersion = "3.0.0"
     val konfigVersion = "1.6.10.0"
     val kotlinxSerializationVersion = "0.20.0"
-    val ktBotVersion = "1.2.5"
+    val ktBotVersion = "1.3.3"
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("com.github.kittinunf.fuel:fuel:$fuelVersion")

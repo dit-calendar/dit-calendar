@@ -25,10 +25,10 @@ import qualified Data.Service.CalendarTasks   as CalendarTasks
 
 mkFixture "Fixture" [ts| MonadDBTaskRepo |]
 
-taskFromDb1 = def { Task.description="task1", taskId=1, startTime=Nothing, endTime=Nothing, Task.owner=10}
-taskFromDb2 = def { Task.description="task2", taskId=2, startTime=Nothing, endTime=Nothing, Task.owner=10}
+taskFromDb1 = def { Task.title="A", Task.description=Just "task1", taskId=1, startTime=Nothing, endTime=Nothing, Task.owner=10}
+taskFromDb2 = def { Task.title="A", Task.description=Just "task2", taskId=2, startTime=Nothing, endTime=Nothing, Task.owner=10}
 dbDate = read "2011-11-19 18:28:52.607875 UTC"::UTCTime
-entryFromDb = def { CalendarEntry.description="termin2", entryId=1, CalendarEntry.owner=10, tasks=[1,2],
+entryFromDb = def { CalendarEntry.title="A", CalendarEntry.description=Just "termin2", entryId=1, CalendarEntry.owner=10, tasks=[1,2],
         startDate=dbDate, endDate=dbDate}
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m

@@ -8,7 +8,8 @@ import java.util.*
 
 @Serializable
 data class DitCalendar(var entryId: Long,
-                       val description: String,
+                       val title: String,
+                       val description: String? = null,
                        @Serializable(with = DateSerializer::class)
                        val startDate: Date,
                        @Transient

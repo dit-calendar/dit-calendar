@@ -7,12 +7,13 @@ module Data.Domain.Task where
 import           Data.Data         (Data, Typeable)
 import           Data.Default
 import           Data.Domain.Types (Description, Entity (..), TaskId,
-                                    TelegramChatId, UserId)
+                                    TelegramChatId, Title, UserId)
 import           Data.SafeCopy     (base, deriveSafeCopy)
 import           Data.Time.Clock   (UTCTime)
 
 data Task = Task {
-    description             :: Description
+    title                   :: Title
+    , description           :: Maybe Description
     , taskId                :: TaskId
     , version               :: Int
     , owner                 :: UserId
