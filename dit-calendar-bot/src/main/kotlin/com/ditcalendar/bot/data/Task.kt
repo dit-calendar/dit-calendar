@@ -10,7 +10,8 @@ typealias Tasks = List<Task>
 @Serializable
 sealed class Task : Base() {
     abstract val taskId: Long
-    abstract val description: String
+    abstract val title: String
+    abstract val description: String?
 
     @Serializable(with = DateSerializer::class)
     abstract val startTime: Date
@@ -21,7 +22,8 @@ sealed class Task : Base() {
 
 @Serializable
 class TaskForAssignment(override val taskId: Long,
-                        override val description: String,
+                        override val title: String,
+                        override val description: String? = null,
                         @Serializable(with = DateSerializer::class)
                         override val startTime: Date,
                         @Serializable(with = DateSerializer::class)
@@ -29,7 +31,8 @@ class TaskForAssignment(override val taskId: Long,
 
 @Serializable
 class TaskForUnassignment(override val taskId: Long,
-                          override val description: String,
+                          override val title: String,
+                          override val description: String? = null,
                           @Serializable(with = DateSerializer::class)
                           override val startTime: Date,
                           @Serializable(with = DateSerializer::class)
@@ -37,7 +40,8 @@ class TaskForUnassignment(override val taskId: Long,
 
 @Serializable
 class TaskAfterUnassignment(override val taskId: Long,
-                            override val description: String,
+                            override val title: String,
+                            override val description: String? = null,
                             @Serializable(with = DateSerializer::class)
                             override val startTime: Date,
                             @Serializable(with = DateSerializer::class)

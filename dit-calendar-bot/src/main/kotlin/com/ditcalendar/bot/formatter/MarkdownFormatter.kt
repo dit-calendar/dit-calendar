@@ -18,19 +18,23 @@ fun TelegramTaskAssignment.toMarkdown(): String =
         when (this.task) {
             is TaskForAssignment ->
                 """
-                    *${task.formatTime()}* \- ${task.description}
+                    *${task.formatTime()}* \- ${task.title}
                     Wer?: ${assignedUsers.toMarkdown()} [assign me](https://t.me/$botName?start=assign_${task.taskId})
                 """.trimIndent()
-            is TaskForUnassignment ->
-                """
-                    *erfolgreich hinzugefügt:*
-                    *${formatter.format(task.startTime.time)} Uhr* \- ${task.description}
-                    Wer?: ${assignedUsers.toMarkdown()}
-                """.trimIndent()
+            is TaskForUnassignment -> {
+                val formattedDescription =
+                        if (task.description != null)
+                            System.lineSeparator() + task.description.toString()
+                        else ""
+                "*erfolgreich hinzugefügt:*" + System.lineSeparator() +
+                        "*${formatter.format(task.startTime.time)} Uhr* \\- ${task.title}$formattedDescription" + System.lineSeparator() +
+                        "Wer?: ${assignedUsers.toMarkdown()}"
+            }
+
             is TaskAfterUnassignment ->
                 """
                     *erfolgreich ausgetragen*:
-                    *${formatter.format(task.startTime.time)} Uhr* \- ${task.description}
+                    *${formatter.format(task.startTime.time)} Uhr* \- ${task.title}
                 """.trimIndent()
         }
 
@@ -51,8 +55,13 @@ private fun TelegramLinks.toMarkdown(): String {
 
 fun TelegramTaskAssignments.toMarkdown(): String = joinToString(separator = System.lineSeparator()) { it.toMarkdown() }
 
-fun DitCalendar.toMarkdown(): String =
-        """
-            *$description* am ${dateFormatter.format(startDate).replace(".", "\\.")}
-            
+fun DitCalendar.toMarkdown(): String {
+    val formattedDescription =
+            if (description != null)
+                System.lineSeparator() + description.toString() + System.lineSeparator()
+            else ""
+
+    return """
+            *$title* am ${dateFormatter.format(startDate).replace(".", "\\.")}$formattedDescription
         """.trimIndent() + telegramTaskAssignments.toMarkdown()
+}

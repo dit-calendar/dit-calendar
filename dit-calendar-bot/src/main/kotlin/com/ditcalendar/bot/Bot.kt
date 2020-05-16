@@ -73,7 +73,7 @@ fun main(args: Array<String>) {
                     val inlineButton = InlineKeyboardButton(result.callBackText, callback_data = result.callBackData)
                     val inlineKeyboardMarkup = InlineKeyboardMarkup(listOf(listOf(inlineButton)))
                     bot.editMessageText(originallyMessage.chat.id, originallyMessage.message_id, text = result.message,
-                            parseMode = "MarkdownV2", markup = inlineKeyboardMarkup)
+                            parseMode = "MarkdownV2", disableWebPagePreview = true, markup = inlineKeyboardMarkup)
                 }
             }
         }
