@@ -49,7 +49,7 @@ view model =
             , ListGroup.custom
                 (List.map
                     (\entry ->
-                        ListGroup.button [ ListGroup.attrs [ onClick (OpenCalendarDetailsView entry) ] ] [ text ("description: " ++ entry.description ++ ", start date:" ++ entry.startDate) ]
+                        ListGroup.button [ ListGroup.attrs [ onClick (OpenCalendarDetailsView entry) ] ] [ text ("title: " ++ entry.title ++ ", start date:" ++ entry.startDate) ]
                     )
                     model.calendarEntries
                 )

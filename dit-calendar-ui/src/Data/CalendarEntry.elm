@@ -9,7 +9,8 @@ import Http.Detailed as HttpEx
 type alias CalendarEntry =
     { entryId : Maybe Int
     , version : Int
-    , description : String
+    , title : String
+    , description : Maybe String
     , startDate : String
     , startTime : String
     , endDate : String
@@ -26,11 +27,12 @@ type alias Model =
 
 emptyCalendarEntry : CalendarEntry
 emptyCalendarEntry =
-    { entryId = Nothing, version = 0, description = "", startDate = "", startTime = "", endDate = "", endTime = "" }
+    { entryId = Nothing, version = 0, title = "", description = Nothing, startDate = "", startTime = "", endDate = "", endTime = "" }
 
 
 type CalendarDetailMsg
-    = Description String
+    = Title String
+    | Description String
     | StartDate String
     | StartTime String
     | EndDate String
