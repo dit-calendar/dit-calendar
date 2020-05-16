@@ -36,11 +36,16 @@ addTelegramLinkToTask taskId telegramDto _ = onTaskExist taskId assignTelegramLi
     where
         assignTelegramLink task = do
             mTelegramLink <- TelegramLinkRepo.findTelegramLinkById (chatId telegramDto)
-            result <- case mTelegramLink of
+            resultTask <- updateTaskAndTelegram mTelegramLink task
+            mapM readTelegramLinks resultTask
+        updateTaskAndTelegram mTelegramLink task =
+            case mTelegramLink of
                 Just link -> TelegramTasksService.addTelegramLinkToTask (TelegramMapper.transformFromDto telegramDto mTelegramLink) task
                 Nothing -> TelegramTasksService.addNewTelegramLinkToTask (TelegramMapper.transformFromDto telegramDto Nothing) task
-            telegramLinks <- TelegramTasksService.getTelegramLinksOfTask task
-            return $ fmap (TelegramAssignmentMapper.transformToDto telegramLinks) result
+        readTelegramLinks rTask = do
+                telegramLinks <- TelegramTasksService.getTelegramLinksOfTask rTask
+                return (TelegramAssignmentMapper.transformToDto telegramLinks rTask)
+
 
 removeTelegramLinkFromTask :: TaskId -> TelegramDto.TelegramUserLink ->  DomainUser.User -> App (EitherResult TelegramDto.TelegramTaskAssignment)
 removeTelegramLinkFromTask taskId telegramDto _ =
@@ -48,6 +53,8 @@ removeTelegramLinkFromTask taskId telegramDto _ =
     where
         chatId = TelegramDto.chatId telegramDto
         unassignTelegramLink task telegramLink = do
-            result <- TelegramTasksService.removeTelegramLinkFromTask task telegramLink
+            rTask <- TelegramTasksService.removeTelegramLinkFromTask task telegramLink
+            mapM readTelegramLinks rTask
+        readTelegramLinks task = do
             telegramLinks <- TelegramTasksService.getTelegramLinksOfTask task
-            return $ fmap (TelegramAssignmentMapper.transformToDto telegramLinks) result
+            return (TelegramAssignmentMapper.transformToDto telegramLinks task)
