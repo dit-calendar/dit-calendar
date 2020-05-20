@@ -34,6 +34,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("com.github.kittinunf.fuel:fuel:$fuelVersion")
+    implementation("com.github.kittinunf.fuel:fuel-kotlinx-serialization:$fuelVersion")
     implementation("com.github.kittinunf.result:result:$kittinunfResultVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:$kotlinxSerializationVersion")
     implementation("com.github.elbekd:kt-telegram-bot:$ktBotVersion")
