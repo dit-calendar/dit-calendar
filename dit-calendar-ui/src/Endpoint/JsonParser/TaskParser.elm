@@ -6,6 +6,7 @@ import Endpoint.JsonParser.ResponseErrorDecoder exposing (ErrorResponse, errorDe
 import Http as Http
 import Http.Detailed as HttpEx
 import Json.Decode as Decode
+import Json.Decode.Pipeline exposing (hardcoded, optional, required)
 import Json.Encode as Encode
 import Json.Encode.Extra as Encode
 
@@ -14,7 +15,8 @@ taskEncoder : Task -> Encode.Value
 taskEncoder model =
     Encode.object
         [ ( "version", Encode.int model.version )
-        , ( "description", Encode.string model.description )
+        , ( "title", Encode.string model.title )
+        , ( "description", Encode.maybe Encode.string model.description )
         , ( "startTime", Encode.string (model.startDate ++ "T" ++ model.startTime ++ ":00.000000Z") )
         , ( "assignedUsers", Encode.list Encode.int [] )
         , case model.endDate of
@@ -33,17 +35,16 @@ taskEncoder model =
 
 tasksDecoder : Maybe Int -> Decode.Decoder Task
 tasksDecoder calendarId =
-    Decode.map8
-        -- TODO reuse decoder from Tasks?
-        Task
-        (Decode.succeed calendarId)
-        (Decode.nullable (Decode.field "taskId" Decode.int))
-        (Decode.field "version" Decode.int)
-        (Decode.at [ "description" ] Decode.string)
-        (Decode.field "startTime" stringToDate)
-        (Decode.field "startTime" stringToDateTime)
-        (Decode.maybe (Decode.field "endTime" stringToDate))
-        (Decode.maybe (Decode.field "endTime" stringToDateTime))
+    Decode.succeed Task
+        |> hardcoded calendarId
+        |> required "taskId" (Decode.nullable Decode.int)
+        |> required "version" Decode.int
+        |> required "title" Decode.string
+        |> optional "description" (Decode.maybe Decode.string) Nothing
+        |> required "startTime" stringToDate
+        |> required "startTime" stringToDateTime
+        |> optional "endTime" (Decode.maybe stringToDate) Nothing
+        |> optional "endTime" (Decode.maybe stringToDateTime) Nothing
 
 
 taskErrorsDecoder : HttpEx.Error String -> List String

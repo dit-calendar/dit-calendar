@@ -34,7 +34,7 @@ routeTask entryId = do
         POST -> do
             body <- getBody
             case TaskDto.validate (eitherDecode body :: Either String TaskDto.Task) of
-                 Right taskDto -> TaskController.createTask entryId taskDto >>= handleResponse
+                 Right taskDto -> callIfAuthorized (TaskController.createTask entryId taskDto)
                  Left errorMessage -> badRequest errorMessage
         GET -> callIfAuthorized (TaskController.calendarTasks entryId)
         other -> notImplemented other
@@ -56,11 +56,13 @@ routeTaskDetail entryId taskId = do
 routeTaskWithTelegramLink :: TaskId -> App Response
 routeTaskWithTelegramLink taskId = do
     m <- getHttpMethod
-    body <- getBody
-    case TelegramDto.validate (eitherDecode body :: Either String TelegramDto.TelegramUserLink) of
-          Right telegramDto ->
-               case m of
-                   DELETE -> callIfAuthorized (TelegramController.removeTelegramLinkFromTask taskId telegramDto)
-                   PUT    -> callIfAuthorized (TelegramController.addTelegramLinkToTask taskId telegramDto)
-                   other  -> notImplemented other
-          Left errorMessage -> badRequest errorMessage
+    case m of
+        DELETE -> parseBodyAndExecute (TelegramController.removeTelegramLinkFromTask taskId)
+        PUT    -> parseBodyAndExecute (TelegramController.addTelegramLinkToTask taskId)
+        other  -> notImplemented other
+    where
+        parseBodyAndExecute f = do
+            body <- getBody
+            case TelegramDto.validate (eitherDecode body :: Either String TelegramDto.TelegramUserLink) of
+                 Right telegramDto -> callIfAuthorized (f telegramDto)
+                 Left errorMessage -> badRequest errorMessage

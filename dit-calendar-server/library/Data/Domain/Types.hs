@@ -8,6 +8,7 @@ module Data.Domain.Types
     , TaskId
     , TelegramChatId
     , Description
+    , Title
     , StartDate
     , EndDate
     , Entity(..)
@@ -45,6 +46,7 @@ type TaskId = Int
 type TelegramChatId = Int
 
 type Description = Text
+type Title = Text
 
 newtype UserIdIndex = UserIdIndex UserId
     deriving (Eq, Ord, Read, Show, Data, Typeable)

@@ -4,7 +4,7 @@ group = "dit-calendar"
 version = "0.6.0.0-SNAPSHOT"
 
 plugins {
-    val kotlinVersion = "1.3.71"
+    val kotlinVersion = "1.3.72"
 
     application
 
@@ -30,10 +30,11 @@ dependencies {
     val kittinunfResultVersion = "3.0.0"
     val konfigVersion = "1.6.10.0"
     val kotlinxSerializationVersion = "0.20.0"
-    val ktBotVersion = "1.2.5"
+    val ktBotVersion = "1.3.3"
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("com.github.kittinunf.fuel:fuel:$fuelVersion")
+    implementation("com.github.kittinunf.fuel:fuel-kotlinx-serialization:$fuelVersion")
     implementation("com.github.kittinunf.result:result:$kittinunfResultVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:$kotlinxSerializationVersion")
     implementation("com.github.elbekd:kt-telegram-bot:$ktBotVersion")

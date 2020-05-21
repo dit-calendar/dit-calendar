@@ -14,7 +14,8 @@ import           Data.Time.Clock           (UTCTime)
 import           GHC.Generics
 
 data CalendarEntry = CalendarEntry
-    { description :: Text
+    { title       :: Text
+    , description :: Maybe Text
     , entryId     :: Maybe Int
     , version     :: Maybe Int
     , startDate   :: UTCTime

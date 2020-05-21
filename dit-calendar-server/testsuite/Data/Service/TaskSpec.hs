@@ -30,8 +30,8 @@ import qualified Data.Service.Task                    as TaskService
 
 mkFixture "Fixture" [ts| TelegramTasksAssignmentService, MonadDBTaskRepo, MonadDBCalendarRepo |]
 dbDate = read "2011-11-19 18:28:52.607875 UTC"::UTCTime
-taskFromDb = def{ Task.description="task1", taskId=5, startTime=Nothing, endTime=Nothing}
-entryFromDb = def { CalendarEntry.description="termin2", entryId=1, CalendarEntry.owner=10,
+taskFromDb = def{ Task.title="A", Task.description=Just "task1", taskId=5, startTime=Nothing, endTime=Nothing, Task.owner=10}
+entryFromDb = def { CalendarEntry.title="A", CalendarEntry.description=Just "termin2", entryId=1, CalendarEntry.owner=10,
         CalendarEntry.startDate=dbDate, CalendarEntry.endDate=dbDate,
         CalendarEntry.tasks = [1, 2]}
 
@@ -39,7 +39,7 @@ fixture :: (Monad m, MonadWriter [String] m) => Fixture m
 fixture = Fixture { _addTaskToCalendarEntry = \entry taskId -> tell [show entry] >> tell [show taskId] >>= (\_ -> return $ Right entry)
                   , _updateTask = \a -> tell [show a] >>= (\_ -> return $ Right a)
                   , _deleteTask = \a -> tell [show a]
-                  , _createTask = \a -> return taskFromDb
+                  , _createTask = \a -> tell [show a] >>= (\_ -> return taskFromDb)
                   , _findTaskById = \a -> tell [show a] >>= (\_ -> return $ Just taskFromDb)
                   , _deleteTaskFromCalendarEntry = \c i -> tell [show c] >> tell [show i] >>= (\_ -> return $ Right undefined)
                   , _deleteTaskFromAllTelegramLinks = \a -> tell [show a]
@@ -51,7 +51,7 @@ instance MonadIO Identity where
 
 spec = describe "TaskServiceSpec" $ do
     it "deleteTaskAndCascade" $ do
-        let task = def{ Task.description="task1", taskId=1, assignedTelegramLinks=[7], startTime=Nothing, endTime=Nothing}
+        let task = def{ Task.title="A", Task.description=Just "task1", taskId=1, assignedTelegramLinks=[7], startTime=Nothing, endTime=Nothing, Task.owner=10}
         let (_, log) = evalTestFixture (TaskService.deleteTaskAndCascadeImpl entryFromDb task) fixture
         length log `shouldBe` 4
         -- calendarrepo calls
@@ -63,9 +63,12 @@ spec = describe "TaskServiceSpec" $ do
         log!!3 `shouldBe` show task
     it "createTaskInCalendar" $ do
         let newDate = read "2011-11-19 18:28:52.607875 UTC"::UTCTime
-        let calc = def{ CalendarEntry.description="termin2", entryId=1, CalendarEntry.owner=2,
+        let calc = def{ CalendarEntry.title = "A", CalendarEntry.description=Just "termin2", entryId=1, CalendarEntry.owner=2,
             startDate=newDate, endDate=newDate}
-        let (result, log) = evalTestFixture (TaskService.createTaskInCalendarImpl calc taskFromDb) fixture
+        let newTask = def{ Task.title="A", Task.description=Just "task1", taskId=1, assignedTelegramLinks=[7], startTime=Nothing, endTime=Nothing}
+        let (result, log) = evalTestFixture (TaskService.createTaskInCalendarImpl calc newTask) fixture
+        length log `shouldBe` 3
         result `shouldBe` taskFromDb
-        log!!0 `shouldBe` show calc
-        log!!1 `shouldBe` show (Task.taskId taskFromDb)
+        log!!0 `shouldBe` show newTask {Task.owner = CalendarEntry.owner calc}
+        log!!1 `shouldBe` show calc
+        log!!2 `shouldBe` show (Task.taskId taskFromDb)

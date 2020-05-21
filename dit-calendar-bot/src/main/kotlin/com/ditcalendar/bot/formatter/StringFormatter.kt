@@ -21,12 +21,12 @@ private fun parseSuccess(result: Base): TelegramResponse =
         when (result) {
             is DitCalendar ->
                 WithInline(result.toMarkdown() + System.lineSeparator(), "reload", "$reloadCallbackCommand${result.entryId}")
-            is TaskForUnassignment ->
-                WithInline("*erfolgreich hinzugefügt zu:*" + System.lineSeparator() + result.toMarkdown(),
-                        "unassign me", "unassign_${result.taskId}")
-            is TaskForAssignment ->
+            is TelegramTaskForUnassignment ->
+                WithInline(result.toMarkdown(),
+                        "unassign me", "unassign_${result.task.taskId}")
+            is TelegramTaskForAssignment ->
                 OnlyText("nicht implementiert")
-            is TaskAfterUnassignment ->
+            is TelegramTaskAfterUnassignment ->
                 OnlyText(result.toMarkdown())
             else ->
                 OnlyText("interner server Fehler")

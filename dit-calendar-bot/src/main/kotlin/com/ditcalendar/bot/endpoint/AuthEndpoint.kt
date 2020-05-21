@@ -5,8 +5,9 @@ import com.ditcalendar.bot.config.dit_calendar_server_url
 import com.ditcalendar.bot.config.dit_calendar_user_name
 import com.ditcalendar.bot.config.dit_calendar_user_password
 import com.github.kittinunf.fuel.httpPost
+import com.github.kittinunf.fuel.serialization.responseObject
 import com.github.kittinunf.result.Result
-import com.github.kittinunf.result.flatMap
+import com.github.kittinunf.result.map
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
@@ -27,17 +28,13 @@ class AuthEndpoint {
         val (_, _, result) = "$ditCalendarUrl/authenticate/authentication-methods/password/token"
                 .httpPost()
                 .body("{\"user\":\"$userName\",\"password\":\"$password\"}")
-                .responseString()
+                .responseObject(loader = JWT.serializer(), json = json)
 
-
-        return result.flatMap {
-            Result.of<String, Exception> {
-                val jwt = json.parse(JWT.serializer(), result.get())
-                if (jwt.jrStatus == "Ok")
-                    jwt.jrData.token
-                else
-                    throw Exception("jrStatus: ${jwt.jrStatus}")
-            }
+        return result.map { jwt ->
+            if (jwt.jrStatus == "Ok")
+                jwt.jrData.token
+            else
+                throw Exception("jrStatus: ${jwt.jrStatus}")
         }
     }
 

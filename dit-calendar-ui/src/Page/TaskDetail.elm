@@ -25,7 +25,7 @@ main =
 
 initMain : () -> ( Model, Cmd Msg )
 initMain _ =
-    ( Model (Task Nothing Nothing 0 "" "" "" Nothing Nothing) (Problems []), Cmd.none )
+    ( Model (Task Nothing Nothing 0 "" Nothing "" "" Nothing Nothing) (Problems []), Cmd.none )
 
 
 init : Task -> ( Model, Cmd Msg )
@@ -55,8 +55,11 @@ update msg model =
 updateTaskDetials : TaskMsg -> Task -> Task
 updateTaskDetials msg model =
     case msg of
+        Title title ->
+            { model | title = title }
+
         Description des ->
-            { model | description = des }
+            { model | description = Just des }
 
         StartTime startT ->
             { model | startTime = startT }
@@ -81,8 +84,12 @@ view model =
         [ Form.form []
             [ h4 [] [ text "Task Eintrag" ]
             , Form.group []
+                [ Form.label [] [ text "title" ]
+                , Input.text [ Input.value taskInfo.title, Input.onInput (TaskMsg << Title) ]
+                ]
+            , Form.formInline []
                 [ Form.label [] [ text "description" ]
-                , Input.text [ Input.value taskInfo.description, Input.onInput (TaskMsg << Description) ]
+                , Input.text [ Input.value (withDefault "" taskInfo.description), Input.onInput (TaskMsg << Description) ]
                 ]
             , Form.formInline []
                 [ Form.label [] [ text "start date" ]

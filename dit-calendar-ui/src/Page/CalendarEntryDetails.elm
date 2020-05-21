@@ -69,8 +69,11 @@ update msg model =
 updateCalendarDetails : CalendarDetailMsg -> CalendarEntry -> CalendarEntry
 updateCalendarDetails msg model =
     case msg of
+        Title title ->
+            { model | title = title }
+
         Description des ->
-            { model | description = des }
+            { model | description = Just des }
 
         StartDate startD ->
             { model | startDate = startD }
@@ -98,8 +101,12 @@ view model =
         [ Form.form []
             [ h4 [] [ text "Kalendar Eintrag" ]
             , Form.group []
+                [ Form.label [] [ text "title" ]
+                , Input.text [ Input.value calendarInfo.title, Input.onInput (CalendarDetailEditMsg << Title) ]
+                ]
+            , Form.formInline []
                 [ Form.label [] [ text "description" ]
-                , Input.text [ Input.value calendarInfo.description, Input.onInput (CalendarDetailEditMsg << Description) ]
+                , Input.text [ Input.value (withDefault "" calendarInfo.description), Input.onInput (CalendarDetailEditMsg << Description) ]
                 ]
             , Form.formInline []
                 [ Form.label [] [ text "start date" ]
@@ -115,7 +122,7 @@ view model =
         , ListGroup.custom
             (List.map
                 (\task ->
-                    ListGroup.button [ ListGroup.attrs [ HtmlEvent.onClick (OpenTaskDetailsView task) ] ] [ text ("task: " ++ task.description) ]
+                    ListGroup.button [ ListGroup.attrs [ HtmlEvent.onClick (OpenTaskDetailsView task) ] ] [ text ("task: " ++ task.title) ]
                 )
                 tasks
             )

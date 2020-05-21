@@ -2,27 +2,29 @@ module Presentation.Route.CalendarRoute
     ( routeCalendarEntry
     , routeCalendarEntryDetails
     , routeCalendarFilter
+    , routeCalendarTelegramLinks
     ) where
 
-import           Data.Aeson                                 (eitherDecode)
+import           Data.Aeson                                     (eitherDecode)
 import           Data.Either
 
-import           Happstack.Server                           (Method (DELETE, GET, POST, PUT),
-                                                             Response)
+import           Happstack.Server                               (Method (DELETE, GET, POST, PUT),
+                                                                 Response)
 
-import           AppContext                                 (App)
-import           Auth.Authorization                         (callIfAuthorized)
-import           Data.Domain.Types                          (EntryId)
-import           Presentation.Dto.CalendarEntry             (validate)
-import           Server.HttpServerHelper                    (getBody,
-                                                             getHttpMethod)
-import           Server.ResponseBuilder                     (badRequest,
-                                                             handleResponse,
-                                                             notImplemented)
+import           AppContext                                     (App)
+import           Auth.Authorization                             (callIfAuthorized)
+import           Data.Domain.Types                              (EntryId)
+import           Presentation.Dto.CalendarEntry                 (validate)
+import           Server.HttpServerHelper                        (getBody,
+                                                                 getHttpMethod)
+import           Server.ResponseBuilder                         (badRequest,
+                                                                 handleResponse,
+                                                                 notImplemented)
 
-import qualified Presentation.Controller.CalendarController as CalendarController
-import qualified Presentation.Dto.CalendarEntry             as CalendarDto
-import qualified Presentation.Dto.CalendarFilter            as FilterDto
+import qualified Presentation.Controller.CalendarController     as CalendarController
+import qualified Presentation.Controller.TelegramLinkController as TelegramLinkController
+import qualified Presentation.Dto.CalendarEntry                 as CalendarDto
+import qualified Presentation.Dto.CalendarFilter                as FilterDto
 
 
 routeCalendarEntry :: App Response
@@ -62,3 +64,10 @@ routeCalendarEntryDetails entryId = do
                         callIfAuthorized (CalendarController.updateCalendarEntry entryId calendarDto)
                   Left errorMessage -> badRequest errorMessage
         other -> notImplemented other
+
+routeCalendarTelegramLinks :: EntryId -> App Response
+routeCalendarTelegramLinks entryId = do
+    m <- getHttpMethod
+    case m of
+        GET    -> callIfAuthorized (TelegramLinkController.calendarTasksTelegramLinks entryId)
+        other  -> notImplemented other

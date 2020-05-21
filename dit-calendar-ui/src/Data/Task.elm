@@ -9,7 +9,8 @@ type alias Task =
     { calendarEntryId : Maybe Int
     , taskId : Maybe Int
     , version : Int
-    , description : String
+    , title : String
+    , description : Maybe String
 
     -- TODO , assignedUsers : List User
     , startDate : String
@@ -21,7 +22,7 @@ type alias Task =
 
 emptyTask : Maybe Int -> Task
 emptyTask calendarId =
-    { calendarEntryId = calendarId, taskId = Nothing, version = 0, description = "", startDate = "", startTime = "", endDate = Nothing, endTime = Nothing }
+    { calendarEntryId = calendarId, taskId = Nothing, version = 0, title = "", description = Nothing, startDate = "", startTime = "", endDate = Nothing, endTime = Nothing }
 
 
 type alias Model =
@@ -31,7 +32,8 @@ type alias Model =
 
 
 type TaskMsg
-    = Description String
+    = Title String
+    | Description String
       --TODO | assignedUsers (List User)
     | StartTime String
     | StartDate String

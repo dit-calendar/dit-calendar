@@ -7,13 +7,15 @@ import Http
 import Http.Detailed as HttpEx
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Encode as Encode
+import Json.Encode.Extra as Encode
 
 
 calendarEntryEncoder : CalendarEntry -> Encode.Value
 calendarEntryEncoder model =
     Encode.object
         [ ( "version", Encode.int model.version )
-        , ( "description", Encode.string model.description )
+        , ( "title", Encode.string model.title )
+        , ( "description", Encode.maybe Encode.string model.description )
         , ( "startDate", Encode.string (model.startDate ++ "T" ++ model.startTime ++ ":00.000000Z") )
         , ( "endDate", Encode.string (model.endDate ++ "T" ++ model.endTime ++ ":00.000000Z") )
         ]
@@ -26,11 +28,12 @@ calendarEntriesDecoder =
 
 calendarEntryDecoder : Decode.Decoder CalendarEntry
 calendarEntryDecoder =
-    Decode.map7
+    Decode.map8
         CalendarEntry
         (Decode.nullable (Decode.field "entryId" Decode.int))
         (Decode.field "version" Decode.int)
-        (Decode.at [ "description" ] Decode.string)
+        (Decode.at [ "title" ] Decode.string)
+        (Decode.maybe (Decode.field "description" Decode.string))
         (Decode.field "startDate" stringToDate)
         (Decode.field "startDate" stringToDateTime)
         (Decode.field "endDate" stringToDate)

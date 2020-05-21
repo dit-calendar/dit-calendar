@@ -25,15 +25,15 @@ initUser = def{User.userId = 1}
 newDate = read "2012-11-19 17:51:42.203841 UTC"::UTCTime
 
 initCalendar :: Calendar.CalendarEntry
-initCalendar = def{ Calendar.entryId = 0, Calendar.owner = User.userId initUser, Calendar.description = "erster eintrag",
+initCalendar = def{ Calendar.title="A", Calendar.entryId = 0, Calendar.owner = User.userId initUser, Calendar.description = Just "erster eintrag",
     Calendar.startDate = newDate, Calendar.endDate = newDate}
 
 initCalendar2 :: Calendar.CalendarEntry
-initCalendar2 = def{ Calendar.entryId = 1, Calendar.owner = User.userId initUser, Calendar.description = "zweiter eintrag",
+initCalendar2 = def{ Calendar.title="A", Calendar.entryId = 1, Calendar.owner = User.userId initUser, Calendar.description = Just "zweiter eintrag",
     Calendar.startDate = newDate, Calendar.endDate = newDate}
 
 initCalendar3 :: Calendar.CalendarEntry
-initCalendar3 = def{ Calendar.entryId = 2, Calendar.owner = -1, Calendar.description = "sollte nicht angezeigt werden",
+initCalendar3 = def{ Calendar.title="A", Calendar.entryId = 2, Calendar.owner = -1, Calendar.description = Just "sollte nicht angezeigt werden",
     Calendar.startDate = newDate, Calendar.endDate = newDate}
 
 spec :: Spec

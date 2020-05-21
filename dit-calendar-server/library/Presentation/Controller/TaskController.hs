@@ -27,8 +27,8 @@ calendarTasks entryId user = onEntryExist entryId getTasks
               result <- CalendarTasks.getCalendarTasks cEntry
               return $ Right (transformToDtoList result)
 
-createTask :: EntryId -> TaskDto.Task -> App (EitherResult TaskDto.Task)
-createTask calendarId taskDto =
+createTask :: EntryId -> TaskDto.Task -> DomainUser.User -> App (EitherResult TaskDto.Task)
+createTask calendarId taskDto _ =
     onEntryExist calendarId
         (\e -> do
         result <- TaskService.createTaskInCalendar e (transformFromDto taskDto Nothing)

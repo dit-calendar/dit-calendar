@@ -10,11 +10,12 @@ import           Data.Data         (Data, Typeable)
 import           Data.Default
 import           Data.SafeCopy     (base, deriveSafeCopy)
 
-import           Data.Domain.Types (Description, Entity (..), EntryId, TaskId,
-                                    UserId, StartDate, EndDate)
+import           Data.Domain.Types (Description, EndDate, Entity (..), EntryId,
+                                    StartDate, TaskId, Title, UserId)
 
 data CalendarEntry = CalendarEntry
-    { description :: Description
+    { title       :: Title
+    , description :: Maybe Description
     , entryId     :: EntryId
     , version     :: Int
     , owner       :: UserId

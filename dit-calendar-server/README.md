@@ -105,6 +105,11 @@ curl -H "Content-Type: application/json" -H "Authorization: Bearer XXX" -X POST 
 curl -H "Content-Type: application/json" -H "Authorization: Bearer XX" -X PUT -d '{"description":"testHeute","startDate":"2011-11-19T18:28:52.607875Z", "endDate":"2011-11-20T12:15:53.102875Z"}' http://localhost:8080/calendarentries/1 --insecure
 ```
 
+### show all telegramLinks of calendar
+```sh
+curl -H "Content-Type: application/json" -H "Authorization: Bearer XX" -X GET http://localhost:8080/calendarentries/1/telegramlinks --insecure
+```
+
 ## Task
 
 ### show task

@@ -9,3 +9,4 @@ ideaHaskellLib
 .directory
 .stack-work
 out/
+stack.yaml.lock
