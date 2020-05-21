@@ -1,6 +1,9 @@
 package com.ditcalendar.bot.service
 
-import com.ditcalendar.bot.data.*
+import com.ditcalendar.bot.data.DitCalendar
+import com.ditcalendar.bot.data.TelegramLink
+import com.ditcalendar.bot.data.TelegramTaskAfterUnassignment
+import com.ditcalendar.bot.data.TelegramTaskForUnassignment
 import com.ditcalendar.bot.data.core.Base
 import com.ditcalendar.bot.endpoint.AuthEndpoint
 import com.ditcalendar.bot.endpoint.CalendarEndpoint
@@ -11,19 +14,36 @@ import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.map
 
+const val unassignCallbackCommand = "unassign_"
+const val reloadCallbackCommand = "reloadCalendar_"
+const val assingWithNameCallbackCommand = "assignme_"
+const val assingAnnonCallbackCommand = "assignmeAnnon_"
+
 class DitCalendarService {
 
     private val calendarEndpoint = CalendarEndpoint()
     private val taskEndpoint = TelegramAssignmentEndpoint()
     private val authEndpoint = AuthEndpoint()
 
-    fun executeCallback(telegramLink: TelegramLink, callbackRequest: CallbackRequest?): Result<Base, Exception> =
-            when (callbackRequest) {
-                is UnassignCallbackRequest -> unassignUserFromTask(callbackRequest.taskId, telegramLink)
-                is ReloadCallbackRequest -> getCalendarAndTask(callbackRequest.calendarId)
-                null -> Result.error(InvalidRequest())
-            }
-
+    fun executeCallback(telegramLink: TelegramLink, callbaBackData: String): Result<Base, Exception> =
+            if (callbaBackData.startsWith(unassignCallbackCommand)) {
+                val taskId: Long? = callbaBackData.substringAfter("_").toLongOrNull()
+                if (taskId != null)
+                    unassignUserFromTask(taskId, telegramLink)
+                else
+                    Result.error(InvalidRequest())
+            } else if (callbaBackData.startsWith(reloadCallbackCommand)) {
+                val calendarId: Long? = callbaBackData.substringAfter("_").toLongOrNull()
+                if (calendarId != null)
+                    getCalendarAndTask(calendarId)
+                else
+                    Result.error(InvalidRequest())
+            } else if (callbaBackData.startsWith(assingWithNameCallbackCommand)) {
+                executeTaskAssignmentCommand(telegramLink, callbaBackData)
+            } else if (callbaBackData.startsWith(assingAnnonCallbackCommand)) {
+                executeTaskAssignmentCommand(telegramLink.copy(firstName = null, userName = null), callbaBackData)
+            } else
+                Result.error(InvalidRequest())
 
     fun executeTaskAssignmentCommand(telegramLink: TelegramLink, opts: String): Result<Base, Exception> {
         val taskId: Long? = opts.substringAfter("_").toLongOrNull()

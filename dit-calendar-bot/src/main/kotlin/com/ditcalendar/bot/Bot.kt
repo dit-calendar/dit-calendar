@@ -5,9 +5,11 @@ import com.ditcalendar.bot.data.OnlyText
 import com.ditcalendar.bot.data.TelegramLink
 import com.ditcalendar.bot.data.WithInline
 import com.ditcalendar.bot.data.core.Base
-import com.ditcalendar.bot.data.parse
+import com.ditcalendar.bot.error.InvalidRequest
 import com.ditcalendar.bot.formatter.parseResponse
 import com.ditcalendar.bot.service.DitCalendarService
+import com.ditcalendar.bot.service.assingAnnonCallbackCommand
+import com.ditcalendar.bot.service.assingWithNameCallbackCommand
 import com.elbekD.bot.Bot
 import com.elbekD.bot.server
 import com.elbekD.bot.types.InlineKeyboardButton
@@ -56,8 +58,7 @@ fun main(args: Array<String>) {
         } else {
             val msgUser = callbackQuery.from
             val telegramLink = TelegramLink(originallyMessage.chat.id, msgUser.id, msgUser.username, msgUser.first_name)
-            val callbackRequest = parse(request)
-            val response = calendarService.executeCallback(telegramLink, callbackRequest)
+            val response = calendarService.executeCallback(telegramLink, request)
 
             when (val result = parseResponse(response)) {
                 is OnlyText -> {
@@ -69,7 +70,7 @@ fun main(args: Array<String>) {
                     }
                 }
                 is WithInline -> {
-                    bot.answerCallbackQuery(callbackQuery.id, "calendar wurde neugeladen")
+                    bot.answerCallbackQuery(callbackQuery.id, result.callbackNotificationText)
                     val inlineButton = InlineKeyboardButton(result.callBackText, callback_data = result.callBackData)
                     val inlineKeyboardMarkup = InlineKeyboardMarkup(listOf(listOf(inlineButton)))
                     bot.editMessageText(originallyMessage.chat.id, originallyMessage.message_id, text = result.message,
@@ -87,10 +88,16 @@ fun main(args: Array<String>) {
             bot.sendMessage(msg.chat.id, "fehlerhafte Anfrage")
         } else {
             if (opts != null && opts.startsWith("assign")) {
-                val telegramLink = TelegramLink(msg.chat.id, msgUser.id, msgUser.username, msgUser.first_name)
-                val response = calendarService.executeTaskAssignmentCommand(telegramLink, opts)
 
-                sendMessage(response, bot, msg)
+                val taskId: Long? = opts.substringAfter("_").toLongOrNull()
+                if (taskId != null) {
+                    val assignMeButton = InlineKeyboardButton("Mit Telegram Namen", callback_data = assingWithNameCallbackCommand + taskId)
+                    val annonAssignMeButton = InlineKeyboardButton("Annonym", callback_data = assingAnnonCallbackCommand + taskId)
+                    val inlineKeyboardMarkup = InlineKeyboardMarkup(listOf(listOf(assignMeButton, annonAssignMeButton)))
+                    bot.sendMessage(msg.chat.id, "Darf ich dein Namen verwenden?", "MarkdownV2", true, markup = inlineKeyboardMarkup)
+                } else {
+                    sendMessage(Result.error(InvalidRequest()), bot, msg)
+                }
             } else {
                 bot.sendMessage(msg.chat.id, helpMessage)
             }

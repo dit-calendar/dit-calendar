@@ -8,4 +8,4 @@ typealias TelegramLinks = List<TelegramLink>
 data class TelegramLink(val chatId: Long,
                         val userId: Int,
                         val userName: String? = null,
-                        val firstName: String?)
+                        val firstName: String? = null)

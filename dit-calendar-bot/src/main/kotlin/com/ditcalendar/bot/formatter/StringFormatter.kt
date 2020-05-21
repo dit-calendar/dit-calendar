@@ -5,6 +5,7 @@ import com.ditcalendar.bot.data.core.Base
 import com.ditcalendar.bot.error.DitBotError
 import com.ditcalendar.bot.error.InvalidRequest
 import com.ditcalendar.bot.error.UnassigmentError
+import com.ditcalendar.bot.service.reloadCallbackCommand
 import com.github.kittinunf.fuel.core.FuelError
 import com.github.kittinunf.result.Result
 
@@ -20,10 +21,10 @@ fun parseResponse(result: Result<Base, Exception>): TelegramResponse =
 private fun parseSuccess(result: Base): TelegramResponse =
         when (result) {
             is DitCalendar ->
-                WithInline(result.toMarkdown() + System.lineSeparator(), "reload", "$reloadCallbackCommand${result.entryId}")
+                WithInline(result.toMarkdown() + System.lineSeparator(), "reload", "$reloadCallbackCommand${result.entryId}", "calendar wurde neugeladen")
             is TelegramTaskForUnassignment ->
                 WithInline(result.toMarkdown(),
-                        "unassign me", "unassign_${result.task.taskId}")
+                        "unassign me", "unassign_${result.task.taskId}", null)
             is TelegramTaskForAssignment ->
                 OnlyText("nicht implementiert")
             is TelegramTaskAfterUnassignment ->
