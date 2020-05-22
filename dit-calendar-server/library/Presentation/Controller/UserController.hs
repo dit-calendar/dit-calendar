@@ -59,7 +59,7 @@ createUser authenticateURL routeAuthenticate = do
     body <- getBody
     let createUserBody = readAuthUserFromBodyAsList body
     case createUserBody of
-        Just (NewAccountData naUser naPassword _) ->
+        Just (NewAccountData naUser _ _) ->
             do
                 let naUsername :: AuthUser.Username = AuthUser._username naUser
                 let username = AuthUser._unUsername naUsername

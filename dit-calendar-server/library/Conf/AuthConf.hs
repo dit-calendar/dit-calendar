@@ -11,7 +11,7 @@ import qualified Data.Text                            as T
 
 authenticateConfig :: AuthenticateConfig
 authenticateConfig = AuthenticateConfig
-    { _isAuthAdmin        = const $ return True
+    { _isAuthAdmin        = const $ return False
     , _usernameAcceptable = usernamePolicy
     , _requireEmail       = True
     }
