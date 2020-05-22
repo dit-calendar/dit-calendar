@@ -44,8 +44,8 @@ loggedUserPage :: DomainUser.User -> App (EitherResult UserDto.User)
 loggedUserPage loggedUser = return $ Right $ transformToDto loggedUser
 
 --TODO wrapper für die Auth-lib
-createUser  :: AuthenticateURL -> (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response) -> App Response
-createUser authenticateURL routeAuthenticate = do
+createUser  :: AuthenticateURL -> (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response) -> Text -> App Response
+createUser authenticateURL routeAuthenticate telegramToken = do
     body <- getBody
     let createUserBody = readAuthUserFromBodyAsList body
     case createUserBody of
@@ -59,7 +59,7 @@ createUser authenticateURL routeAuthenticate = do
                 if isInfixOf "NotOk" $ show responseBody then
                     badRequest response
                 else
-                    createDomainUser username
+                    createDomainUser username telegramToken
 
         -- if request body is not valid use response of auth library
         Nothing -> leaveRouteT (mapRouteT liftServerPartT2FoundationT $ routeAuthenticate authenticateURL)
@@ -68,11 +68,11 @@ leaveRouteT :: RouteT url m a-> m a
 leaveRouteT r = unRouteT r (\ _ _ -> undefined)
 
 --TODO other creating concept, or change rest interface (and transform UserDto to NewAccoundData)
-createDomainUser :: Text -> App Response
-createDomainUser name = do
+createDomainUser :: Text -> Text -> App Response
+createDomainUser name telegramToken = do
     mUser <- UserRepo.createUser user
     okResponseJson $ encode $ transformToDto mUser
-    where user = def { DomainUser.loginName = name }
+    where user = def { DomainUser.loginName = name, DomainUser.telegramToken = telegramToken }
 
 --TODO updating AuthenticateUser is missing
 updateUser :: UserDto.User -> DomainUser.User -> App (EitherResult UserDto.User)

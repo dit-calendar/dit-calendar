@@ -16,6 +16,7 @@ instance Mapper Domain.User User where
             { loginName = Domain.loginName domain
             , userId = Just $ Domain.userId domain
             , version = Just $ Domain.version domain
+            , telegramToken = Domain.telegramToken domain
             }
 
     transformFromDto dto mDbCalendar =
@@ -27,4 +28,5 @@ instance Mapper Domain.User User where
                     , Domain.userId = Domain.userId dbUser
                     , Domain.version = fromMaybe (-1) (version dto)
                     , Domain.ownerOfCalendarEntries = Domain.ownerOfCalendarEntries dbUser
+                    , Domain.telegramToken = telegramToken dto
                     }

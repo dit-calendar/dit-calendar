@@ -30,7 +30,7 @@ import qualified Data.Repository.UserRepo     as UserRepo
 
 mkFixture "Fixture" [ts| UserDAO |]
 
-userFromDb = def { loginName="Foo", User.userId=10}
+userFromDb = def { loginName="Foo", User.userId=10, User.telegramToken="token"}
 taskFromDb = def {Task.taskId=2}
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
@@ -51,21 +51,21 @@ spec = describe "UserRepo" $ do
         User.loginName result `shouldBe` "name"
         User.ownerOfCalendarEntries result `shouldBe` []
     it "deleteUser" $ do
-        let user = def { loginName="Foo", User.userId=10}
+        let user = def { loginName="Foo", User.userId=10, telegramToken=""}
         let (_, log) = evalTestFixture (UserRepo.deleteUserImpl user) fixture
         log `shouldBe` ["10"::String]
     it "updateName" $ do
-        let user = def { loginName="Foo", User.userId=10 }
+        let user = def { loginName="Foo", User.userId=10, telegramToken="" }
         let (_, log) = evalTestFixture (UserRepo.updateUserImpl user {loginName = "Name2"}) fixture
         let newUser = user { loginName = "Name2" }
         log!!0 `shouldBe` show newUser
     it "addCalendarEntryToUser" $ do
-        let user = def { loginName="Foo", User.userId=10, ownerOfCalendarEntries=[1]}
+        let user = def { loginName="Foo", User.userId=10, ownerOfCalendarEntries=[1], telegramToken=""}
         let (_, log) = evalTestFixture (UserRepo.addCalendarEntryToUserImpl user 2) fixture
         let newUser = user {ownerOfCalendarEntries = [2, 1]}
         log!!0 `shouldBe` show newUser
     it "deleteCalendarEntryFromUser" $ do
-        let user = def{ loginName="Foo", User.userId=10, ownerOfCalendarEntries=[1,2,3]}
+        let user = def{ loginName="Foo", User.userId=10, ownerOfCalendarEntries=[1,2,3], telegramToken=""}
         let (_, log) = evalTestFixture (UserRepo.deleteCalendarEntryFromUserImpl user 2) fixture
         let newUser = user {ownerOfCalendarEntries = [1, 3]}
         log!!0 `shouldBe` show newUser

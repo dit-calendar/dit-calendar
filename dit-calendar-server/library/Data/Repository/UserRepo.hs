@@ -16,7 +16,7 @@ import           Prelude
 import qualified Data.List                 as List
 
 import           AppContext                (App)
-import           Data.Domain.Types         (EitherResult, EntryId, UserId)
+import           Data.Domain.Types         (EitherResult, EntryId, UserId, TelegramToken)
 import           Data.Domain.User          (User (..))
 import           Data.Repository.Acid.User (UserDAO (..))
 import           Server.AcidInitializer
@@ -56,6 +56,9 @@ findUserByIdImpl = query . UserAcid.UserById
 findUserByLoginNameIml :: (UserDAO m, MonadIO m) => Text -> m (Maybe User)
 findUserByLoginNameIml = queryByLoginName . UserAcid.FindByLoginName
 
+findUserByTelegramTokenIml :: (UserDAO m, MonadIO m) => TelegramToken -> m (Maybe User)
+findUserByTelegramTokenIml = queryByLoginName . UserAcid.FindByLoginName
+
 class Monad m => MonadDBUserRepo m where
     createUser :: User -> m User
     findUserById :: UserId -> m (Maybe User)
@@ -64,6 +67,7 @@ class Monad m => MonadDBUserRepo m where
     addCalendarEntryToUser :: User -> EntryId -> m (EitherResult User)
     deleteCalendarEntryFromUser :: User -> EntryId -> m (EitherResult User)
     findUserByLoginName :: Text -> m (Maybe User)
+    findUserByTelegramToken :: TelegramToken -> m (Maybe User)
 
 instance UserDAO App => MonadDBUserRepo App where
     createUser = createUserImpl
@@ -73,3 +77,4 @@ instance UserDAO App => MonadDBUserRepo App where
     addCalendarEntryToUser = addCalendarEntryToUserImpl
     deleteCalendarEntryFromUser = deleteCalendarEntryFromUserImpl
     findUserByLoginName = findUserByLoginNameIml
+    findUserByTelegramToken = findUserByTelegramTokenIml

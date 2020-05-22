@@ -2,11 +2,7 @@
 
 module AppStart where
 
-import           Prelude                               hiding (readFile)
-
 import           Control.Exception                     (finally)
-import           Data.Text.IO                          (readFile)
-import           System.Environment                    (lookupEnv)
 
 import           Conferer                              (defaultConfig,
                                                         getFromRootConfig)

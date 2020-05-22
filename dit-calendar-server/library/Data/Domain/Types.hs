@@ -12,10 +12,12 @@ module Data.Domain.Types
     , Title
     , StartDate
     , EndDate
+    , TelegramToken
     , Entity(..)
     , EitherResult
     , ResultError(..)
     , UserIdIndex(..)
+    , TelegramTokenIndex(..)
     ) where
 
 import           Data.Aeson
@@ -44,6 +46,8 @@ type EntryId = Int
 
 type TaskId = Int
 
+type TelegramToken = Text
+
 type TelegramChatId = Int
 
 type Description = Text
@@ -52,6 +56,10 @@ type Title = Text
 newtype UserIdIndex = UserIdIndex UserId
     deriving (Eq, Ord, Read, Show, Data, Typeable)
 $(deriveSafeCopy 0 'base ''UserIdIndex)
+
+newtype TelegramTokenIndex = TelegramTokenIndex TelegramToken
+    deriving (Eq, Ord, Read, Show, Data, Typeable)
+$(deriveSafeCopy 0 'base ''TelegramTokenIndex)
 
 class Entity entity key | entity -> key, key -> entity where
     getId :: entity -> key

@@ -20,7 +20,7 @@ withDatabaseConnection :: (AcidState CalendarEntryAcid.EntryList -> IO ()) -> IO
 withDatabaseConnection = initDatabaseWithList 1 [initCalendar, initCalendar2, initCalendar3]
 
 initUser :: User.User
-initUser = def{User.userId = 1}
+initUser = def{User.userId = 1, User.telegramToken="token"}
 
 newDate = read "2012-11-19 17:51:42.203841 UTC"::UTCTime
 

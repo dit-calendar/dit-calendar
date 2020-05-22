@@ -30,7 +30,7 @@ import qualified Data.Service.CalendarEntry   as CalendarEntryService
 
 mkFixture "Fixture" [ts| MonadDBUserRepo, MonadDBCalendarRepo, CalendarTasksService |]
 
-userFromDb = def{ loginName="Foo", User.userId=10}
+userFromDb = def{ loginName="Foo", User.userId=10, telegramToken="token"}
 dbDate = read "2011-11-19 18:28:52.607875 UTC"::UTCTime
 entryFromDb = def { CalendarEntry.title="A", CalendarEntry.description=Just "termin2", entryId=1, CalendarEntry.owner=10, tasks=[1,2],
         startDate=dbDate, endDate=dbDate}
@@ -53,7 +53,7 @@ instance MonadIO Identity where
 
 spec = describe "CalendarEntryServiceSpec" $ do
     it "createEntry" $ do
-        let user = def{ loginName="Foo", User.userId=10, ownerOfCalendarEntries=[1,2] }
+        let user = def{ loginName="Foo", User.userId=10, ownerOfCalendarEntries=[1,2], telegramToken="" }
         let (result, log) = evalTestFixture (CalendarEntryService.createEntryImpl newCalendar user) fixture
         result `shouldBe` entryFromDb
         -- Test calendarRepo calls

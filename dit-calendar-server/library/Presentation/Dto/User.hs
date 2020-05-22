@@ -12,13 +12,16 @@ import           Data.Text
 import           GHC.Generics
 
 data User = User
-    { loginName :: Text
-    , userId    :: Maybe Int
-    , version   :: Maybe Int
-    } deriving (Show, Generic)
+    { loginName     :: Text
+    --TODO can be deleted?
+    , userId        :: Maybe Int --TODO can be deleted?
+    , version       :: Maybe Int
+    , telegramToken :: Text
+    }
+    deriving (Show, Generic)
 
 validate :: Either String User -> Either String User
-validate (Left e) = Left e
+validate (Left e)     = Left e
 validate (Right user) = Right user
 
 instance ToJSON User where

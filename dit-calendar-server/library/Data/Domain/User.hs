@@ -13,12 +13,14 @@ import           Data.Default
 import           Data.SafeCopy     (base, deriveSafeCopy)
 import           Data.Text         (Text)
 
-import           Data.Domain.Types (Entity (..), EntryId, TaskId, UserId)
+import           Data.Domain.Types (Entity (..), EntryId, TaskId, TelegramToken,
+                                    UserId)
 
 data User = User
     { loginName              :: Text
     , userId                 :: UserId
     , version                :: Int
+    , telegramToken          :: TelegramToken
     , ownerOfCalendarEntries :: [EntryId]
     } deriving (Eq, Ord, Read, Show, Data, Typeable)
 

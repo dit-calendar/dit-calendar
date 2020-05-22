@@ -4,13 +4,16 @@ module Presentation.Route.MainRouting
 
 import           Control.Monad.Cont                       (lift)
 
+import           Data.Text
+import           Data.Text.Encoding                       (decodeUtf8)
 import           Happstack.Authenticate.Core              (AuthenticateURL (..))
 import           Happstack.Server                         (BodyPolicy (..),
                                                            Method (OPTIONS),
                                                            Response,
-                                                           ServerPartT,
+                                                           ServerPartT, askRq,
                                                            decodeBody,
-                                                           defaultBodyPolicy)
+                                                           defaultBodyPolicy,
+                                                           getHeader)
 import           Web.Routes                               (RouteT, mapRouteT,
                                                            nestURL)
 
@@ -28,6 +31,7 @@ import           Presentation.Route.UserRoute             (routeDetailUser)
 import           Server.HappstackHelper                   (liftServerPartT2FoundationT)
 import           Server.HttpServerHelper                  (getHttpMethod)
 import           Server.ResponseBuilder                   (addCorsToResponse,
+                                                           badRequest,
                                                            corsResponse)
 
 import qualified Presentation.Controller.HomeController   as HomeController
@@ -41,12 +45,18 @@ myPolicy = defaultBodyPolicy "/tmp/" 0 1000 1000
 authOrRoute :: (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response) -> Sitemap -> CtrlV
 authOrRoute routeAuthenticate url =
     case url of
-        Authenticate authenticateURL ->
-            if show authenticateURL ==
-               "AuthenticationMethods (Just (AuthenticationMethod {_unAuthenticationMethod = \"password\"},[\"account\"]))"
-                then lift $ UserController.createUser authenticateURL routeAuthenticate
-                else mapRouteT liftServerPartT2FoundationT $ nestURL Authenticate $ routeAuthenticate authenticateURL
+        Authenticate authenticateURL -> do
+            mTelegramToken <- lift $ lift getTelegramTokenFromHeader
+            case mTelegramToken of
+                Just telegramToken -> if show authenticateURL ==
+                   "AuthenticationMethods (Just (AuthenticationMethod {_unAuthenticationMethod = \"password\"},[\"account\"]))"
+                    then lift $ UserController.createUser authenticateURL routeAuthenticate telegramToken
+                    else mapRouteT liftServerPartT2FoundationT $ nestURL Authenticate $ routeAuthenticate authenticateURL
+                Nothing -> badRequest "missing Header: TelegramToken"
         other -> lift $ route other
+
+getTelegramTokenFromHeader :: ServerPartT IO (Maybe Text)
+getTelegramTokenFromHeader = fmap decodeUtf8 . getHeader "TelegramToken" <$> askRq
 
 -- | the route mapping function
 route :: Sitemap -> App Response
