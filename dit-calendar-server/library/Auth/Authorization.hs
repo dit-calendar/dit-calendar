@@ -1,17 +1,22 @@
 {-# LANGUAGE FlexibleContexts #-}
-module Auth.Authorization ( callIfAuthorized ) where
+module Auth.Authorization ( callIfAuthorized, createToken ) where
 
 import           Data.Text                   (unpack)
 
+import           Conf.AuthConf               (authenticateConfig)
+import           Data.Acid                   (AcidState)
+import           Data.Acid.Advanced          (query')
 import           Data.Aeson                  (ToJSON)
-import           Happstack.Authenticate.Core (Token (_tokenUser), getToken)
-import           Happstack.Server            (Response, getHeaderM,
-                                              internalServerError, toResponse,
-                                              unauthorized)
+import           Happstack.Authenticate.Core (AuthenticateState,
+                                              GetUserByUsername (..),
+                                              Token (_tokenUser), Username (..),
+                                              getToken, issueToken,
+                                              toJSONSuccess)
+import           Happstack.Server            (Response, internalServerError,
+                                              toResponse, unauthorized)
 
 import           AppContext                  (App, setCurrentUser)
 import           Data.Domain.Types           (EitherResult)
-import           Presentation.Route.PageEnum (Sitemap (..))
 import           Server.HappstackHelper      (HasAcidState (getAcidState))
 import           Server.ResponseBuilder      (handleResponse)
 
@@ -43,3 +48,11 @@ getDomainUser (AuthUser.User _ name _) = UserRepo.findUserByLoginName $ AuthUser
 responseWithError :: AuthUser.User -> App Response
 responseWithError (AuthUser.User _ name _) = internalServerError $ toResponse ("something went wrong. Domainuser: "
                                                                    ++ unpack (AuthUser._unUsername name) ++ " not found")
+createToken :: DomainUser.User -> App Response
+createToken domainUser = do
+    authState <- getAcidState
+    mAuthUser <- query' authState (GetUserByUsername $ Username domainUserName)
+    case mAuthUser of
+        Just authUser -> toJSONSuccess <$> issueToken authState authenticateConfig authUser
+        Nothing -> internalServerError $ toResponse ("internal server error. AuthUser for Domainuser " ++ unpack domainUserName ++ " not found")
+    where domainUserName = DomainUser.loginName domainUser
