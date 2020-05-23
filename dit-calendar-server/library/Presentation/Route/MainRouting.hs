@@ -16,7 +16,7 @@ import           Web.Routes                               (RouteT, mapRouteT,
 
 import           AppContext                               (App, AppContext,
                                                            CtrlV, getConfig)
-import           Conf.Config                              (Config (..))
+import           Conf.Config                              (AppConfig (..))
 import           Presentation.Route.CalendarRoute         (routeCalendarEntry, routeCalendarEntryDetails,
                                                            routeCalendarFilter,
                                                            routeCalendarTelegramLinks)
@@ -75,5 +75,5 @@ routeWithOptions routeAuthenticate url = do
     config <- getConfig
     m <- lift getHttpMethod
     if m == OPTIONS
-        then lift $ corsResponse (cfCors config)
-        else addCorsToResponse (cfCors config) $ authOrRoute routeAuthenticate url
+        then lift $ corsResponse (appConfigCors config)
+        else addCorsToResponse (appConfigCors config) $ authOrRoute routeAuthenticate url

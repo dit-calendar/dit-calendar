@@ -92,8 +92,8 @@ addCorsHeaders :: CorsConfig ->  Response -> Response
 addCorsHeaders corsConfig response =
     setHeader "Access-Control-Allow-Methods" "POST, GET, PUT, DELETE" $
     setHeader "Access-Control-Allow-Headers" "Content-Type" $
-    setHeader "Access-Control-Allow-Origin" (clientUrl corsConfig) $
-    setHeader "Access-Control-Allow-Credentials" (allowCookie corsConfig) response
+    setHeader "Access-Control-Allow-Origin" (corsConfigAllowOrigin corsConfig) $
+    setHeader "Access-Control-Allow-Credentials" (show $ corsConfigAllowCredentials corsConfig) response
 
 badRequest :: HServer.FilterMonad Response m  => String -> m Response
 badRequest message = HServer.badRequest $ toResponse message

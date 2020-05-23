@@ -6,7 +6,7 @@ import           Control.Monad.Reader        (asks, local)
 import           Happstack.Server            (Response)
 import           Web.Routes.RouteT           (RouteT)
 
-import           Conf.Config                 (Config)
+import           Conf.Config                 (AppConfig)
 import           Presentation.Route.PageEnum (Sitemap)
 import           Server.DBState              (Acid)
 import           Server.HappstackHelper      (FoundationT)
@@ -21,7 +21,7 @@ type CtrlV    = CtrlV' Response
 data AppReader = AppReader
     {
     acidState     :: Acid
-    , config      :: Config
+    , config      :: AppConfig
     , currentUser :: Maybe DomainUser.User
     }
 
@@ -31,7 +31,7 @@ updateUserInAppContext mUser reader = reader { currentUser = Just mUser}
 class Monad m => AppContext m  where
     setCurrentUser :: DomainUser.User -> m a -> m a
     getCurrentUser :: m (Maybe DomainUser.User)
-    getConfig      :: m Config
+    getConfig      :: m AppConfig
 
 instance AppContext App where
     setCurrentUser user = local (updateUserInAppContext user)
