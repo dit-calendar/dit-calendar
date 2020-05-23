@@ -41,7 +41,7 @@ RUN apt-get update && apt-get -y install libgmp10 netbase
 
 # Copy from a build stage
 COPY --from=build /build/bin .
-COPY application.cfg LICENSE /app/
+COPY config LICENSE /app/
 
 EXPOSE 8080
 
