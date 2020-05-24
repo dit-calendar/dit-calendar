@@ -4,6 +4,7 @@
 module Presentation.Controller.UserController (createUser, updateUser, deleteUser, usersPage, userPage, loggedUserPage) where
 
 import           Data.Aeson                           (encode)
+import           Data.Default                         (def)
 import           Data.List                            (isInfixOf)
 import           Data.Text                            (Text)
 
@@ -80,8 +81,9 @@ leaveRouteT r = unRouteT r (\ _ _ -> undefined)
 --TODO other creating concept, or change rest interface (and transform UserDto to NewAccoundData)
 createDomainUser :: Text -> App Response
 createDomainUser name = do
-    mUser <- UserRepo.createUser name
+    mUser <- UserRepo.createUser user
     okResponseJson $ encode $ transformToDto mUser
+    where user = def { DomainUser.loginName = name }
 
 --TODO updating AuthenticateUser is missing
 updateUser :: UserDto.User -> DomainUser.User -> App (EitherResult UserDto.User)

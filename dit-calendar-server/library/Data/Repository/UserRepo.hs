@@ -5,22 +5,18 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Data.Repository.UserRepo
-    ( deleteUserImpl, updateUserImpl, updateLoginNameImpl, addCalendarEntryToUserImpl
+    ( deleteUserImpl, updateUserImpl, addCalendarEntryToUserImpl
     , deleteCalendarEntryFromUserImpl, findUserByIdImpl, createUserImpl, findUserByLoginNameIml,
      MonadDBUserRepo(..) ) where
 
 import           Control.Monad.IO.Class
-import           Data.Default              (def)
-import           Data.Maybe                (fromJust)
 import           Data.Text                 (Text)
 import           Prelude
 
 import qualified Data.List                 as List
 
 import           AppContext                (App)
-import           Data.Domain.Task          (Task (..))
-import           Data.Domain.Types         (EitherResult, EntryId, TaskId,
-                                            UserId)
+import           Data.Domain.Types         (EitherResult, EntryId, UserId)
 import           Data.Domain.User          (User (..))
 import           Data.Repository.Acid.User (UserDAO (..))
 import           Server.AcidInitializer
@@ -36,19 +32,14 @@ instance UserDAO App where
     query  = Foundation.query
     queryByLoginName = Foundation.query
 
-createUserImpl :: UserDAO m => Text -> m User
-createUserImpl name = let user = def { loginName = name
-                    } in
-        create $ UserAcid.NewUser user
+createUserImpl :: UserDAO m => User -> m User
+createUserImpl user = create $ UserAcid.NewUser user
 
 deleteUserImpl :: UserDAO m => User -> m ()
 deleteUserImpl =  delete . UserAcid.DeleteUser . userId
 
 updateUserImpl :: UserDAO m => User -> m (EitherResult User)
 updateUserImpl = update . UserAcid.UpdateUser
-
-updateLoginNameImpl :: UserDAO m => User -> Text -> m (EitherResult User)
-updateLoginNameImpl user newName = updateUserImpl user {loginName = newName}
 
 addCalendarEntryToUserImpl :: UserDAO m => User -> EntryId -> m (EitherResult User)
 addCalendarEntryToUserImpl user entryId =
@@ -66,11 +57,10 @@ findUserByLoginNameIml :: (UserDAO m, MonadIO m) => Text -> m (Maybe User)
 findUserByLoginNameIml = queryByLoginName . UserAcid.FindByLoginName
 
 class Monad m => MonadDBUserRepo m where
-    createUser :: Text -> m User
+    createUser :: User -> m User
     findUserById :: UserId -> m (Maybe User)
     updateUser :: User -> m (EitherResult User)
     deleteUser :: User -> m ()
-    updateLoginName :: User -> Text -> m (EitherResult User)
     addCalendarEntryToUser :: User -> EntryId -> m (EitherResult User)
     deleteCalendarEntryFromUser :: User -> EntryId -> m (EitherResult User)
     findUserByLoginName :: Text -> m (Maybe User)
@@ -80,7 +70,6 @@ instance UserDAO App => MonadDBUserRepo App where
     findUserById = findUserByIdImpl
     updateUser = updateUserImpl
     deleteUser = deleteUserImpl
-    updateLoginName = updateLoginNameImpl
     addCalendarEntryToUser = addCalendarEntryToUserImpl
     deleteCalendarEntryFromUser = deleteCalendarEntryFromUserImpl
     findUserByLoginName = findUserByLoginNameIml

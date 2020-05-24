@@ -46,7 +46,8 @@ instance MonadIO Identity where
 
 spec = describe "UserRepo" $ do
     it "createUser" $ do
-        let (result, _) = evalTestFixture (UserRepo.createUserImpl "name") fixture
+        let user = def { loginName="name" }
+        let (result, _) = evalTestFixture (UserRepo.createUserImpl user) fixture
         User.loginName result `shouldBe` "name"
         User.ownerOfCalendarEntries result `shouldBe` []
     it "deleteUser" $ do
@@ -55,7 +56,7 @@ spec = describe "UserRepo" $ do
         log `shouldBe` ["10"::String]
     it "updateName" $ do
         let user = def { loginName="Foo", User.userId=10 }
-        let (_, log) = evalTestFixture (UserRepo.updateLoginNameImpl user "Name2") fixture
+        let (_, log) = evalTestFixture (UserRepo.updateUserImpl user {loginName = "Name2"}) fixture
         let newUser = user { loginName = "Name2" }
         log!!0 `shouldBe` show newUser
     it "addCalendarEntryToUser" $ do
