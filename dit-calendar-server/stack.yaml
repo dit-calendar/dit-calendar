@@ -58,6 +58,7 @@ extra-deps:
 - hslogger-1.3.1.0
 - socks-0.6.1
 - connection-0.3.1
+- conferer-0.4.1.0
 
 # Override default flag values for local packages and extra-deps
 # flags: {}

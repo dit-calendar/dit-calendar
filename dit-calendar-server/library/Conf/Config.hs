@@ -1,53 +1,64 @@
+{-# LANGUAGE DeriveGeneric     #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Conf.Config
-    ( readConfig
-    , Config(..)
-    , LocalConfig(..)
+    ( AppConfig(..)
     , CorsConfig(..)
+    , ServerConfig(..)
+    , customHappstackServerConf
+    , serverConfigHostUri
     ) where
 
-import           Data.Ini.Config
+import           Conferer
 import           Data.Text
+import           Happstack.Server       (nullConf)
+import           Happstack.Server.Types (Conf, port)
 
-import           Conf.NetworkConfig (NetworkConfig (..), networkConfigParser)
+import           GHC.Generics           (Generic)
 
-data Config = Config
-    { cfNetwork :: NetworkConfig
-    , cfLocal   :: Maybe LocalConfig
-    , cfCors     :: CorsConfig
-    } deriving (Eq, Show)
+data AppConfig = AppConfig
+    { appConfigServer :: ServerConfig
+    , appConfigCors   :: CorsConfig
+    } deriving (Show, Generic)
 
 data CorsConfig = CorsConfig
-    { clientUrl :: String
-    , allowCookie :: String
-    } deriving (Eq, Show)
+    { corsConfigAllowOrigin      :: String
+    , corsConfigAllowCredentials :: Bool
+    } deriving (Show, Generic)
 
-data LocalConfig = LocalConfig
-    { adminUser     :: Text
-    , adminPassword :: Text
-    } deriving (Eq, Show)
+data ServerConfig = ServerConfig
+    { serverConfigHost    :: String
+    , serverConfigPort    :: Int
+    , serverConfigProtocol :: String
+    } deriving (Show, Generic)
 
-localConfigParser :: IniParser (Maybe LocalConfig)
-localConfigParser = 
-    sectionMb "LOCAL" $ do
-        user <- fieldOf "admin.user" string
-        password <- fieldOf "admin.password" string
-        return LocalConfig {adminPassword = password, adminUser = user}
-        
-corsConfigParser :: IniParser CorsConfig
-corsConfigParser = 
-    section "CORS" $ do
-                url <- fieldOf "allow.origin" string
-                cookie <- fieldOf "allow.credentials" string
-                return CorsConfig {clientUrl = url, allowCookie = cookie}
+serverConfigHostUri :: ServerConfig -> String
+serverConfigHostUri c = serverConfigProtocol c ++ "://" ++ serverConfigHost c ++ ":" ++ show (serverConfigPort c)
 
-configParser :: Maybe String -> IniParser Config
-configParser defaultPort = do
-    netCf <- networkConfigParser defaultPort
-    locCf <- localConfigParser
-    corsCf <- corsConfigParser
-    return Config {cfNetwork = netCf, cfLocal = locCf, cfCors = corsCf}
+instance FromConfig AppConfig
+instance FromConfig ServerConfig
+instance FromConfig CorsConfig
 
-readConfig :: Maybe String -> Text -> Either String Config
-readConfig defaultPort textConfig = parseIniFile textConfig $ configParser defaultPort
+instance DefaultConfig AppConfig where
+    configDef = AppConfig {
+        appConfigServer = configDef,
+        appConfigCors = configDef
+    }
+
+instance DefaultConfig ServerConfig where
+    configDef = ServerConfig {
+        serverConfigHost = "localhost"
+        , serverConfigPort = 8080
+        , serverConfigProtocol = "http"
+    }
+
+instance DefaultConfig CorsConfig where
+    configDef = CorsConfig{
+        corsConfigAllowOrigin = "http://localhost:8000"
+        , corsConfigAllowCredentials = True
+    }
+
+
+customHappstackServerConf :: ServerConfig -> Conf
+customHappstackServerConf netConf =
+    nullConf { port = serverConfigPort netConf }

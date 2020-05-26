@@ -4,8 +4,8 @@ import           Happstack.Authenticate.Core          (AuthenticateConfig (..),
                                                        usernamePolicy)
 import           Happstack.Authenticate.Password.Core (PasswordConfig (..))
 
-import           Conf.Config                          (Config (..))
-import           Conf.NetworkConfig                   (hostUri)
+import           Conf.Config                          (AppConfig (..),
+                                                       serverConfigHostUri)
 
 import qualified Data.Text                            as T
 
@@ -16,9 +16,9 @@ authenticateConfig = AuthenticateConfig
     , _requireEmail       = True
     }
 
-passwordConfig :: Config -> PasswordConfig
+passwordConfig :: AppConfig -> PasswordConfig
 passwordConfig conf =
-    let url = T.pack (hostUri (cfNetwork conf)  ++ "/#resetPassword") in
+    let url = T.pack (serverConfigHostUri (appConfigServer conf)  ++ "/#resetPassword") in
     PasswordConfig
         { _resetLink = url
         , _domain    = T.pack "example.org"
