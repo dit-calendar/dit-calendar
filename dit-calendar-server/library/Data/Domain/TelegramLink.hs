@@ -11,7 +11,7 @@ import           Data.Default
 import           Data.SafeCopy     (base, deriveSafeCopy)
 import           Data.Text         (Text)
 
-import           Data.Domain.Types (Entity (..), TaskId, TelegramChatId)
+import           Data.Domain.Types (Entity (..), TaskId, TelegramChatId, UserId)
 
 data TelegramLink = TelegramLink
     { chatId          :: TelegramChatId
@@ -19,6 +19,7 @@ data TelegramLink = TelegramLink
     , userName        :: Maybe Text
     , firstName       :: Maybe Text
     , assignedToTasks :: [TaskId]
+    , owner           :: UserId
     , version         :: Int
     } deriving (Eq, Ord, Read, Show, Data, Typeable)
 
@@ -27,7 +28,7 @@ $(deriveSafeCopy 0 'base ''TelegramLink)
 instance Entity TelegramLink where
     setId telegramLink newId = telegramLink {chatId = newId}
     getId = chatId
-    getUsersAccessRestriction a = []
+    getUsersAccessRestriction a = [owner a]
     getVersion = version
     setVersion telegramLink newVersion = telegramLink {version = newVersion}
 

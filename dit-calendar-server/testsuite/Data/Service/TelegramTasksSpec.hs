@@ -30,8 +30,8 @@ import qualified Data.Service.TelegramTasks as TelegramTasksService
 
 mkFixture "Fixture" [ts| MonadDBTaskRepo, MonadDBTelegramRepo |]
 
-newTelegramLink = def{TelegramLink.chatId = 256, telegramUserId = 257, firstName = Just "foo"}
-telegramLinkDB = def{TelegramLink.chatId = 352, telegramUserId = 353, TelegramLink.assignedToTasks = [10, 2], firstName = Just "bar"}
+newTelegramLink = def{TelegramLink.chatId = 256, telegramUserId = 257, firstName = Just "foo", TelegramLink.owner=10 }
+telegramLinkDB = def{TelegramLink.chatId = 352, telegramUserId = 353, TelegramLink.assignedToTasks = [10, 2], firstName = Just "bar", TelegramLink.owner=10}
 taskFromDb = def{ Task.title="A", Task.description=Just "task1", taskId=10, startTime=Nothing, endTime=Nothing, assignedTelegramLinks=[1, TelegramLink.chatId telegramLinkDB], Task.owner=10}
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
