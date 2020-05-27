@@ -24,10 +24,10 @@ import           Data.Service.TelegramLink        (TelegramLinkService)
 import qualified Data.Service.TelegramLink        as TelegramLinkService
 
 
-addNewTelegramLinkToTaskImpl :: (MonadDBTaskRepo m, MonadDBTelegramRepo m) =>
+addNewTelegramLinkToTaskImpl :: (MonadDBTaskRepo m, MonadDBTelegramRepo m, TelegramLinkService m) =>
                 TelegramLink -> Task ->  m (EitherResult Task)
 addNewTelegramLinkToTaskImpl newEntity task = do
-    newLink <- TelegramRepo.createTelegramLink newEntity
+    newLink <- TelegramLinkService.createTelegramLink (Task.owner task) newEntity
     addTelegramLinkToTaskImpl newLink task
 
 deleteTaskFromAllTelegramLinksImpl :: (MonadIO m, MonadDBTelegramRepo m) =>
