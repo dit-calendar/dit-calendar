@@ -15,7 +15,7 @@ import qualified Data.Repository.Acid.InterfaceAcid  as InterfaceAcid
 import qualified Data.Repository.Acid.User           as UserAcid
 
 withDatabaseConnection :: (AcidState UserAcid.UserList -> IO ()) -> IO ()
-withDatabaseConnection = initDatabase def{ User.loginName="Foo", userId=0}
+withDatabaseConnection = initDatabase 1 def{ User.loginName="Foo", userId=0}
 
 spec :: Spec
 spec =

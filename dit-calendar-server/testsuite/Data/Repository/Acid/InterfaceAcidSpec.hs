@@ -20,7 +20,7 @@ import qualified Data.Repository.Acid.InterfaceAcid  as InterfaceAcid
 
 dbDate = read "2011-11-19 18:28:52.607875 UTC"::UTCTime
 withDatabaseConnection :: (AcidState CalendarEntryAcid.EntryList -> IO ()) -> IO ()
-withDatabaseConnection = initDatabase def{ CalendarEntry.title="A", CalendarEntry.description= Just "Foo", CalendarEntry.entryId=0, owner=0,
+withDatabaseConnection = initDatabase 1 def{ CalendarEntry.title="A", CalendarEntry.description= Just "Foo", CalendarEntry.entryId=0, owner=0,
     startDate=dbDate, endDate=dbDate}
 
 spec :: Spec
