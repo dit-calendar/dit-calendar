@@ -28,10 +28,10 @@ instance Indexable CalendarEntry where
                 , ixFun $ \bp -> [ endDate bp]
                 ]
 
-type EntryList = InterfaceAcid.EntrySet CalendarEntry
+type EntryList = InterfaceAcid.EntrySet CalendarEntry EntryId
 
 initialEntryListState :: EntryList
-initialEntryListState = InterfaceAcid.initialState
+initialEntryListState = InterfaceAcid.initialState 1
 
 getEntryList :: Query EntryList EntryList
 getEntryList = InterfaceAcid.getEntrySet

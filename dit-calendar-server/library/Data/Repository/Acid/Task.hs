@@ -18,10 +18,10 @@ import qualified Data.Repository.Acid.InterfaceAcid as InterfaceAcid
 instance Indexable Task where
   empty = ixSet [ ixFun $ \bp -> [ taskId bp ] ]
 
-type TaskList = InterfaceAcid.EntrySet Task
+type TaskList = InterfaceAcid.EntrySet Task TaskId
 
 initialTaskListState :: TaskList
-initialTaskListState = InterfaceAcid.initialState
+initialTaskListState = InterfaceAcid.initialState 1
 
 getTaskList :: Query TaskList TaskList
 getTaskList = InterfaceAcid.getEntrySet

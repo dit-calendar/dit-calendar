@@ -1,6 +1,8 @@
-{-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE TemplateHaskell    #-}
+{-# LANGUAGE DeriveDataTypeable    #-}
+{-# LANGUAGE TemplateHaskell       #-}
 {-# OPTIONS_GHC -fno-warn-missing-fields #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TypeSynonymInstances  #-}
 
 module Data.Domain.CalendarEntry
     ( CalendarEntry(..)
@@ -26,7 +28,7 @@ data CalendarEntry = CalendarEntry
 
 $(deriveSafeCopy 0 'base ''CalendarEntry)
 
-instance Entity CalendarEntry where
+instance Entity CalendarEntry EntryId where
     setId calendarEntry newId = calendarEntry {entryId = newId}
     getId = entryId
     setVersion calendarEntry newVersion = calendarEntry {version = newVersion}

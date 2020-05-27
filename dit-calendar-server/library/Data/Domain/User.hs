@@ -1,6 +1,8 @@
-{-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE TemplateHaskell    #-}
+{-# LANGUAGE DeriveDataTypeable    #-}
+{-# LANGUAGE TemplateHaskell       #-}
 {-# OPTIONS_GHC -fno-warn-missing-fields #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TypeSynonymInstances  #-}
 
 module Data.Domain.User
     ( User(..)
@@ -22,7 +24,7 @@ data User = User
 
 $(deriveSafeCopy 0 'base ''User)
 
-instance Entity User where
+instance Entity User UserId where
     setId user newId = user {userId = newId}
     getId = userId
     setVersion user newVersion = user {version = newVersion}
