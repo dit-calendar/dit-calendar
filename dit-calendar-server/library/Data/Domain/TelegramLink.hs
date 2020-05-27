@@ -1,8 +1,8 @@
 {-# LANGUAGE DeriveDataTypeable    #-}
-{-# LANGUAGE TemplateHaskell       #-}
-{-# OPTIONS_GHC -fno-warn-missing-fields #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TemplateHaskell       #-}
+{-# OPTIONS_GHC -fno-warn-missing-fields #-}
 
 module Data.Domain.TelegramLink
     ( TelegramLink(..)

@@ -2,7 +2,6 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE RecordWildCards    #-}
 {-# LANGUAGE TemplateHaskell    #-}
-{-# LANGUAGE AllowAmbiguousTypes    #-}
 
 module Data.Repository.Acid.InterfaceAcid where
 
