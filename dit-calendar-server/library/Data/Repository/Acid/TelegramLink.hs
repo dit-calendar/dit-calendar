@@ -26,7 +26,7 @@ instance Indexable TelegramLink where
 type TelegramLinkList = InterfaceAcid.EntrySet TelegramLink (TelegramChatId, UserId)
 
 initialTelegramState :: TelegramLinkList
-initialTelegramState = InterfaceAcid.initialState (undefined,undefined)
+initialTelegramState = InterfaceAcid.initialState (0,0) --don't use the key
 
 telegramLinkById :: (TelegramChatId, UserId) -> Query TelegramLinkList (Maybe TelegramLink)
 telegramLinkById = InterfaceAcid.entryById
