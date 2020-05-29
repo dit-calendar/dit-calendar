@@ -43,4 +43,5 @@ calendarEntry entryId =
 
 baseUrl : String
 baseUrl =
+    -- "http://localhost:8080/"
     "https://dit-calendar-vitab.cloud.okteto.net/"
