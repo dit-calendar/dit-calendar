@@ -14,7 +14,7 @@ instance Mapper Domain.TelegramLink TelegramUserLink where
     transformToDto domain =
         TelegramUserLink
             { chatId = Domain.chatId domain
-            , userId = Domain.telegramUserId domain
+            , telegramUserId = Domain.telegramUserId domain
             , userName = Domain.userName domain
             , firstName = Domain.firstName domain
             }
@@ -24,7 +24,7 @@ instance Mapper Domain.TelegramLink TelegramUserLink where
             Nothing ->
                 def
                 { Domain.chatId = chatId dto
-                , Domain.telegramUserId = userId dto
+                , Domain.telegramUserId = telegramUserId dto
                 , Domain.userName = userName dto
                 , Domain.firstName = firstName dto
                 }

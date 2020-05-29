@@ -1,5 +1,7 @@
-{-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE TemplateHaskell    #-}
+{-# LANGUAGE DeriveDataTypeable    #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TemplateHaskell       #-}
 {-# OPTIONS_GHC -fno-warn-missing-fields #-}
 
 module Data.Domain.TelegramLink
@@ -25,9 +27,9 @@ data TelegramLink = TelegramLink
 
 $(deriveSafeCopy 0 'base ''TelegramLink)
 
-instance Entity TelegramLink where
-    setId telegramLink newId = telegramLink {chatId = newId}
-    getId = chatId
+instance Entity TelegramLink (TelegramChatId, UserId) where
+    setId telegramLink (newChatId, newUserId) = telegramLink {chatId = newChatId, owner = newUserId}
+    getId a = (chatId a, owner a)
     getUsersAccessRestriction a = [owner a]
     getVersion = version
     setVersion telegramLink newVersion = telegramLink {version = newVersion}

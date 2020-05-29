@@ -1,5 +1,7 @@
-{-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE TemplateHaskell    #-}
+{-# LANGUAGE DeriveDataTypeable    #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TemplateHaskell       #-}
+{-# LANGUAGE TypeSynonymInstances  #-}
 {-# OPTIONS_GHC -fno-warn-missing-fields #-}
 
 module Data.Domain.Task where
@@ -24,7 +26,7 @@ data Task = Task {
     deriving (Eq, Ord, Read, Show, Data, Typeable)
 $(deriveSafeCopy 0 'base ''Task)
 
-instance Entity Task where
+instance Entity Task TaskId where
     setId task newId = task { taskId = newId }
     getId = taskId
     getVersion = version

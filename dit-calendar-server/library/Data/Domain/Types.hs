@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveGeneric      #-}
 {-# LANGUAGE TemplateHaskell    #-}
+{-# LANGUAGE FunctionalDependencies #-}
 
 module Data.Domain.Types
     ( UserId
@@ -26,7 +27,7 @@ import           Data.Time.Clock (UTCTime)
 
 type EitherResult a = Either ResultError a
 
-data ResultError = OptimisticLocking | EntryNotFound Int | PermissionAccessInsufficient
+data ResultError = OptimisticLocking | EntryNotFound String | PermissionAccessInsufficient
     deriving (Eq, Show)
 deriveJSON defaultOptions ''ResultError
 
@@ -52,9 +53,9 @@ newtype UserIdIndex = UserIdIndex UserId
     deriving (Eq, Ord, Read, Show, Data, Typeable)
 $(deriveSafeCopy 0 'base ''UserIdIndex)
 
-class Entity a where
-    getId :: a -> Int
-    setId :: a -> Int -> a
-    getVersion :: a -> Int
-    setVersion :: a -> Int -> a
-    getUsersAccessRestriction :: a -> [UserId]
+class Entity entity key | entity -> key, key -> entity where
+    getId :: entity -> key
+    setId :: entity -> key -> entity
+    getVersion :: entity -> Int
+    setVersion :: entity -> Int -> entity
+    getUsersAccessRestriction :: entity -> [UserId]

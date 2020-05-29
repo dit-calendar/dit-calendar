@@ -46,6 +46,73 @@
 			]
 		},
 		{
+			"name": "user",
+			"item": [
+				{
+					"name": "get logged user",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/users/me",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create user",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"naPassword\": \"12345\",\n    \"naPasswordConfirm\": \"12345\",\n    \"naUser\": {\n        \"email\": \"a.befort@googlemail.com\",\n        \"username\": \"alex2\",\n        \"userId\": 0\n    }\n}"
+						},
+						"url": {
+							"raw": "https://dit-calendar-vitab.cloud.okteto.net/authenticate/authentication-methods/password/account",
+							"protocol": "https",
+							"host": [
+								"dit-calendar-vitab",
+								"cloud",
+								"okteto",
+								"net"
+							],
+							"path": [
+								"authenticate",
+								"authentication-methods",
+								"password",
+								"account"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "calendar",
 			"item": [
 				{
@@ -178,69 +245,34 @@
 						}
 					},
 					"response": []
-				}
-			]
-		},
-		{
-			"name": "user",
-			"item": [
+				},
 				{
-					"name": "get logged user",
+					"name": "delete calendar",
 					"request": {
-						"method": "GET",
+						"method": "DELETE",
 						"header": [
 							{
 								"key": "Content-Type",
 								"name": "Content-Type",
 								"type": "text",
 								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoQWRtaW4iOnRydWUsImV4cCI6MTU2NzY5Mzc1NSwidXNlciI6eyJlbWFpbCI6ImEuYmVmb3J0QGdvb2dsZW1haWwuY29tIiwidXNlcm5hbWUiOiJhbGV4MiIsInVzZXJJZCI6MX19.VDghd6u8ZMwpFQzZdf7avk7R5FBkLCG3xTGfnz4QVSg"
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8080/users/me",
+							"raw": "http://localhost:8080/calendarentries/1",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
-								"users",
-								"me"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "create user",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"naPassword\": \"12345\",\n    \"naPasswordConfirm\": \"12345\",\n    \"naUser\": {\n        \"email\": \"a.befort@googlemail.com\",\n        \"username\": \"alex2\",\n        \"userId\": 0\n    }\n}"
-						},
-						"url": {
-							"raw": "https://dit-calendar-vitab.cloud.okteto.net/authenticate/authentication-methods/password/account",
-							"protocol": "https",
-							"host": [
-								"dit-calendar-vitab",
-								"cloud",
-								"okteto",
-								"net"
-							],
-							"path": [
-								"authenticate",
-								"authentication-methods",
-								"password",
-								"account"
+								"calendarentries",
+								"1"
 							]
 						}
 					},
@@ -393,7 +425,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"chatId\": 111,\n    \"userId\": 1\n}"
+							"raw": "{\n    \"chatId\": 111,\n    \"telegramUserId\": 1\n}"
 						},
 						"url": {
 							"raw": "https://dit-calendar-vitab.cloud.okteto.net/calendarentries/tasks/1/assignment",

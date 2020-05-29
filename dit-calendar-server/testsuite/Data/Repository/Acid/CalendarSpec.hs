@@ -17,7 +17,7 @@ import qualified Data.Repository.Acid.CalendarEntry  as CalendarEntryAcid
 import qualified Data.Repository.Acid.InterfaceAcid  as InterfaceAcid
 
 withDatabaseConnection :: (AcidState CalendarEntryAcid.EntryList -> IO ()) -> IO ()
-withDatabaseConnection = initDatabaseWithList [initCalendar, initCalendar2, initCalendar3]
+withDatabaseConnection = initDatabaseWithList 1 [initCalendar, initCalendar2, initCalendar3]
 
 initUser :: User.User
 initUser = def{User.userId = 1}

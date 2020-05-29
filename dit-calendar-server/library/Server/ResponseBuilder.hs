@@ -32,9 +32,10 @@ import           Conf.Config                      (CorsConfig (..))
 import           Data.Domain.CalendarEntry        (CalendarEntry)
 import           Data.Domain.Task                 (Task)
 import           Data.Domain.TelegramLink         (TelegramLink)
-import           Data.Domain.Types                (EitherResult, EntryId,
-                                                   ResultError (..), TaskId,
-                                                   TelegramChatId, UserId)
+import           Data.Domain.Types                (EitherResult, Entity,
+                                                   EntryId, ResultError (..),
+                                                   TaskId, TelegramChatId,
+                                                   UserId)
 import           Data.Domain.User                 (User)
 import           Data.Repository.CalendarRepo     (MonadDBCalendarRepo)
 import           Data.Repository.TaskRepo         (MonadDBTaskRepo)
@@ -49,11 +50,11 @@ import qualified Data.Repository.UserRepo         as UserRepo
 preconditionFailed :: (HServer.FilterMonad Response m) => a -> m a
 preconditionFailed = HServer.resp 412
 
-onDBEntryExist :: (ToJSON dto, Monad m) => (Int -> m (Maybe entry)) -> Int -> (entry -> m (EitherResult dto)) -> m (EitherResult dto)
+onDBEntryExist :: (ToJSON dto, Monad m, Show key) => (key -> m (Maybe entry)) -> key -> (entry -> m (EitherResult dto)) -> m (EitherResult dto)
 onDBEntryExist find i controllerFunction = do
     mDbEntry <- find i
     case mDbEntry of
-        Nothing      -> return $ Left $ EntryNotFound i
+        Nothing      -> return $ Left $ EntryNotFound (show i)
         Just dbEntry -> controllerFunction dbEntry
 
 handleResponse :: (ToJSON dto, HServer.FilterMonad Response m ) => EitherResult dto -> m Response

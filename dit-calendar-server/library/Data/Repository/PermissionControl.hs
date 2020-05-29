@@ -6,12 +6,12 @@ import           Data.Domain.Types (EitherResult, Entity,
                                     getId, getUsersAccessRestriction)
 import           Data.Domain.User  (User)
 
-isUserAllowed :: Entity a => User -> a-> Bool
+isUserAllowed :: Entity a key => User -> a-> Bool
 isUserAllowed user entity =
     let allowedUser = getUsersAccessRestriction entity in
         (null allowedUser || (getId user `elem` allowedUser))
 
-executeUnderUserPermission :: (Entity a, AppContext m) => a -> m (EitherResult a) -> m (EitherResult a)
+executeUnderUserPermission :: (Entity a key, AppContext m) => a -> m (EitherResult a) -> m (EitherResult a)
 executeUnderUserPermission entity f = do
     mUser <- getCurrentUser
     case mUser of

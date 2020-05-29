@@ -26,16 +26,16 @@ createDatabaseConnection taskAcid =
     bracket (openLocalStateFrom basePath taskAcid)
     $ \c -> (>>) (closeAcidState c) removeDataBaseDirectory
 
-initDatabase :: (IsAcidic (InterfaceAcid.EntrySet a), Typeable a, Ord a, Indexable a, SafeCopy a) =>
-    a -> (AcidState (InterfaceAcid.EntrySet a) -> IO ()) -> IO ()
-initDatabase initEntry = createDatabaseConnection InterfaceAcid.EntrySet{
-        InterfaceAcid.nextEntryId   = 1
+initDatabase :: (IsAcidic (InterfaceAcid.EntrySet a key), Typeable a, Ord a, Indexable a, SafeCopy a, SafeCopy key) =>
+    key -> a -> (AcidState (InterfaceAcid.EntrySet a key) -> IO ()) -> IO ()
+initDatabase initKey initEntry = createDatabaseConnection InterfaceAcid.EntrySet{
+        InterfaceAcid.nextEntryId   = initKey
         , InterfaceAcid.entrys      = insert initEntry empty
         }
 
-initDatabaseWithList :: (IsAcidic (InterfaceAcid.EntrySet a), Typeable a, Ord a, Indexable a, SafeCopy a) =>
- [a]-> (AcidState (InterfaceAcid.EntrySet a) -> IO ()) -> IO ()
-initDatabaseWithList initEntry = createDatabaseConnection InterfaceAcid.EntrySet{
-     InterfaceAcid.nextEntryId   = 1
+initDatabaseWithList :: (IsAcidic (InterfaceAcid.EntrySet a key), Typeable a, Ord a, Indexable a, SafeCopy a, SafeCopy key) =>
+    key -> [a] -> (AcidState (InterfaceAcid.EntrySet a key) -> IO ()) -> IO ()
+initDatabaseWithList initKey initEntry = createDatabaseConnection InterfaceAcid.EntrySet{
+     InterfaceAcid.nextEntryId   = initKey
      , InterfaceAcid.entrys      = fromList initEntry
      }

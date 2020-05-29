@@ -20,41 +20,41 @@ import           Data.Domain.Types    (EitherResult, Entity,
 
 
 --type that represents the state we wish to store
-data (Typeable a, Ord a, Indexable a) => EntrySet a = EntrySet
-    { nextEntryId :: Int
+data (Typeable a, Ord a, Indexable a) => EntrySet a key = EntrySet
+    { nextEntryId :: key
     , entrys      :: IxSet a
     }
     deriving (Data, Typeable)
 
-incVersion :: Entity a => a -> a
+incVersion :: Entity a key => a -> a
 incVersion x = setVersion x (getVersion x + 1)
 
 $(deriveSafeCopy 0 'base ''EntrySet)
 
-initialState :: (Ord a, Typeable a, Indexable a) => EntrySet a
-initialState =
+initialState :: (Ord a, Typeable a, Indexable a) => key -> EntrySet a key
+initialState initKey =
     EntrySet {
-        nextEntryId              = 1
+        nextEntryId              = initKey
         , entrys                 = empty
         }
 
-getEntrySet :: (Ord a, Indexable a) => Query (EntrySet a) (EntrySet a)
+getEntrySet :: (Ord a, Indexable a) => Query (EntrySet a key) (EntrySet a key)
 getEntrySet = ask
 
-allEntrysAsList :: (Ord a, Typeable a, Indexable a) => Query (EntrySet a) [a]
+allEntrysAsList :: (Ord a, Typeable a, Indexable a) => Query (EntrySet a key) [a]
 allEntrysAsList = asks (toList . entrys)
 
-entryById :: (Ord a, Typeable a, Indexable a) => Int -> Query (EntrySet a) (Maybe a)
+entryById :: (Ord a, Typeable a, Typeable key, Indexable a) => key -> Query (EntrySet a key) (Maybe a)
 entryById eid = asks (getOne . getEQ eid . entrys)
 
-deleteEntry :: (Ord a, Typeable a, Indexable a) => Int -> Update (EntrySet a) ()
+deleteEntry :: (Ord a, Typeable a, Indexable a) => Int -> Update (EntrySet a key) ()
 deleteEntry entryToDelete =
     do  b@EntrySet{..} <- get
         put b { entrys =
             deleteIx entryToDelete entrys
             }
 
-updateEntry :: (Ord a, Typeable a, Indexable a, Entity a) => a -> Update (EntrySet a) (EitherResult a)
+updateEntry :: (Ord a, Typeable a, Typeable key, Indexable a, Entity a key) => a -> Update (EntrySet a key) (EitherResult a)
 updateEntry updatedEntry = do
     b@EntrySet{..} <- get
     let dbEntry = fromJust $ getOne (getEQ (getId updatedEntry) entrys)
@@ -67,7 +67,7 @@ updateEntry updatedEntry = do
         else return $ Left OptimisticLocking
 
 -- create a new entry and add it to the database
-newEntry :: (Ord a, Typeable a, Indexable a, Entity a) => a -> Update (EntrySet a) a
+newEntry :: (Ord a, Typeable a, Indexable a, Entity a key, Enum key) => a -> Update (EntrySet a key) a
 newEntry entry =
     do  b@EntrySet{..} <- get
         let nEntry = setVersion (setId entry nextEntryId) 0

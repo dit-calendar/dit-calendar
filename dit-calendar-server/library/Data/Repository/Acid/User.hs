@@ -9,9 +9,8 @@ module Data.Repository.Acid.User
 
 import           Control.Monad.Reader               (ask)
 import           Data.Acid                          (Query, Update, makeAcidic)
-import           Data.IxSet                         (Indexable (..),
-                                                     getOne, ixFun, ixSet,
-                                                     (@=))
+import           Data.IxSet                         (Indexable (..), getOne,
+                                                     ixFun, ixSet, (@=))
 import           Data.Text                          (Text)
 
 import           Data.Domain.Types                  (EitherResult, UserId)
@@ -24,10 +23,10 @@ instance Indexable User where
   empty = ixSet [ ixFun $ \bp -> [ userId bp ],
                   ixFun $ \bp -> [ loginName bp ] ]
 
-type UserList = InterfaceAcid.EntrySet User
+type UserList = InterfaceAcid.EntrySet User UserId
 
 initialUserListState :: UserList
-initialUserListState = InterfaceAcid.initialState
+initialUserListState = InterfaceAcid.initialState 1
 
 getUserList :: Query UserList UserList
 getUserList = InterfaceAcid.getEntrySet

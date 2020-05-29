@@ -14,20 +14,21 @@ import           Data.IxSet                         (Indexable (..), insert,
 
 import           Data.Domain.TelegramLink           (TelegramLink (..))
 import           Data.Domain.Types                  (EitherResult,
-                                                     TelegramChatId, setVersion)
+                                                     TelegramChatId, UserId,
+                                                     setVersion)
 
 import qualified Data.Repository.Acid.InterfaceAcid as InterfaceAcid
 
 
 instance Indexable TelegramLink where
-  empty = ixSet [ ixFun $ \bp -> [ chatId bp ]]
+  empty = ixSet [ ixFun $ \bp -> [ (chatId bp, owner bp) ]]
 
-type TelegramLinkList = InterfaceAcid.EntrySet TelegramLink
+type TelegramLinkList = InterfaceAcid.EntrySet TelegramLink (TelegramChatId, UserId)
 
 initialTelegramState :: TelegramLinkList
-initialTelegramState = InterfaceAcid.initialState
+initialTelegramState = InterfaceAcid.initialState (0,0) --don't use the key
 
-telegramLinkById :: TelegramChatId -> Query TelegramLinkList (Maybe TelegramLink)
+telegramLinkById :: (TelegramChatId, UserId) -> Query TelegramLinkList (Maybe TelegramLink)
 telegramLinkById = InterfaceAcid.entryById
 
 -- create a new, empty user and add it to the database

@@ -11,12 +11,11 @@ import           Data.Maybe        (isNothing)
 import           Data.Text
 import           GHC.Generics
 
--- TODO add bot reference?
 data TelegramUserLink = TelegramUserLink
-    { chatId          :: TelegramChatId
-    , userId          :: Int
-    , userName        :: Maybe Text
-    , firstName       :: Maybe Text
+    { chatId         :: TelegramChatId
+    , telegramUserId :: Int
+    , userName       :: Maybe Text
+    , firstName      :: Maybe Text
     } deriving (Show, Generic)
 
 validate :: Either String TelegramUserLink -> Either String TelegramUserLink
