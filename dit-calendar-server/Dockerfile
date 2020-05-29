@@ -32,7 +32,7 @@ RUN mv "$(stack path --local-install-root --system-ghc)/bin" /build/bin
 
 # Run
 ##############################################################################
-FROM ubuntu:16.04 as app
+FROM debian:buster-slim as app
 
 WORKDIR /app
 
