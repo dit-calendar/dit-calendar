@@ -56,7 +56,7 @@ routeCalendarEntryDetails entryId = do
     case m of
         DELETE -> callIfAuthorized (CalendarController.deleteCalendarEntry entryId)
         --  https://localhost:8443/calendarentries/1
-        GET -> CalendarController.entryPage entryId >>= handleResponse
+        GET -> callIfAuthorized (CalendarController.entryPage entryId)
         PUT -> do
             body <- getBody
             case validate (eitherDecode body :: Either String CalendarDto.CalendarEntry) of

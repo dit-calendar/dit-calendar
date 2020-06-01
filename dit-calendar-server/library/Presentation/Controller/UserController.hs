@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings   #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Presentation.Controller.UserController (createUser, updateUser, deleteUser, usersPage, userPage, loggedUserPage) where
+module Presentation.Controller.UserController (createUser, updateUser, deleteUser, loggedUserPage) where
 
 import           Data.Aeson                           (encode)
 import           Data.Default                         (def)
@@ -41,18 +41,7 @@ import qualified Happstack.Authenticate.Core          as AuthUser
 
 
 loggedUserPage :: DomainUser.User -> App (EitherResult UserDto.User)
-loggedUserPage loggedUser = userPage (DomainUser.userId loggedUser)
-
---handler for userPage
-userPage :: UserId -> App (EitherResult UserDto.User)
-userPage i = onUserExist i (return . Right . transformToDto)
-
---handler for userPage
-usersPage :: App (EitherResult [UserDto.User])
-usersPage =
-    do  method GET
-        userList <- query UserAcid.AllUsers
-        return $ Right (transformToDtoList userList)
+loggedUserPage loggedUser = return $ Right $ transformToDto loggedUser
 
 --TODO wrapper für die Auth-lib
 createUser  :: AuthenticateURL -> (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response) -> App Response

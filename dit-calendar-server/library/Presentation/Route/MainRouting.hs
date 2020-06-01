@@ -24,9 +24,7 @@ import           Presentation.Route.PageEnum              (Sitemap (..))
 import           Presentation.Route.TaskRoute             (routeTask,
                                                            routeTaskDetail,
                                                            routeTaskWithTelegramLink)
-import           Presentation.Route.UserRoute             (routeDetailUser,
-                                                           routeUser,
-                                                           routeUsers)
+import           Presentation.Route.UserRoute             (routeDetailUser)
 import           Server.HappstackHelper                   (liftServerPartT2FoundationT)
 import           Server.HttpServerHelper                  (getHttpMethod)
 import           Server.ResponseBuilder                   (addCorsToResponse,
@@ -58,8 +56,6 @@ route url = do
         Home                       -> HomeController.homePage
         Logout                     -> LogoutController.logout
         Userdetail                 -> routeDetailUser
-        User i                     -> routeUser i
-        Users                      -> routeUsers
         -- calendar routing
         CalendarEntry              -> routeCalendarEntry
         CalendarFilter             -> routeCalendarFilter

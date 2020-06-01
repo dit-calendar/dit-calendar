@@ -43,7 +43,7 @@ routeTaskDetail :: EntryId ->  TaskId -> App Response
 routeTaskDetail entryId taskId = do
     m <- getHttpMethod
     case m of
-        GET -> TaskController.taskPage taskId >>= handleResponse
+        GET -> callIfAuthorized (TaskController.taskPage taskId)
         PUT -> do
             body <- getBody
             case TaskDto.validate (eitherDecode body :: Either String TaskDto.Task) of

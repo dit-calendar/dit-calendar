@@ -22,8 +22,8 @@ calendarEntries user = do
     return (Right $ transformToDtoList result)
 
 
-entryPage :: EntryId -> App (EitherResult CalendarDto.CalendarEntry)
-entryPage i = onEntryExist i (return . Right . transformToDto)
+entryPage :: EntryId -> DomainUser.User -> App (EitherResult CalendarDto.CalendarEntry)
+entryPage i _ = onEntryExist i (return . Right . transformToDto)
 
 createCalendarEntry :: CalendarDto.CalendarEntry -> DomainUser.User -> App (EitherResult CalendarDto.CalendarEntry)
 createCalendarEntry calendarDto loggedUser = onUserExist userId createCalendar

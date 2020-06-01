@@ -22,9 +22,7 @@ data Sitemap
     = Home
     | Logout
     | Authenticate AuthenticateURL
-    | User UserId
     | Userdetail
-    | Users
     --calendar mapping
     | CalendarEntry
     | CalendarFilter
@@ -46,9 +44,7 @@ urlSitemapParser =
     <> lit "calendarentries" . calendarTaskMapping
     <> rCalendarFilter . lit "calendarFilter"
     where
-        userMapping = rUsers
-            <> rUserdetail </> lit "me"
-            <> rUser </> int
+        userMapping = rUserdetail </> lit "me"
         calendarTaskMapping =
             calendarMapping
             <> taskMapping

@@ -1,8 +1,5 @@
 module Presentation.Route.UserRoute
-    ( routeUser
-    , routeDetailUser
-    , routeUsers
-    ) where
+    ( routeDetailUser ) where
 
 import           Data.Aeson                             (eitherDecode)
 import           Happstack.Server                       (Method (DELETE, GET, POST, PUT),
@@ -19,20 +16,6 @@ import           Server.ResponseBuilder                 (badRequest,
                                                          notImplemented)
 
 import qualified Presentation.Controller.UserController as UserController
-
-routeUsers :: App Response
-routeUsers = do
-    m <- getHttpMethod
-    case m of
-        GET   -> UserController.usersPage >>= handleResponse
-        other -> notImplemented other
-
-routeUser :: UserId -> App Response
-routeUser userId = do
-    m <- getHttpMethod
-    case m of
-        GET   -> UserController.userPage userId >>= handleResponse
-        other -> notImplemented other
 
 routeDetailUser :: App Response
 routeDetailUser = do

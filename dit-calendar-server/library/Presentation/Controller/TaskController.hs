@@ -17,8 +17,8 @@ import qualified Data.Service.Task              as TaskService
 
 
 --handler for taskPage
-taskPage :: TaskId -> App (EitherResult TaskDto.Task)
-taskPage i = onTaskExist i (return . Right . transformToDto)
+taskPage :: TaskId -> DomainUser.User -> App (EitherResult TaskDto.Task)
+taskPage i _ = onTaskExist i (return . Right . transformToDto)
 
 calendarTasks :: EntryId -> DomainUser.User -> App (EitherResult [TaskDto.Task])
 calendarTasks entryId user = onEntryExist entryId getTasks
