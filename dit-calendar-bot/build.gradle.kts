@@ -42,8 +42,8 @@ dependencies {
 }
 
 tasks.withType<KotlinCompile>().configureEach {
-    sourceCompatibility = "1.8"
-    kotlinOptions.jvmTarget = "1.8"
+    sourceCompatibility = "11"
+    kotlinOptions.jvmTarget = "11"
 
     kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict")
     incremental = true
