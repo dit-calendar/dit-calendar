@@ -1,6 +1,20 @@
-# Revision history for dit-calendar-server
+# Revision history for dit-calendar
 
-## 0.6.0.0 -- 2019-
+## 0.6.0.0 -- 2020-06-01
+* create telegram bot
+  * written in kotlin with kt-telegram-bot lib
+  * for post a calendar entry with id
+  * assing/unassing telegram user to task
+  * every account should have own telegram bot
+* backend
+  * environment variables overwrite config
+  * replace happstack-foundation with custom setup
+  * filter calendar entries with date
+* k8s deployment
+  * pods for server and ui
+  * ingress controller for server and ui
+  * PersistentVolumeClaim for acid state
+* use travis build matrix for multiple projects
 
 ## 0.5.0.0 -- 2019-12-14
 * ui
