@@ -1,7 +1,7 @@
 matrix:
   include:
     - language: java
-      jdk: openjdk8
+      jdk: openjdk11
       before_script:
         - cd dit-calendar-bot
         - gradle assemble
@@ -31,4 +31,3 @@ matrix:
         - cabal build
         - cabal test
         - cabal check
-        - cabal sdist

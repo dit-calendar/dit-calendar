@@ -8,7 +8,6 @@ author:              Viktor Befort, Alex Befort
 maintainer:          v.befort@googlemail.com
 category:            Web
 build-type:          Simple
-extra-source-files:  ChangeLog.md
 cabal-version:       >=1.10
 
 source-repository head
