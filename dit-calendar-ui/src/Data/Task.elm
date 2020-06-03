@@ -20,9 +20,9 @@ type alias Task =
     }
 
 
-emptyTask : Maybe Int -> String -> Task
+emptyTask : Int -> String -> Task
 emptyTask calendarId startDate =
-    { calendarEntryId = calendarId, taskId = Nothing, version = 0, title = "", description = Nothing, startDate = startDate, startTime = "", endDate = Nothing, endTime = Nothing }
+    { calendarEntryId = Just calendarId, taskId = Nothing, version = 0, title = "", description = Nothing, startDate = startDate, startTime = "", endDate = Nothing, endTime = Nothing }
 
 
 type alias Model =
