@@ -8,16 +8,39 @@ import Http.Detailed as HttpEx
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Encode as Encode
 import Json.Encode.Extra as Encode
+import String exposing (isEmpty)
 
 
 calendarEntryEncoder : CalendarEntry -> Encode.Value
 calendarEntryEncoder model =
+    let
+        startTime =
+            if isEmpty model.startTime then
+                "00:00"
+
+            else
+                model.startTime
+
+        endDate =
+            if isEmpty model.endDate then
+                model.startDate
+
+            else
+                model.endDate
+
+        endTime =
+            if isEmpty model.endTime then
+                "23:59"
+
+            else
+                model.endTime
+    in
     Encode.object
         [ ( "version", Encode.int model.version )
         , ( "title", Encode.string model.title )
         , ( "description", Encode.maybe Encode.string model.description )
-        , ( "startDate", Encode.string (model.startDate ++ "T" ++ model.startTime ++ ":00.000000Z") )
-        , ( "endDate", Encode.string (model.endDate ++ "T" ++ model.endTime ++ ":00.000000Z") )
+        , ( "startDate", Encode.string (model.startDate ++ "T" ++ startTime ++ ":00.000000Z") )
+        , ( "endDate", Encode.string (endDate ++ "T" ++ endTime ++ ":59.000000Z") )
         ]
 
 
