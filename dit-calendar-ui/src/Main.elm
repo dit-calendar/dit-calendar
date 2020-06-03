@@ -249,7 +249,7 @@ routeParser =
 
 view : Model -> Browser.Document Msg
 view model =
-    { title = "Elm Bootstrap"
+    { title = "DIT Calendar"
     , body =
         [ div []
             [ menuView model
@@ -263,7 +263,7 @@ menuView : Model -> Html Msg
 menuView model =
     Navbar.config NavMsg
         |> Navbar.withAnimation
-        |> Navbar.brand [ href "#" ] [ text "Elm Bootstrap" ]
+        |> Navbar.brand [ href "#" ] [ text "DIT Calendar" ]
         |> Navbar.info
         |> Navbar.items
             [ Navbar.itemLink [ href "#login" ] [ text "Login" ]
