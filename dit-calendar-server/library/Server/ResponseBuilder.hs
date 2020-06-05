@@ -64,6 +64,7 @@ handleResponse eitherResult = case eitherResult of
         OptimisticLocking -> preconditionFailedResponse "\"version is not set or not equal with database\""
         EntryNotFound i -> notFound $ toResponse $ "\"Could not find a db entry with id " ++ show i ++ "\""
         PermissionAccessInsufficient -> forbidden $ toResponse ("\"Sorry, it is forbidden.\""::ByteString)
+        EntryAlreadyExists -> preconditionFailedResponse "\"not unique\""
     Right dto -> okResponseJson $ encode dto
 
 onUserExist :: (ToJSON dto, MonadDBUserRepo m) => UserId -> (User -> m (EitherResult dto)) -> m (EitherResult dto)

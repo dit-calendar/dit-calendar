@@ -7,15 +7,19 @@ module Data.Repository.Acid.User
     ( UserDAO(..), initialUserListState, UserList(..), NewUser(..), UserById(..), AllUsers(..),
     GetUserList(..), UpdateUser(..), DeleteUser(..), FindByLoginName(..), FindByTelegramToken(..) ) where
 
+import           Prelude                            hiding (null)
+
 import           Control.Monad.Reader               (ask)
+import           Control.Monad.State                (get)
 import           Data.Acid                          (Query, Update, makeAcidic)
-import           Data.IxSet                         (Indexable (..), getOne,
-                                                     ixFun, ixSet, (@=))
+import           Data.IxSet                         (Indexable (..), getEQ,
+                                                     getOne, ixFun,
+                                                     ixSet, null, (@=))
 import           Data.Text                          (Text)
 
 import           Data.Domain.Types                  (EitherResult,
                                                      TelegramToken,
-                                                     TelegramTokenIndex (..),
+                                                     TelegramTokenIndex (..), ResultError(..),
                                                      UserId)
 import           Data.Domain.User                   (User (..))
 
@@ -25,7 +29,7 @@ import qualified Data.Repository.Acid.InterfaceAcid as InterfaceAcid
 instance Indexable User where
   empty = ixSet [ ixFun $ \bp -> [ userId bp ],
                   ixFun $ \bp -> [ loginName bp ],
-                  -- TODO: Unique
+                  -- Unique
                   ixFun $ \bp -> [ TelegramTokenIndex $ telegramToken bp]]
 
 type UserList = InterfaceAcid.EntrySet User UserId
@@ -37,8 +41,12 @@ getUserList :: Query UserList UserList
 getUserList = InterfaceAcid.getEntrySet
 
 -- create a new, empty user and add it to the database
-newUser :: User -> Update UserList User
-newUser = InterfaceAcid.newEntry
+newUser :: User -> Update UserList (EitherResult User)
+newUser entry =
+    do  b@InterfaceAcid.EntrySet{..} <- get
+        if null (getEQ (TelegramTokenIndex $ telegramToken entry) entrys)
+            then fmap Right (InterfaceAcid.newEntry entry)
+        else return $ Left EntryAlreadyExists
 
 userById :: UserId -> Query UserList (Maybe User)
 userById = InterfaceAcid.entryById
@@ -63,8 +71,9 @@ deleteUser = InterfaceAcid.deleteEntry
 $(makeAcidic ''UserList ['newUser, 'userById, 'findByLoginName, 'allUsers, 'getUserList, 'updateUser, 'deleteUser, 'findByTelegramToken])
 
 class Monad m => UserDAO m where
-    create :: NewUser -> m User
+    create :: NewUser -> m (EitherResult User)
     update :: UpdateUser -> m (EitherResult User)
     delete :: DeleteUser -> m ()
     query  :: UserById -> m (Maybe User)
     queryByLoginName :: FindByLoginName -> m (Maybe User)
+    queryByToken :: FindByTelegramToken -> m (Maybe User)

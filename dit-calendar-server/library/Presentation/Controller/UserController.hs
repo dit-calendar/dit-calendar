@@ -6,6 +6,7 @@ module Presentation.Controller.UserController (createUser, updateUser, deleteUse
 import           Data.Aeson                           (encode)
 import           Data.Default                         (def)
 import           Data.List                            (isInfixOf)
+import           Data.Maybe                           (isNothing)
 import           Data.Text                            (Text)
 
 import           Happstack.Authenticate.Core          (AuthenticateURL (..))
@@ -18,7 +19,7 @@ import           Web.Routes                           (RouteT, mapRouteT,
                                                        nestURL, unRouteT)
 
 import           AppContext                           (App)
-import           Data.Domain.Types                    (EitherResult, UserId)
+import           Data.Domain.Types                    (EitherResult, UserId, ResultError(..))
 import           Data.Domain.User                     as DomainUser (User (..))
 import           Data.Service.Authorization           as AuthService (deleteAuthUser)
 import           Presentation.Dto.User                as UserDto
@@ -32,7 +33,7 @@ import           Server.HappstackHelper               (HasAcidState (getAcidStat
                                                        query)
 import           Server.HttpServerHelper              (getBody, readAuthUserFromBodyAsList)
 import           Server.ResponseBuilder               (okResponseJson,
-                                                       onUserExist)
+                                                       onUserExist, handleResponse)
 
 import qualified Data.Repository.Acid.User            as UserAcid
 import qualified Data.Repository.UserRepo             as UserRepo
@@ -47,22 +48,25 @@ loggedUserPage loggedUser = return $ Right $ transformToDto loggedUser
 createUser  :: AuthenticateURL -> (AuthenticateURL -> RouteT AuthenticateURL (ServerPartT IO) Response) -> Text -> App Response
 createUser authenticateURL routeAuthenticate telegramToken = do
     body <- getBody
-    let createUserBody = readAuthUserFromBodyAsList body
-    case createUserBody of
-        Just (NewAccountData naUser _ _) ->
-            do
-                let naUsername :: AuthUser.Username = AuthUser._username naUser
-                let username = AuthUser._unUsername naUsername
+    existingUser <- UserRepo.findUserByTelegramToken telegramToken
+    if isNothing existingUser
+    then
+        let createUserBody = readAuthUserFromBodyAsList body in
+        case createUserBody of
+            Just (NewAccountData naUser _ _) ->
+                do
+                    let naUsername :: AuthUser.Username = AuthUser._username naUser
+                    let username = AuthUser._unUsername naUsername
 
-                response <- leaveRouteT (mapRouteT liftServerPartT2FoundationT $ routeAuthenticate authenticateURL)
-                let responseBody = rsBody response
-                if isInfixOf "NotOk" $ show responseBody then
-                    badRequest response
-                else
-                    createDomainUser username telegramToken
-
-        -- if request body is not valid use response of auth library
-        Nothing -> leaveRouteT (mapRouteT liftServerPartT2FoundationT $ routeAuthenticate authenticateURL)
+                    response <- leaveRouteT (mapRouteT liftServerPartT2FoundationT $ routeAuthenticate authenticateURL)
+                    let responseBody = rsBody response
+                    if isInfixOf "NotOk" $ show responseBody then
+                            badRequest response
+                        else
+                            createDomainUser username telegramToken
+            -- if request body is not valid use response of auth library
+            Nothing -> leaveRouteT (mapRouteT liftServerPartT2FoundationT $ routeAuthenticate authenticateURL)
+    else handleResponse (Left EntryAlreadyExists :: EitherResult UserDto.User)
 
 leaveRouteT :: RouteT url m a-> m a
 leaveRouteT r = unRouteT r (\ _ _ -> undefined)
@@ -71,7 +75,7 @@ leaveRouteT r = unRouteT r (\ _ _ -> undefined)
 createDomainUser :: Text -> Text -> App Response
 createDomainUser name telegramToken = do
     mUser <- UserRepo.createUser user
-    okResponseJson $ encode $ transformToDto mUser
+    handleResponse (transformToDtoE mUser)
     where user = def { DomainUser.loginName = name, DomainUser.telegramToken = telegramToken }
 
 --TODO updating AuthenticateUser is missing

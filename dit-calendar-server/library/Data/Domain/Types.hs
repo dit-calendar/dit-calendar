@@ -29,7 +29,7 @@ import           Data.Time.Clock (UTCTime)
 
 type EitherResult a = Either ResultError a
 
-data ResultError = OptimisticLocking | EntryNotFound String | PermissionAccessInsufficient
+data ResultError = OptimisticLocking | EntryNotFound String | PermissionAccessInsufficient | EntryAlreadyExists
     deriving (Eq, Show)
 deriveJSON defaultOptions ''ResultError
 

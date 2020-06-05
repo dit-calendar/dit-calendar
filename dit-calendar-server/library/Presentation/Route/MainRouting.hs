@@ -47,12 +47,12 @@ authOrRoute routeAuthenticate url =
     case url of
         Authenticate authenticateURL -> do
             mTelegramToken <- lift $ lift getTelegramTokenFromHeader
-            case mTelegramToken of
-                Just telegramToken -> if show authenticateURL ==
-                   "AuthenticationMethods (Just (AuthenticationMethod {_unAuthenticationMethod = \"password\"},[\"account\"]))"
-                    then lift $ UserController.createUser authenticateURL routeAuthenticate telegramToken
-                    else mapRouteT liftServerPartT2FoundationT $ nestURL Authenticate $ routeAuthenticate authenticateURL
-                Nothing -> badRequest "missing Header: TelegramToken"
+            if show authenticateURL ==
+               "AuthenticationMethods (Just (AuthenticationMethod {_unAuthenticationMethod = \"password\"},[\"account\"]))"
+                then case mTelegramToken of
+                        Just telegramToken -> lift $ UserController.createUser authenticateURL routeAuthenticate telegramToken
+                        Nothing -> badRequest "missing Header: TelegramToken"
+                else mapRouteT liftServerPartT2FoundationT $ nestURL Authenticate $ routeAuthenticate authenticateURL
         other -> lift $ route other
 
 getTelegramTokenFromHeader :: ServerPartT IO (Maybe Text)

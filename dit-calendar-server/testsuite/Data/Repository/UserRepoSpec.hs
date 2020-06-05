@@ -16,6 +16,7 @@ import           Control.Monad.Identity       (Identity)
 import           Control.Monad.IO.Class
 import           Control.Monad.Writer.Class   (tell)
 import           Data.Default                 (def)
+import           Data.Either                  (fromRight)
 import           Data.Maybe                   (fromJust)
 
 import           Data.Domain.Task             as Task
@@ -34,7 +35,7 @@ userFromDb = def { loginName="Foo", User.userId=10, User.telegramToken="token"}
 taskFromDb = def {Task.taskId=2}
 
 fixture :: (Monad m, MonadWriter [String] m) => Fixture m
-fixture = Fixture { _create = \(NewUser a)    -> return a
+fixture = Fixture { _create = \(NewUser a)    -> return $ Right a
                   , _delete = \(DeleteUser a) -> tell [show a]
                   , _update = \(UpdateUser a) -> tell [show a] >>= (\_ -> return $ Right a)
                   , _query = \(UserById a)    -> return (Just userFromDb)
@@ -48,8 +49,8 @@ spec = describe "UserRepo" $ do
     it "createUser" $ do
         let user = def { loginName="name" }
         let (result, _) = evalTestFixture (UserRepo.createUserImpl user) fixture
-        User.loginName result `shouldBe` "name"
-        User.ownerOfCalendarEntries result `shouldBe` []
+        User.loginName (fromRight undefined result) `shouldBe` "name"
+        User.ownerOfCalendarEntries (fromRight undefined result) `shouldBe` []
     it "deleteUser" $ do
         let user = def { loginName="Foo", User.userId=10, telegramToken=""}
         let (_, log) = evalTestFixture (UserRepo.deleteUserImpl user) fixture

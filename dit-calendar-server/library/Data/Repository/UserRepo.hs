@@ -31,8 +31,9 @@ instance UserDAO App where
     delete = Foundation.update
     query  = Foundation.query
     queryByLoginName = Foundation.query
+    queryByToken = Foundation.query
 
-createUserImpl :: UserDAO m => User -> m User
+createUserImpl :: UserDAO m => User -> m (EitherResult User)
 createUserImpl user = create $ UserAcid.NewUser user
 
 deleteUserImpl :: UserDAO m => User -> m ()
@@ -57,10 +58,10 @@ findUserByLoginNameIml :: (UserDAO m, MonadIO m) => Text -> m (Maybe User)
 findUserByLoginNameIml = queryByLoginName . UserAcid.FindByLoginName
 
 findUserByTelegramTokenIml :: (UserDAO m, MonadIO m) => TelegramToken -> m (Maybe User)
-findUserByTelegramTokenIml = queryByLoginName . UserAcid.FindByLoginName
+findUserByTelegramTokenIml = queryByToken . UserAcid.FindByTelegramToken
 
 class Monad m => MonadDBUserRepo m where
-    createUser :: User -> m User
+    createUser :: User -> m (EitherResult User)
     findUserById :: UserId -> m (Maybe User)
     updateUser :: User -> m (EitherResult User)
     deleteUser :: User -> m ()
