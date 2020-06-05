@@ -81,8 +81,8 @@ calendarEntriesResponse response model =
             { model | problems = calendarErrorsDecoder error }
 
 
-calendarEntryResponse : Result (HttpEx.Error String) ( Http.Metadata, String ) -> Model -> Model
-calendarEntryResponse response model =
+calendarEntryResponse : Result (HttpEx.Error String) ( Http.Metadata, String ) -> Model -> Messages -> Model
+calendarEntryResponse response model sucessMessage =
     case response of
         Ok value ->
             let
@@ -91,7 +91,7 @@ calendarEntryResponse response model =
             in
             case resp of
                 Ok calendarEntry ->
-                    { model | calendarEntry = calendarEntry }
+                    { model | calendarEntry = calendarEntry, messages = sucessMessage }
 
                 Err error ->
                     { model | messages = Problems [ error ] }
@@ -102,17 +102,9 @@ calendarEntryResponse response model =
 
 getCalendarEntryResponse : Result (HttpEx.Error String) ( Http.Metadata, String ) -> Model -> Model
 getCalendarEntryResponse response model =
-    let
-        newModel =
-            calendarEntryResponse response model
-    in
-    { newModel | messages = Problems [] }
+    calendarEntryResponse response model (Problems [])
 
 
 saveCalendarEntryResponse : Result (HttpEx.Error String) ( Http.Metadata, String ) -> Model -> Model
 saveCalendarEntryResponse response model =
-    let
-        newModel =
-            calendarEntryResponse response model
-    in
-    { newModel | messages = SuccessUpdate }
+    calendarEntryResponse response model SuccessUpdate

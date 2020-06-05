@@ -4,6 +4,8 @@
 module Presentation.Dto.Task
     ( Task(..), validate ) where
 
+import           Prelude           hiding (null)
+
 import           Data.Aeson
 import           Data.Default
 import           Data.Maybe                        (isNothing)
@@ -21,14 +23,17 @@ data Task = Task
     , assignedUsers :: [TelegramChatId]
     , startTime     :: Maybe UTCTime
     , endTime       :: Maybe UTCTime
-    } deriving (Show, Generic)
+    }
+    deriving (Show, Generic)
 
 validate :: Either String Task -> Either String Task
 validate (Left e) = Left e
 validate (Right task) =
-    if isNothing (endTime task) || (startTime task < endTime task)
+    if not (null (title task))
+    then if isNothing (endTime task) || (startTime task < endTime task)
         then Right task
         else Left "startTime cannot be before endTime"
+    else Left "title cannot be empty"
 
 instance ToJSON Task where
     toEncoding = genericToEncoding defaultOptions { omitNothingFields = True }

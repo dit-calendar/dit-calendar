@@ -127,9 +127,16 @@ view model =
                 tasks
             )
         , Button.button [ Button.primary, onClick SaveCalendar ] [ text "Speichern" ]
-        , Button.button
-            [ Button.primary, Button.onClick (OpenTaskDetailsView (emptyTask model.calendarEntry.entryId)) ]
-            [ text "Neuen Task Eintrag erstellen" ]
+
+        -- hide button for create task if calendar entry is not existing yet
+        , case calendarInfo.entryId of
+            Just eId ->
+                Button.button
+                    [ Button.primary, Button.onClick (OpenTaskDetailsView (emptyTask eId calendarInfo.startDate)) ]
+                    [ text "Neuen Task Eintrag erstellen" ]
+
+            Nothing ->
+                div [] []
         , case model.messages of
             Problems errors ->
                 div [ class "error-messages" ] (List.map viewProblem errors)

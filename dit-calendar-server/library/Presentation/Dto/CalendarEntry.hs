@@ -7,6 +7,8 @@ module Presentation.Dto.CalendarEntry
     validate
     ) where
 
+import           Prelude         hiding (null)
+
 import           Data.Aeson
 import           Data.Default
 import           Data.Text
@@ -20,14 +22,17 @@ data CalendarEntry = CalendarEntry
     , version     :: Maybe Int
     , startDate   :: UTCTime
     , endDate     :: UTCTime
-    } deriving (Show, Generic)
+    }
+    deriving (Show, Generic)
 
 validate :: Either String CalendarEntry -> Either String CalendarEntry
 validate (Left e) = Left e
 validate (Right entry) =
-    if startDate entry < endDate entry
+    if not (null (title entry))
+    then if startDate entry < endDate entry
         then Right entry
         else Left "startDate cannot be before endDate"
+    else Left "title cannot be empty"
 
 instance ToJSON CalendarEntry where
     toEncoding = genericToEncoding defaultOptions
