@@ -22,7 +22,7 @@ COPY --from=setup /root/.stack /root/.stack
 COPY library /build/library
 COPY src /build/src
 COPY testsuite /build/testsuite
-COPY LICENSE ChangeLog.md /build/
+COPY LICENSE /build/
 COPY stack.yaml stack.yaml.lock dit-calendar-server.cabal /build/
 
 RUN apt-get update && apt-get -y install happy

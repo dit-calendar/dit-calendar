@@ -8,7 +8,7 @@ author:              Viktor Befort, Alex Befort
 maintainer:          v.befort@googlemail.com
 category:            Web
 build-type:          Simple
-cabal-version:       >=1.10
+cabal-version:       >=2.0.0
 
 source-repository head
   type:     git
