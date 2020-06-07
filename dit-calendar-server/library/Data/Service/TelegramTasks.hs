@@ -1,7 +1,6 @@
 {-# LANGUAGE FlexibleContexts     #-}
 {-# LANGUAGE FlexibleInstances    #-}
 {-# LANGUAGE MonoLocalBinds       #-}
-{-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Data.Service.TelegramTasks (getTelegramLinksOfTaskImpl, deleteTaskFromAllTelegramLinksImpl, addTelegramLinkToTaskImpl,
