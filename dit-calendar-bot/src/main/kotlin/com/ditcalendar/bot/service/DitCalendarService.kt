@@ -63,8 +63,8 @@ class DitCalendarService {
 
 
     private fun getCalendarAndTask(calendarId: Long): Result<DitCalendar, Exception> {
-        val calendarResult = calendarEndpoint.readCalendar(calendarId)
         val tokenResul = authEndpoint.getToken()
+        val calendarResult = tokenResul.flatMap { calendarEndpoint.readCalendar(calendarId, it) }
         val tasksResulst = tokenResul.flatMap { taskEndpoint.readTasks(calendarId, it) }
 
         return calendarResult.flatMap { calendar ->

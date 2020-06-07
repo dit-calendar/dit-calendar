@@ -37,6 +37,7 @@ private fun parseError(error: Exception): TelegramResponse =
         OnlyText(when (error) {
             is FuelError -> {
                 when (error.response.statusCode) {
+                    401 -> "Bot fehlen notwendige Zugriffsrechte"
                     403 -> "Bot fehlen notwendige Zugriffsrechte"
                     404 -> "Kalendar oder Task nicht gefunden"
                     503 -> "Server nicht erreichbar, versuchs nochmal"
