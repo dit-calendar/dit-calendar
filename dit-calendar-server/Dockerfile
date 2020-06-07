@@ -1,6 +1,6 @@
 # setup image
 ##############################################################################
-FROM haskell:8.2.2 AS setup
+FROM haskell:8.6 AS setup
 WORKDIR /build
 
 # Docker build should not use cached layer if any of these is modified
@@ -10,7 +10,7 @@ RUN stack build --dependencies-only
 
 # build image
 ##############################################################################
-FROM haskell:8.2.2 AS build
+FROM haskell:8.6 AS build
 
 WORKDIR /build
 
