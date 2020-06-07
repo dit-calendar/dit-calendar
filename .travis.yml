@@ -22,7 +22,7 @@ matrix:
     - env: HAPPYVER=1.19.5
       language: haskell
       ghc:
-        - "8.2.2"
+        - "8.6.1"
       before_install:
         - cd dit-calendar-server
         - cabal install happy-$HAPPYVER
