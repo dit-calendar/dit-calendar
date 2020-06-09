@@ -1,5 +1,4 @@
 {-# LANGUAGE FunctionalDependencies #-}
-{-# LANGUAGE MultiParamTypeClasses  #-}
 
 module Presentation.Mapper.BaseMapper
     ( Mapper(..)

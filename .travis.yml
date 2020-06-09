@@ -4,7 +4,6 @@ matrix:
       jdk: openjdk11
       before_script:
         - cd dit-calendar-bot
-        - gradle assemble
       script:
         - gradle build
 
@@ -19,15 +18,16 @@ matrix:
         - elm make src/Main.elm --output src/Main.js
         - elm-test
 
-    - env: HAPPYVER=1.19.5
+    - env: HAPPYVER=1.19.12
       language: haskell
       ghc:
-        - "8.2.2"
+        - "8.6.5"
       before_install:
         - cd dit-calendar-server
-        - cabal install happy-$HAPPYVER
+        - cabal install happy-$HAPPYVER alex
+        - cabal install --only-dependencies --enable-tests --allow-newer=test-fixture:template-haskell
       script:
-        - cabal configure --enable-tests --enable-benchmarks -v2  # -v2 provides useful information for debugging
+        - cabal v2-configure --enable-tests --enable-benchmarks -v2  # -v2 provides useful information for debugging
         - cabal build
         - cabal test
         - cabal check

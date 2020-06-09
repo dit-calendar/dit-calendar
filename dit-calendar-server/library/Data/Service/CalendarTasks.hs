@@ -1,11 +1,10 @@
 {-# LANGUAGE FlexibleInstances    #-}
 {-# LANGUAGE MonoLocalBinds       #-}
-{-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Data.Service.CalendarTasks (CalendarTasksService(..), getCalendarTasksIml, deleteCalendarsTasksImpl) where
 
-import           Data.Maybe                (fromJust)
+import           Data.Maybe                (fromJust, fromMaybe)
 
 import           AppContext                (App)
 import           Data.Domain.CalendarEntry as CalendarEntry
@@ -25,11 +24,8 @@ deleteCalendarsTasksImpl calendar =
 getCalendarTasksIml :: MonadDBTaskRepo m => CalendarEntry -> m [Task]
 getCalendarTasksIml calendar = mapM getTaskWithFail (CalendarEntry.tasks calendar)
 
--- https://en.wikibooks.org/wiki/Haskell/do_notation#The_fail_method
 getTaskWithFail :: (MonadDBTaskRepo m) => TaskId -> m Task
-getTaskWithFail taskId = do
-    Just task <- MonadDBTaskRepo.findTaskById taskId
-    return task
+getTaskWithFail taskId = fmap fromJust (MonadDBTaskRepo.findTaskById taskId)
 
 class Monad m => CalendarTasksService m where
     getCalendarTasks :: CalendarEntry -> m [Task]
