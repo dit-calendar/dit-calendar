@@ -7,7 +7,7 @@ import java.util.*
 
 @Serializer(forClass = Date::class)
 object DateSerializer : KSerializer<Date> {
-    private val df: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
+    private val df: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm")
 
     override val descriptor: SerialDescriptor =
             PrimitiveDescriptor("WithCustomDefault", PrimitiveKind.STRING)

@@ -53,7 +53,8 @@ private fun TelegramLinks.toMarkdown(): String {
 }
 
 
-fun TelegramTaskAssignments.toMarkdown(): String = joinToString(separator = System.lineSeparator()) { it.toMarkdown() }
+fun TelegramTaskAssignments.toMarkdown(): String = System.lineSeparator() +
+        joinToString(separator = System.lineSeparator()) { it.toMarkdown() }
 
 fun DitCalendar.toMarkdown(): String {
     val formattedDescription =

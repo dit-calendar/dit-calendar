@@ -41,7 +41,13 @@ private fun parseError(error: Exception): TelegramResponse =
                     403 -> "Bot fehlen notwendige Zugriffsrechte"
                     404 -> "Kalendar oder Task nicht gefunden"
                     503 -> "Server nicht erreichbar, versuchs nochmal"
-                    else -> "unbekannter Fehler"
+                    else -> if (error.message != null)
+                        "Error: " + error.message.toString()
+                                .replace("\"", "")
+                                .replace("-", "\\-")
+                                .replace("_", "\\_")
+                                .replace(".", "\\.")
+                    else "unkown Error"
                 }
             }
             is DitBotError -> {
