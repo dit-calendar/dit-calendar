@@ -1,3 +1,20 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: dit-calendar-server
+  annotations:
+    dev.okteto.com/auto-ingress: "true"
+spec:
+  type: ClusterIP
+  ports:
+  - name: "dit-calendar"
+    port: 8080
+  selector:
+    app: dit-calendar
+    tier: backend
+
+---
+
 kind: Deployment
 apiVersion: apps/v1
 metadata:
@@ -31,32 +48,3 @@ spec:
         volumeMounts:
           - name: dit-calendar-volume
             mountPath: /app/state
-
----
-
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: dit-calendar-storage
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 4Gi
----
-
-kind: Service
-apiVersion: v1
-metadata:
-  name: dit-calendar-server
-  annotations:
-    dev.okteto.com/auto-ingress: "true"
-spec:
-  type: ClusterIP
-  ports:
-  - name: "dit-calendar"
-    port: 8080
-  selector:
-    app: dit-calendar
-    tier: backend

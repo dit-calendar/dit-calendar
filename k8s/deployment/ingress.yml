@@ -2,6 +2,8 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: simple-fanout
+  labels:
+    app: dit-calendar
   annotations:
     dev.okteto.com/generate-host: "dit-calendar"
 spec:
