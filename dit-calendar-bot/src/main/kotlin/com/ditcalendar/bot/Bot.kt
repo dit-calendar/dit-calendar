@@ -8,6 +8,7 @@ import com.ditcalendar.bot.data.core.Base
 import com.ditcalendar.bot.error.InvalidRequest
 import com.ditcalendar.bot.formatter.parseResponse
 import com.ditcalendar.bot.service.DitCalendarService
+import com.ditcalendar.bot.service.ServerDeploymentService
 import com.ditcalendar.bot.service.assingAnnonCallbackCommand
 import com.ditcalendar.bot.service.assingWithNameCallbackCommand
 import com.elbekD.bot.Bot
@@ -18,6 +19,8 @@ import com.elbekD.bot.types.Message
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.failure
 import com.github.kittinunf.result.success
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 val helpMessage =
         """
@@ -34,8 +37,12 @@ fun main(args: Array<String>) {
     val token = config[telegram_token]
     val herokuApp = config[heroku_app_name]
     val calendarService = DitCalendarService()
+    val serverDeploymentService = ServerDeploymentService()
 
     val bot = if (config[webhook_is_enabled]) {
+        GlobalScope.launch {
+            serverDeploymentService.deployServer()
+        }
         Bot.createWebhook(config[bot_name], token) {
             url = "https://$herokuApp.herokuapp.com/$token"
 
@@ -50,6 +57,7 @@ fun main(args: Array<String>) {
     } else Bot.createPolling(config[bot_name], token)
 
     bot.onCallbackQuery { callbackQuery ->
+        serverDeploymentService.deployServer()
         val request = callbackQuery.data
         val originallyMessage = callbackQuery.message
 
@@ -82,6 +90,7 @@ fun main(args: Array<String>) {
 
     //for deeplinking
     bot.onCommand("/start") { msg, opts ->
+        serverDeploymentService.deployServer()
         val msgUser = msg.from
         //if message user is not set, we can't process
         if (msgUser == null) {
@@ -109,6 +118,7 @@ fun main(args: Array<String>) {
     }
 
     bot.onCommand("/postcalendar") { msg, opts ->
+        serverDeploymentService.deployServer()
         val msgUser = msg.from
         //if message user is not set, we can't process
         if (msgUser == null) {
