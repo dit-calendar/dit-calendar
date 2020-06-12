@@ -20,6 +20,7 @@ import Page.Logout as LogoutService
 import Page.Register as Register
 import Page.SimpleCalendarList as CalendarList
 import Page.TaskDetail as TaskDetail
+import ServerDeploy as ServerDeploy
 import Url exposing (Url)
 import Url.Parser as UrlParser exposing ((</>), Parser)
 
@@ -32,6 +33,7 @@ type alias Model =
     { navKey : Navigation.Key
     , page : Page
     , navState : Navbar.State
+    , serverStarUpLoadingState : ServerDeploy.Model
     }
 
 
@@ -62,10 +64,18 @@ init _ url key =
         ( navState, navCmd ) =
             Navbar.initialState NavMsg
 
+        ( serverStartUpState, serverStartUpCmd ) =
+            ServerDeploy.update ServerDeploy.CheckHealth ServerDeploy.initModel
+
         ( model, urlCmd ) =
-            urlUpdate url { navKey = key, navState = navState, page = LoginPage { name = "", password = "", problems = [] } }
+            urlUpdate url
+                { navKey = key
+                , navState = navState
+                , page = LoginPage { name = "", password = "", problems = [] }
+                , serverStarUpLoadingState = serverStartUpState
+                }
     in
-    ( model, Cmd.batch [ urlCmd, navCmd ] )
+    ( model, Cmd.batch [ urlCmd, navCmd, Cmd.map ServerHealthMsg serverStartUpCmd ] )
 
 
 type Msg
@@ -78,6 +88,7 @@ type Msg
     | CalendarDetailMsg CalendarEntryDetails.Msg
     | TaskDetailMsg TaskDetail.Msg
     | LogoutMsg Logout.Msg
+    | ServerHealthMsg ServerDeploy.Msg
 
 
 subscriptions : Model -> Sub Msg
@@ -162,6 +173,16 @@ update msg model =
 
         LogoutMsg logoutMsg ->
             stepLogout model (LogoutService.update logoutMsg)
+
+        ServerHealthMsg startUpMsg ->
+            stepHealth model (ServerDeploy.update startUpMsg model.serverStarUpLoadingState)
+
+
+stepHealth : Model -> ( ServerDeploy.Model, Cmd ServerDeploy.Msg ) -> ( Model, Cmd Msg )
+stepHealth model ( startUpState, cmd ) =
+    ( { model | serverStarUpLoadingState = startUpState }
+    , Cmd.map ServerHealthMsg cmd
+    )
 
 
 stepLogin : Model -> ( Login.Model, Cmd Login.Msg ) -> ( Model, Cmd Msg )
@@ -287,7 +308,9 @@ mainContent model =
     Grid.container [] <|
         case model.page of
             LoginPage login ->
-                [ Html.map LoginMsg (Login.view login) ]
+                [ Html.map LoginMsg (Login.view login)
+                , Html.map ServerHealthMsg (ServerDeploy.view model.serverStarUpLoadingState)
+                ]
 
             RegisterPage register ->
                 [ Html.map RegisterMsg (Register.view register) ]
