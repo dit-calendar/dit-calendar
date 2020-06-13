@@ -9,26 +9,22 @@ import com.github.kittinunf.fuel.httpGet
 class ServerDeploymentService {
 
     private val config by config()
+    private val ditCalendarUrl = config[dit_calendar_server_url]
+    private val ditCalendarDeploymentUrl = config[dit_calendar_deployment_url]
 
     suspend fun deployServer() {
         if (!healthCheck())
             wakeUpServer()
-
     }
 
-    private suspend fun healthCheck(): Boolean {
-        val ditCalendarUrl = config[dit_calendar_server_url]
-
-        return "$ditCalendarUrl/"
-                .httpGet()
-                .awaitStringResponseResult()
-                .second
-                .statusCode == 200
-    }
+    private fun healthCheck(): Boolean =
+            "$ditCalendarUrl/"
+                    .httpGet()
+                    .response()
+                    .second
+                    .statusCode == 200
 
     private suspend fun wakeUpServer() {
-        val ditCalendarDeploymentUrl = config[dit_calendar_deployment_url]
-
         "$ditCalendarDeploymentUrl/"
                 .httpGet().awaitStringResponseResult()
     }
