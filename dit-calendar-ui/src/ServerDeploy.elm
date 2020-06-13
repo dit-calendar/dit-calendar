@@ -18,7 +18,8 @@ type alias Model =
 type Msg
     = CheckHealth
     | CheckHealthResult (Result (HttpEx.Error Bytes) ())
-    | ServerStartUpResult (Result (HttpEx.Error Bytes) ())
+    | ServerStartDeployResult (Result (HttpEx.Error Bytes) ())
+    | ServerAwakeResult (Result (HttpEx.Error Bytes) ())
 
 
 initModel : Model
@@ -35,7 +36,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         CheckHealth ->
-            ( model, healthCheck )
+            ( model, healthCheck CheckHealthResult )
 
         CheckHealthResult response ->
             case response of
@@ -45,20 +46,23 @@ update msg model =
                 Err _ ->
                     ( { showLoading = True, error = Nothing }, serverStartUp )
 
-        ServerStartUpResult response ->
+        ServerStartDeployResult _ ->
+            ( model, healthCheck ServerAwakeResult )
+
+        ServerAwakeResult response ->
             case response of
                 Ok _ ->
                     init
 
                 Err _ ->
-                    ( { showLoading = False, error = Just "Server Problems" }, Cmd.none )
+                    ( { showLoading = False, error = Just "Server is not running. Re-try in a moment" }, Cmd.none )
 
 
 view : Model -> Html Msg
 view model =
     div []
         [ if model.showLoading then
-            div [ class "server-startup-spinner" ] [ Alert.simplePrimary [] [ text "Server initialising" ] ]
+            div [ class "server-startup-spinner" ] [ Alert.simplePrimary [] [ text "Startup Server" ] ]
 
           else
             case model.error of
@@ -70,15 +74,15 @@ view model =
         ]
 
 
-healthCheck =
+healthCheck resultType =
     Http.get
         { url = Server.baseUrl
-        , expect = HttpEx.expectWhatever CheckHealthResult
+        , expect = HttpEx.expectWhatever resultType
         }
 
 
 serverStartUp =
     Http.get
         { url = Server.serverStartUpUrl
-        , expect = HttpEx.expectWhatever ServerStartUpResult
+        , expect = HttpEx.expectWhatever ServerStartDeployResult
         }
