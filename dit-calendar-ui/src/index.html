@@ -13,5 +13,8 @@
 </body>
 <script>
         var app = Elm.Main.init({ flags:null, node: document.getElementById("elm-node") });
+        app.ports.saveCookie.subscribe(function(token) {
+            sessionStorage.setItem("atc", token);
+        });
     </script>
 </html>

@@ -1,12 +1,16 @@
-module Page.Login exposing (init, update, view, viewInput)
+port module Page.Login exposing (init, update, view, viewInput)
 
 import Bootstrap.Alert as Alert
 import Browser.Navigation as Navigation
 import Data.Login exposing (Model, Msg(..))
 import Endpoint.AuthEndpoint exposing (login, loginResponse)
+import Endpoint.JsonParser.AuthParser exposing (parseLoginResult)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+
+
+port saveCookie : String -> Cmd msg
 
 
 init : ( Model, Cmd Msg )
@@ -28,8 +32,8 @@ update msg model =
 
         HttpLogin result ->
             case result of
-                Ok _ ->
-                    ( model, Navigation.load "#calendar" )
+                Ok token ->
+                    ( model, Cmd.batch [ Navigation.load "#calendar", saveCookie (parseLoginResult token) ] )
 
                 Err error ->
                     ( loginResponse error model, Cmd.none )

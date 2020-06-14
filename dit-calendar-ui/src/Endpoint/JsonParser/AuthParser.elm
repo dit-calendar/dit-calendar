@@ -1,8 +1,9 @@
-module Endpoint.JsonParser.AuthParser exposing (authErrorDecoder, loginEncoder, registerEncoder)
+module Endpoint.JsonParser.AuthParser exposing (authErrorDecoder, loginEncoder, parseLoginResult, registerEncoder)
 
 import Data.Login as Login
 import Data.Register as Register
 import Endpoint.JsonParser.ResponseErrorDecoder exposing (ErrorResponse, errorDecoder)
+import Http
 import Http.Detailed as HttpEx
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -43,3 +44,22 @@ registerEncoder model =
         , ( "naPassword", Encode.string model.register.password )
         , ( "naPasswordConfirm", Encode.string model.register.passwordConfirm )
         ]
+
+
+parseLoginResult : ( Http.Metadata, String ) -> String
+parseLoginResult ( _, body ) =
+    let
+        decode =
+            Decode.decodeString loginDecoder body
+    in
+    case decode of
+        Ok token ->
+            token
+
+        Err _ ->
+            "fehler beim decodieren des login response"
+
+
+loginDecoder : Decode.Decoder String
+loginDecoder =
+    Decode.field "jrData" (Decode.field "token" Decode.string)
