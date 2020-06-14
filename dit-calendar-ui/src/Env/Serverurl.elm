@@ -1,4 +1,4 @@
-module Env.Serverurl exposing (calendarEntries, calendarEntry, calendarTask, loginUrl, logoutUrl, registerUrl, updateCalendarTask)
+module Env.Serverurl exposing (baseUrl, calendarEntries, calendarEntry, calendarTask, loginUrl, logoutUrl, registerUrl, serverStartUpUrl, updateCalendarTask)
 
 
 authUrl : String
@@ -44,4 +44,8 @@ calendarEntry entryId =
 baseUrl : String
 baseUrl =
     -- "http://localhost:8080/"
-    "https://dit-calendar-vitab.cloud.okteto.net/"
+    "https://dit-calendar-server-vitab.cloud.okteto.net/"
+
+
+serverStartUpUrl =
+    "https://dit-calendar-okteto.herokuapp.com/"
